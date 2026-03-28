@@ -3,18 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intent — Work System</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <title>Work Ontology — Intent</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; }
-    .site-nav { max-width: 1000px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
     .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
     .site-nav .logo span { color: #3b82f6; }
     .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
     .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+
+    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+    .content h2 { font-size: 18px; font-weight: 600; margin: 32px 0 12px 0; }
+
+    .diagram { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; margin: 24px 0; }
+    .diagram h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #94a3b8; }
+    .level { margin-bottom: 20px; }
+    .level-name { font-size: 13px; font-weight: 600; color: #3b82f6; margin-bottom: 6px; }
+    .level-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+
+    .hierarchy { font-family: monospace; font-size: 12px; color: #94a3b8; background: #0f172a; padding: 16px; border-radius: 4px; margin: 16px 0; overflow-x: auto; }
+
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -26,467 +41,95 @@
     <a href="signals.html">Signals</a>
     <a href="decisions.html">Decisions</a>
   </nav>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-    const { useState } = React;
 
-    const COLORS = {
-      bg: "#0f172a", surface: "#1e293b", surfaceHover: "#334155", border: "#334155",
-      text: "#f1f5f9", textMuted: "#94a3b8", textDim: "#64748b",
-      signal: "#f59e0b", intent: "#a855f7", spec: "#3b82f6", contract: "#06b6d4",
-      capability: "#10b981", feature: "#8b5cf6", product: "#ec4899",
-      notice: "#f59e0b", observe: "#a855f7", entire: "#ec4899", execute: "#10b981",
-    };
+  <div class="content">
+    <h1>Work Ontology</h1>
+    <p>The seven-level hierarchy that replaces tickets: Signal → Intent → Spec → Contract → Capability → Feature → Product. With three governance dimensions and an Agile comparison.</p>
 
-    const tabs = [
-      { id: "ontology", label: "Ontology", icon: "🏗️" },
-      { id: "dimensions", label: "Three Dimensions", icon: "📐" },
-      { id: "flow", label: "Agent Flow", icon: "🔀" },
-      { id: "dashboard", label: "Dashboard", icon: "📊" },
-      { id: "versus", label: "Agile vs Intent", icon: "⚖️" },
-    ];
+    <h2>The Hierarchy</h2>
 
-    function OntologyTab() {
-      const [expanded, setExpanded] = useState(null);
-      const units = [
-        {
-          id: "signal", name: "Signal", color: COLORS.signal, icon: "📡",
-          desc: "Observation proposing change",
-          details: "Raw observation from research, user feedback, metrics, or agent traces. Proposes a change. Low structure, high diversity. Example: 'Noticed 3 support tickets about onboarding flow delays.'"
-        },
-        {
-          id: "intent", name: "Intent", color: COLORS.intent, icon: "🎯",
-          desc: "Hypothesis-driven outcome",
-          details: "Crystallizes a signal into a hypothesis with success criteria. Answers 'why?'. Example: 'Hypothesis: Reduce onboarding friction by 50%. Success: Onboarding NPS > 8/10.'"
-        },
-        {
-          id: "spec", name: "Spec", color: COLORS.spec, icon: "📝",
-          desc: "Declarative behavior",
-          details: "Detailed specification of desired behavior. Machine-readable and testable. Maps to Intent. Example: 'When user completes profile page, system sends welcome email with tutorial link within 2 seconds.'"
-        },
-        {
-          id: "contract", name: "Contract", color: COLORS.contract, icon: "✓",
-          desc: "Verifiable interface",
-          details: "Atomic unit of execution. Done when assertions pass. Replaces tasks/subtasks. Example: '@test function welcomeEmailSent() { assert(email.subject.includes(\"Welcome\")); }'"
-        },
-        {
-          id: "capability", name: "Capability", color: COLORS.capability, icon: "🔧",
-          desc: "Reusable building block",
-          details: "Technical component that delivers a discrete function. Composed from Contracts. Versioned and documented. Example: 'EmailService: send, template, tracking, retry logic.'"
-        },
-        {
-          id: "feature", name: "Feature", color: COLORS.feature, icon: "⭐",
-          desc: "User-visible value",
-          details: "Composed from Capabilities. Delivers measurable user value. Tied to Intents. Example: 'Guided Onboarding: tutorials + progress tracking + help overlay.'"
-        },
-        {
-          id: "product", name: "Product", color: COLORS.product, icon: "🎁",
-          desc: "Living system",
-          details: "Continuous composition of Features. Evolves based on Signals. The highest level of work organization. Example: 'The entire platform with all features, capabilities, and governance.'"
-        },
-      ];
+    <div class="hierarchy">Signal
+  ↓
+Intent
+  ↓
+Spec
+  ↓
+Contract
+  ↓
+Capability
+  ↓
+Feature
+  ↓
+Product
+    </div>
 
-      return (
-        <div style={{ padding: "0 20px" }}>
-          <p style={{ color: COLORS.textMuted, marginBottom: 24, lineHeight: 1.6 }}>
-            Seven units compose the work hierarchy. Each has a schema, state machine, and unique ID flowing through its children.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {units.map(unit => (
-              <div key={unit.id}>
-                <button
-                  onClick={() => setExpanded(expanded === unit.id ? null : unit.id)}
-                  style={{
-                    width: "100%",
-                    background: expanded === unit.id ? COLORS.surfaceHover : COLORS.surface,
-                    border: `1px solid ${expanded === unit.id ? unit.color : COLORS.border}`,
-                    borderRadius: 8,
-                    padding: "14px 18px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1 }}>
-                    <span style={{ fontSize: 18 }}>{unit.icon}</span>
-                    <div style={{ textAlign: "left" }}>
-                      <div style={{ color: unit.color, fontWeight: 600, fontSize: 14 }}>{unit.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 12 }}>{unit.desc}</div>
-                    </div>
-                  </div>
-                  <span style={{ color: COLORS.textDim, transform: expanded === unit.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
-                </button>
-                {expanded === unit.id && (
-                  <div style={{ background: COLORS.surface, borderRadius: 6, padding: 14, marginTop: 4, marginLeft: 16, borderLeft: `2px solid ${unit.color}30` }}>
-                    <p style={{ color: COLORS.textMuted, fontSize: 13, lineHeight: 1.6, margin: 0 }}>{unit.details}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+    <div class="diagram">
+      <h3>Level by Level</h3>
+      <div class="level">
+        <div class="level-name">1. Signal</div>
+        <div class="level-desc">Observations from work, research, conversation. Raw input. Includes confidence score and source. Multiple signals may relate to the same intent.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">2. Intent</div>
+        <div class="level-desc">What we want to change. Declarative: "Users should be able to X." Connects signals to specs. One intent may spawn multiple specs.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">3. Spec</div>
+        <div class="level-desc">How we'll change it. Narrative + acceptance criteria. Humans write specs; agents use them as contracts.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">4. Contract</div>
+        <div class="level-desc">Verifiable assertions. The spec's assertions extracted and made executable. Done when contract passes.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">5. Capability</div>
+        <div class="level-desc">Building blocks. Reusable functions, components, patterns that contracts are composed of.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">6. Feature</div>
+        <div class="level-desc">User-facing unit. One or more capabilities working together. Released to production.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">7. Product</div>
+        <div class="level-desc">System. Multiple features forming a coherent offering.</div>
+      </div>
+    </div>
 
-    function DimensionsTab() {
-      const [expanded, setExpanded] = useState("right-things");
-      const dimensions = [
-        {
-          id: "right-things",
-          name: "Right Things",
-          color: "#f59e0b",
-          desc: "Validate ideas via continuous discovery",
-          details: [
-            "Use opportunity trees (Teresa Torres) to surface, validate, and prioritize problems.",
-            "Specs reference their parent Intent, tying each piece of work to a validated opportunity.",
-            "Observability: track which Intents led to Features that moved metrics."
-          ]
-        },
-        {
-          id: "right-time",
-          name: "Right Time",
-          color: "#3b82f6",
-          desc: "Parallelize and sequence via dependency graphs",
-          details: [
-            "Specs declare dependencies explicitly. The scheduler respects them.",
-            "Work flows based on dependency graphs, not sprint commitments.",
-            "No blocked teams. Observability: visualize dependency paths, identify bottlenecks."
-          ]
-        },
-        {
-          id: "right-way",
-          name: "Right Way",
-          color: "#10b981",
-          desc: "Architectural governance via tech radar",
-          details: [
-            "Specs cite tech radar constraints: Play (no approval), Build (architecture review), Operate (legacy, migration required).",
-            "Permit levels prevent tech debt accumulation.",
-            "Observability: track tech radar adoption, measure migration progress."
-          ]
-        },
-      ];
+    <h2>Governance Dimensions</h2>
 
-      return (
-        <div style={{ padding: "0 20px" }}>
-          <p style={{ color: COLORS.textMuted, marginBottom: 24, lineHeight: 1.6 }}>
-            The loop addresses flow. Three orthogonal dimensions address governance.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {dimensions.map(dim => (
-              <div key={dim.id}>
-                <button
-                  onClick={() => setExpanded(expanded === dim.id ? null : dim.id)}
-                  style={{
-                    width: "100%",
-                    background: expanded === dim.id ? COLORS.surfaceHover : COLORS.surface,
-                    border: `1px solid ${expanded === dim.id ? dim.color : COLORS.border}`,
-                    borderRadius: 8,
-                    padding: "14px 18px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  <div style={{ textAlign: "left", flex: 1 }}>
-                    <div style={{ color: dim.color, fontWeight: 600, fontSize: 14 }}>{dim.name}</div>
-                    <div style={{ color: COLORS.textDim, fontSize: 12 }}>{dim.desc}</div>
-                  </div>
-                  <span style={{ color: COLORS.textDim, transform: expanded === dim.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
-                </button>
-                {expanded === dim.id && (
-                  <div style={{ background: COLORS.surface, borderRadius: 6, padding: 14, marginTop: 4, marginLeft: 16, borderLeft: `2px solid ${dim.color}30` }}>
-                    <ul style={{ listStyle: "none", padding: 0 }}>
-                      {dim.details.map((detail, i) => (
-                        <li key={i} style={{ color: COLORS.textMuted, fontSize: 13, lineHeight: 1.6, marginBottom: 8, paddingLeft: 16, position: "relative" }}>
-                          <span style={{ position: "absolute", left: 0 }}>•</span>
-                          {detail}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+    <div class="diagram">
+      <h3>How work is organized across three axes</h3>
+      <div class="level">
+        <div class="level-name">Time Dimension</div>
+        <div class="level-desc">Continuous flow. No sprints. Work moves when dependencies resolve, not on calendar boundaries.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">Quality Dimension</div>
+        <div class="level-desc">Contracts are the source of truth. Code and design conform to contracts, not the reverse.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">Visibility Dimension</div>
+        <div class="level-desc">OpenTelemetry-compatible events at every transition. Work is observable at all times.</div>
+      </div>
+    </div>
 
-    function AgentFlowTab() {
-      const [expanded, setExpanded] = useState(null);
-      const phases = [
-        {
-          id: "intake",
-          phase: "1. Signal Intake",
-          color: COLORS.notice,
-          title: "Raw signals from multiple sources",
-          sources: "Customer research, user feedback, metrics, agent traces, Entire.io observations",
-          outputs: "Structured signal cards with source, confidence, and hypothesis",
-          parallel: true
-        },
-        {
-          id: "shaping",
-          phase: "2. Intent Shaping",
-          color: COLORS.intent,
-          title: "Crystallize signals into hypotheses with success criteria",
-          sources: "Signals, existing Intents, team context",
-          outputs: "Intent cards ready for spec authoring",
-          parallel: true
-        },
-        {
-          id: "authoring",
-          phase: "3. Spec Authoring",
-          color: COLORS.spec,
-          title: "Humans and agents draft declarative specifications",
-          sources: "Intents, technical context, dependency graphs",
-          outputs: "Versioned spec files with references, assertions, and contracts",
-          parallel: true
-        },
-        {
-          id: "execution",
-          phase: "4. Contract Execution",
-          color: COLORS.contract,
-          title: "Agents execute contracts while humans review and guide",
-          sources: "Specs, Capabilities, Entire.io traces",
-          outputs: "Code, tests passing, merged commits linked to traces",
-          parallel: true
-        },
-        {
-          id: "verification",
-          phase: "5. Verification & Quality Gate",
-          color: COLORS.capability,
-          title: "Contracts validated against assertions; metrics against Intent",
-          sources: "Test results, deployment metrics, user feedback",
-          outputs: "Pass/fail gates; blocked merges if assertions fail",
-          parallel: false
-        },
-        {
-          id: "observation",
-          phase: "6. Observation & Learning",
-          color: COLORS.observe,
-          title: "Extract signals from execution traces and outcome data",
-          sources: "Entire.io traces, metrics, team retrospective",
-          outputs: "New signals fed back into Notice layer; decisions.md updated",
-          parallel: false
-        },
-      ];
+    <h2>Versus Agile</h2>
 
-      return (
-        <div style={{ padding: "0 20px" }}>
-          <p style={{ color: COLORS.textMuted, marginBottom: 24, lineHeight: 1.6 }}>
-            Six phases compose the work flow. Phases 1-4 are parallelizable. Phases 5-6 are sequential gates.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {phases.map(p => (
-              <div key={p.id}>
-                <button
-                  onClick={() => setExpanded(expanded === p.id ? null : p.id)}
-                  style={{
-                    width: "100%",
-                    background: expanded === p.id ? COLORS.surfaceHover : COLORS.surface,
-                    border: `1px solid ${expanded === p.id ? p.color : COLORS.border}`,
-                    borderRadius: 8,
-                    padding: "14px 18px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  <div style={{ textAlign: "left", flex: 1 }}>
-                    <div style={{ color: p.color, fontWeight: 600, fontSize: 14 }}>{p.phase}</div>
-                    <div style={{ color: COLORS.textMuted, fontSize: 12 }}>{p.title}</div>
-                  </div>
-                  <span style={{ background: p.parallel ? `${p.color}20` : "transparent", color: p.color, fontSize: 10, padding: "2px 8px", borderRadius: 4, marginRight: 12, fontWeight: 600 }}>{p.parallel ? "PARALLEL" : "SEQUENTIAL"}</span>
-                  <span style={{ color: COLORS.textDim, transform: expanded === p.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
-                </button>
-                {expanded === p.id && (
-                  <div style={{ background: COLORS.surface, borderRadius: 6, padding: 14, marginTop: 4, marginLeft: 16, borderLeft: `2px solid ${p.color}30` }}>
-                    <div style={{ marginBottom: 10 }}>
-                      <span style={{ color: p.color, fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.5px" }}>Sources</span>
-                      <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "4px 0 0 0", lineHeight: 1.6 }}>{p.sources}</p>
-                    </div>
-                    <div>
-                      <span style={{ color: p.color, fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.5px" }}>Outputs</span>
-                      <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "4px 0 0 0", lineHeight: 1.6 }}>{p.outputs}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+    <div class="diagram">
+      <h3>How Intent differs from Agile's model</h3>
+      <div class="level">
+        <div class="level-name">Agile: User Story → Sprint → Standup → Backlog Refinement → Retro</div>
+        <div class="level-desc">Ceremony-driven. Humans coordinate via ritual. Estimation guesses duration.</div>
+      </div>
+      <div class="level">
+        <div class="level-name">Intent: Signal → Intent → Spec → Contract → Observe → Event Stream</div>
+        <div class="level-desc">Flow-driven. Systems coordinate via dependency graphs. Observation reveals actual patterns.</div>
+      </div>
+    </div>
+  </div>
 
-    function DashboardTab() {
-      const [selected, setSelected] = useState("lookback");
-
-      return (
-        <div style={{ padding: "0 20px" }}>
-          <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
-            {[{id: "lookback", label: "Look-Back Metrics"}, {id: "lookahead", label: "Look-Ahead Queue"}, {id: "health", label: "Capability Health"}].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setSelected(tab.id)}
-                style={{
-                  background: selected === tab.id ? COLORS.surfaceHover : "transparent",
-                  border: "none",
-                  padding: "10px 16px",
-                  cursor: "pointer",
-                  color: selected === tab.id ? COLORS.text : COLORS.textDim,
-                  fontWeight: selected === tab.id ? 600 : 400,
-                  fontSize: 13
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {selected === "lookback" && (
-            <div>
-              <p style={{ color: COLORS.textMuted, marginBottom: 16, fontSize: 13 }}>Metrics from last loop cycle (last 4 weeks)</p>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-                {[
-                  {label: "Intents Completed", value: "8", color: COLORS.intent},
-                  {label: "Avg Days to Completion", value: "6.2", color: COLORS.spec},
-                  {label: "Specs Authored", value: "21", color: COLORS.spec},
-                  {label: "Contract Pass Rate", value: "94%", color: COLORS.contract},
-                  {label: "Signals Extracted", value: "18", color: COLORS.notice},
-                  {label: "Cycle Time (Intake→Done)", value: "18d", color: COLORS.feature}
-                ].map((m, i) => (
-                  <div key={i} style={{ background: COLORS.surface, border: `1px solid ${COLORS.border}`, borderRadius: 6, padding: 12 }}>
-                    <div style={{ color: m.color, fontWeight: 600, fontSize: 16 }}>{m.value}</div>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 4 }}>{m.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {selected === "lookahead" && (
-            <div>
-              <p style={{ color: COLORS.textMuted, marginBottom: 16, fontSize: 13 }}>Now / Next / Later work queue</p>
-              {[
-                {phase: "Now (This Week)", count: "3 Specs", items: "Contracts in execution", color: COLORS.execute},
-                {phase: "Next (Blocked)", count: "5 Specs", items: "Awaiting dependency resolution", color: COLORS.spec},
-                {phase: "Later (Backlog)", count: "12 Specs", items: "Designed, not yet scheduled", color: COLORS.notice}
-              ].map((q, i) => (
-                <div key={i} style={{ background: COLORS.surface, border: `1px solid ${COLORS.border}`, borderRadius: 6, padding: 14, marginBottom: 10 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                    <div style={{ color: q.color, fontWeight: 600, fontSize: 13 }}>{q.phase}</div>
-                    <div style={{ background: `${q.color}20`, color: q.color, padding: "2px 8px", borderRadius: 4, fontSize: 12, fontWeight: 600 }}>{q.count}</div>
-                  </div>
-                  <p style={{ color: COLORS.textMuted, fontSize: 12, margin: 0 }}>{q.items}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {selected === "health" && (
-            <div>
-              <p style={{ color: COLORS.textMuted, marginBottom: 16, fontSize: 13 }}>Capability maturity matrix</p>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${COLORS.border}` }}>
-                    <th style={{ textAlign: "left", padding: 8, color: COLORS.textDim }}>Capability</th>
-                    <th style={{ textAlign: "center", padding: 8, color: COLORS.textDim }}>Permit</th>
-                    <th style={{ textAlign: "center", padding: 8, color: COLORS.textDim }}>Tech Radar</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    {name: "Auth System", permit: "OPERATE", radar: "assess"},
-                    {name: "API Gateway", permit: "BUILD", radar: "adopt"},
-                    {name: "Observability", permit: "BUILD", radar: "trial"},
-                    {name: "React Components", permit: "PLAY", radar: "adopt"},
-                    {name: "Email Delivery", permit: "OPERATE", radar: "assess"}
-                  ].map((cap, i) => (
-                    <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}>
-                      <td style={{ padding: 8, color: COLORS.text }}>{cap.name}</td>
-                      <td style={{ textAlign: "center", padding: 8 }}>
-                        <span style={{ background: cap.permit === "PLAY" ? "#10b98120" : cap.permit === "BUILD" ? "#3b82f620" : "#f5940e20", color: cap.permit === "PLAY" ? "#10b981" : cap.permit === "BUILD" ? "#3b82f6" : "#f59e0b", padding: "2px 8px", borderRadius: 3, fontSize: 11, fontWeight: 600 }}>{cap.permit}</span>
-                      </td>
-                      <td style={{ textAlign: "center", padding: 8, color: COLORS.textMuted }}>{cap.radar}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    function VersusTab() {
-      const comparisons = [
-        {agile: "Sprint (2 weeks)", intent: "Loop (continuous)", shift: "Work flows based on dependencies, not calendar. No ceremony walls."},
-        {agile: "Epic / Backlog", intent: "Intent Backlog", shift: "Validated opportunities, not just ideas. Connected to discovery signals."},
-        {agile: "User Story", intent: "Spec", shift: "Declarative behavior. Machine-readable. Agents consume it directly."},
-        {agile: "Acceptance Criteria", intent: "Contract", shift: "Verifiable, testable, done when assertions pass. Not subjective done."},
-        {agile: "Story Points / T-shirt Sizing", intent: "Dependency Graph + Signals", shift: "Size emerges from spec complexity. Prioritized by signal confidence and impact."},
-        {agile: "Sprint Planning", intent: "Dependency Analysis", shift: "Continuous. Work is always ready. No ceremony, just scheduling."},
-        {agile: "Daily Stand-up", intent: "Entire.io Traces", shift: "Async status. Reasoning captured in execution traces. No sync meetings."},
-        {agile: "Retrospective", intent: "Signal Extraction", shift: "Observations automated from traces. Not memory in a room. Fed back into specs."},
-        {agile: "Process Heavy (Ceremonies)", intent: "Signal Heavy (Patterns)", shift: "Clarity over process. Best practices encoded in ontology and schemas."}
-      ];
-
-      return (
-        <div style={{ padding: "0 20px" }}>
-          <p style={{ color: COLORS.textMuted, marginBottom: 24, fontSize: 13 }}>How Intent replaces every piece of the agile model</p>
-          {comparisons.map((c, i) => (
-            <div key={i} style={{ background: COLORS.surface, border: `1px solid ${COLORS.border}`, borderRadius: 6, padding: 14, marginBottom: 12 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 10 }}>
-                <div>
-                  <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4 }}>Agile</div>
-                  <div style={{ color: COLORS.text, fontWeight: 600, fontSize: 13 }}>{c.agile}</div>
-                </div>
-                <div>
-                  <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4 }}>Intent</div>
-                  <div style={{ color: COLORS.text, fontWeight: 600, fontSize: 13 }}>{c.intent}</div>
-                </div>
-              </div>
-              <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 10 }}>
-                <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4 }}>The Shift</div>
-                <p style={{ color: COLORS.textMuted, fontSize: 12, margin: 0, lineHeight: 1.6 }}>{c.shift}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    function App() {
-      const [activeTab, setActiveTab] = useState("ontology");
-      return (
-        <div style={{ background: COLORS.bg, minHeight: "100vh", color: COLORS.text, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
-          <div style={{ maxWidth: 1000, margin: "0 auto", padding: "32px 20px" }}>
-            <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 8px 0" }}>Intent Work System</h1>
-            <p style={{ color: COLORS.textMuted, fontSize: 14, margin: "0 0 24px 0", lineHeight: 1.6 }}>The ontology, flow, and governance model that replaces agile ceremonies.</p>
-            <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 4, overflowX: "auto" }}>
-              {tabs.map(tab => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ background: activeTab === tab.id ? COLORS.surfaceHover : "transparent", border: "none", borderRadius: "6px 6px 0 0", padding: "10px 16px", cursor: "pointer", color: activeTab === tab.id ? COLORS.text : COLORS.textDim, fontWeight: activeTab === tab.id ? 600 : 400, fontSize: 13, display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
-                  <span>{tab.icon}</span>{tab.label}
-                </button>
-              ))}
-            </div>
-            {activeTab === "ontology" && <OntologyTab />}
-            {activeTab === "dimensions" && <DimensionsTab />}
-            {activeTab === "flow" && <AgentFlowTab />}
-            {activeTab === "dashboard" && <DashboardTab />}
-            {activeTab === "versus" && <VersusTab />}
-          </div>
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
+  </footer>
 </body>
 </html>

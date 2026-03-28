@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intent &mdash; Concept Brief</title>
+  <title>Concept Brief — Intent</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
     .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
     .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
     .site-nav .logo span { color: #3b82f6; }
     .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
     .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-    .content { max-width: 800px; margin: 0 auto; padding: 48px 24px 64px; }
-    h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-    h2 { font-size: 20px; font-weight: 700; margin: 40px 0 16px; }
-    p { color: #cbd5e1; font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
-    .intro { color: #94a3b8; font-size: 16px; margin-bottom: 32px; }
-    .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-    .card h3 { font-size: 16px; font-weight: 600; color: #f1f5f9; margin-bottom: 8px; margin-top: 0; }
-    .card p { color: #cbd5e1; margin-bottom: 0; }
-    .risk-card { border-left: 3px solid #f59e0b; }
-    .hypothesis { border-left: 3px solid #3b82f6; }
-    .hypothesis strong { color: #f1f5f9; }
+
+    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .content h2 { font-size: 20px; font-weight: 600; margin: 32px 0 12px 0; }
+    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+    .content ul { margin-left: 20px; margin-bottom: 16px; }
+    .content li { color: #94a3b8; font-size: 14px; margin-bottom: 8px; line-height: 1.6; }
+
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -36,93 +37,32 @@
   </nav>
 
   <div class="content">
-    <h1>Intent Product Concept</h1>
-    <p class="intro">A team operating model positioned above spec-driven dev tools and alongside observability platforms. Replaces agile ceremonies with a tight notice → spec → execute → observe loop.</p>
+    <h1>Concept Brief</h1>
+    <p>Intent as a product: the problem, audience, solution, differentiation, go-to-market hypotheses, and open risks. For anyone evaluating the venture angle.</p>
 
     <h2>The Problem</h2>
-    <p>AI-augmented teams face a new bottleneck: not how to write code, but how to agree on what to write. Traditional agile ceremonies (refinement, planning, standups) are synchronous overhead. They scale poorly in distributed teams and don't leverage AI's async strength.</p>
-    <p>Meanwhile, spec-driven development tools (Claude Code, GitHub Spec Kit) handle spec→code. Entire.io handles observability. Nobody owns the "why are we building this" layer—the Intent layer.</p>
-
-    <h2>The Solution: Intent</h2>
-    <p>A methodology and playbook for teams to organize work around continuously emerging signals, explicit specs, and closed-loop observability. Replaces sprints and tickets with a notice → spec → execute → observe loop that runs continuously.</p>
+    <p>Agile ceremonies were designed for coordinating human labor. When AI agents do the building, the old machinery breaks down. Standup, sprints, and story points become friction. The real bottleneck shifts upstream: the quality of what you ask for matters more than the process you follow.</p>
 
     <h2>The Audience</h2>
-    <ul style="color: #cbd5e1; margin-left: 24px;">
-      <li>Distributed product teams (4–40 people) building with AI</li>
-      <li>Early-stage startups replacing VC-driven process with clarity</li>
-      <li>Teams already using Claude Code or spec-driven tools looking for the "why" layer</li>
-      <li>Organizations trying to scale autonomous agent work without ceremony overhead</li>
+    <p>Three personas feel this acutely:</p>
+    <ul>
+      <li>Senior ICs who've collapsed their own workflow with AI but watch their teams stuck in agile theater.</li>
+      <li>PMs who see AI as vindication of the hard problem (discovery, not execution) and want the org to match.</li>
+      <li>Designers and QA frustrated that AI output is evaluated against ticket-level specs instead of UX intent.</li>
     </ul>
 
-    <h2>Go-to-Market: Three Stages</h2>
-    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-      <tr>
-        <th style="text-align: left; padding: 12px; border: 1px solid #334155; background: #1e293b; color: #f1f5f9; font-weight: 600;">Stage 1: Thought Leadership</th>
-      </tr>
-      <tr>
-        <td style="padding: 12px; border: 1px solid #334155; color: #cbd5e1;">Manifesto + research interviews + blog. Validate the pattern. Prove it works with real teams.</td>
-      </tr>
-    </table>
-    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-      <tr>
-        <th style="text-align: left; padding: 12px; border: 1px solid #334155; background: #1e293b; color: #f1f5f9; font-weight: 600;">Stage 2: Methodology Product</th>
-      </tr>
-      <tr>
-        <td style="padding: 12px; border: 1px solid #334155; color: #cbd5e1;">Playbook + workshops + decision logs template. Help teams adopt the pattern. Build community.</td>
-      </tr>
-    </table>
-    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-      <tr>
-        <th style="text-align: left; padding: 12px; border: 1px solid #334155; background: #1e293b; color: #f1f5f9; font-weight: 600;">Stage 3: Tooling (Conditional)</th>
-      </tr>
-      <tr>
-        <td style="padding: 12px; border: 1px solid #334155; color: #cbd5e1;">Only if methodology validation proves demand. Dashboard, integrations, hosted trace analysis.</td>
-      </tr>
-    </table>
+    <h2>The Solution</h2>
+    <p>Intent replaces ceremonies with a continuous notice-spec-execute-observe loop. Work units are declarative contracts agents execute against, not prose tickets humans update. State lives in git, changes emit structured events, and observability is ambient.</p>
 
     <h2>Differentiation</h2>
-    <ul style="color: #cbd5e1; margin-left: 24px;">
-      <li><strong>Not a tool:</strong> A methodology that works with existing stacks (GitHub, Claude Code, Entire.io).</li>
-      <li><strong>Not process-heavy:</strong> Replaces ceremony with async signals and dependency graphs.</li>
-      <li><strong>AI-native from the start:</strong> Specs are machine-readable. Observations are extracted from traces, not stories in a room.</li>
-      <li><strong>Grounded in theory:</strong> Builds on Cagan (discovery), Patton (user story mapping), Torres (opportunity trees), and empirical validation from real teams.</li>
-    </ul>
+    <p>This isn't agile optimization. It's a category shift: from human-labor coordination to agent-augmented teams. The mental model is spec-driven development, not ticket-driven project management.</p>
 
-    <h2>Risks</h2>
-    <div class="card risk-card">
-      <h3>Adoption Inertia</h3>
-      <p>Teams are deep in agile. Changing mental models is hard. Mitigation: Focus on teams already feeling agile pain (distributed, AI-augmented, high trust).</p>
-    </div>
-    <div class="card risk-card">
-      <h3>Needs Active Observability</h3>
-      <p>Intent requires Entire.io or equivalent tracing. It's not a stand-alone methodology. Mitigation: Partner with observability platforms, show ROI early.</p>
-    </div>
-    <div class="card risk-card">
-      <h3>Spec Discipline</h3>
-      <p>Without rigorous specs, the loop breaks. Teams used to loose user stories will struggle. Mitigation: Strong playbook, early team coaching, decision log templates.</p>
-    </div>
-
-    <h2>Falsifiable Hypotheses</h2>
-    <div class="card hypothesis">
-      <h3>H1: Discovery is the bottleneck, not execution</h3>
-      <p><strong>If true:</strong> Teams will adopt a better discovery model (Intent) over a better execution model (agile). <strong>Test:</strong> Interview 10 distributed teams; measure time in refinement vs. coding.</p>
-    </div>
-    <div class="card hypothesis">
-      <h3>H2: Teams already using Claude Code will adopt Intent</h3>
-      <p><strong>If true:</strong> Intent fills a real gap in the spec-driven dev workflow. <strong>Test:</strong> Pitch to 5 Claude Code users; measure intent to adopt or integrate.</p>
-    </div>
-    <div class="card hypothesis">
-      <h3>H3: Specs can replace user stories</h3>
-      <p><strong>If true:</strong> Agents and humans can work from declarative behavior descriptions instead of narrative stories. <strong>Test:</strong> Dogfood Intent on this project; compare productivity to agile.</p>
-    </div>
-    <div class="card hypothesis">
-      <h3>H4: Distributed teams can close the async loop in under 1 week</h3>
-      <p><strong>If true:</strong> Async signals → intent → specs → execution → observation can cycle quickly without ceremony. <strong>Test:</strong> Track cycle time on Tier 2 Intent repos; compare to 2-week sprint cadence.</p>
-    </div>
-    <div class="card hypothesis">
-      <h3>H5: Entire.io traces replace stand-ups</h3>
-      <p><strong>If true:</strong> Structured observability removes the need for synchronous status meetings. <strong>Test:</strong> Measure team meeting time; measure satisfaction with async observation model.</p>
-    </div>
+    <h2>Open Risks</h2>
+    <p>Adoption requires unlearning agile habits. Teams accustomed to sprints and standups must shift to continuous flow and signal-driven intake. Tooling is early.</p>
   </div>
+
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
+  </footer>
 </body>
 </html>

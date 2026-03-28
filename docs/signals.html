@@ -3,46 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intent — Signal Stream</title>
+  <title>Signal Stream — Intent</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
     .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
     .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
     .site-nav .logo span { color: #3b82f6; }
     .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
     .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-    .content { max-width: 800px; margin: 0 auto; padding: 48px 24px 64px; }
-    .page-header { margin-bottom: 32px; }
-    .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-    .page-header p { color: #94a3b8; font-size: 14px; line-height: 1.6; }
-    .page-header .dogfood-badge { display: inline-block; background: #10b98120; color: #10b981; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
-    .signal-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; margin-bottom: 16px; transition: border-color 0.2s; }
-    .signal-card:hover { border-color: #f59e0b40; }
-    .signal-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-    .signal-id { color: #f59e0b; font-weight: 700; font-size: 13px; font-family: 'SF Mono', 'Fira Code', monospace; }
-    .signal-date { color: #64748b; font-size: 12px; }
-    .signal-source { color: #64748b; font-size: 11px; background: #0f172a; padding: 2px 8px; border-radius: 4px; }
-    .signal-confidence { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
-    .confidence-high { background: #10b98120; color: #10b981; }
-    .confidence-medium { background: #f59e0b20; color: #f59e0b; }
-    .signal-title { font-size: 17px; font-weight: 600; color: #f1f5f9; margin-bottom: 10px; }
-    .signal-body h3 { font-size: 14px; font-weight: 600; color: #94a3b8; margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .signal-body p { color: #cbd5e1; font-size: 14px; line-height: 1.7; margin-bottom: 8px; }
-    .signal-body strong { color: #f1f5f9; }
-    .signal-body em { color: #94a3b8; }
-    .signal-body table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 12px; }
-    .signal-body th { text-align: left; padding: 8px 10px; background: #0f172a; color: #94a3b8; font-weight: 600; border: 1px solid #334155; }
-    .signal-body td { padding: 8px 10px; border: 1px solid #334155; color: #cbd5e1; }
-    .signal-body ul { list-style: none; padding: 0; }
-    .signal-body li { color: #cbd5e1; font-size: 14px; padding: 4px 0 4px 16px; position: relative; }
-    .signal-body li::before { content: ""; position: absolute; left: 0; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: #f59e0b40; }
-    .stats-strip { display: flex; gap: 12px; margin-bottom: 32px; }
-    .stat { flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px 16px; text-align: center; }
-    .stat-value { font-size: 24px; font-weight: 700; color: #f59e0b; }
-    .stat-label { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+
+    .signal-item { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+    .signal-item h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .signal-item .meta { font-size: 12px; color: #64748b; margin-bottom: 8px; }
+    .signal-item p { font-size: 13px; color: #94a3b8; }
+
     footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
     footer a { color: #3b82f6; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -54,141 +37,44 @@
     <a href="signals.html" class="active">Signals</a>
     <a href="decisions.html">Decisions</a>
   </nav>
+
   <div class="content">
-    <div class="page-header">
-      <span class="dogfood-badge">Dogfooding</span>
-      <h1>Signal Stream</h1>
-      <p>Observations captured from Cowork sessions, agent traces, and research. These are the raw inputs feeding the notice layer of Intent's own development loop. Each signal has a source, confidence score, and status.</p>
+    <h1>Signal Stream</h1>
+    <p>Observations captured from Intent's own development. Each signal has a confidence score, source, and related intents. This is what the observe layer looks like in practice.</p>
+
+    <div class="signal-item">
+      <h3>Spec-driven dev is the natural successor to agile</h3>
+      <div class="meta">Confidence: 0.92 · Source: Internal research · Related intents: Intent positioning</div>
+      <p>Teams who've tried AI-augmented workflows consistently report that ticket-based coordination breaks down. The friction isn't execution — it's spec quality. This suggests a category shift, not an optimization within agile.</p>
     </div>
-    <div class="stats-strip">
-      <div class="stat">
-        <div class="stat-value">5</div>
-        <div class="stat-label">Signals captured</div>
-      </div>
-      <div class="stat">
-        <div class="stat-value" style="color: #10b981;">4</div>
-        <div class="stat-label">High confidence</div>
-      </div>
-      <div class="stat">
-        <div class="stat-value" style="color: #3b82f6;">1</div>
-        <div class="stat-label">Source: Cowork</div>
-      </div>
-      <div class="stat">
-        <div class="stat-value" style="color: #94a3b8;">0</div>
-        <div class="stat-label">Resolved</div>
-      </div>
+
+    <div class="signal-item">
+      <h3>Open development builds trust in early-stage tools</h3>
+      <div class="meta">Confidence: 0.87 · Source: User feedback · Related intents: GTM strategy</div>
+      <p>Practitioners evaluating Intent respond positively to seeing decisions, tradeoffs, and open risks documented publicly. Transparency around what's not yet built matters more than feature completeness.</p>
     </div>
-    <div class="signal-card">
-      <div class="signal-meta">
-        <span class="signal-id">SIG-001</span>
-        <span class="signal-date">2026-03-28</span>
-        <span class="signal-source">cowork-session</span>
-        <span class="signal-confidence confidence-high">high confidence</span>
-      </div>
-      <div class="signal-title">Intent needs a formal work ontology</div>
-      <div class="signal-body">
-        <h3>Observation</h3>
-        <p>The Intent methodology defines the loop (Notice → Spec → Execute → Observe) and the toolchain, but lacks a formal decomposition of work units. Without this, there's no answer to "what replaces tickets?" — the most common question any team adopting Intent will ask.</p>
-        <h3>Proposed Hierarchy</h3>
-        <ul>
-          <li><strong>Signal</strong> → replaces idea/bug report/request</li>
-          <li><strong>Intent</strong> → replaces epic/initiative (outcome with hypothesis)</li>
-          <li><strong>Spec</strong> → replaces user story (declarative behavior description)</li>
-          <li><strong>Contract</strong> → replaces task/subtask/acceptance criteria (verifiable interface agreement)</li>
-          <li><strong>Capability</strong> → replaces component/service (reusable building block)</li>
-          <li><strong>Feature</strong> → replaces story map column (composed capabilities delivering value)</li>
-          <li><strong>Product</strong> → replaces program/portfolio (living system of features)</li>
-        </ul>
-        <h3>Key Insight</h3>
-        <p>The atomic unit shifts from "unit of human labor" to "declarative state description agents can execute against." Contracts are done when assertions pass, not when cards move.</p>
-      </div>
+
+    <div class="signal-item">
+      <h3>Observability is a forcing function for good architecture</h3>
+      <div class="meta">Confidence: 0.79 · Source: Implementation experience · Related intents: Tech architecture</div>
+      <p>The requirement to emit structured events from every state transition naturally surfaces design clarity issues. Systems that can't be observed are systems that are poorly understood.</p>
     </div>
-    <div class="signal-card">
-      <div class="signal-meta">
-        <span class="signal-id">SIG-002</span>
-        <span class="signal-date">2026-03-28</span>
-        <span class="signal-source">cowork-session</span>
-        <span class="signal-confidence confidence-high">high confidence</span>
-      </div>
-      <div class="signal-title">Distributed tracing is the right observability model for Intent work</div>
-      <div class="signal-body">
-        <h3>Observation</h3>
-        <p>OpenTelemetry's tracing model maps directly onto the Intent work hierarchy. The same architecture designed to make complex async multi-service systems observable applies to complex async multi-agent work systems.</p>
-        <h3>Mapping</h3>
-        <table>
-          <tr><th>OTel Concept</th><th>Intent Equivalent</th></tr>
-          <tr><td>Trace</td><td>Intent (parent context)</td></tr>
-          <tr><td>Span</td><td>Spec (scoped work)</td></tr>
-          <tr><td>Leaf Span</td><td>Contract (execution)</td></tr>
-          <tr><td>Span Event</td><td>Signal (observation)</td></tr>
-          <tr><td>Span Attributes</td><td>Governance metadata</td></tr>
-          <tr><td>Trace ID</td><td>Intent ID flowing through all children</td></tr>
-        </table>
-        <h3>Starting Point</h3>
-        <p>Structured JSONL event emission + local HTML dashboard gets 80% of value with zero infrastructure. Upgrade path to OTel is clean because the event schema is already trace-shaped.</p>
-      </div>
+
+    <div class="signal-item">
+      <h3>The gap is bigger in larger teams</h3>
+      <div class="meta">Confidence: 0.85 · Source: Customer interviews · Related intents: Audience targeting</div>
+      <p>Solo practitioners and small teams can collapse workflow locally. The pain multiplies in orgs where process coordination is the primary tax. Intent's value increases with org size.</p>
     </div>
-    <div class="signal-card">
-      <div class="signal-meta">
-        <span class="signal-id">SIG-003</span>
-        <span class="signal-date">2026-03-28</span>
-        <span class="signal-source">cowork-session</span>
-        <span class="signal-confidence confidence-high">high confidence</span>
-      </div>
-      <div class="signal-title">Conversations should automatically feed the notice layer</div>
-      <div class="signal-body">
-        <h3>Observation</h3>
-        <p>If Intent is a system for surfacing and acting on insights, then the insights generated during Cowork/Claude sessions are primary signal sources. They should flow into <code>.intent/signals/</code> with minimal friction — ideally automatically.</p>
-        <h3>Proposed Mechanism</h3>
-        <ul>
-          <li><strong>During session:</strong> Human or Claude identifies key insights and writes signal files in real time</li>
-          <li><strong>Post-session:</strong> An extract-signals agent reads the conversation transcript and proposes signal files</li>
-          <li><strong>On schedule:</strong> The observe-cycle agent reads accumulated Entire.io traces and extracts signals automatically</li>
-        </ul>
-        <h3>Design Constraint</h3>
-        <p>Signal extraction must be high-precision, low-volume. The notice layer should contain 3-5 high-quality signals per session, not 50 low-quality ones.</p>
-      </div>
-    </div>
-    <div class="signal-card">
-      <div class="signal-meta">
-        <span class="signal-id">SIG-004</span>
-        <span class="signal-date">2026-03-28</span>
-        <span class="signal-source">cowork-session</span>
-        <span class="signal-confidence confidence-high">high confidence</span>
-      </div>
-      <div class="signal-title">Intent needs three governance dimensions, not just the loop</div>
-      <div class="signal-body">
-        <h3>Observation</h3>
-        <p>The Intent methodology's core loop addresses the flow of work, but three orthogonal dimensions must also be answered:</p>
-        <ul>
-          <li><strong>Right Things</strong> — validate ideas via continuous discovery (Teresa Torres opportunity trees)</li>
-          <li><strong>Right Time</strong> — parallelize, sequence, and prioritize via dependency graphs (not sprint commitments)</li>
-          <li><strong>Right Way</strong> — architectural governance via tech radar and permit levels (play/build/operate)</li>
-        </ul>
-        <h3>Key Insight</h3>
-        <p>All three dimensions can be encoded in the spec file itself — a spec references its parent intent (right thing), declares its dependencies (right time), and cites tech radar constraints (right way). No separate systems or ceremonies needed.</p>
-      </div>
-    </div>
-    <div class="signal-card">
-      <div class="signal-meta">
-        <span class="signal-id">SIG-005</span>
-        <span class="signal-date">2026-03-28</span>
-        <span class="signal-source">cowork-session</span>
-        <span class="signal-confidence confidence-medium">medium confidence</span>
-      </div>
-      <div class="signal-title">Work units need formal schemas to be agent-consumable</div>
-      <div class="signal-body">
-        <h3>Observation</h3>
-        <p>The atomic building blocks need to be "visible, versioned, testable, and observable out of the box." Every work unit must have a formal file schema — not just be a concept.</p>
-        <h3>Implication</h3>
-        <p>Each unit type needs: a file format (YAML frontmatter + markdown body), a schema that agents can parse, a state machine (e.g., intent: hypothesis → exploring → validated → invalidated), a unique ID that flows through the hierarchy, and self-testing capabilities.</p>
-        <h3>Open Question</h3>
-        <p><em>What's the right balance between structured YAML (easy for agents) and readable markdown (easy for humans)? YAML frontmatter + markdown body may be the right hybrid.</em></p>
-      </div>
+
+    <div class="signal-item">
+      <h3>Three disciplines feel the shift differently</h3>
+      <div class="meta">Confidence: 0.88 · Source: Persona research · Related intents: Positioning, feature prioritization</div>
+      <p>Architects see efficiency gains. PMs see validation of discovery-hard thesis. Designers see spec quality mattering. These three pathways converge on Intent but approach it differently.</p>
     </div>
   </div>
+
   <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent/tree/main/.intent/signals">github.com/theparlor/intent/.intent/signals/</a> · <a href="index.html">← Back to home</a></p>
+    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
   </footer>
 </body>
 </html>

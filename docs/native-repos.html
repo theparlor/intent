@@ -3,18 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intent-Native Repos</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <title>Repo Pattern — Intent</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; }
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
     .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
     .site-nav .logo span { color: #3b82f6; }
     .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
     .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+
+    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+    .content h2 { font-size: 18px; font-weight: 600; margin: 32px 0 12px 0; }
+    .content h3 { font-size: 14px; font-weight: 600; margin: 16px 0 8px 0; }
+
+    .tree { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; margin: 16px 0; font-family: monospace; font-size: 12px; color: #94a3b8; overflow-x: auto; }
+    .tree-dir { color: #3b82f6; }
+    .tree-file { color: #94a3b8; }
+
+    .layer { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .layer h3 { font-size: 13px; font-weight: 600; color: #3b82f6; margin-bottom: 8px; }
+    .layer p { font-size: 12px; color: #94a3b8; }
+
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -26,169 +42,96 @@
     <a href="signals.html">Signals</a>
     <a href="decisions.html">Decisions</a>
   </nav>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-    const { useState } = React;
-    // Component source is loaded inline to avoid CORS issues with local file:// serving
-    // Source: artifacts/intent-native-repos.jsx
 
-    const COLORS = {
-      bg: "#0f172a", surface: "#1e293b", surfaceHover: "#334155", border: "#334155",
-      borderActive: "#60a5fa", text: "#f1f5f9", textMuted: "#94a3b8", textDim: "#64748b",
-      notice: "#f59e0b", spec: "#3b82f6", execute: "#10b981", observe: "#a855f7",
-      entire: "#ec4899", accent: "#60a5fa", warn: "#f59e0b", success: "#10b981",
-    };
+  <div class="content">
+    <h1>Repo Pattern</h1>
+    <p>The three-layer structure every Intent-native repo follows: .intent/, .claude/, .entire/ — with file schemas and directory conventions.</p>
 
-    const tabs = [
-      { id: "template", label: "Repo Template", icon: "📋" },
-      { id: "tiers", label: "Adoption Tiers", icon: "🤤" },
-      { id: "loop", label: "Entire → Spec Loop", icon: "🔄" },
-    ];
+    <h2>Directory Structure</h2>
 
-    function RepoTemplate() {
-      const [expanded, setExpanded] = useState(null);
-      const layers = [
-        { id: "intent", name: ".intent/", desc: "Loop metadata — why this repo exists", color: COLORS.spec,
-          files: [
-            { name: "INTENT.md", purpose: "The repo's intent declaration — purpose, outcome, loop phase", required: true },
-            { name: "decisions.md", purpose: "Running decision log — extracted from Entire.io traces. Institutional memory of WHY.", required: true },
-            { name: "risks.md", purpose: "Active risk register — surfaced from traces, specs, observe cycles", required: false },
-          ] },
-        { id: "claude", name: ".claude/", desc: "Agent operating context", color: COLORS.execute,
-          files: [
-            { name: "CLAUDE.md", purpose: "Project-level context for Claude Code. WHO it is, WHAT the repo does, HOW to work.", required: true },
-            { name: "commands/*.md", purpose: "Headless prompts for autonomous ops via claude -p", required: false },
-          ] },
-        { id: "entire", name: ".entire/", desc: "Observability layer — agent reasoning capture", color: COLORS.entire,
-          files: [
-            { name: "settings.json", purpose: "Config created by `entire enable`", required: true },
-            { name: "metadata/*/", purpose: "Session captures: prompt.txt + full.jsonl per agent session", required: true },
-          ] },
-      ];
-      return (
-        <div>
-          <p style={{ color: COLORS.textMuted, marginBottom: 24, lineHeight: 1.6 }}>
-            Three dotfile directories make a repo Intent-native. Not every repo needs the full notice/spec/execute/observe structure.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {layers.map(layer => (
-              <div key={layer.id}>
-                <button onClick={() => setExpanded(expanded === layer.id ? null : layer.id)}
-                  style={{ width: "100%", background: expanded === layer.id ? COLORS.surfaceHover : COLORS.surface, border: `1px solid ${expanded === layer.id ? layer.color : COLORS.border}`, borderRadius: 8, padding: "14px 18px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", transition: "all 0.2s" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <code style={{ color: layer.color, fontSize: 16, fontWeight: 600 }}>{layer.name}</code>
-                    <span style={{ color: COLORS.textMuted, fontSize: 13 }}>{layer.desc}</span>
-                  </div>
-                  <span style={{ color: COLORS.textDim, fontSize: 18, transform: expanded === layer.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
-                </button>
-                {expanded === layer.id && (
-                  <div style={{ marginTop: 4, marginLeft: 16, borderLeft: `2px solid ${layer.color}30`, paddingLeft: 16 }}>
-                    {layer.files.map((f, i) => (
-                      <div key={i} style={{ background: COLORS.surface, borderRadius: 6, padding: 14, marginBottom: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                          <code style={{ color: layer.color, fontSize: 13 }}>{f.name}</code>
-                          <span style={{ background: f.required ? `${layer.color}20` : `${COLORS.textDim}20`, color: f.required ? layer.color : COLORS.textDim, fontSize: 10, padding: "2px 6px", borderRadius: 4 }}>{f.required ? "required" : "optional"}</span>
-                        </div>
-                        <p style={{ color: COLORS.textMuted, fontSize: 13, lineHeight: 1.5, margin: 0 }}>{f.purpose}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 24, background: `${COLORS.spec}10`, border: `1px solid ${COLORS.spec}30`, borderRadius: 8, padding: 16 }}>
-            <p style={{ color: COLORS.spec, fontWeight: 600, fontSize: 14, margin: "0 0 8px 0" }}>Minimum viable Intent repo</p>
-            <p style={{ color: COLORS.textMuted, fontSize: 13, lineHeight: 1.6, margin: 0 }}>
-              <code style={{ color: COLORS.spec }}>.intent/INTENT.md</code> + <code style={{ color: COLORS.spec }}>.intent/decisions.md</code> + <code style={{ color: COLORS.execute }}>.claude/CLAUDE.md</code> + <code style={{ color: COLORS.entire }}>.entire/</code> enabled.
-            </p>
-          </div>
-        </div>
-      );
-    }
+    <div class="tree">
+<span class="tree-dir">.intent/</span>
+  <span class="tree-file">signals/</span>
+  <span class="tree-file">intents/</span>
+  <span class="tree-file">specs/</span>
+  <span class="tree-file">contracts/</span>
+  <span class="tree-file">decisions/</span>
+  <span class="tree-file">events/</span>
+<span class="tree-dir">.claude/</span>
+  <span class="tree-file">projects/</span>
+  <span class="tree-file">sessions/</span>
+<span class="tree-dir">.entire/</span>
+  <span class="tree-file">traces/</span>
+<span class="tree-dir">src/</span>
+<span class="tree-dir">docs/</span>
+    </div>
 
-    function AdoptionTiers() {
-      const tiers = [
-        { name: "Tier 0: Observable", tagline: '"At least I can see what happened"', color: COLORS.observe, what: "Just Entire.io enabled.", gets: "Agent reasoning traces alongside every commit.", effort: "30 seconds" },
-        { name: "Tier 1: Intentional", tagline: '"The repo knows why it exists"', color: COLORS.spec, what: ".intent/ + CLAUDE.md", gets: "Strategic context captured. Any agent or human knows purpose, shape, and key decisions.", effort: "15-30 minutes" },
-        { name: "Tier 2: Autonomous", tagline: '"The repo runs itself"', color: COLORS.execute, what: "+ .claude/commands/ + ops/ + launchd + logs", gets: "Agent does work on schedule, logs everything, Entire captures reasoning.", effort: "1-2 hours" },
-        { name: "Tier 3: Self-Observing", tagline: '"The repo closes its own loop"', color: COLORS.entire, what: "+ observe-cycle that reads Entire traces back into .intent/", gets: "Fully closed loop: execute → capture → extract → write back → better specs.", effort: "New command file" },
-      ];
-      return (
-        <div>
-          <p style={{ color: COLORS.textMuted, marginBottom: 24, lineHeight: 1.6 }}>Adopt incrementally. Each tier delivers value on its own.</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {tiers.map((t, i) => (
-              <div key={i} style={{ background: COLORS.surface, border: `1px solid ${COLORS.border}`, borderRadius: 8, overflow: "hidden" }}>
-                <div style={{ background: `${t.color}15`, padding: "12px 18px", borderBottom: `1px solid ${t.color}30` }}>
-                  <span style={{ color: t.color, fontWeight: 700, fontSize: 15 }}>{t.name}</span>
-                  <p style={{ color: COLORS.textMuted, fontSize: 13, fontStyle: "italic", margin: "4px 0 0 0" }}>{t.tagline}</p>
-                </div>
-                <div style={{ padding: 16, display: "grid", gridTemplateColumns: "70px 1fr", gap: "8px 12px", fontSize: 13 }}>
-                  <span style={{ color: COLORS.textDim, fontWeight: 600 }}>Add</span><span style={{ color: COLORS.text }}>{t.what}</span>
-                  <span style={{ color: COLORS.textDim, fontWeight: 600 }}>Gets</span><span style={{ color: COLORS.textMuted }}>{t.gets}</span>
-                  <span style={{ color: COLORS.textDim, fontWeight: 600 }}>Effort</span><span style={{ color: COLORS.success }}>{t.effort}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+    <h2>Layer 1: Intent (.intent/)</h2>
+    <p>The Intent layer stores all work artifacts in structured files, versioned in git.</p>
 
-    function EntireSpecLoop() {
-      const [step, setStep] = useState(0);
-      const steps = [
-        { phase: "Execute", color: COLORS.execute, title: "Agent builds against spec", detail: "Claude Code implements, makes autonomous decisions within spec boundaries." },
-        { phase: "Capture", color: COLORS.entire, title: "Entire.io records session", detail: "Prompt + full reasoning transcript captured as versioned data, linked to commit SHA." },
-        { phase: "Extract", color: COLORS.observe, title: "Observe agent extracts signal", detail: "Reads recent sessions. Finds decisions, challenges, risks." },
-        { phase: "Write Back", color: COLORS.observe, title: "Observations flow into .intent/", detail: "Appends to decisions.md, updates risks.md, optionally writes a notice." },
-        { phase: "Inform", color: COLORS.spec, title: "Next spec reads context", detail: "Spec is informed by execution reality. Learning from delivery, not just planning." },
-      ];
-      return (
-        <div>
-          <p style={{ color: COLORS.textMuted, marginBottom: 20, lineHeight: 1.6 }}>How Entire.io closes the loop from execution back into the spec layer.</p>
-          <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
-            {steps.map((s, i) => (
-              <button key={i} onClick={() => setStep(i)} style={{ flex: 1, background: step === i ? `${s.color}20` : COLORS.surface, border: `1px solid ${step === i ? s.color : COLORS.border}`, borderRadius: 6, padding: "8px 4px", cursor: "pointer" }}>
-                <div style={{ color: s.color, fontSize: 11, fontWeight: 700 }}>{s.phase}</div>
-              </button>
-            ))}
-          </div>
-          <div style={{ background: COLORS.surface, border: `1px solid ${steps[step].color}40`, borderRadius: 8, padding: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span style={{ background: `${steps[step].color}20`, color: steps[step].color, padding: "4px 10px", borderRadius: 4, fontSize: 12, fontWeight: 600 }}>{steps[step].phase}</span>
-              <span style={{ color: COLORS.text, fontWeight: 600, fontSize: 15 }}>{steps[step].title}</span>
-            </div>
-            <p style={{ color: COLORS.textMuted, lineHeight: 1.7, fontSize: 14, margin: 0 }}>{steps[step].detail}</p>
-          </div>
-        </div>
-      );
-    }
+    <div class="layer">
+      <h3>signals/</h3>
+      <p>Observations from work, research, conversation. Each signal: source, confidence, timestamp, related intents. YAML or JSON files named by signal ID.</p>
+    </div>
 
-    function App() {
-      const [activeTab, setActiveTab] = useState("template");
-      return (
-        <div style={{ background: COLORS.bg, minHeight: "100vh", color: COLORS.text, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
-          <div style={{ maxWidth: 780, margin: "0 auto", padding: "32px 20px" }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 8px 0" }}>Intent-Native Repos</h1>
-            <p style={{ color: COLORS.textMuted, fontSize: 14, margin: "0 0 24px 0", lineHeight: 1.6 }}>What every repo needs to follow the Intent pattern.</p>
-            <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 4 }}>
-              {tabs.map(tab => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ background: activeTab === tab.id ? COLORS.surfaceHover : "transparent", border: "none", borderRadius: "6px 6px 0 0", padding: "10px 16px", cursor: "pointer", color: activeTab === tab.id ? COLORS.text : COLORS.textDim, fontWeight: activeTab === tab.id ? 600 : 400, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 14 }}>{tab.icon}</span>{tab.label}
-                </button>
-              ))}
-            </div>
-            {activeTab === "template" && <RepoTemplate />}
-            {activeTab === "tiers" && <AdoptionTiers />}
-            {activeTab === "loop" && <EntireSpecLoop />}
-          </div>
-        </div>
-      );
-    }
+    <div class="layer">
+      <h3>intents/</h3>
+      <p>What we want to change. Declarative: "Users should be able to X." Links signals to specs. YAML with title, description, related signals, assigned to.</p>
+    </div>
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+    <div class="layer">
+      <h3>specs/</h3>
+      <p>How we'll change it. Narrative + acceptance criteria (contracts). Markdown with frontmatter. Human-readable but machine-parseable.</p>
+    </div>
+
+    <div class="layer">
+      <h3>contracts/</h3>
+      <p>Verifiable assertions extracted from specs. JSON schema defining inputs, outputs, assertions. Executable by agents.</p>
+    </div>
+
+    <div class="layer">
+      <h3>decisions/</h3>
+      <p>Significant architectural and strategic decisions. Context, alternatives considered, rationale, decision date. Markdown with frontmatter.</p>
+    </div>
+
+    <div class="layer">
+      <h3>events/</h3>
+      <p>Structured events from execution. OpenTelemetry format. signal.created, spec.written, contract.completed, etc. JSON lines format.</p>
+    </div>
+
+    <h2>Layer 2: Claude (.claude/)</h2>
+    <p>Agent reasoning and session artifacts. Where Claude Code stores project context and reasoning traces.</p>
+
+    <div class="layer">
+      <h3>projects/</h3>
+      <p>High-level project metadata. Vision, architecture, key decisions, dependencies. Used by agents to bootstrap context.</p>
+    </div>
+
+    <div class="layer">
+      <h3>sessions/</h3>
+      <p>Session transcripts and reasoning. Agents log their thinking, decisions made, blockers encountered. Enables observability of agent cognition.</p>
+    </div>
+
+    <h2>Layer 3: Entire (.entire/)</h2>
+    <p>Observability layer. End-to-end execution traces and system health metrics.</p>
+
+    <div class="layer">
+      <h3>traces/</h3>
+      <p>Complete execution traces. Spans, logs, metrics. Ingested from GitHub Actions, agent sessions, test runs. Used by observe phase for learning.</p>
+    </div>
+
+    <h2>File Naming Conventions</h2>
+
+    <p><strong>Signals:</strong> <code>signal-YYYYMMDD-slug.yml</code></p>
+    <p><strong>Intents:</strong> <code>intent-YYYYMMDD-slug.yml</code></p>
+    <p><strong>Specs:</strong> <code>spec-YYYYMMDD-slug.md</code></p>
+    <p><strong>Contracts:</strong> <code>contract-spec-slug.json</code></p>
+    <p><strong>Decisions:</strong> <code>decision-YYYYMMDD-slug.md</code></p>
+    <p><strong>Events:</strong> <code>events-YYYYMMDD.jsonl</code></p>
+  </div>
+
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
+  </footer>
 </body>
 </html>
