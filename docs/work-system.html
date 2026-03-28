@@ -1,445 +1,620 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intent Work System</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-        [role="tablist"] {
-            display: flex;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        [role="tab"] {
-            padding: 0.75rem 1.5rem;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        [role="tab"][aria-selected="true"] {
-            border-bottom-color: #3b82f6;
-            color: #1e40af;
-        }
-        [role="tab"]:hover {
-            color: #1e40af;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent Work System</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; }
+    .back-link { position: fixed; top: 16px; left: 16px; color: #64748b; text-decoration: none; font-size: 13px; font-family: -apple-system, sans-serif; z-index: 100; }
+    .back-link:hover { color: #94a3b8; }
+  </style>
 </head>
-<body class="bg-white">
-    <div id="root"></div>
+<body>
+  <a class="back-link" href="index.html">← All artifacts</a>
+  <div id="root"></div>
+  <script type="text/babel" data-type="module">
+    const { useState } = React;
 
-    <script type="text/babel">
-        const { useState } = React;
+const COLORS = {
+  bg: "#0f172a",
+  surface: "#1e293b",
+  surfaceHover: "#334155",
+  border: "#334155",
+  text: "#f1f5f9",
+  textMuted: "#94a3b8",
+  // Intent loop phases
+  notice: "#f59e0b",
+  spec: "#3b82f6",
+  execute: "#10b981",
+  observe: "#a855f7",
+  // Work units
+  signal: "#f59e0b",
+  intent: "#60a5fa",
+  specUnit: "#3b82f6",
+  contract: "#10b981",
+  capability: "#06b6d4",
+  feature: "#a855f7",
+  product: "#ec4899",
+  // Governance
+  play: "#fbbf24",
+  build: "#34d399",
+  operate: "#60a5fa",
+  // Status
+  validated: "#10b981",
+  exploring: "#f59e0b",
+  hypothesis: "#94a3b8",
+  invalidated: "#ef4444",
+};
 
-        const IntentWorkSystem = () => {
-            const [expandedCard, setExpandedCard] = useState(null);
-            const [activeTab, setActiveTab] = useState('ontology');
+const tabs = [
+  { id: "ontology", label: "Work Ontology" },
+  { id: "dimensions", label: "Three Dimensions" },
+  { id: "flow", label: "Agent Flow" },
+  { id: "dashboard", label: "Dashboard" },
+  { id: "versus", label: "Agile → Intent" },
+];
 
-            // Work Ontology Data
-            const workUnits = [
-                {
-                    id: 'signal',
-                    label: 'Signal',
-                    icon: '⚡',
-                    description: 'Raw observation or request',
-                    details: 'Unstructured input captured from design sessions, user feedback, or monitoring. The notice layer feeds these into the system.',
-                    color: 'from-yellow-50 to-orange-50',
-                    borderColor: 'border-yellow-300',
-                },
-                {
-                    id: 'intent',
-                    label: 'Intent',
-                    icon: '⚠️',
-                    description: 'Declarative goal or outcome',
-                    details: 'What we want to achieve. Parsed from signals, structured as goals. Orthogonal to time and implementation path.',
-                    color: 'from-orange-50 to-red-50',
-                    borderColor: 'border-orange-300',
-                },
-                {
-                    id: 'spec',
-                    label: 'Spec',
-                    icon: '⚙️',
-                    description: 'Detailed requirements & constraints',
-                    details: 'How to achieve the intent. Includes business logic, edge cases, acceptance criteria. Agents consume specs as program input.',
-                    color: 'from-red-50 to-pink-50',
-                    borderColor: 'border-red-300',
-                },
-                {
-                    id: 'contract',
-                    label: 'Contract',
-                    icon: '✓',
-                    description: 'Interface & guarantees',
-                    details: 'The boundary between components. Defines input types, output types, error handling. Enables parallelization.',
-                    color: 'from-pink-50 to-purple-50',
-                    borderColor: 'border-pink-300',
-                },
-                {
-                    id: 'capability',
-                    label: 'Capability',
-                    icon: '📚',
-                    description: 'Atomic skill or subsystem',
-                    details: 'A unit of functionality that fulfills a contract. Can be built by agent, human, or hybrid. Tested independently.',
-                    color: 'from-purple-50 to-blue-50',
-                    borderColor: 'border-purple-300',
-                },
-                {
-                    id: 'feature',
-                    label: 'Feature',
-                    icon: '📊',
-                    description: 'Composed capability for users',
-                    details: 'One or more capabilities composed into user-visible behavior. Has acceptance tests, telemetry, observability.',
-                    color: 'from-blue-50 to-cyan-50',
-                    borderColor: 'border-blue-300',
-                },
-                {
-                    id: 'product',
-                    label: 'Product',
-                    icon: '→',
-                    description: 'Integrated system for market',
-                    details: 'A collection of features integrated into a coherent offering. Has versioning, release notes, user support.',
-                    color: 'from-cyan-50 to-green-50',
-                    borderColor: 'border-cyan-300',
-                },
-            ];
+// ─── Work Ontology Tab ───
+function OntologyTab() {
+  const [selected, setSelected] = useState(null);
 
-            // Three Dimensions Data
-            const dimensions = [
-                {
-                    title: 'Right Things (Discovery)',
-                    icon: '⚠️',
-                    description: 'What should we build?',
-                    layers: [
-                        {
-                            name: 'Input: Signals',
-                            tools: ['Design sessions', 'User research', 'Monitoring', 'Customer feedback'],
-                        },
-                        {
-                            name: 'Parse: Intents',
-                            tools: ['Intent spec templates', 'Goal parsing', 'Constraint extraction'],
-                        },
-                        {
-                            name: 'Output: Prioritized roadmap',
-                            tools: ['Prioritization', 'Portfolio view', 'Impact estimation'],
-                        },
-                    ],
-                    color: 'bg-yellow-50',
-                },
-                {
-                    title: 'Right Time (Parallelization)',
-                    icon: '🕐',
-                    description: 'When can we build it in parallel?',
-                    layers: [
-                        {
-                            name: 'Input: Specs',
-                            tools: ['Dependency graph', 'Contract analysis', 'Interface extraction'],
-                        },
-                        {
-                            name: 'Schedule: Critical path',
-                            tools: ['DAG solver', 'Work partitioning', 'Resource leveling'],
-                        },
-                        {
-                            name: 'Output: Work streams',
-                            tools: ['Sprint planning', 'Team allocation', 'Milestone tracking'],
-                        },
-                    ],
-                    color: 'bg-blue-50',
-                },
-                {
-                    title: 'Right Way (Governance)',
-                    icon: '⚙️',
-                    description: 'How do we build it correctly?',
-                    layers: [
-                        {
-                            name: 'Input: Contracts',
-                            tools: ['Interface specs', 'SLA definitions', 'Architecture rules'],
-                        },
-                        {
-                            name: 'Enforce: Quality gates',
-                            tools: ['Design review', 'Code review', 'Test coverage', 'Performance budgets'],
-                        },
-                        {
-                            name: 'Output: Capability',
-                            tools: ['Integration', 'Release', 'Documentation', 'Monitoring'],
-                        },
-                    ],
-                    color: 'bg-purple-50',
-                },
-            ];
+  const units = [
+    {
+      id: "signal",
+      name: "Signal",
+      color: COLORS.signal,
+      replaces: "Idea / Bug Report / Request",
+      icon: "◈",
+      definition: "An observed change, insight, or opportunity that enters the system.",
+      properties: ["Source (Entire trace, user research, market, metrics, agent observation)", "Timestamp", "Confidence score", "Related intents"],
+      examples: ["Entire.io trace shows 3 failed auth attempts in deploy pipeline", "User interview reveals confusion about onboarding flow", "Agent observe-cycle detects drift between spec and implementation"],
+      key: "Signals are the raw material of discovery. They don't prescribe solutions — they surface reality. Every signal has a source you can trace back to.",
+    },
+    {
+      id: "intent",
+      name: "Intent",
+      color: COLORS.intent,
+      replaces: "Epic / Initiative / Theme",
+      icon: "◆",
+      definition: "A coherent statement of purpose that directs discovery and shapes work.",
+      properties: ["Title & narrative", "Related signals", "Three-dimension scope", "Lifecycle stage"],
+      examples: ["Reduce time-to-production in the deploy pipeline", "Establish confidence in new user cohorts through frictionless onboarding", "Enable data-driven team operating model through observable intent execution"],
+      key: "Every intent connects signals to work. It's not a solution — it's the question that shapes discovery.",
+    },
+    {
+      id: "spec",
+      name: "Spec Unit",
+      color: COLORS.specUnit,
+      replaces: "User Story / Task",
+      icon: "◇",
+      definition: "The smallest unit of work that realizes part of an intent. Fully specced, estimable, and executable.",
+      properties: ["Parent intent", "Acceptance criteria", "Capability mapping", "Estimate", "Status"],
+      examples: ["Implement webhook retry logic with exponential backoff for failed deployment events", "Design onboarding flow for first-time API consumers", "Create agent observe-cycle that compares spec-as-written to observed behavior"],
+      key: "A spec unit lives in the middle ground between intent and execution. It's detailed enough to build, but loose enough to discover.",
+    },
+    {
+      id: "contract",
+      name: "Contract",
+      color: COLORS.contract,
+      replaces: "Definition of Done",
+      icon: "◈",
+      definition: "The interface agreement between work teams — what's promised, what's verified, what happens next.",
+      properties: ["Input specification", "Output specification", "Quality gates", "SLO/SLA"],
+      examples: ["Deployment service returns deployment event + webhook URL within 100ms, verified via contract tests", "Onboarding API returns user profile with email verification status within 30s", "Agent produces spec review + delta confidence score or rejects due to parsing error"],
+      key: "Contracts are the language teams use to talk across intent boundaries. They're executable specifications of trust.",
+    },
+    {
+      id: "capability",
+      name: "Capability",
+      color: COLORS.capability,
+      replaces: "Feature / Component",
+      icon: "◆",
+      definition: "A stable, reusable system building block that spec units depend on.",
+      properties: ["Owner / team", "Public interface", "SLO/SLA", "Supported spec units"],
+      examples: ["Event Bus — handles pub/sub for deployment events, 99.9% uptime", "User Profile Service — manages profiles + verification status, <50ms API latency", "LLM Observe Engine — compares spec to runtime state, confidence threshold configurable"],
+      key: "Capabilities are how you scale intent execution. They're the infrastructure of intelligent work.",
+    },
+    {
+      id: "feature",
+      name: "Feature",
+      color: COLORS.feature,
+      replaces: "Epic / Release Train",
+      icon: "◇",
+      definition: "A user-visible outcome that emerges from coordinated spec units and capabilities.",
+      properties: ["User value proposition", "Launch checklist", "Governance review", "Observability instrumentation"],
+      examples: ["Automated deployment retry with status transparency", "Zero-friction API onboarding for new partners", "Agent-driven spec validation with human-in-the-loop review"],
+      key: "Features are where intent touches users. They're the feedback loop that drives the next signal.",
+    },
+    {
+      id: "product",
+      name: "Product",
+      color: COLORS.product,
+      replaces: "Product / Platform",
+      icon: "◆",
+      definition: "A coherent system of features + capabilities that solves a distinct user problem at scale.",
+      properties: ["Market positioning", "Customer cohorts", "Revenue model", "Competitive landscape"],
+      examples: ["Deploy Platform — handles CI/CD, observability, governance for infrastructure teams", "Developer Experience Platform — onboarding, API design, self-service capabilities", "Intent Execution Platform — spec authoring, agent orchestration, team coordination"],
+      key: "Products are where multiple intents converge. They're the units of business value.",
+    },
+  ];
 
-            // Agent Flow Data
-            const agentFlow = [
-                {
-                    phase: 'Notice',
-                    description: 'Capture signals from design sessions, user feedback, monitoring',
-                    agent: 'Observation Agent',
-                    duration: 'Continuous',
-                },
-                {
-                    phase: 'Parse',
-                    description: 'Extract intents and specs from signals',
-                    agent: 'Intent Parser',
-                    duration: '< 1 minute',
-                },
-                {
-                    phase: 'Plan',
-                    description: 'Analyze parallelization opportunities and schedule work',
-                    agent: 'Scheduler',
-                    duration: '< 5 minutes',
-                },
-                {
-                    phase: 'Build',
-                    description: 'Execute contracts and compose capabilities',
-                    agent: 'Developer Agents',
-                    duration: '< 2 hours',
-                },
-                {
-                    phase: 'Test',
-                    description: 'Validate contracts and acceptance criteria',
-                    agent: 'Test Agent',
-                    duration: '< 10 minutes',
-                },
-                {
-                    phase: 'Observe',
-                    description: 'Gather telemetry and feedback for next cycle',
-                    agent: 'Monitor Agent',
-                    duration: 'Continuous',
-                },
-            ];
+  return (
+    <div style={{ padding: "24px", maxWidth: "1200px" }}>
+      <div style={{ marginBottom: "32px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "12px", color: COLORS.text }}>
+          Work Ontology
+        </h2>
+        <p style={{ color: COLORS.textMuted, lineHeight: "1.6" }}>
+          Intent work is organized around seven units that form a nested hierarchy. Each unit has a clear purpose, interface, and relationship to the others.
+        </p>
+      </div>
 
-            // Dashboard Data
-            const dashboardMetrics = [
-                { label: 'Active Intents', value: 12, trend: '+3 this week' },
-                { label: 'Specs in Flight', value: 8, trend: '+2 in progress' },
-                { label: 'Capabilities Built', value: 24, trend: '+4 completed' },
-                { label: 'Feature Velocity', value: '2.4 features/sprint', trend: '+15% vs last sprint' },
-            ];
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+        {units.map((unit) => (
+          <div
+            key={unit.id}
+            onClick={() => setSelected(selected === unit.id ? null : unit.id)}
+            style={{
+              padding: "16px",
+              borderRadius: "8px",
+              border: `1px solid ${COLORS.border}`,
+              background: selected === unit.id ? COLORS.surface : "transparent",
+              cursor: "pointer",
+              transition: "all 200ms",
+              borderTop: `3px solid ${unit.color}`,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+              <span style={{ fontSize: "20px" }}>{unit.icon}</span>
+              <h3 style={{ fontSize: "16px", fontWeight: "600", color: unit.color }}>{unit.name}</h3>
+            </div>
+            <p style={{ fontSize: "12px", color: COLORS.textMuted, marginBottom: "8px" }}>Replaces: {unit.replaces}</p>
+            <p style={{ color: COLORS.text, fontSize: "13px", lineHeight: "1.5", marginBottom: "12px" }}>{unit.definition}</p>
 
-            // Agile vs Intent Comparison
-            const comparison = [
-                {
-                    agile: 'User Story',
-                    intent: 'Signal → Intent',
-                    rationale: 'Stories are for humans; Signals and Intents are declarative machine-consumable goals',
-                },
-                {
-                    agile: 'Acceptance Criteria',
-                    intent: 'Spec',
-                    rationale: 'Spec is the primary unit; AC is implicit in contract + tests',
-                },
-                {
-                    agile: 'Sprint Planning',
-                    intent: 'Schedule (DAG-based)',
-                    rationale: 'Fixed sprints create artificial batching; DAG scheduling discovers optimal parallelization',
-                },
-                {
-                    agile: 'Story Points',
-                    intent: 'Capability atoms',
-                    rationale: 'Story points are estimates; Capabilities are actual deployable units',
-                },
-                {
-                    agile: 'Backlog Grooming',
-                    intent: 'Intent Refinement',
-                    rationale: 'Grooming assumes humans decide priority; Intent system separates discovery from scheduling',
-                },
-                {
-                    agile: 'Sprint Retrospective',
-                    intent: 'Observe Cycle',
-                    rationale: 'Retros are periodic; Observe is continuous, feeding signals back into the system',
-                },
-                {
-                    agile: 'Burndown Chart',
-                    intent: 'Capability Health Dashboard',
-                    rationale: 'Burndown measures human output; Health tracks machine-testable state changes',
-                },
-                {
-                    agile: 'Release Notes',
-                    intent: 'Feature Trace',
-                    rationale: 'Notes describe features; Trace links features back to original signals',
-                },
-                {
-                    agile: 'Product Owner',
-                    intent: 'Intent Parser + Router',
-                    rationale: 'PO prioritizes; Intent system automates discovery and routing',
-                },
-            ];
-
-            const OntologyTab = () => (
-                <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {workUnits.map((unit) => {
-                            const isExpanded = expandedCard === unit.id;
-                            return (
-                                <div
-                                    key={unit.id}
-                                    onClick={() => setExpandedCard(isExpanded ? null : unit.id)}
-                                    className={`relative cursor-pointer transition-all duration-300 ${
-                                        isExpanded ? 'md:col-span-2 lg:col-span-3 xl:col-span-4' : ''
-                                    }`}
-                                >
-                                    <div
-                                        className={`border-2 ${unit.borderColor} bg-gradient-to-br ${unit.color} hover:shadow-lg transition-shadow rounded-lg p-4 h-full`}
-                                    >
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-2xl">{unit.icon}</span>
-                                            <h3 className="text-lg font-semibold">{unit.label}</h3>
-                                        </div>
-                                        <p className="text-sm text-gray-600 mb-2">{unit.description}</p>
-                                        {isExpanded && (
-                                            <p className="text-sm text-gray-700">{unit.details}</p>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            );
-
-            const DimensionsTab = () => (
-                <div className="space-y-6">
-                    {dimensions.map((dim, idx) => (
-                        <div key={idx} className={`p-6 rounded-lg border-2 border-gray-200 ${dim.color}`}>
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="text-3xl">{dim.icon}</span>
-                                <div>
-                                    <h3 className="text-xl font-semibold">{dim.title}</h3>
-                                    <p className="text-sm text-gray-600">{dim.description}</p>
-                                </div>
-                            </div>
-                            <div className="space-y-3">
-                                {dim.layers.map((layer, layerIdx) => (
-                                    <div key={layerIdx} className="bg-white rounded-lg p-4 border border-gray-200">
-                                        <h4 className="font-semibold text-sm mb-2">{layer.name}</h4>
-                                        <div className="flex flex-wrap gap-2">
-                                            {layer.tools.map((tool, toolIdx) => (
-                                                <span
-                                                    key={toolIdx}
-                                                    className="inline-block bg-gray-100 px-2 py-1 rounded text-xs"
-                                                >
-                                                    {tool}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+            {selected === unit.id && (
+              <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: `1px solid ${COLORS.border}` }}>
+                <div style={{ marginBottom: "12px" }}>
+                  <h4 style={{ fontSize: "12px", fontWeight: "600", color: COLORS.text, marginBottom: "4px" }}>Properties</h4>
+                  <ul style={{ fontSize: "12px", color: COLORS.textMuted, marginLeft: "16px" }}>
+                    {unit.properties.map((prop, i) => (
+                      <li key={i} style={{ marginBottom: "2px" }}>
+                        {prop}
+                      </li>
                     ))}
+                  </ul>
                 </div>
-            );
-
-            const AgentFlowTab = () => (
-                <div className="space-y-4">
-                    {agentFlow.map((flow, idx) => (
-                        <div key={idx} className="flex items-start gap-4">
-                            <div className="flex-1 bg-blue-50 rounded-lg p-4 border border-blue-200">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white font-semibold text-sm">
-                                        {idx + 1}
-                                    </span>
-                                    <h4 className="text-lg font-semibold">{flow.phase}</h4>
-                                </div>
-                                <p className="text-sm text-gray-700 mb-2">{flow.description}</p>
-                                <div className="flex justify-between text-xs text-gray-600">
-                                    <span className="font-semibold">Agent: {flow.agent}</span>
-                                    <span>Duration: {flow.duration}</span>
-                                </div>
-                            </div>
-                            {idx < agentFlow.length - 1 && (
-                                <div className="flex items-center justify-center h-full">
-                                    <span className="text-gray-400 text-xl">→</span>
-                                </div>
-                            )}
-                        </div>
+                <div style={{ marginBottom: "12px" }}>
+                  <h4 style={{ fontSize: "12px", fontWeight: "600", color: COLORS.text, marginBottom: "4px" }}>Examples</h4>
+                  <ul style={{ fontSize: "12px", color: COLORS.textMuted, marginLeft: "16px" }}>
+                    {unit.examples.map((ex, i) => (
+                      <li key={i} style={{ marginBottom: "2px" }}>
+                        {ex}
+                      </li>
                     ))}
+                  </ul>
                 </div>
-            );
-
-            const DashboardTab = () => (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {dashboardMetrics.map((metric, idx) => (
-                        <div key={idx} className="border-2 border-purple-200 bg-purple-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold mb-2">{metric.label}</h3>
-                            <div className="text-4xl font-bold text-purple-600 mb-2">{metric.value}</div>
-                            <p className="text-sm text-gray-600">{metric.trend}</p>
-                        </div>
-                    ))}
+                <div style={{ padding: "8px", background: COLORS.bg, borderRadius: "4px", borderLeft: `2px solid ${unit.color}` }}>
+                  <p style={{ fontSize: "12px", color: COLORS.text, fontWeight: "500" }}>{unit.key}</p>
                 </div>
-            );
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-            const VersusTab = () => (
-                <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4 mb-4">
-                        <div className="font-semibold text-center p-3 bg-blue-100 rounded">Agile Concept</div>
-                        <div className="font-semibold text-center p-3 bg-green-100 rounded">Intent Equivalent</div>
-                        <div className="font-semibold text-center p-3 bg-gray-100 rounded">Why the Shift</div>
-                    </div>
-                    {comparison.map((row, idx) => (
-                        <div key={idx} className="grid grid-cols-3 gap-4 items-start">
-                            <div className="p-3 bg-blue-50 rounded border border-blue-200 text-sm">
-                                {row.agile}
-                            </div>
-                            <div className="p-3 bg-green-50 rounded border border-green-200 text-sm font-semibold">
-                                {row.intent}
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded border border-gray-200 text-sm">
-                                {row.rationale}
-                            </div>
-                        </div>
-                    ))}
+// ─── Three Dimensions Tab ───
+function DimensionsTab() {
+  const dimensions = [
+    {
+      name: "Discovery",
+      icon: "◈",
+      color: COLORS.notice,
+      description: "How do we learn?",
+      elements: [
+        { label: "Signal", color: COLORS.signal },
+        { label: "Intent", color: COLORS.intent },
+        { label: "Spec Unit", color: COLORS.specUnit },
+      ],
+      narrative: "Every piece of work starts with an observation. Signals feed intents. Intents are refined through spec units. Each cycle tightens our understanding of the problem and solution.",
+    },
+    {
+      name: "Building",
+      icon: "◆",
+      color: COLORS.execute,
+      description: "What do we create?",
+      elements: [
+        { label: "Capability", color: COLORS.capability },
+        { label: "Feature", color: COLORS.feature },
+        { label: "Product", color: COLORS.product },
+      ],
+      narrative: "Spec units coordinate into capabilities—reusable building blocks. Capabilities combine into features—user-visible outcomes. Features cluster into products—coherent solutions.",
+    },
+    {
+      name: "Governance",
+      icon: "◇",
+      color: COLORS.operate,
+      description: "How do we coordinate?",
+      elements: [
+        { label: "Contract", color: COLORS.contract },
+        { label: "Play", color: COLORS.play },
+        { label: "Operating Model", color: COLORS.operate },
+      ],
+      narrative: "Contracts are the language teams speak across boundaries. Plays are choreographed sequences of work. The operating model is how all three dimensions interlock.",
+    },
+  ];
+
+  return (
+    <div style={{ padding: "24px", maxWidth: "1200px" }}>
+      <div style={{ marginBottom: "32px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "12px", color: COLORS.text }}>Three Dimensions</h2>
+        <p style={{ color: COLORS.textMuted, lineHeight: "1.6" }}>
+          Intent organizes work along three orthogonal dimensions: Discovery (how we learn), Building (what we create), and Governance (how we coordinate).
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
+        {dimensions.map((dim, idx) => (
+          <div key={idx}>
+            <div style={{ marginBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                <span style={{ fontSize: "24px" }}>{dim.icon}</span>
+                <h3 style={{ fontSize: "18px", fontWeight: "600", color: dim.color }}>{dim.name}</h3>
+              </div>
+              <p style={{ fontSize: "13px", color: COLORS.textMuted, fontStyle: "italic" }}>{dim.description}</p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+              {dim.elements.map((elem, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: "12px",
+                    background: COLORS.surface,
+                    borderRadius: "6px",
+                    borderLeft: `3px solid ${elem.color}`,
+                    color: elem.color,
+                    fontWeight: "500",
+                    fontSize: "13px",
+                  }}
+                >
+                  {elem.label}
                 </div>
-            );
+              ))}
+            </div>
 
-            return (
-                <div className="w-full max-w-7xl mx-auto p-6 bg-white">
-                    <div className="mb-8">
-                        <a href="index.html" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">← Back to home</a>
-                        <h1 className="text-4xl font-bold mb-2">Intent Work System</h1>
-                        <p className="text-gray-600">
-                            An agent-native alternative to Agile. Replaces tickets and sprints with declarative work units and continuous parallelization.
-                        </p>
-                    </div>
+            <div
+              style={{
+                padding: "12px",
+                background: COLORS.bg,
+                borderRadius: "6px",
+                borderLeft: `2px solid ${dim.color}`,
+              }}
+            >
+              <p style={{ fontSize: "13px", color: COLORS.text, lineHeight: "1.5" }}>{dim.narrative}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-                    <div className="w-full">
-                        <div role="tablist" className="mb-6">
-                            {['ontology', 'dimensions', 'flow', 'dashboard', 'versus'].map(tab => (
-                                <button
-                                    key={tab}
-                                    role="tab"
-                                    aria-selected={activeTab === tab}
-                                    onClick={() => setActiveTab(tab)}
-                                    className={activeTab === tab ? 'text-blue-600' : 'text-gray-600'}
-                                >
-                                    {tab === 'ontology' && 'Work Ontology'}
-                                    {tab === 'dimensions' && 'Three Dimensions'}
-                                    {tab === 'flow' && 'Agent Flow'}
-                                    {tab === 'dashboard' && 'Dashboard'}
-                                    {tab === 'versus' && 'Agile → Intent'}
-                                </button>
-                            ))}
-                        </div>
+// ─── Agent Flow Tab ───
+function AgentFlowTab() {
+  const phases = [
+    {
+      id: "notice",
+      name: "Notice",
+      color: COLORS.notice,
+      description: "Observe signals and articulate intents.",
+      agent: "Observer Agent",
+      inputs: ["Logs, metrics, traces, user feedback"],
+      outputs: ["Signal → Intent articulation"],
+      example: "Scan deploy logs for patterns. If 3+ failed auth attempts in 1h, surface intent: 'Reduce pipeline auth friction'.",
+    },
+    {
+      id: "spec",
+      name: "Specify",
+      color: COLORS.spec,
+      description: "Refine intents into spec units.",
+      agent: "Spec Agent",
+      inputs: ["Intent + context"],
+      outputs: ["Spec units → Acceptance criteria → Capability map"],
+      example: "Given intent, generate spec unit: 'Add exponential backoff to webhook retry logic.' Estimate, assign to capability.",
+    },
+    {
+      id: "execute",
+      name: "Execute",
+      color: COLORS.execute,
+      description: "Implement spec units and build capabilities.",
+      agent: "Build Agent",
+      inputs: ["Spec units"],
+      outputs: ["Code commits → Deployed features"],
+      example: "Pull spec unit queue. Implement, test, merge. Update deployment manifest. Notify downstream capabilities.",
+    },
+    {
+      id: "observe",
+      name: "Observe",
+      color: COLORS.observe,
+      description: "Validate execution against spec and surface deltas.",
+      agent: "Observer Agent",
+      inputs: ["Spec + deployed code"],
+      outputs: ["Drift signals → Next cycle intents"],
+      example: "Compare spec (webhook <100ms) to observed (p99 150ms). Surface signal: 'Retry logic slower than specified'.",
+    },
+  ];
 
-                        <div>
-                            {activeTab === 'ontology' && <OntologyTab />}
-                            {activeTab === 'dimensions' && <DimensionsTab />}
-                            {activeTab === 'flow' && <AgentFlowTab />}
-                            {activeTab === 'dashboard' && <DashboardTab />}
-                            {activeTab === 'versus' && <VersusTab />}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+  return (
+    <div style={{ padding: "24px", maxWidth: "1200px" }}>
+      <div style={{ marginBottom: "32px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "12px", color: COLORS.text }}>Agent Flow</h2>
+        <p style={{ color: COLORS.textMuted, lineHeight: "1.6" }}>
+          Intent execution is orchestrated by four complementary agents, each handling one phase of the notice→spec→execute→observe cycle.
+        </p>
+      </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<IntentWorkSystem />);
-    </script>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "16px" }}>
+        {phases.map((phase) => (
+          <div
+            key={phase.id}
+            style={{
+              padding: "16px",
+              background: COLORS.surface,
+              borderRadius: "8px",
+              borderTop: `3px solid ${phase.color}`,
+            }}
+          >
+            <h3 style={{ fontSize: "16px", fontWeight: "600", color: phase.color, marginBottom: "4px" }}>{phase.name}</h3>
+            <p style={{ fontSize: "12px", color: COLORS.textMuted, marginBottom: "12px" }}>{phase.agent}</p>
+            <p style={{ fontSize: "13px", color: COLORS.text, marginBottom: "12px", lineHeight: "1.5" }}>{phase.description}</p>
+
+            <div style={{ marginBottom: "12px" }}>
+              <h4 style={{ fontSize: "11px", fontWeight: "600", color: COLORS.textMuted, marginBottom: "4px" }}>INPUTS</h4>
+              <ul style={{ fontSize: "12px", color: COLORS.textMuted, marginLeft: "16px" }}>
+                {phase.inputs.map((inp, i) => (
+                  <li key={i}>{inp}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div style={{ marginBottom: "12px" }}>
+              <h4 style={{ fontSize: "11px", fontWeight: "600", color: COLORS.textMuted, marginBottom: "4px" }}>OUTPUTS</h4>
+              <ul style={{ fontSize: "12px", color: COLORS.textMuted, marginLeft: "16px" }}>
+                {phase.outputs.map((out, i) => (
+                  <li key={i}>{out}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div style={{ padding: "8px", background: COLORS.bg, borderRadius: "4px", borderLeft: `2px solid ${phase.color}` }}>
+              <p style={{ fontSize: "12px", color: COLORS.text, fontStyle: "italic" }}>{phase.example}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: "32px", padding: "16px", background: COLORS.surface, borderRadius: "8px", borderLeft: `3px solid ${COLORS.spec}` }}>
+        <h3 style={{ fontSize: "14px", fontWeight: "600", color: COLORS.text, marginBottom: "8px" }}>The Loop</h3>
+        <p style={{ color: COLORS.textMuted, fontSize: "13px", lineHeight: "1.6" }}>
+          These four phases form a continuous loop. Observe generates signals for Notice. Intents drive Spec. Specs guide Execute. Execution feeds Observe. The entire system is a learning machine—intent execution becomes better with each cycle.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Dashboard Tab ───
+function DashboardTab() {
+  const workUnits = [
+    { label: "Signals", count: "24", color: COLORS.signal, trend: "+6" },
+    { label: "Intents", count: "8", color: COLORS.intent, trend: "+2" },
+    { label: "Spec Units", count: "47", color: COLORS.specUnit, trend: "+12" },
+    { label: "Capabilities", count: "5", color: COLORS.capability, trend: "0" },
+    { label: "Features", count: "3", color: COLORS.feature, trend: "+1" },
+    { label: "Products", count: "1", color: COLORS.product, trend: "0" },
+  ];
+
+  const statuses = [
+    { label: "Validated", count: "12", color: COLORS.validated },
+    { label: "Exploring", count: "8", color: COLORS.exploring },
+    { label: "Hypothesis", count: "5", color: COLORS.hypothesis },
+    { label: "Invalidated", count: "2", color: COLORS.invalidated },
+  ];
+
+  return (
+    <div style={{ padding: "24px", maxWidth: "1200px" }}>
+      <div style={{ marginBottom: "32px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "12px", color: COLORS.text }}>Dashboard</h2>
+        <p style={{ color: COLORS.textMuted, lineHeight: "1.6" }}>
+          Real-time view of work across all units and lifecycle stages.
+        </p>
+      </div>
+
+      <div style={{ marginBottom: "32px" }}>
+        <h3 style={{ fontSize: "16px", fontWeight: "600", color: COLORS.text, marginBottom: "16px" }}>Work Units</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px" }}>
+          {workUnits.map((unit, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "16px",
+                background: COLORS.surface,
+                borderRadius: "8px",
+                borderLeft: `3px solid ${unit.color}`,
+              }}
+            >
+              <p style={{ fontSize: "12px", color: COLORS.textMuted, marginBottom: "8px" }}>{unit.label}</p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+                <span style={{ fontSize: "28px", fontWeight: "600", color: unit.color }}>{unit.count}</span>
+                <span style={{ fontSize: "12px", color: COLORS.validated }}>{unit.trend}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ fontSize: "16px", fontWeight: "600", color: COLORS.text, marginBottom: "16px" }}>Status Breakdown</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px" }}>
+          {statuses.map((status, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "16px",
+                background: COLORS.surface,
+                borderRadius: "8px",
+                borderTop: `3px solid ${status.color}`,
+              }}
+            >
+              <p style={{ fontSize: "12px", color: COLORS.textMuted, marginBottom: "8px" }}>{status.label}</p>
+              <p style={{ fontSize: "24px", fontWeight: "600", color: status.color }}>{status.count}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Agile → Intent Tab ───
+function VersusTab() {
+  const comparison = [
+    {
+      aspect: "Basic Unit",
+      agile: "User Story → Story Points",
+      intent: "Spec Unit → Intent Intent",
+      rationale: "Intent work links every spec to the problem it solves. Not just what to build, but why.",
+    },
+    {
+      aspect: "Hierarchy",
+      agile: "Theme → Epic → Story → Task",
+      intent: "Product → Feature → Capability → Spec Unit → Intent → Signal",
+      rationale: "Intent adds two critical layers below: the intent that drives each capability, and the signals that surface new intents. Tighter feedback.",
+    },
+    {
+      aspect: "Execution",
+      agile: "Team pulls stories, completes sprint",
+      intent: "Agents orchestrate notice→spec→execute→observe. Humans author specs and make governance calls.",
+      rationale: "Work is observable and continuous, not batched into sprints. Feedback loops close in hours, not weeks.",
+    },
+    {
+      aspect: "Observability",
+      agile: "Burndown chart, velocity metric",
+      intent: "Spec vs. reality delta, intent lifecycle, agent reasoning",
+      rationale: "You can see not just what's done, but whether what you did matches what you said you'd do. And why.",
+    },
+    {
+      aspect: "Feedback",
+      agile: "Retrospective at sprint end",
+      intent: "Observe phase after every spec execution",
+      rationale: "Don't wait for the sprint to end. Validate every spec in production immediately.",
+    },
+    {
+      aspect: "Learning",
+      agile: "Stories carry implicit context",
+      intent: "Signal → Intent → Spec → Contract → Observe creates a complete reasoning trail",
+      rationale: "You can see the entire decision history for any piece of work. Great for onboarding. Great for auditing.",
+    },
+  ];
+
+  return (
+    <div style={{ padding: "24px", maxWidth: "1200px" }}>
+      <div style={{ marginBottom: "32px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "12px", color: COLORS.text }}>Agile → Intent</h2>
+        <p style={{ color: COLORS.textMuted, lineHeight: "1.6" }}>
+          How Intent differs from traditional Agile. Not a replacement—an evolution that brings feedback loops closer and makes work observable.
+        </p>
+      </div>
+
+      <div style={{ overflowX: "auto" }}>
+        <div style={{ minWidth: "100%" }}>
+          {comparison.map((row, i) => (
+            <div
+              key={i}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "150px 1fr 1fr 1fr",
+                gap: "16px",
+                padding: "16px",
+                borderBottom: i < comparison.length - 1 ? `1px solid ${COLORS.border}` : "none",
+                alignItems: "start",
+              }}
+            >
+              <div style={{ fontWeight: "600", color: COLORS.text, fontSize: "13px" }}>{row.aspect}</div>
+              <div style={{ fontSize: "12px", color: COLORS.textMuted }}>{row.agile}</div>
+              <div style={{ fontSize: "12px", color: COLORS.spec }}>{row.intent}</div>
+              <div style={{ fontSize: "12px", color: COLORS.textMuted, fontStyle: "italic" }}>{row.rationale}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main App ───
+export default function App() {
+  const [activeTab, setActiveTab] = useState("ontology");
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: COLORS.bg,
+        color: COLORS.text,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          borderBottom: `1px solid ${COLORS.border}`,
+          background: COLORS.surface,
+          position: "sticky",
+          top: "0",
+          zIndex: "10",
+        }}
+      >
+        <div style={{ maxWidth: "1200px", width: "100%", margin: "0 auto", display: "flex" }}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                flex: 1,
+                padding: "16px 0",
+                background: activeTab === tab.id ? "transparent" : "transparent",
+                border: "none",
+                color: activeTab === tab.id ? COLORS.spec : COLORS.textMuted,
+                borderBottom: activeTab === tab.id ? `2px solid ${COLORS.spec}` : "none",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "500",
+                transition: "all 200ms",
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {activeTab === "ontology" && <OntologyTab />}
+      {activeTab === "dimensions" && <DimensionsTab />}
+      {activeTab === "flow" && <AgentFlowTab />}
+      {activeTab === "dashboard" && <DashboardTab />}
+      {activeTab === "versus" && <VersusTab />}
+    </div>
+  );
+}
+  </script>
 </body>
 </html>
