@@ -22,6 +22,6 @@ If the agent executes and the result is wrong, the spec failed — not the agent
 
 ## What Lives Here
 
-- **development-operating-system.md** — The core methodology spec
+- **intent-methodology.md** — The Intent methodology spec
 - **autonomous-operations-design.md** — The operations layer spec
 - **intent-concept-brief.md** — The product concept spec

@@ -1,12 +1,12 @@
 ---
-title: Development Operating System
+title: Intent Methodology
 type: spec
 maturity: draft
 created: 2026-03-28
 summary: "A spec-driven SDLC for the AI-augmented practitioner. Replaces Agile ceremony overhead with a continuous loop — notice, spec, execute, observe — where specification quality is the bottleneck, not delivery velocity."
 ---
 
-# Development Operating System
+# Intent Methodology
 
 > **Purpose**: How work flows from idea to running software when AI collapses implementation to hours.
 >
@@ -168,5 +168,5 @@ Check reality against the contract. But also notice *new* things: edge cases the
 
 ---
 
-*Development Operating System v1.0 — 2026-03-28*
+*Intent Methodology v1.0 — 2026-03-28*
 *Origin: Cowork session, grounded in Ari conversation and Cagan/Patton/Torres/Seiden frameworks*

@@ -32,6 +32,6 @@ Intent as a potential product for AI-augmented practitioners and small teams. De
 ## Connected Resources
 
 - Ari conversation: `notice/ari-conversation.md`
-- Methodology spec: `spec/development-operating-system.md`
+- Methodology spec: `spec/intent-methodology.md`
 - Operations spec: `spec/autonomous-operations-design.md`
 - Product concept: `spec/intent-concept-brief.md`
