@@ -34,6 +34,8 @@
     .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; }
     .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
     .card p { color: #cbd5e1; font-size: 14px; line-height: 1.6; }
+    .card-icon { font-size: 24px; margin-bottom: 12px; display: inline-block; }
+    .card-icon.flow-diagram { background: linear-gradient(135deg, #f59e0b 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   </style>
 </head>
 <body>
@@ -123,6 +125,11 @@
       <h2>Dogfooding</h2>
       <p style="color: #cbd5e1; margin-bottom: 20px; line-height: 1.6;">Intent dogfoods itself. This documentation site mirrors the loop. Signals emerge from research and cowork sessions. Decisions are recorded. Every page is a live experiment in the methodology.</p>
       <div class="cards">
+        <div class="card">
+          <div class="card-icon flow-diagram">↻</div>
+          <h3><a href="flow-diagram.html" style="color: #f1f5f9; text-decoration: none;">Flow Diagram</a></h3>
+          <p>Persona paths through the system — who does what, when events fire</p>
+        </div>
         <div class="card">
           <h3>Signal Stream</h3>
           <p><a href="signals.html" style="color: #3b82f6; text-decoration: none;">View signals</a> captured from cowork sessions and agent traces feeding Intent's own development.</p>
