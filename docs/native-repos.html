@@ -10,12 +10,22 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0f172a; }
-    .back-link { position: fixed; top: 16px; left: 16px; color: #64748b; text-decoration: none; font-size: 13px; font-family: -apple-system, sans-serif; z-index: 100; }
-    .back-link:hover { color: #94a3b8; }
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
+    .site-nav .logo span { color: #3b82f6; }
+    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
   </style>
 </head>
 <body>
-  <a class="back-link" href="index.html">← All artifacts</a>
+  <nav class="site-nav">
+    <a href="index.html" class="logo"><span>I</span>ntent</a>
+    <a href="index.html">Home</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="concept-brief.html">Concept Brief</a>
+    <a href="signals.html">Signals</a>
+    <a href="decisions.html">Decisions</a>
+  </nav>
   <div id="root"></div>
   <script type="text/babel" data-type="module">
     const { useState } = React;
@@ -30,26 +40,26 @@
     };
 
     const tabs = [
-      { id: "template", label: "Repo Template", icon: "\ud83d\udcd0" },
-      { id: "tiers", label: "Adoption Tiers", icon: "\ud83e\udea4" },
-      { id: "loop", label: "Entire \u2192 Spec Loop", icon: "\ud83d\udd04" },
+      { id: "template", label: "Repo Template", icon: "📋" },
+      { id: "tiers", label: "Adoption Tiers", icon: "🤤" },
+      { id: "loop", label: "Entire → Spec Loop", icon: "🔄" },
     ];
 
     function RepoTemplate() {
       const [expanded, setExpanded] = useState(null);
       const layers = [
-        { id: "intent", name: ".intent/", desc: "Loop metadata \u2014 why this repo exists", color: COLORS.spec,
+        { id: "intent", name: ".intent/", desc: "Loop metadata — why this repo exists", color: COLORS.spec,
           files: [
-            { name: "INTENT.md", purpose: "The repo's intent declaration \u2014 purpose, outcome, loop phase", required: true },
-            { name: "decisions.md", purpose: "Running decision log \u2014 extracted from Entire.io traces. Institutional memory of WHY.", required: true },
-            { name: "risks.md", purpose: "Active risk register \u2014 surfaced from traces, specs, observe cycles", required: false },
+            { name: "INTENT.md", purpose: "The repo's intent declaration — purpose, outcome, loop phase", required: true },
+            { name: "decisions.md", purpose: "Running decision log — extracted from Entire.io traces. Institutional memory of WHY.", required: true },
+            { name: "risks.md", purpose: "Active risk register — surfaced from traces, specs, observe cycles", required: false },
           ] },
         { id: "claude", name: ".claude/", desc: "Agent operating context", color: COLORS.execute,
           files: [
             { name: "CLAUDE.md", purpose: "Project-level context for Claude Code. WHO it is, WHAT the repo does, HOW to work.", required: true },
             { name: "commands/*.md", purpose: "Headless prompts for autonomous ops via claude -p", required: false },
           ] },
-        { id: "entire", name: ".entire/", desc: "Observability layer \u2014 agent reasoning capture", color: COLORS.entire,
+        { id: "entire", name: ".entire/", desc: "Observability layer — agent reasoning capture", color: COLORS.entire,
           files: [
             { name: "settings.json", purpose: "Config created by `entire enable`", required: true },
             { name: "metadata/*/", purpose: "Session captures: prompt.txt + full.jsonl per agent session", required: true },
@@ -69,7 +79,7 @@
                     <code style={{ color: layer.color, fontSize: 16, fontWeight: 600 }}>{layer.name}</code>
                     <span style={{ color: COLORS.textMuted, fontSize: 13 }}>{layer.desc}</span>
                   </div>
-                  <span style={{ color: COLORS.textDim, fontSize: 18, transform: expanded === layer.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>\u203a</span>
+                  <span style={{ color: COLORS.textDim, fontSize: 18, transform: expanded === layer.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
                 </button>
                 {expanded === layer.id && (
                   <div style={{ marginTop: 4, marginLeft: 16, borderLeft: `2px solid ${layer.color}30`, paddingLeft: 16 }}>
@@ -102,7 +112,7 @@
         { name: "Tier 0: Observable", tagline: '"At least I can see what happened"', color: COLORS.observe, what: "Just Entire.io enabled.", gets: "Agent reasoning traces alongside every commit.", effort: "30 seconds" },
         { name: "Tier 1: Intentional", tagline: '"The repo knows why it exists"', color: COLORS.spec, what: ".intent/ + CLAUDE.md", gets: "Strategic context captured. Any agent or human knows purpose, shape, and key decisions.", effort: "15-30 minutes" },
         { name: "Tier 2: Autonomous", tagline: '"The repo runs itself"', color: COLORS.execute, what: "+ .claude/commands/ + ops/ + launchd + logs", gets: "Agent does work on schedule, logs everything, Entire captures reasoning.", effort: "1-2 hours" },
-        { name: "Tier 3: Self-Observing", tagline: '"The repo closes its own loop"', color: COLORS.entire, what: "+ observe-cycle that reads Entire traces back into .intent/", gets: "Fully closed loop: execute \u2192 capture \u2192 extract \u2192 write back \u2192 better specs.", effort: "New command file" },
+        { name: "Tier 3: Self-Observing", tagline: '"The repo closes its own loop"', color: COLORS.entire, what: "+ observe-cycle that reads Entire traces back into .intent/", gets: "Fully closed loop: execute → capture → extract → write back → better specs.", effort: "New command file" },
       ];
       return (
         <div>

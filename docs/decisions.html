@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent — Decision Log</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
+    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
+    .site-nav .logo span { color: #3b82f6; }
+    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+    .content { max-width: 800px; margin: 0 auto; padding: 48px 24px 64px; }
+    .page-header { margin-bottom: 32px; }
+    .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .page-header p { color: #94a3b8; font-size: 14px; line-height: 1.6; }
+    .page-header .dogfood-badge { display: inline-block; background: #10b98120; color: #10b981; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .decision-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; margin-bottom: 16px; border-left: 3px solid #a855f7; }
+    .decision-date { color: #64748b; font-size: 12px; margin-bottom: 8px; }
+    .decision-title { font-size: 18px; font-weight: 600; color: #f1f5f9; margin-bottom: 12px; }
+    .decision-field { margin-bottom: 10px; }
+    .decision-field .label { color: #a855f7; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .decision-field p { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 0; }
+    .decision-field .alternatives { color: #94a3b8; font-size: 13px; font-style: italic; }
+    .decision-source { color: #64748b; font-size: 12px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #334155; }
+    .stats-strip { display: flex; gap: 12px; margin-bottom: 32px; }
+    .stat { flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px 16px; text-align: center; }
+    .stat-value { font-size: 24px; font-weight: 700; color: #a855f7; }
+    .stat-label { font-size: 11px; color: #64748b; margin-top: 4px; }
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="index.html" class="logo"><span>I</span>ntent</a>
+    <a href="index.html">Home</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="concept-brief.html">Concept Brief</a>
+    <a href="signals.html">Signals</a>
+    <a href="decisions.html" class="active">Decisions</a>
+  </nav>
+  <div class="content">
+    <div class="page-header">
+      <span class="dogfood-badge">Dogfooding</span>
+      <h1>Decision Log</h1>
+      <p>Every significant decision recorded with context, alternatives considered, and rationale. This is Intent's institutional memory — the accumulation of <em>why</em> that prevents future drift and gives new participants the reasoning behind the current state.</p>
+    </div>
+    <div class="stats-strip">
+      <div class="stat">
+        <div class="stat-value">6</div>
+        <div class="stat-label">Decisions recorded</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" style="color: #f1f5f9;">1</div>
+        <div class="stat-label">Days active</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" style="color: #10b981;">6</div>
+        <div class="stat-label">With alternatives</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" style="color: #3b82f6;">0</div>
+        <div class="stat-label">Reversed</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-date">2026-03-28</div>
+      <div class="decision-title">Product named "Intent"</div>
+      <div class="decision-field">
+        <div class="label">Context</div>
+        <p>Working name was "Dev OS" throughout initial development. Sounded like DevOps infrastructure tooling, which confused the positioning.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Alternatives Considered</div>
+        <p class="alternatives">Frame, Premise, Lucid, Upstream, "Intent Operating Flow"</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Decision</div>
+        <p>Single word "Intent" — names exactly what the layer produces. One word, like Entire.io.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Why</div>
+        <p>The product IS intent — the layer where teams crystallize why they're building what they're building. The name should be the thing, not a metaphor for the thing.</p>
+      </div>
+      <div class="decision-source">Source: Cowork session 2026-03-28</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-date">2026-03-28</div>
+      <div class="decision-title">Three-layer stack positioning</div>
+      <div class="decision-field">
+        <div class="label">Context</div>
+        <p>Needed to clarify where Intent sits relative to existing tools (Kiro, GitHub Spec Kit, Claude Code, etc.)</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Decision</div>
+        <p>Intent sits ABOVE spec-driven dev tools, which sit above AI coding assistants. Entire.io is the observability layer that runs alongside all three.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Why</div>
+        <p>Existing tools handle spec→code and code execution. Nobody owns the "why are we building this" layer. That's the gap.</p>
+      </div>
+      <div class="decision-source">Source: Cowork session 2026-03-28, concept brief development</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-date">2026-03-28</div>
+      <div class="decision-title">Dogfood the repo structure</div>
+      <div class="decision-field">
+        <div class="label">Context</div>
+        <p>How should the Intent methodology repo itself be organized?</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Decision</div>
+        <p>Mirror the Notice → Spec → Execute → Observe loop as top-level directories.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Why</div>
+        <p>The medium is the message. If the methodology is a loop, the repo should be a loop. Also serves as the reference implementation for other teams adopting Intent.</p>
+      </div>
+      <div class="decision-source">Source: Cowork session 2026-03-28</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-date">2026-03-28</div>
+      <div class="decision-title">Staged GTM over tooling-first</div>
+      <div class="decision-field">
+        <div class="label">Context</div>
+        <p>Should Intent be a SaaS tool, a methodology, or a consulting offering?</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Alternatives Considered</div>
+        <p class="alternatives">Tooling-first SaaS, methodology + tooling bundled, consulting-only</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Decision</div>
+        <p>Stage it: thought leadership (manifesto + case studies) → methodology product (playbook + workshops) → tooling (conditional on validation).</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Why</div>
+        <p>Building tooling before validating the methodology is premature. Brien is a solo practitioner — the highest-leverage move is content + interviews, not code.</p>
+      </div>
+      <div class="decision-source">Source: Concept brief quality review, Cowork session 2026-03-28</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-date">2026-03-28</div>
+      <div class="decision-title">Ari conversation as primary evidence</div>
+      <div class="decision-field">
+        <div class="label">Context</div>
+        <p>Needed empirical validation beyond Cagan/Patton/Torres theory.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Decision</div>
+        <p>Ari's team experience is Case Study #0 — a real team that discovered the pattern independently.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Why</div>
+        <p>Theory says discovery is the bottleneck. Ari's team proved it: their tickets became "specifications for bots to run," their refinement became "heavily design oriented," and their PRDs moved outside Jira.</p>
+      </div>
+      <div class="decision-source">Source: Brien's conversation with engineer Ari</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-date">2026-03-28</div>
+      <div class="decision-title">Rename all references from "Dev OS" to "Intent"</div>
+      <div class="decision-field">
+        <div class="label">Context</div>
+        <p>After naming decision, needed consistency across all files, GitHub repo, and local workspace.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Decision</div>
+        <p>Comprehensive rename: repo name, file names, file contents, memory files, cross-references.</p>
+      </div>
+      <div class="decision-field">
+        <div class="label">Challenges</div>
+        <p>GitHub API doesn't support file deletion or rename (git mv). Required CLI cleanup script for stubs and renames. 68KB JSX file successfully pushed through API despite size concerns.</p>
+      </div>
+      <div class="decision-source">Source: Cowork session 2026-03-28, commit history in theparlor/intent</div>
+    </div>
+  </div>
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent/blob/main/.intent/decisions.md">github.com/theparlor/intent/.intent/decisions.md</a> · <a href="index.html">← Back to home</a></p>
+  </footer>
+</body>
+</html>

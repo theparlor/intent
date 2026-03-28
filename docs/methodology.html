@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent &mdash; Methodology</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
+    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
+    .site-nav .logo span { color: #3b82f6; }
+    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+    .content { max-width: 800px; margin: 0 auto; padding: 48px 24px 64px; }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    h2 { font-size: 20px; font-weight: 700; margin: 40px 0 16px; }
+    h3 { font-size: 16px; font-weight: 600; margin: 24px 0 12px; }
+    p { color: #cbd5e1; font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
+    .intro { color: #94a3b8; font-size: 16px; margin-bottom: 32px; }
+    blockquote { border-left: 3px solid #3b82f6; padding-left: 16px; margin: 24px 0; color: #cbd5e1; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { text-align: left; padding: 12px; border: 1px solid #334155; }
+    th { background: #1e293b; color: #f1f5f9; font-weight: 600; }
+    td { color: #cbd5e1; }
+    code { background: #1e293b; color: #3b82f6; padding: 2px 6px; border-radius: 3px; font-family: 'SF Mono', monospace; }
+    ul, ol { margin-left: 24px; color: #cbd5e1; }
+    li { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="index.html" class="logo"><span>I</span>ntent</a>
+    <a href="index.html">Home</a>
+    <a href="methodology.html" class="active">Methodology</a>
+    <a href="concept-brief.html">Concept Brief</a>
+    <a href="signals.html">Signals</a>
+    <a href="decisions.html">Decisions</a>
+  </nav>
+
+  <div class="content">
+    <h1>Intent Methodology</h1>
+    <p class="intro">How teams organize work around AI-augmented execution. A framework for clarity, autonomy, and continuous learning.</p>
+
+    <h2>The Loop</h2>
+    <p>Intent defines a continuous four-phase cycle that replaces time-boxed sprints:</p>
+    <ol>
+      <li><strong>Notice:</strong> Signals emerge from customer research, agent traces, metrics, and conversations. The team surfaces insights continuously.</li>
+      <li><strong>Spec:</strong> Signals crystallize into Intent (hypothesis + outcome) and Spec (declarative behavior). This is the "why" and "what" layer.</li>
+      <li><strong>Execute:</strong> Agents and humans build against the spec. Work is observable—every decision is traced.</li>
+      <li><strong>Observe:</strong> Traces are analyzed for signal: decisions made, risks surfaced, learning captured. Observations flow back into Notice.</li>
+    </ol>
+
+    <h2>The Shift from Agile</h2>
+    <table>
+      <tr>
+        <th>Agile Concept</th>
+        <th>Intent Equivalent</th>
+        <th>The Shift</th>
+      </tr>
+      <tr>
+        <td>Sprint (2 weeks)</td>
+        <td>Loop (continuous)</td>
+        <td>Work flows based on dependencies, not calendar. No ceremony walls.</td>
+      </tr>
+      <tr>
+        <td>Epic / User Story</td>
+        <td>Intent / Spec</td>
+        <td>Work units are declarative behavior, not human labor units. Agents consume specs directly.</td>
+      </tr>
+      <tr>
+        <td>Backlog Refinement</td>
+        <td>Spec Authoring</td>
+        <td>Specs are version-controlled, testable, and machine-readable. Not prose in a tool.</td>
+      </tr>
+      <tr>
+        <td>Sprint Planning</td>
+        <td>Dependency Graph</td>
+        <td>Prioritization emerges from dependency analysis. Work is always "ready."</td>
+      </tr>
+      <tr>
+        <td>Stand-up</td>
+        <td>Observe Traces</td>
+        <td>Status is captured in execution traces. No synchronous meetings.</td>
+      </tr>
+      <tr>
+        <td>Retrospective</td>
+        <td>Signal Extraction</td>
+        <td>Learning is captured from traces automatically, not from memory in a room.</td>
+      </tr>
+    </table>
+
+    <h2>Three Governance Dimensions</h2>
+    <p>The loop addresses the flow of work. Three orthogonal dimensions govern what gets built:</p>
+    <h3>Right Things (Discovery)</h3>
+    <p>Validate ideas via continuous discovery. Use opportunity trees (Teresa Torres) to surface, validate, and prioritize problems. Specs reference their parent Intent, tying each piece of work to a validated opportunity.</p>
+    <h3>Right Time (Sequencing)</h3>
+    <p>Parallelize and sequence work via dependency graphs, not sprint commitments. The spec layer declares dependencies explicitly. The scheduler respects them. No blocked teams.</p>
+    <h3>Right Way (Architecture)</h3>
+    <p>Enforce technical governance via tech radar and permit levels. Each spec cites tech radar constraints. "Play" tech requires no approval. "Build" tech requires architecture review. "Operate" tech is legacy and requires migration plans.</p>
+
+    <h2>Work Ontology</h2>
+    <blockquote>The atomic unit shifts from "unit of human labor" to "declarative state description agents can execute against."</blockquote>
+    <p>Intent defines a formal hierarchy of work units, each with its own schema, state machine, and contract:</p>
+    <ul>
+      <li><strong>Signal:</strong> Observation from work or research proposing a change</li>
+      <li><strong>Intent:</strong> Hypothesis-driven outcome with success criteria</li>
+      <li><strong>Spec:</strong> Declarative behavior description agents can execute</li>
+      <li><strong>Contract:</strong> Verifiable interface agreement; done when assertions pass</li>
+      <li><strong>Capability:</strong> Reusable building block; composable into features</li>
+      <li><strong>Feature:</strong> User-visible value delivery; composed of capabilities</li>
+      <li><strong>Product:</strong> Living system of features with continuous evolution</li>
+    </ul>
+
+    <h2>Observability: Entire.io</h2>
+    <p>Execution is captured using Entire.io, a distributed tracing system for multi-agent work. Every agent session produces:</p>
+    <ul>
+      <li><strong>Session transcript:</strong> Full reasoning log linked to commit SHA</li>
+      <li><strong>Span hierarchy:</strong> Intent → Spec → Contract mapping to OTel traces</li>
+      <li><strong>Span events:</strong> Decisions, risks, questions captured as structured data</li>
+    </ul>
+    <p>The observe cycle reads these traces and extracts signals automatically, closing the loop.</p>
+
+    <h2>Repo Structure</h2>
+    <p>Intent-native repositories mirror the loop as first-class directories:</p>
+    <ul>
+      <li><code>.intent/</code> – Loop metadata (INTENT.md, decisions.md, risks.md)</li>
+      <li><code>.claude/</code> – Agent operating context (CLAUDE.md, commands/)</li>
+      <li><code>.entire/</code> – Observability layer (Entire.io traces, metadata)</li>
+    </ul>
+
+    <h2>Three Adoption Tiers</h2>
+    <table>
+      <tr>
+        <th>Tier</th>
+        <th>You Add</th>
+        <th>You Get</th>
+        <th>Effort</th>
+      </tr>
+      <tr>
+        <td>Tier 0: Observable</td>
+        <td>Enable Entire.io</td>
+        <td>Agent reasoning traces for every commit</td>
+        <td>30 seconds</td>
+      </tr>
+      <tr>
+        <td>Tier 1: Intentional</td>
+        <td>.intent/ + CLAUDE.md</td>
+        <td>Strategic context captured for humans and agents</td>
+        <td>15–30 min</td>
+      </tr>
+      <tr>
+        <td>Tier 2: Autonomous</td>
+        <td>.claude/commands/ + scheduling</td>
+        <td>Agent runs work on schedule, logs everything</td>
+        <td>1–2 hours</td>
+      </tr>
+      <tr>
+        <td>Tier 3: Self-Observing</td>
+        <td>observe-cycle that reads traces back into .intent/</td>
+        <td>Fully closed loop: execute → capture → learn → improve</td>
+        <td>New command file</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
