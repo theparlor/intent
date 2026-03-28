@@ -1,66 +1,665 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Methodology — Intent</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intent Methodology — A Spec-Driven SDLC for AI-Augmented Practitioners</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+        html, body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+        }
 
-    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-    .content h2 { font-size: 20px; font-weight: 600; margin: 32px 0 12px 0; }
-    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-    .content ul { margin-left: 20px; margin-bottom: 16px; }
-    .content li { color: #94a3b8; font-size: 14px; margin-bottom: 8px; line-height: 1.6; }
+        body {
+            padding: 3rem 1.5rem;
+        }
 
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #0f172a;
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 1.5rem;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+        }
+
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #f1f5f9;
+        }
+
+        nav a.active {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        /* Main container */
+        main {
+            max-width: 720px;
+            margin: 5rem auto 0;
+        }
+
+        /* Source badge */
+        .source-badge {
+            display: inline-block;
+            background-color: #1e293b;
+            color: #94a3b8;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+            border: 1px solid #334155;
+            transition: all 0.2s;
+        }
+
+        .source-badge:hover {
+            color: #f1f5f9;
+            border-color: #475569;
+        }
+
+        /* Document header */
+        .doc-header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .doc-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+        }
+
+        .doc-meta span {
+            display: flex;
+            align-items: center;
+        }
+
+        .doc-meta strong {
+            color: #f1f5f9;
+            margin-right: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+
+        .summary {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-top: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+            padding-left: 1rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            background-color: #1e293b;
+            border-left: 4px solid #3b82f6;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0.25rem;
+        }
+
+        blockquote > p {
+            margin-bottom: 1rem;
+        }
+
+        blockquote > p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote strong {
+            color: #f1f5f9;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background-color: #1e293b;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: #0f172a;
+            border-bottom: 2px solid #334155;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #f1f5f9;
+            border-right: 1px solid #334155;
+        }
+
+        th:last-child {
+            border-right: none;
+        }
+
+        td {
+            padding: 1rem;
+            border-right: 1px solid #334155;
+            color: #f1f5f9;
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #334155;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #1e293b;
+        }
+
+        tbody tr:hover {
+            background-color: #475569;
+        }
+
+        /* Code blocks */
+        pre {
+            background-color: #0a0f1a;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+            border: 1px solid #334155;
+        }
+
+        code {
+            font-family: "Menlo", "Monaco", "Courier New", monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
+        pre code {
+            color: #e2e8f0;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background-color: #0a0f1a;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            color: #f1f5f9;
+        }
+
+        li > p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid #334155;
+            margin: 2rem 0;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ASCII diagram styling */
+        .diagram {
+            background-color: #0a0f1a;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .diagram code {
+            color: #f1f5f9;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* Emphasis colors */
+        strong {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        em {
+            color: #cbd5e1;
+            font-style: italic;
+        }
+
+        /* Links */
+        a {
+            color: #3b82f6;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #60a5fa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                margin-top: 2rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            main {
+                margin-top: 6rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html">Home</a>
-    <a href="methodology.html" class="active">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html">Decisions</a>
-  </nav>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="docs-methodology-v2.html" class="active">Methodology</a></li>
+            <li><a href="concept-brief.html">Concept Brief</a></li>
+            <li><a href="signals.html">Signals</a></li>
+            <li><a href="decisions.html">Decisions</a></li>
+        </ul>
+    </nav>
 
-  <div class="content">
-    <h1>Methodology</h1>
-    <p>The shift from ceremony to loop. What replaces standup, planning, retro, and backlog grooming — and the heuristics that guide every decision.</p>
+    <main>
+        <a href="#" class="source-badge">📄 Source: Intent Methodology (v1.0)</a>
 
-    <h2>The Loop</h2>
-    <p>Intent replaces agile ceremonies with a continuous notice-spec-execute-observe loop. Instead of timeboxed rituals, work flows through the system based on dependency graphs and signal strength.</p>
+        <section class="doc-header">
+            <h1>Intent Methodology</h1>
+            <p class="summary">A spec-driven SDLC for the AI-augmented practitioner. Replaces Agile ceremony overhead with a continuous loop — notice, spec, execute, observe — where specification quality is the bottleneck, not delivery velocity.</p>
+            <div class="doc-meta">
+                <span><strong>Type:</strong> Spec</span>
+                <span><strong>Maturity:</strong> Draft</span>
+                <span><strong>Version:</strong> 1.0</span>
+                <span><strong>Created:</strong> 2026-03-28</span>
+            </div>
+        </section>
 
-    <h2>From Tickets to Contracts</h2>
-    <p>Traditional tickets are prose. Specs in Intent are declarative contracts that agents can execute against. Done is verifiable: when assertions pass, not when someone moves a card.</p>
+        <blockquote>
+            <p><strong>Purpose</strong>: How work flows from idea to running software when AI collapses implementation to hours.</p>
+            <p><strong>Version</strong>: 1.0 — 2026-03-28</p>
+            <p><strong>Origin</strong>: A conversation with engineer Ari, who described his team's empirical discovery of the same shift — then pressure-tested against Cagan's product model, Patton's story mapping, and Torres' continuous discovery.</p>
+        </blockquote>
 
-    <h2>Signals Replace Backlogs</h2>
-    <p>Signals are captured continuously from work, research, and conversation. They flow into intents, which crystallize into specs. No quarterly grooming ceremony — the intake is living.</p>
+        <hr>
 
-    <h2>Observation Replaces Estimation</h2>
-    <p>Don't guess duration. Observe what happened. Traces from execution feed directly into the observe phase, where patterns emerge and the system learns from its own behavior.</p>
+        <section>
+            <h2>The Shift</h2>
 
-    <h2>Dashboard Over Standup</h2>
-    <p>OpenTelemetry-compatible events make work visible at all times. Status updates are ambient — available on demand, not forced into 15-minute ceremonies.</p>
+            <p>For thirty years, software development methodology has been organized around a single assumption: <em>implementation is the bottleneck</em>. Waterfall managed it with upfront planning. Agile managed it with iterative delivery. Scrum managed it with two-week timebox ceremonies that make the slow, expensive act of building software legible to the business.</p>
 
-    <h2>Continuous Learning Instead of Retros</h2>
-    <p>An agent reads execution traces daily and writes observations. Learning is a system property, not something that happens once a sprint in a meeting room.</p>
-  </div>
+            <p>That assumption is breaking.</p>
 
-  <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
-  </footer>
+            <p>When an AI agent can implement a well-specified feature in hours — not sprints — the entire gravitational center of the SDLC shifts left. The hard problem was never delivery. It was always discovery. Cagan has been saying this for years: the best teams spend their energy on figuring out <em>what to build and why</em>, not on managing the mechanics of building it. AI just made the argument undeniable.</p>
+
+            <p>Here's what collapses when implementation gets fast:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ceremony</th>
+                        <th>Original Purpose</th>
+                        <th>What Happens When Implementation Is Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sprint Planning</td>
+                        <td>Forecast what fits in two weeks</td>
+                        <td>Irrelevant — there's nothing to forecast when the unit of work is a spec, not a sprint</td>
+                    </tr>
+                    <tr>
+                        <td>Daily Standup</td>
+                        <td>Surface blockers across a team</td>
+                        <td>No team to coordinate. Blockers are spec ambiguity, not resource contention</td>
+                    </tr>
+                    <tr>
+                        <td>Velocity Tracking</td>
+                        <td>Predict future throughput</td>
+                        <td>Throughput is no longer the constraint. Spec quality is</td>
+                    </tr>
+                    <tr>
+                        <td>Backlog Grooming</td>
+                        <td>Prioritize and size upcoming work</td>
+                        <td>Sizing is meaningless. Prioritization still matters — but it's strategic, not operational</td>
+                    </tr>
+                    <tr>
+                        <td>Sprint Review</td>
+                        <td>Demo what shipped</td>
+                        <td>Ship continuously. Observe continuously. No artificial ceremony boundary</td>
+                    </tr>
+                    <tr>
+                        <td>Retrospective</td>
+                        <td>Improve team process</td>
+                        <td>Still valuable — but the unit of reflection is the spec-execute-observe cycle, not the sprint</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Ari's team discovered this empirically. Their tickets became "specifications for bots to run." Their refinement meetings became "heavily design oriented." Their PRDs moved outside Jira because the tool was optimizing for tracking status, not communicating intent.</p>
+        </section>
+
+        <section>
+            <h2>The Loop</h2>
+
+            <div class="diagram">
+                <pre><code>        ┌──────────┐
+        │  NOTICE  │ ← Something is broken, missing, or possible
+        └────┬─────┘
+             │
+             ▼
+        ┌──────────┐
+        │   SPEC   │ ← Crystallize into Intent → Shape → Contract
+        └────┬─────┘
+             │
+             ▼
+        ┌──────────┐
+        │ EXECUTE  │ ← Agent builds against the spec
+        └────┬─────┘
+             │
+             ▼
+        ┌──────────┐
+        │ OBSERVE  │ ← Does reality match the contract?
+        └────┬─────┘
+             │
+             └──────────→ back to NOTICE</code></pre>
+            </div>
+
+            <h3>Notice</h3>
+
+            <p>The first phase is <em>paying attention</em>. A notice is anything that creates a gap between the world as it is and the world as it should be. The discipline is <em>not</em> to jump straight to solutions. When two or three notices cluster around the same area, a spec is warranted.</p>
+
+            <p>This is the Patton insight: don't start with the solution. Start with the story of what's happening and who it's happening to.</p>
+
+            <h3>Spec</h3>
+
+            <p>The spec is the unit of work. Three parts:</p>
+
+            <p><strong>Intent</strong> — Why it matters now and what outcome you want. Think Seiden: <em>what behavior changes? What becomes true that wasn't?</em></p>
+
+            <p><strong>Shape</strong> — The architect's fat-marker sketch. Boundaries (in/out), key decisions already made, open questions. Think Shape Up: appetite set, approach sketched, details left to the builder.</p>
+
+            <p><strong>Contract</strong> — How we know it's done. Observable outcomes, not task checkboxes. A smoke test the agent can run.</p>
+
+            <p>A good spec is the shortest document that makes the agent dangerous.</p>
+
+            <p><strong>Quality heuristic</strong>: If the agent executes and the result is wrong, the spec failed — not the agent.</p>
+
+            <h3>Execute</h3>
+
+            <p>The agent builds against the spec. Key principle: <strong>the agent can make implementation decisions the architect didn't specify.</strong> The spec draws the boundaries. Inside those boundaries, the agent has autonomy.</p>
+
+            <h3>Observe</h3>
+
+            <p>Check reality against the contract. But also notice <em>new</em> things: edge cases the spec missed, architectural questions surfaced, adjacent workflows affected. Those observations feed back into Notice.</p>
+        </section>
+
+        <section>
+            <h2>The Toolchain</h2>
+
+            <div class="diagram">
+                <pre><code>  NOTICE          SPEC            EXECUTE         OBSERVE
+  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+  │NotebookLM│   │  Cowork  │   │Claude Code│   │ Entire.io│
+  │ research │   │ strategy │   │   CLI     │   │ observe  │
+  │ synthesis│   │ shaping  │   │ execution │   │ reasoning│
+  └──────────┘   └──────────┘   └──────────┘   └──────────┘
+
+  ┌──────────────────────────────────────────────────────────┐
+  │              Git + GitHub — source of truth               │
+  └──────────────────────────────────────────────────────────┘
+  ┌──────────────────────────────────────────────────────────┐
+  │         launchd — scheduling for autonomous ops           │
+  └──────────────────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Role</th>
+                        <th>Analogy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>NotebookLM</strong></td>
+                        <td>Research and synthesis before shaping</td>
+                        <td>The library</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cowork</strong></td>
+                        <td>Strategy, spec authoring, architecture review</td>
+                        <td>The architect's table</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Claude Code CLI</strong></td>
+                        <td>Autonomous execution, building, nightly ops</td>
+                        <td>The workshop floor</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Entire.io</strong></td>
+                        <td>Agent observability alongside git commits</td>
+                        <td>The black box recorder</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Git + GitHub</strong></td>
+                        <td>Source of truth for code, specs, and design docs</td>
+                        <td>The vault</td>
+                    </tr>
+                    <tr>
+                        <td><strong>launchd</strong></td>
+                        <td>Native macOS scheduling for autonomous workflows</td>
+                        <td>The clock</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>What Replaces What</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Traditional Artifact</th>
+                        <th>Replacement</th>
+                        <th>Why</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Jira ticket</td>
+                        <td>Spec file (Intent / Shape / Contract)</td>
+                        <td>A ticket tracks status. A spec communicates intent</td>
+                    </tr>
+                    <tr>
+                        <td>Sprint backlog</td>
+                        <td><code>TASKS.md</code></td>
+                        <td>Priority-ordered. No velocity, no points, no sprint boundary</td>
+                    </tr>
+                    <tr>
+                        <td>Epic / initiative</td>
+                        <td>Design doc</td>
+                        <td>Narrative-scale thinking in prose, not a ticket hierarchy</td>
+                    </tr>
+                    <tr>
+                        <td>Status tracking</td>
+                        <td>Git history + Entire.io</td>
+                        <td>Commits are ground truth. Entire.io adds the <em>why</em></td>
+                    </tr>
+                    <tr>
+                        <td>Sprint review</td>
+                        <td>Observe phase</td>
+                        <td>Continuous, not ceremonial</td>
+                    </tr>
+                    <tr>
+                        <td>Retrospective</td>
+                        <td>Spec quality feedback loop</td>
+                        <td>"What was missing from the spec?"</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>What's Kept</h3>
+
+            <p><strong>Iterative delivery</strong> — the loop is iterative. The boundary is the spec, not the sprint.</p>
+
+            <p><strong>Working software as measure of progress</strong> — the contract makes this explicit.</p>
+
+            <p><strong>Responding to change</strong> — Notice is designed for this. No waiting for the next sprint.</p>
+
+            <p><strong>Sustainable pace</strong> — don't spec faster than you can observe.</p>
+        </section>
+
+        <section>
+            <h2>Heuristics</h2>
+
+            <p><strong>When to spec vs. just do it</strong>: If the agent needs to make decisions you haven't thought through, write a spec.</p>
+
+            <p><strong>When a spec is failing</strong>: Execution is technically correct but wrong in spirit. Sharpen the shape.</p>
+
+            <p><strong>When to break a spec</strong>: If you can't write a meaningful smoke test, the spec is too big.</p>
+
+            <p><strong>When to abandon a spec</strong>: If the Intent is no longer the right goal, don't rework — write a new one.</p>
+        </section>
+
+        <section>
+            <h2>How This Scales</h2>
+
+            <p><strong>Two people</strong>: Specs are the coordination mechanism. Conflicts surface in the Shape section.</p>
+
+            <p><strong>Small team (3-5)</strong>: Design docs become the coordination layer. Weekly sync, not daily.</p>
+
+            <p><strong>The limit</strong>: Breaks down when coordination cost exceeds specification cost. With AI agents, that breakpoint is higher than it used to be.</p>
+        </section>
+
+        <hr>
+
+        <p style="text-align: center; font-size: 0.95rem; color: #94a3b8; margin-top: 3rem; font-style: italic;">
+            Intent Methodology v1.0 — 2026-03-28<br>
+            Origin: Cowork session, grounded in Ari conversation and Cagan/Patton/Torres/Seiden frameworks
+        </p>
+    </main>
+
+    <footer>
+        <p>
+            <a href="index.html">← Back to home</a> •
+            Intent Methodology v1.0 •
+            <a href="#top">Top</a>
+        </p>
+        <p style="margin-top: 1rem; font-size: 0.8rem;">
+            Designed for depth and readability. Built for AI-augmented practitioners.
+        </p>
+    </footer>
 </body>
 </html>
