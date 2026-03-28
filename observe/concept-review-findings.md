@@ -1,7 +1,7 @@
 # Concept Brief Quality Review
 
 > **Date:** 2026-03-28
-> **Subject:** Dev OS Product Concept Brief
+> **Subject:** Intent Product Concept Brief
 > **Method:** Independent agent review against Cagan/Patton/Torres quality criteria
 
 ---

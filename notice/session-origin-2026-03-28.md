@@ -15,11 +15,11 @@ What began as a bug fix expanded through three design layers:
 ### 1. Autonomous Operations Layer (spec written)
 Designed a three-layer architecture (Pipeline / Orchestrator / Intelligence) to migrate automated workflows from Cowork's sandbox to Claude Code CLI running natively.
 
-### 2. Development Operating System (spec written)
+### 2. Intent Methodology (spec written)
 Emerged from Brien's conversation with Ari. Core insight: when implementation takes hours, the entire SDLC gravity shifts left toward strategy, design, and specification. The loop: Notice / Spec / Execute / Observe.
 
 ### 3. Product Concept (brief written)
-Dev OS as a potential product for AI-augmented practitioners and small teams. Defines the problem statement, target audience, competitive landscape, and staged GTM.
+Intent as a potential product for AI-augmented practitioners and small teams. Defines the problem statement, target audience, competitive landscape, and staged GTM.
 
 ## Key Decisions Made
 
@@ -34,4 +34,4 @@ Dev OS as a potential product for AI-augmented practitioners and small teams. De
 - Ari conversation: `notice/ari-conversation.md`
 - Methodology spec: `spec/development-operating-system.md`
 - Operations spec: `spec/autonomous-operations-design.md`
-- Product concept: `spec/dev-os-concept-brief.md`
+- Product concept: `spec/intent-concept-brief.md`

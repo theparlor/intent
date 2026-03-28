@@ -24,4 +24,4 @@ If the agent executes and the result is wrong, the spec failed — not the agent
 
 - **development-operating-system.md** — The core methodology spec
 - **autonomous-operations-design.md** — The operations layer spec
-- **dev-os-concept-brief.md** — The product concept spec
+- **intent-concept-brief.md** — The product concept spec

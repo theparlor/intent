@@ -1,10 +1,10 @@
-# Dev OS
+# Intent
 
 > A team operating model for AI-augmented product teams.
 
 When AI collapses implementation from weeks to hours, the bottleneck moves upstream — from *delivery* to *discovery, specification, and observation*. Agile ceremonies built for slow, expensive delivery become overhead. The team's operating model needs to change.
 
-Dev OS is that operating model.
+Intent is that operating model.
 
 ---
 
@@ -40,15 +40,15 @@ TASKS.md         ← The living backlog (replaces Jira)
 
 ---
 
-## Where Dev OS Sits
+## Where Intent Sits
 
 | Layer | What It Solves | Examples |
 |-------|---------------|----------|
-| **Team Operating Model** | How the team flows, decides, and learns | **Dev OS** ← this |
+| **Team Operating Model** | How the team flows, decides, and learns | **Intent** ← this |
 | **Spec-Driven Development** | How specs become code via AI agents | GitHub Spec Kit, Kiro, Tessl |
 | **AI Coding Assistants** | How individuals get AI help | Copilot, Claude Code, Cursor |
 
-Dev OS is the missing top layer.
+Intent is the missing top layer.
 
 ---
 

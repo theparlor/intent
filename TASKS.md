@@ -6,9 +6,9 @@
 
 ## Active
 
-- [ ] Write the Dev OS Manifesto — sharp, opinionated, shareable, 1500 words max
+- [ ] Write the Intent Manifesto — sharp, opinionated, shareable, 1500 words max
 - [ ] Interview 5 practitioners experiencing AI + Agile friction (start with Ari's team)
-- [ ] Document Brien's personal Dev OS as Case Study #1
+- [ ] Document Brien's personal Intent methodology as Case Study #1
 
 ## Next
 
