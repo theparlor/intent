@@ -10,7 +10,7 @@ Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked
 
 **Owner:** Brien (theparlorhq@gmail.com) — solo practitioner, The Parlor
 **Repo:** github.com/theparlor/intent (private)
-**Status:** Idea → ready for validation. Thought leadership first, methodology product second, tooling conditional on validation.
+**Status:** Methodology defined, bootstrap kit built, validating with real repos.
 
 ## Core Concepts
 
@@ -19,6 +19,15 @@ Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked
 NOTICE  →  SPEC  →  EXECUTE  →  OBSERVE  →  (back to NOTICE)
 ```
 No sprint boundaries. No ceremony tax. A continuous loop where the team's energy follows the highest-leverage work.
+
+### Four Products
+Intent is four products, not one. Each phase of the loop is a product with its own maturity:
+- **Notice** (Operational) — Signal capture from any surface. MCP server, CLI, GitHub Action built.
+- **Spec** (Conceptual) — Shaping signals into agent-ready specs. Methodology defined, no tooling yet.
+- **Execute** (Defined) — Agent implementation against specs. Event schema defined, no integration yet.
+- **Observe** (Schema-Ready) — Dashboard and learning layer. 15 event types defined, no visualization yet.
+
+See `spec/product-roadmap.md` for the full four-product roadmap with investments.
 
 ### Work Ontology (7 levels)
 Signal → Intent → Spec → Contract → Capability → Feature → Product
@@ -35,9 +44,19 @@ Each level has a clear owner, clear transitions, and clear events. This replaces
 15 OTel-compatible events across 6 emission mechanisms. Events stored in `.intent/events/events.jsonl`. Schema: version, event, timestamp, trace_id (=Intent), span_id (=work unit), parent_id (=hierarchy), source, data.
 
 ### Three-Layer Repo Pattern
-- `.intent/` — Work artifacts (signals, intents, specs, contracts, decisions, events)
+- `.intent/` — Work artifacts (signals, intents, specs, contracts, decisions, events, templates)
 - `.claude/` — Agent reasoning (project context, session transcripts)
 - `.entire/` — Observability (execution traces from Entire.io)
+
+### Signal Capture System
+A 5-tier adapter architecture for capturing signals from every surface where practitioners work:
+1. **MCP Server** (Tier 1) — Claude Code, Cowork, Cursor. One server, three surfaces.
+2. **CLI** (Tier 2) — `bin/intent-signal` shell script. Works in any terminal.
+3. **Slack** (Tier 3) — Reaction-based or slash command. Specced, not built.
+4. **GitHub** (Tier 4) — Issue labels, PR comments. Specced, not built.
+5. **AI Plugins** (Tier 5) — ChatGPT, Copilot, Codex. Specced, not built.
+
+See `spec/signal-capture-system.md` for the full architecture.
 
 ## Repo Structure
 
@@ -46,42 +65,56 @@ intent/
 ├── .intent/                  ← Intent's own dogfood
 │   ├── INTENT.md             ← Project manifest
 │   ├── decisions.md          ← Decision log (source of truth)
-│   └── signals/              ← 5 founding signals (SIG-001 through SIG-005)
+│   ├── signals/              ← 11 founding signals (SIG-001 through SIG-011)
+│   ├── events/               ← Event log (events.jsonl)
+│   └── templates/            ← Signal template
+├── .github/
+│   └── workflows/
+│       └── intent-events.yml ← GitHub Action: emit events on push
 ├── artifacts/                ← React JSX interactive artifacts
-│   ├── intent-event-catalog.jsx    ← Event catalog (~750 lines)
-│   ├── intent-flow-diagram.jsx     ← Flow diagram (~880 lines)
-│   ├── intent-work-system.jsx      ← Work ontology explorer
-│   └── intent-visual-brief.jsx     ← Product visual brief
+│   ├── intent-event-catalog.jsx
+│   ├── intent-flow-diagram.jsx
+│   ├── intent-work-system.jsx
+│   └── intent-visual-brief.jsx
+├── bin/
+│   └── intent-signal         ← CLI signal capture tool
 ├── docs/                     ← GitHub Pages site (source: main, /docs)
-│   ├── index.html            ← Product landing page (~22KB)
-│   ├── methodology.html      ← Full long-form rendering of methodology spec
-│   ├── concept-brief.html    ← Full long-form rendering of concept brief
-│   ├── signals.html          ← Signal stream
-│   ├── decisions.html        ← Decision log
-│   ├── event-catalog.html    ← Event catalog overview + link to artifact
-│   ├── flow-diagram.html     ← Flow diagram overview + link to artifact
-│   ├── work-system.html      ← Work ontology overview + link to artifact
-│   ├── native-repos.html     ← Repo pattern guide
-│   ├── visual-brief.html     ← Embeds visual-brief-app via iframe
-│   └── visual-brief-app/     ← Vite-built React app for visual brief
-├── spec/                     ← Markdown source files (source of truth for content)
-│   ├── README.md             ← Spec directory overview
-│   ├── intent-methodology.md ← Full methodology (9KB) — source for methodology.html
-│   ├── intent-concept-brief.md ← Full concept brief (6KB) — source for concept-brief.html
-│   ├── autonomous-operations-design.md ← Three-layer ops design
-│   ├── signal-stream.md      ← Source for signals.html
-│   ├── decision-log.md       ← Source for decisions.html
-│   ├── event-catalog.md      ← Source for event-catalog.html
-│   ├── flow-diagram.md       ← Source for flow-diagram.html
-│   ├── repo-pattern.md       ← Source for native-repos.html
-│   └── work-ontology.md      ← Source for work-system.html
-├── notice/                   ← Loop directory: notice phase artifacts
-├── execute/                  ← Loop directory: execute phase artifacts
-├── observe/                  ← Loop directory: observe phase artifacts
+│   ├── index.html            ← Product landing page
+│   ├── methodology.html
+│   ├── concept-brief.html
+│   ├── signals.html
+│   ├── decisions.html
+│   ├── event-catalog.html
+│   ├── flow-diagram.html
+│   ├── work-system.html
+│   ├── native-repos.html
+│   ├── visual-brief.html
+│   ├── quickstart.md         ← 5-minute getting started guide
+│   └── visual-brief-app/     ← Vite-built React app
+├── spec/                     ← Markdown source files (source of truth)
+│   ├── intent-methodology.md
+│   ├── intent-concept-brief.md
+│   ├── autonomous-operations-design.md
+│   ├── signal-capture-system.md  ← 5-tier capture architecture
+│   ├── product-roadmap.md       ← Four-product roadmap
+│   ├── signal-stream.md
+│   ├── decision-log.md
+│   ├── event-catalog.md
+│   ├── flow-diagram.md
+│   ├── repo-pattern.md
+│   └── work-ontology.md
+├── tools/
+│   └── intent-mcp/           ← MCP signal capture server
+│       ├── server.py
+│       ├── requirements.txt
+│       └── README.md
+├── notice/                   ← Loop directory: notice phase
+├── execute/                  ← Loop directory: execute phase
+├── observe/                  ← Loop directory: observe phase
 ├── reference/                ← Reference materials
-├── CLAUDE.md                 ← THIS FILE — continuity guide
+├── CLAUDE.md                 ← THIS FILE
 ├── CHANGELOG.md              ← Timestamp-based version history
-├── VERSION                   ← Current version (YYYY.MM.DD-MAJOR.MINOR.PATCH)
+├── VERSION                   ← Current: 2026.03.29-0.3.0
 ├── README.md                 ← Public-facing repo README
 └── TASKS.md                  ← Living task list
 ```
@@ -139,7 +172,7 @@ The index page follows five sections that mirror the loop:
 ### Editing existing content
 1. Edit the markdown source in `spec/` first
 2. Then update the HTML in `docs/` to match
-3. For methodology and concept-brief, the HTML is a full rendering of the markdown — every section, table, code block
+3. For methodology and concept-brief, the HTML is a full rendering of the markdown
 
 ### Pushing changes
 The sandbox environment cannot `git commit` directly (no git config). Use the GitHub MCP tool `push_files` to push:
@@ -164,6 +197,7 @@ Brien needs to enable GitHub Pages: Settings → Pages → Source: Deploy from b
 5. **Target practitioner-architects first** — senior ICs who feel the gap and have org influence.
 6. **Specs as contracts, not stories** — agents need verifiable assertions, not prose.
 7. **Staged GTM** — thought leadership → methodology product → tooling (conditional).
+8. **Four-product framing** — Notice, Spec, Execute, Observe are distinct products with own roadmaps.
 
 ## Intellectual Foundations
 
@@ -172,10 +206,11 @@ Intent draws from: Marty Cagan (product operating model), Jeff Patton (story map
 ## What's Not Yet Done
 
 - [ ] GitHub Pages not yet enabled by Brien
-- [ ] Install .intent/ scaffolds into Brien's 4 repos (script exists at ~/Workspaces/Core/install-intent-scaffolds.sh)
+- [ ] Install MCP server on Brien's repos and validate end-to-end signal capture
+- [ ] Build Spec templates (intent.md, spec.md, contract.md)
+- [ ] Install .intent/ scaffolds into Brien's 4 repos
+- [ ] Intent dashboard v1 (Observe product)
+- [ ] Slack signal capture bot (Notice product, Tier 3)
 - [ ] 5 in-depth interviews with teams experiencing AI + Agile friction
-- [ ] Tier 3 observe-cycle agent (automated health check → signal generation)
-- [ ] Phase 2 health check scheduling (launchd plist)
 - [ ] Message to Ari about Intent (draft exists)
-- [ ] Deeper positioning and vision work (Brien flagged for when he has time)
-- [ ] OTel collector integration for production teams (Phase 6 of event implementation)
+- [ ] Deeper positioning and vision work

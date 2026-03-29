@@ -11,6 +11,17 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.03.29-0.3.0
+
+**Bootstrap kit, signal capture system, four-product roadmap**
+
+- Built bootstrap kit: MCP server (`tools/intent-mcp/`), CLI (`bin/intent-signal`), GitHub Action (`.github/workflows/intent-events.yml`), signal template, quickstart guide
+- Designed 5-tier signal capture architecture (MCP → CLI → Slack → GitHub → AI Plugins)
+- Captured 6 founding signals from build sessions (SIG-006 through SIG-011)
+- Reframed Intent as four products: Notice (Operational), Spec (Conceptual), Execute (Defined), Observe (Schema-Ready)
+- Created product roadmap with current state, maturity assessment, and Now/Next/Later investment priorities
+- Updated CLAUDE.md with bootstrap kit documentation and four-product framing
+
 ## 2026.03.29-0.2.0
 
 **Site restructure, full content hydration, markdown source parity**
