@@ -1,30 +1,37 @@
 ---
-id: SIG-006
-timestamp: 2026-03-28T15:00:00Z
+id: SIG-005
+timestamp: 2026-03-28T12:00:00Z
 source: cowork-session
 author: brien
-confidence: 0.75
-trust: 0.45
-autonomy_level: L1
+confidence: 0.6
+trust: 0.5
+autonomy_level: L2
 status: active
 cluster: work-ontology-design
 parent_signal:
 related_intents: []
 ---
-# Signal: Work units (contract, process, tool) need structured schemas
+# Signal: Work units need formal schemas to be agent-consumable
 
 ## Observation
 
-The work ontology defines what *exists* (contracts, processes, tools), but not how to *describe* them. A contract needs fields like `vendor`, `term`, `renewal_date`, `status`. A process needs `owner`, `steps`, `handoff_points`, `sla`. Without schemas, signals about work units are free text—hard to query, integrate, or score for trust.
+Brien emphasized that the atomic building blocks need to be "visible, versioned, testable, and observable out of the box." This means every work unit (signal, intent, spec, contract, capability) must have a formal file schema — not just be a concept.
 
-## Why It Matters
+## Implication
 
-Schemas are the boundary between human-readable signals and machine-actionable intents. With schemas, a signal like "Contract with Acme expires in 30 days" can be parsed into structured metadata, matched against risks, and escalated automatically. Without them, signals are just comments.
+Each unit type needs:
 
-## Trust Factors
+- **A file format** (YAML frontmatter + markdown body, or pure YAML for contracts)
+- **A schema** that agents can parse and validate
+- **A state machine** (e.g., intent: hypothesis → exploring → validated → invalidated)
+- **A unique ID** that flows through the hierarchy (trace ID pattern)
+- **Git tracking** (versioning is free)
+- **Self-testing** (contracts carry assertions; specs carry contract references)
 
-- Clarity: High — the need is obvious once stated
-- Blast radius: Very High — schemas define downstream automation
-- Reversibility: Medium — schema changes require migration
-- Testability: High — schema validation is testable
-- Precedent: Very High — every data system uses schemas
+## Next Steps
+
+Design the formal schemas for each unit type. Start with Contract (the atom) and work upward. The schema should be minimal but machine-parseable — an agent picking up a contract file should be able to execute against it without human explanation.
+
+## Open Question
+
+What’s the right balance between structured YAML (easy for agents) and readable markdown (easy for humans)? YAML frontmatter + markdown body may be the right hybrid.

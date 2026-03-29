@@ -1,35 +1,20 @@
 ---
-id: SIG-011
-timestamp: 2026-03-29T10:00:00Z
-source: cowork-session
+id: SIG-006
+timestamp: 2026-03-29T18:00:00Z
+source: conversation
 author: brien
-confidence: 0.8
-trust: 0.50
-autonomy_level: L1
+confidence: 0.95
+trust: 0.55
+autonomy_level: L2
 status: active
 cluster: bootstrap-tooling
 parent_signal:
-related_intents: []
+related_intents: [notice-product, adoption]
 ---
-# Signal: Bootstrap gap is "description-as-enabler" — we need to describe systems to automate them
+# Intent is a description, not an enabler — practitioners can understand it but can’t install and test it Monday morning
 
-## Observation
+Ari could read everything we’ve built and reconstruct Intent from scratch, but he couldn’t enable his existing dev work with a plugin and test it out Monday morning on real code. The gap between "I understand the methodology" and "I’m running it on my repo" is the entire bootstrap kit problem.
 
-The gap between Intent (concept) and autonomous ops (running system) is not code. It's *specification infrastructure*. Before a system can be autonomous, it needs to be *described*: contracts, processes, policies, schemas. Right now, that description lives in spreadsheets, wikis, tribal knowledge. It's scattered.
+This is the difference between a whitepaper and a product. The methodology docs are the whitepaper. The MCP server + CLI + GitHub Action are the product.
 
-## Why It Matters
-
-Autonomous agents cannot run against undocumented systems. They need:
-- What is the contract? (SLA, scope, vendor details)
-- What is the process? (steps, rules, exceptions)
-- What are the schemas? (valid states, transitions, edge cases)
-
-This isn't "nice to have" documentation. It's the *specification layer* that makes autonomy possible. The bootstrap gap is: *how do we build this description layer fast enough for the three-year roadmap?*
-
-## Trust Factors
-
-- Clarity: High — the problem is concrete
-- Blast radius: Very High — solution affects entire architecture
-- Reversibility: Medium — description infrastructure is sticky once in place
-- Testability: High — can measure description completeness
-- Precedent: High — similar to "infrastructure-as-code" pattern
+Evidence: Every prior artifact was a spec, decision, or explanation. Zero artifacts were installable tools. The quickstart guide didn’t exist until this signal was noticed.

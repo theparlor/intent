@@ -1,36 +1,38 @@
 ---
-id: SIG-005
-timestamp: 2026-03-28T14:00:00Z
+id: SIG-004
+timestamp: 2026-03-28T12:00:00Z
 source: cowork-session
 author: brien
-confidence: 0.85
-trust: 0.6
-autonomy_level: L1
+confidence: 0.9
+trust: 0.1
+autonomy_level: L0
 status: active
 cluster: work-ontology-design
 parent_signal:
 related_intents: []
 ---
-# Signal: Work can be classified on three independent dimensions: layer, type, scope
+# Signal: Intent needs three governance dimensions, not just the loop
 
 ## Observation
 
-During ontology sketching, a clean taxonomy emerged:
+The Intent methodology’s core loop (Notice → Spec → Execute → Observe) addresses the flow of work, but Brien surfaced three orthogonal dimensions that any work system must answer:
 
-- **Layer**: code, process, infrastructure
-- **Type**: tool-specific, contract-level, workflow-level
-- **Scope**: atomic, compound, cross-system
+1. **Right Things** — validate ideas via continuous discovery (Teresa Torres opportunity trees)
+2. **Right Time** — parallelize, sequence, and prioritize via dependency graphs (not sprint commitments)
+3. **Right Way** — architectural governance via tech radar and permit levels (play/build/operate)
 
-These are orthogonal. A bug fix is *code* layer, *tool-specific* type, *atomic* scope. A refactor might be *code* layer, *contract-level* type, *compound* scope. This gives precise language for describing what broke and where autonomy starts.
+## Implication
 
-## Why It Matters
+The spec and concept brief focus on the loop. But the product needs to explicitly address all three dimensions. Each dimension has its own artifacts:
 
-Without a taxonomy, signals blend together and trust scoring becomes subjective. Clear dimensions let the trust framework ask targeted questions: "Is this a code-layer signal?" → different evidence rules than "Is this a process-layer signal?"
+- Right Things: `.intent/intents/` with discovery status + `.intent/signals/` stream
+- Right Time: Spec dependency declarations → Now/Next/Later derived from graph
+- Right Way: `.intent/tech-radar.md` + `.intent/decisions.md` + contract boundaries
 
-## Trust Factors
+## Key Insight
 
-- Clarity: Very High — the framework is simple and fits observed work
-- Blast radius: Medium — affects how signals are scored and filtered
-- Reversibility: High — taxonomy can evolve without breaking existing signals
-- Testability: Medium — observable in signal metadata
-- Precedent: High — three-axis classification is standard (RACI, risk matrices, etc.)
+All three dimensions can be encoded in the spec file itself — a spec references its parent intent (right thing), declares its dependencies (right time), and cites tech radar constraints (right way). No separate systems or ceremonies needed.
+
+## Evidence
+
+Brien’s framing: "build the right things at the right time in the right way and make this flow of work visible at all times" — this is the Intent product’s core value proposition stated as a design requirement.
