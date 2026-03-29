@@ -1,30 +1,45 @@
 ---
-id: SIG-004
-timestamp: 2026-03-28T13:00:00Z
+id: SIG-002
+timestamp: 2026-03-28T12:00:00Z
 source: cowork-session
 author: brien
-confidence: 0.8
-trust: 0.55
+confidence: 0.9
+trust: 0.2
 autonomy_level: L1
 status: active
-cluster: work-ontology-design
+cluster:
 parent_signal:
 related_intents: []
 ---
-# Signal: OTel spans map naturally to work units (contract, process, tool)
+# Signal: Distributed tracing is the right observability model for Intent work
 
 ## Observation
 
-During ontology design, Brien noticed that OpenTelemetry spans already model hierarchical work. A contract (customer agreement) spans multiple processes (vendor onboarding, invoice handling), which span tools (Salesforce, Jira, payment system). This is *exactly* the work structure needed for autonomous ops.
+OpenTelemetry's tracing model maps directly onto the Intent work hierarchy. The same architecture designed to make complex async multi-service systems observable applies to complex async multi-agent work systems.
 
-## Why It Matters
+## Mapping
 
-OTel is already instrumented in production systems. Rather than invent a new telemetry layer, the signal framework can map OTel spans to the work ontology, immediately giving visibility into how work flows and where it breaks. This makes autonomous signal capture possible without added instrumentation burden.
+| OTel Concept    | Intent Equivalent       |
+|-----------------|-------------------------|
+| Trace           | Intent (parent context) |
+| Span            | Spec (scoped work)      |
+| Leaf Span       | Contract (execution)    |
+| Span Event      | Signal (observation)    |
+| Span Attributes | Governance metadata     |
+| Trace ID        | Intent ID flowing through all children |
 
-## Trust Factors
+## Implication
 
-- Clarity: High — OTel hierarchy is explicit
-- Blast radius: High — changes how we instrument everything
-- Reversibility: High — just a mapping layer, non-destructive
-- Testability: High — OTel data is queryable
-- Precedent: Medium — few projects do this yet
+Every state change in the Intent system (signal captured, intent validated, spec authored, contract started/passed/failed) should emit a structured event. These events can be:
+
+1. **Minimal**: Append-only JSONL files in `.intent/events/` — git-tracked, local
+2. **Medium**: OpenTelemetry SDK emitting to Grafana Tempo — queryable traces
+3. **Full**: Datadog/Honeycomb — enterprise-grade with alerting
+
+## Starting Point
+
+Structured JSONL event emission + local HTML dashboard gets 80% of value with zero infrastructure. Upgrade path to OTel is clean because the event schema is already trace-shaped.
+
+## Evidence
+
+Entire.io already captures the execution layer (agent sessions). What's missing is the work layer — structured events linking signals → intents → specs → contracts with trace IDs.

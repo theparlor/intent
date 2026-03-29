@@ -15,16 +15,22 @@ related_intents: []
 
 ## Observation
 
-During the Cowork session that produced the work ontology and OTel mapping, Brien asked: "Should conversations (developer + AI) be a signal capture surface?" The answer was yes—they should feed the notice layer with observations about design patterns, misunderstandings, and emergent intents that become visible only through conversation.
+During the Cowork session that produced the work ontology and OTel mapping, Brien asked: "how do we take this thread here between us and turn it into consideration and part of the intent ideation and notice layer as we talk?"
 
-## Why It Matters
+## Implication
 
-Conversations are a *discovery mechanism* for intents. A developer and AI thinking through a problem surface observations that are not present in code, tickets, or traces. This is where nuance, context switching, and design reasoning live. If not captured, it's lost at context close.
+If Intent is a system for surfacing and acting on insights, then the insights generated during Cowork/Claude sessions are primary signal sources. They should flow into `.intent/signals/` with minimal friction — ideally automatically.
 
-## Trust Factors
+## Proposed Mechanism
 
-- Clarity: High — the pattern is evident once noticed
-- Blast radius: Medium — depends on downstream systems using this signal
-- Reversibility: High — adding new signal sources is low-cost
-- Testability: Medium — "captured signals" are in the repo; hard to test *omission*
-- Precedent: High — Slack reactions and PR comments already do this informally
+1. **During session**: Human or Claude identifies key insights and writes signal files to `.intent/signals/` in real time (what we're doing right now)
+2. **Post-session**: An extract-signals agent reads the conversation transcript (available via Cowork session API or Entire.io capture) and proposes signal files
+3. **On schedule**: The observe-cycle agent reads accumulated Entire.io traces and extracts signals automatically
+
+## Design Constraint
+
+Signal extraction must be high-precision, low-volume. The notice layer should contain 3-5 high-quality signals per session, not 50 low-quality ones. The agent should surface what's surprising or non-obvious, not summarize everything.
+
+## Dogfooding Note
+
+This signal file was itself generated during the conversation it describes — demonstrating the pattern in action.

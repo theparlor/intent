@@ -1,36 +1,36 @@
 ---
-id: SIG-002
-timestamp: 2026-03-28T11:00:00Z
+id: SIG-001
+timestamp: 2026-03-28T12:00:00Z
 source: cowork-session
 author: brien
-confidence: 0.95
-trust: 0.75
-autonomy_level: L1
+confidence: 0.9
+trust: 0.15
+autonomy_level: L0
 status: active
 cluster: work-ontology-design
 parent_signal:
 related_intents: []
 ---
-# Signal: Work is organized into three nested units: contract, process, tool
+# Signal: Intent needs a formal work ontology
 
 ## Observation
 
-Across multiple customer engagements (Subaru, Ari's team, internal), the same pattern appears:
+The Intent methodology defines the loop (Notice → Spec → Execute → Observe) and the toolchain, but lacks a formal decomposition of work units. Without this, there's no answer to "what replaces tickets?" — the most common question any team adopting Intent will ask.
 
-1. **Contracts** — Agreements with vendors/customers (SLAs, scope, renewal cycles)
-2. **Processes** — Business workflows running within or across contracts (e.g., vendor onboarding, invoice cycle, PR review)
-3. **Tools** — Systems executing processes (Salesforce, Jira, payment platforms, code repos)
+## Evidence
 
-These nest: a contract spans multiple processes, a process uses multiple tools. This is the "unit structure" that autonomous systems need to reason about.
+During Cowork session on 2026-03-28, the question surfaced naturally: "what are our atomic replacements for tickets, stories, tasks, subtasks so that a multitude of agents can build and pull from an intent driven list?"
 
-## Why It Matters
+## Proposed Hierarchy
 
-Autonomous operations (L2-L4) cannot work at the level of individual API calls or tickets. They need to understand *business context*. The work ontology provides it: where business drivers (contracts) create obligations, which decompose into processes, which require tools. A signal about an SLA breach means nothing without knowing the contract. A monitoring alert is just noise without knowing the process it's in.
+- Signal → replaces idea/bug report/request
+- Intent → replaces epic/initiative (outcome with hypothesis)
+- Spec → replaces user story (declarative behavior description)
+- Contract → replaces task/subtask/acceptance criteria (verifiable interface agreement — the true atom)
+- Capability → replaces component/service (reusable building block)
+- Feature → replaces story map column (composed capabilities delivering value)
+- Product → replaces program/portfolio (living system of features)
 
-## Trust Factors
+## Key Insight
 
-- Clarity: Very High — this structure is observable across all engagements
-- Blast radius: High — this structure defines how everything else is organized
-- Reversibility: High — it's a naming convention, not a code/infra change
-- Testability: High — can check that work units map cleanly to existing systems
-- Precedent: Very High — same pattern in ITIL, work breakdown structures, product management
+The atomic unit shifts from "unit of human labor" to "declarative state description agents can execute against." Contracts are done when assertions pass, not when cards move.
