@@ -11,6 +11,17 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.03.29-0.5.0
+
+**Signal dashboard, trust framework, agent handoff protocol**
+
+- Built signal management dashboard (`docs/signals.html`) — operational interface replacing the read-only signals page. Features: signal lifecycle view (captured→active→clustered→promoted→dismissed), cluster grouping with promote-to-intent action, trust score visualization, L0-L4 autonomy spectrum, interactive filtering and view toggling
+- Specced signal trust & autonomous execution framework (`spec/signal-trust-framework.md`) — trust scoring model (clarity×0.30 + blast_radius×0.20 + reversibility×0.20 + testability×0.20 + precedent×0.10), five autonomy levels, six-agent enrichment pipeline, disambiguation loop, builder-configurable thresholds via `.intent/config.yml`
+- Captured 2 new signals: SIG-012 (autonomous signal processing with trust-based execution) and SIG-013 (multi-machine cloud requirement)
+- Fixed global nav across all 10 docs pages — added Roadmap link, standardized nav pattern
+- Updated CLAUDE.md with trust framework, deployment topology, and agent handoff protocol
+- Defined deployment topology: config-driven local vs hosted mode, always-on processing requirement
+
 ## 2026.03.29-0.4.0
 
 **CLI suite, expanded MCP server, roadmap interfaces**
