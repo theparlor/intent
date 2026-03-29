@@ -1,137 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repo Pattern — Intent</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-    .content h2 { font-size: 18px; font-weight: 600; margin: 32px 0 12px 0; }
-    .content h3 { font-size: 14px; font-weight: 600; margin: 16px 0 8px 0; }
-
-    .tree { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; margin: 16px 0; font-family: monospace; font-size: 12px; color: #94a3b8; overflow-x: auto; }
-    .tree-dir { color: #3b82f6; }
-    .tree-file { color: #94a3b8; }
-
-    .layer { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; margin: 16px 0; }
-    .layer h3 { font-size: 13px; font-weight: 600; color: #3b82f6; margin-bottom: 8px; }
-    .layer p { font-size: 12px; color: #94a3b8; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Native Repos - Intent</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html">Home</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html">Decisions</a>
-  </nav>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html">Signals</a>
+        <a href="decisions.html">Decisions</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
-  <div class="content">
-    <h1>Repo Pattern</h1>
-    <p>The three-layer structure every Intent-native repo follows: .intent/, .claude/, .entire/ — with file schemas and directory conventions.</p>
+    <header class="page-header">
+        <div class="container">
+            <h1>Native Repos</h1>
+            <p class="subtitle">Reference repositories for Intent</p>
+        </div>
+    </header>
 
-    <h2>Directory Structure</h2>
+    <main class="container">
+        <section class="native-repos-intro">
+            <p>
+                Intent is maintained across multiple repositories that demonstrate the system in action and provide reference implementations.
+            </p>
+        </section>
+    </main>
 
-    <div class="tree">
-<span class="tree-dir">.intent/</span>
-  <span class="tree-file">signals/</span>
-  <span class="tree-file">intents/</span>
-  <span class="tree-file">specs/</span>
-  <span class="tree-file">contracts/</span>
-  <span class="tree-file">decisions/</span>
-  <span class="tree-file">events/</span>
-<span class="tree-dir">.claude/</span>
-  <span class="tree-file">projects/</span>
-  <span class="tree-file">sessions/</span>
-<span class="tree-dir">.entire/</span>
-  <span class="tree-file">traces/</span>
-<span class="tree-dir">src/</span>
-<span class="tree-dir">docs/</span>
-    </div>
-
-    <h2>Layer 1: Intent (.intent/)</h2>
-    <p>The Intent layer stores all work artifacts in structured files, versioned in git.</p>
-
-    <div class="layer">
-      <h3>signals/</h3>
-      <p>Observations from work, research, conversation. Each signal: source, confidence, timestamp, related intents. YAML or JSON files named by signal ID.</p>
-    </div>
-
-    <div class="layer">
-      <h3>intents/</h3>
-      <p>What we want to change. Declarative: "Users should be able to X." Links signals to specs. YAML with title, description, related signals, assigned to.</p>
-    </div>
-
-    <div class="layer">
-      <h3>specs/</h3>
-      <p>How we'll change it. Narrative + acceptance criteria (contracts). Markdown with frontmatter. Human-readable but machine-parseable.</p>
-    </div>
-
-    <div class="layer">
-      <h3>contracts/</h3>
-      <p>Verifiable assertions extracted from specs. JSON schema defining inputs, outputs, assertions. Executable by agents.</p>
-    </div>
-
-    <div class="layer">
-      <h3>decisions/</h3>
-      <p>Significant architectural and strategic decisions. Context, alternatives considered, rationale, decision date. Markdown with frontmatter.</p>
-    </div>
-
-    <div class="layer">
-      <h3>events/</h3>
-      <p>Structured events from execution. OpenTelemetry format. signal.created, spec.written, contract.completed, etc. JSON lines format.</p>
-    </div>
-
-    <h2>Layer 2: Claude (.claude/)</h2>
-    <p>Agent reasoning and session artifacts. Where Claude Code stores project context and reasoning traces.</p>
-
-    <div class="layer">
-      <h3>projects/</h3>
-      <p>High-level project metadata. Vision, architecture, key decisions, dependencies. Used by agents to bootstrap context.</p>
-    </div>
-
-    <div class="layer">
-      <h3>sessions/</h3>
-      <p>Session transcripts and reasoning. Agents log their thinking, decisions made, blockers encountered. Enables observability of agent cognition.</p>
-    </div>
-
-    <h2>Layer 3: Entire (.entire/)</h2>
-    <p>Observability layer. End-to-end execution traces and system health metrics.</p>
-
-    <div class="layer">
-      <h3>traces/</h3>
-      <p>Complete execution traces. Spans, logs, metrics. Ingested from GitHub Actions, agent sessions, test runs. Used by observe phase for learning.</p>
-    </div>
-
-    <h2>File Naming Conventions</h2>
-
-    <p><strong>Signals:</strong> <code>signal-YYYYMMDD-slug.yml</code></p>
-    <p><strong>Intents:</strong> <code>intent-YYYYMMDD-slug.yml</code></p>
-    <p><strong>Specs:</strong> <code>spec-YYYYMMDD-slug.md</code></p>
-    <p><strong>Contracts:</strong> <code>contract-spec-slug.json</code></p>
-    <p><strong>Decisions:</strong> <code>decision-YYYYMMDD-slug.md</code></p>
-    <p><strong>Events:</strong> <code>events-YYYYMMDD.jsonl</code></p>
-  </div>
-
-  <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
-  </footer>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+        </div>
+    </footer>
 </body>
 </html>

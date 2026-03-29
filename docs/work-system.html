@@ -1,135 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Work Ontology — Intent</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-    .content h2 { font-size: 18px; font-weight: 600; margin: 32px 0 12px 0; }
-
-    .diagram { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; margin: 24px 0; }
-    .diagram h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #94a3b8; }
-    .level { margin-bottom: 20px; }
-    .level-name { font-size: 13px; font-weight: 600; color: #3b82f6; margin-bottom: 6px; }
-    .level-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
-
-    .hierarchy { font-family: monospace; font-size: 12px; color: #94a3b8; background: #0f172a; padding: 16px; border-radius: 4px; margin: 16px 0; overflow-x: auto; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work System - Intent</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html">Home</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html">Decisions</a>
-  </nav>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html">Signals</a>
+        <a href="decisions.html">Decisions</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
-  <div class="content">
-    <h1>Work Ontology</h1>
-    <p>The seven-level hierarchy that replaces tickets: Signal → Intent → Spec → Contract → Capability → Feature → Product. With three governance dimensions and an Agile comparison.</p>
+    <header class="page-header">
+        <div class="container">
+            <h1>Work System</h1>
+            <p class="subtitle">How Intent structures work processes</p>
+        </div>
+    </header>
 
-    <h2>The Hierarchy</h2>
+    <main class="container">
+        <section class="work-system-intro">
+            <p>
+                The Intent work system is built around making all work observable, traceable, and improvable. It replaces traditional project management with a spec-driven, feedback-based approach.
+            </p>
+        </section>
+    </main>
 
-    <div class="hierarchy">Signal
-  ↓
-Intent
-  ↓
-Spec
-  ↓
-Contract
-  ↓
-Capability
-  ↓
-Feature
-  ↓
-Product
-    </div>
-
-    <div class="diagram">
-      <h3>Level by Level</h3>
-      <div class="level">
-        <div class="level-name">1. Signal</div>
-        <div class="level-desc">Observations from work, research, conversation. Raw input. Includes confidence score and source. Multiple signals may relate to the same intent.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">2. Intent</div>
-        <div class="level-desc">What we want to change. Declarative: "Users should be able to X." Connects signals to specs. One intent may spawn multiple specs.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">3. Spec</div>
-        <div class="level-desc">How we'll change it. Narrative + acceptance criteria. Humans write specs; agents use them as contracts.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">4. Contract</div>
-        <div class="level-desc">Verifiable assertions. The spec's assertions extracted and made executable. Done when contract passes.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">5. Capability</div>
-        <div class="level-desc">Building blocks. Reusable functions, components, patterns that contracts are composed of.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">6. Feature</div>
-        <div class="level-desc">User-facing unit. One or more capabilities working together. Released to production.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">7. Product</div>
-        <div class="level-desc">System. Multiple features forming a coherent offering.</div>
-      </div>
-    </div>
-
-    <h2>Governance Dimensions</h2>
-
-    <div class="diagram">
-      <h3>How work is organized across three axes</h3>
-      <div class="level">
-        <div class="level-name">Time Dimension</div>
-        <div class="level-desc">Continuous flow. No sprints. Work moves when dependencies resolve, not on calendar boundaries.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">Quality Dimension</div>
-        <div class="level-desc">Contracts are the source of truth. Code and design conform to contracts, not the reverse.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">Visibility Dimension</div>
-        <div class="level-desc">OpenTelemetry-compatible events at every transition. Work is observable at all times.</div>
-      </div>
-    </div>
-
-    <h2>Versus Agile</h2>
-
-    <div class="diagram">
-      <h3>How Intent differs from Agile's model</h3>
-      <div class="level">
-        <div class="level-name">Agile: User Story → Sprint → Standup → Backlog Refinement → Retro</div>
-        <div class="level-desc">Ceremony-driven. Humans coordinate via ritual. Estimation guesses duration.</div>
-      </div>
-      <div class="level">
-        <div class="level-name">Intent: Signal → Intent → Spec → Contract → Observe → Event Stream</div>
-        <div class="level-desc">Flow-driven. Systems coordinate via dependency graphs. Observation reveals actual patterns.</div>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
-  </footer>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+        </div>
+    </footer>
 </body>
 </html>

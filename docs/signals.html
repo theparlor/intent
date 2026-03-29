@@ -1,80 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Signal Stream — Intent</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-
-    .signal-item { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-    .signal-item h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .signal-item .meta { font-size: 12px; color: #64748b; margin-bottom: 8px; }
-    .signal-item p { font-size: 13px; color: #94a3b8; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signals - Intent</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html">Home</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html" class="active">Signals</a>
-    <a href="decisions.html">Decisions</a>
-  </nav>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html" class="active">Signals</a>
+        <a href="decisions.html">Decisions</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
-  <div class="content">
-    <h1>Signal Stream</h1>
-    <p>Observations captured from Intent's own development. Each signal has a confidence score, source, and related intents. This is what the observe layer looks like in practice.</p>
+    <header class="page-header">
+        <div class="container">
+            <h1>Signals</h1>
+            <p class="subtitle">Structured observability for work</p>
+        </div>
+    </header>
 
-    <div class="signal-item">
-      <h3>Spec-driven dev is the natural successor to agile</h3>
-      <div class="meta">Confidence: 0.92 · Source: Internal research · Related intents: Intent positioning</div>
-      <p>Teams who've tried AI-augmented workflows consistently report that ticket-based coordination breaks down. The friction isn't execution — it's spec quality. This suggests a category shift, not an optimization within agile.</p>
-    </div>
+    <main class="container">
+        <section class="signals-intro">
+            <p>
+                Signals are the observable traces left by work. Every spec executed, every decision made, every experiment run—these leave signals. Signals make the notice→spec→execute→observe loop visible and improvable.
+            </p>
+        </section>
 
-    <div class="signal-item">
-      <h3>Open development builds trust in early-stage tools</h3>
-      <div class="meta">Confidence: 0.87 · Source: User feedback · Related intents: GTM strategy</div>
-      <p>Practitioners evaluating Intent respond positively to seeing decisions, tradeoffs, and open risks documented publicly. Transparency around what's not yet built matters more than feature completeness.</p>
-    </div>
+        <section class="signal-types">
+            <h2>Signal Types</h2>
+            
+            <div class="signal-type">
+                <h3>Execution Signals</h3>
+                <p>Traces left when a spec is executed. Typically includes:</p>
+                <ul>
+                    <li>What was built</li>
+                    <li>When it was built</li>
+                    <li>Who built it (human or AI agent)</li>
+                    <li>What the spec was</li>
+                    <li>Artifacts (code, documents, outputs)</li>
+                    <li>Time taken</li>
+                    <li>Success or failure status</li>
+                </ul>
+            </div>
 
-    <div class="signal-item">
-      <h3>Observability is a forcing function for good architecture</h3>
-      <div class="meta">Confidence: 0.79 · Source: Implementation experience · Related intents: Tech architecture</div>
-      <p>The requirement to emit structured events from every state transition naturally surfaces design clarity issues. Systems that can't be observed are systems that are poorly understood.</p>
-    </div>
+            <div class="signal-type">
+                <h3>Observation Signals</h3>
+                <p>Data collected when observing the results of execution. Examples:</p>
+                <ul>
+                    <li>Did it work as expected?</li>
+                    <li>What surprised you?</li>
+                    <li>What would you change?</li>
+                    <li>Quantitative metrics (speed, quality, cost)</li>
+                    <li>Qualitative feedback (easy to use, understandable, etc.)</li>
+                </ul>
+            </div>
 
-    <div class="signal-item">
-      <h3>The gap is bigger in larger teams</h3>
-      <div class="meta">Confidence: 0.85 · Source: Customer interviews · Related intents: Audience targeting</div>
-      <p>Solo practitioners and small teams can collapse workflow locally. The pain multiplies in orgs where process coordination is the primary tax. Intent's value increases with org size.</p>
-    </div>
+            <div class="signal-type">
+                <h3>Decision Signals</h3>
+                <p>Signals from decisions made and their outcomes:</p>
+                <ul>
+                    <li>What decision was made</li>
+                    <li>Why (reasoning)</li>
+                    <li>When</li>
+                    <li>Expected outcome</li>
+                    <li>Actual outcome</li>
+                    <li>Decisions that led to it (dependencies)</li>
+                </ul>
+            </div>
+        </section>
 
-    <div class="signal-item">
-      <h3>Three disciplines feel the shift differently</h3>
-      <div class="meta">Confidence: 0.88 · Source: Persona research · Related intents: Positioning, feature prioritization</div>
-      <p>Architects see efficiency gains. PMs see validation of discovery-hard thesis. Designers see spec quality mattering. These three pathways converge on Intent but approach it differently.</p>
-    </div>
-  </div>
+        <section class="signal-use-cases">
+            <h2>How Signals Are Used</h2>
+            <p>
+                Signals feed into the observe phase of the loop and then back into notice. As patterns emerge from signals:
+            </p>
+            <ul>
+                <li>You notice recurring problems and opportunities</li>
+                <li>You identify which specs produce the best outcomes</li>
+                <li>You understand which AI agents or tools work best for different tasks</li>
+                <li>You build feedback loops that improve over time</li>
+                <li>You share learnings with your team</li>
+            </ul>
+        </section>
+    </main>
 
-  <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
-  </footer>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+        </div>
+    </footer>
 </body>
 </html>

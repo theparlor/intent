@@ -1,96 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flow Diagram — Intent</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-    .content h2 { font-size: 18px; font-weight: 600; margin: 32px 0 12px 0; }
-
-    .flow-path { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-    .flow-path h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #94a3b8; }
-    .flow-step { font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-family: monospace; }
-    .flow-step strong { color: #3b82f6; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Diagram - Intent</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html">Home</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html">Decisions</a>
-  </nav>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html">Signals</a>
+        <a href="decisions.html">Decisions</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
-  <div class="content">
-    <h1>Flow Diagram</h1>
-    <p>Five concrete paths through the system with personas (Architect, PM, Design/QA, Agent) and event triggers at every transition.</p>
+    <header class="page-header">
+        <div class="container">
+            <h1>Flow Diagram</h1>
+            <p class="subtitle">Visual representation of the Intent loop</p>
+        </div>
+    </header>
 
-    <h2>Path 1: Architect Captures Signal</h2>
-    <div class="flow-path">
-      <h3>Signal → Intent → Approval</h3>
-      <div class="flow-step"><strong>Actor:</strong> Architect</div>
-      <div class="flow-step"><strong>Trigger:</strong> Cowork session or observation from agent traces</div>
-      <div class="flow-step"><strong>Event:</strong> signal.created</div>
-      <div class="flow-step"><strong>Next:</strong> PM reviews signal and links to intent</div>
-    </div>
+    <main class="container">
+        <section class="flow-diagram">
+            <p>
+                The notice→spec→execute→observe loop is the core of Intent. Each phase feeds into the next, creating a continuous cycle of improvement.
+            </p>
+        </section>
+    </main>
 
-    <h2>Path 2: PM Writes Intent</h2>
-    <div class="flow-path">
-      <h3>Intent → Spec Assignment</h3>
-      <div class="flow-step"><strong>Actor:</strong> PM</div>
-      <div class="flow-step"><strong>Trigger:</strong> Signal reaches confidence threshold</div>
-      <div class="flow-step"><strong>Event:</strong> intent.proposed, intent.approved</div>
-      <div class="flow-step"><strong>Next:</strong> Designer/Architect writes spec with contracts</div>
-    </div>
-
-    <h2>Path 3: Design/QA Writes Spec</h2>
-    <div class="flow-path">
-      <h3>Spec → Contract → Ready for Execution</h3>
-      <div class="flow-step"><strong>Actor:</strong> Designer/QA</div>
-      <div class="flow-step"><strong>Trigger:</strong> Intent approved</div>
-      <div class="flow-step"><strong>Events:</strong> spec.written, spec.staged</div>
-      <div class="flow-step"><strong>Next:</strong> Agent picks up staged spec</div>
-    </div>
-
-    <h2>Path 4: Agent Executes Contract</h2>
-    <div class="flow-path">
-      <h3>Contract → Execution → Observation</h3>
-      <div class="flow-step"><strong>Actor:</strong> Agent</div>
-      <div class="flow-step"><strong>Trigger:</strong> Spec staged and dependencies resolved</div>
-      <div class="flow-step"><strong>Events:</strong> contract.started, contract.assertion.passed/failed, contract.completed</div>
-      <div class="flow-step"><strong>Next:</strong> Observe layer reads traces, writes findings</div>
-    </div>
-
-    <h2>Path 5: Observe Closes Loop</h2>
-    <div class="flow-path">
-      <h3>Traces → Observations → New Signals</h3>
-      <div class="flow-step"><strong>Actor:</strong> Agent (observe phase)</div>
-      <div class="flow-step"><strong>Trigger:</strong> Contract completed and all traces aggregated</div>
-      <div class="flow-step"><strong>Events:</strong> trace.completed, observation.written, signal.created</div>
-      <div class="flow-step"><strong>Next:</strong> Loop continues — observations feed back into notice phase</div>
-    </div>
-  </div>
-
-  <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
-  </footer>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+        </div>
+    </footer>
 </body>
 </html>

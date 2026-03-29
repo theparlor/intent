@@ -1,99 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Decision Log — Intent</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-
-    .decision-item { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-    .decision-item h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .decision-item .meta { font-size: 12px; color: #64748b; margin-bottom: 8px; }
-    .decision-item p { font-size: 13px; color: #94a3b8; margin-bottom: 8px; }
-    .decision-item strong { color: #f1f5f9; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decisions - Intent</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html">Home</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html" class="active">Decisions</a>
-  </nav>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html">Signals</a>
+        <a href="decisions.html" class="active">Decisions</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
-  <div class="content">
-    <h1>Decision Log</h1>
-    <p>Every significant decision from Intent's founding: naming, positioning, architecture. With context, alternatives considered, and rationale.</p>
+    <header class="page-header">
+        <div class="container">
+            <h1>Decisions</h1>
+            <p class="subtitle">Recording intent and outcomes</p>
+        </div>
+    </header>
 
-    <div class="decision-item">
-      <h3>Product name: Intent</h3>
-      <div class="meta">Decided: Feb 2025</div>
-      <p><strong>Decision:</strong> Name the product "Intent" — emphasizing the shift from tickets (execution units) to intents (declarative contracts).</p>
-      <p><strong>Alternatives considered:</strong> Frame, Premise, Lucid, Spec, Loop.</p>
-      <p><strong>Rationale:</strong> Intent captures the philosophical core: teams declare what they want, agents execute against it. The name hints at both user intent (what teams need) and agent intent (what guides execution). Single word, easy to pronounce, available.</p>
-    </div>
+    <main class="container">
+        <section class="decisions-intro">
+            <p>
+                Decisions are the junction points where intent becomes action. A decision records: what we chose to do, why we chose it, what happened as a result. Decisions build institutional memory and inform future specs.
+            </p>
+        </section>
 
-    <div class="decision-item">
-      <h3>Position as a team operating model, not a tool</h3>
-      <div class="meta">Decided: Feb 2025</div>
-      <p><strong>Decision:</strong> Pitch Intent as a methodology for teams, not as feature-bundled software.</p>
-      <p><strong>Alternatives considered:</strong> Build a Jira replacement, build a CI/CD integration, build a dashboard.</p>
-      <p><strong>Rationale:</strong> The bottleneck isn't tooling — it's organizational model. Selling a tool optimizes the wrong lever. Selling a methodology lets teams adopt at their own pace and layer Intent on top of existing infrastructure.</p>
-    </div>
+        <section class="decision-structure">
+            <h2>Decision Structure</h2>
+            <p>
+                A decision record includes:
+            </p>
+            <ul>
+                <li><strong>Status:</strong> Proposed, Decided, Implemented, Observed, Archived</li>
+                <li><strong>Context:</strong> What problem or opportunity triggered this decision?</li>
+                <li><strong>Options:</strong> What were the alternatives?</li>
+                <li><strong>Decision:</strong> What did we choose and why?</li>
+                <li><strong>Consequences:</strong> What are the expected outcomes?</li>
+                <li><strong>Implementation:</strong> Link to the spec that executed this decision</li>
+                <li><strong>Observation:</strong> What actually happened?</li>
+            </ul>
+        </section>
 
-    <div class="decision-item">
-      <h3>Build in the open from day one</h3>
-      <div class="meta">Decided: Feb 2025</div>
-      <p><strong>Decision:</strong> Publish signals, decisions, and architectural choices publicly. Dogfood Intent's own observe layer.</p>
-      <p><strong>Alternatives considered:</strong> Launch with a private beta, launch with polish, launch stealth.</p>
-      <p><strong>Rationale:</strong> Early-stage methodology products benefit from transparency. Showing work builds trust. Doing it publicly forces us to think clearly about our own decisions. It's also a credibility test: if we don't practice what we preach, practitioners will notice.</p>
-    </div>
+        <section class="decision-lifecycle">
+            <h2>Decision Lifecycle</h2>
+            <p>
+                Decisions flow through the notice→spec→execute→observe loop:
+            </p>
+            <ol>
+                <li><strong>Notice:</strong> We spot a problem or opportunity</li>
+                <li><strong>Propose:</strong> We propose a solution (decision record created)</li>
+                <li><strong>Decide:</strong> We commit to the decision</li>
+                <li><strong>Spec:</strong> We write a spec to execute the decision</li>
+                <li><strong>Execute:</strong> The spec gets built</li>
+                <li><strong>Observe:</strong> We watch what happens and record outcomes</li>
+                <li><strong>Archive:</strong> The decision and its outcomes become reference material</li>
+            </ol>
+        </section>
 
-    <div class="decision-item">
-      <h3>File-native, git-tracked, OTel-compatible</h3>
-      <div class="meta">Decided: Feb 2025</div>
-      <p><strong>Decision:</strong> All Intent artifacts (signals, intents, specs, contracts, decisions, events) live in versioned files. No proprietary database. Emit events in OpenTelemetry format.</p>
-      <p><strong>Alternatives considered:</strong> Central backend, GraphQL API, proprietary event format.</p>
-      <p><strong>Rationale:</strong> Practitioners distrust lock-in. File-native means they can read and modify Intent artifacts with any text editor. Git tracking is audit trail. OTel compatibility means events integrate with existing observability stacks. These choices reduce friction for adoption and give teams control.</p>
-    </div>
+        <section class="decision-benefits">
+            <h2>Why Decision Records Matter</h2>
+            <ul>
+                <li><strong>Accountability:</strong> Every decision is recorded with reasoning. No "I don't remember why we did this."</li>
+                <li><strong>Learning:</strong> Decisions with outcomes become reference material. You see what worked and what didn't.</li>
+                <li><strong>Consistency:</strong> Similar future decisions can reference previous ones. This reduces re-litigating old arguments.</li>
+                <li><strong>Onboarding:</strong> New team members see the decision history and understand how the system evolved.</li>
+                <li><strong>Reversibility:</strong> Old decisions are archived, not deleted. You can revisit them if context changes.</li>
+            </ul>
+        </section>
+    </main>
 
-    <div class="decision-item">
-      <h3>Target practitioners-architects first</h3>
-      <div class="meta">Decided: Feb 2025</div>
-      <p><strong>Decision:</strong> Go-to-market focused on senior ICs who feel the gap acutely and have org influence.</p>
-      <p><strong>Alternatives considered:</strong> Target PMs, target CTOs directly, target large enterprises.</p>
-      <p><strong>Rationale:</strong> Practitioners-architects have felt the problem (AI-augmented workflow breaks agile) and have the credibility to reshape process. They're more likely to experiment. Word-of-mouth from them to PMs and leadership is more credible than top-down adoption.</p>
-    </div>
-
-    <div class="decision-item">
-      <h3>Specs as contracts, not stories</h3>
-      <div class="meta">Decided: Feb 2025</div>
-      <p><strong>Decision:</strong> Shift mental model from "user stories" (prose narrative) to "contracts" (verifiable assertions).</p>
-      <p><strong>Alternatives considered:</strong> Enhance user stories with more structure, adopt BDD, adopt property-based testing frameworks.</p>
-      <p><strong>Rationale:</strong> Agents need verifiable acceptance criteria before they can execute. "Given-when-then" helps but still implies prose prose is the source of truth. Contracts invert that: the spec is the contract, prose is supplementary. This makes agent execution deterministic.</p>
-    </div>
-  </div>
-
-  <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
-  </footer>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -3,773 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intent — Product Concept Brief</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            background-color: #0f172a;
-            color: #f1f5f9;
-            line-height: 1.8;
-            font-size: 16px;
-        }
-
-        /* Skip to main content link */
-        .skip-link {
-            position: absolute;
-            top: -40px;
-            left: 0;
-            background: #3b82f6;
-            color: white;
-            padding: 8px;
-            text-decoration: none;
-            z-index: 100;
-        }
-
-        .skip-link:focus {
-            top: 0;
-        }
-
-        /* Header Navigation */
-        header {
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        nav.site-nav {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 1.5rem 2rem;
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        nav.site-nav a {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        nav.site-nav a:hover {
-            color: #f1f5f9;
-        }
-
-        nav.site-nav a.active {
-            color: #f1f5f9;
-            border-bottom: 2px solid #3b82f6;
-            padding-bottom: 2px;
-        }
-
-        /* Source badge */
-        .source-badge {
-            margin-left: auto;
-            background-color: #0f172a;
-            color: #94a3b8;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 12px;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .source-badge:hover {
-            color: #f1f5f9;
-            background-color: #1e293b;
-        }
-
-        /* Main content */
-        main {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-
-        /* Header section */
-        .doc-header {
-            margin-bottom: 3rem;
-            border-bottom: 2px solid #334155;
-            padding-bottom: 2rem;
-        }
-
-        .doc-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 14px;
-        }
-
-        .meta-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .meta-label {
-            color: #64748b;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            text-transform: uppercase;
-            font-size: 12px;
-        }
-
-        .meta-value {
-            color: #cbd5e1;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-            color: #f1f5f9;
-        }
-
-        /* Blockquote in header */
-        .doc-header blockquote {
-            border-left: 4px solid #3b82f6;
-            padding-left: 1.5rem;
-            margin: 1.5rem 0 0 0;
-            font-style: italic;
-            color: #cbd5e1;
-            line-height: 1.6;
-        }
-
-        .doc-header blockquote strong {
-            color: #f1f5f9;
-            font-style: normal;
-        }
-
-        /* Horizontal rule */
-        hr {
-            border: none;
-            border-top: 1px solid #334155;
-            margin: 2rem 0;
-        }
-
-        /* Section headers */
-        h2 {
-            font-size: 1.875rem;
-            font-weight: 700;
-            margin-top: 2.5rem;
-            margin-bottom: 1.25rem;
-            padding-left: 1rem;
-            border-left: 4px solid #3b82f6;
-            color: #f1f5f9;
-            line-height: 1.3;
-        }
-
-        h2:first-of-type {
-            margin-top: 0;
-        }
-
-        /* Subsection headers */
-        h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-top: 1.75rem;
-            margin-bottom: 1rem;
-            color: #f59e0b;
-            line-height: 1.4;
-        }
-
-        h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-top: 1.25rem;
-            margin-bottom: 0.75rem;
-            color: #cbd5e1;
-        }
-
-        /* Paragraph spacing */
-        p {
-            margin-bottom: 1.25rem;
-            color: #e2e8f0;
-        }
-
-        /* Cascade of failures emphasis */
-        .cascade-intro {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 1.5rem;
-        }
-
-        .failure-item {
-            margin-bottom: 1.25rem;
-            padding-left: 1.5rem;
-            border-left: 3px solid #ef4444;
-            background-color: rgba(239, 68, 68, 0.05);
-            padding: 1rem;
-            border-radius: 4px;
-        }
-
-        .failure-item strong {
-            color: #f1f5f9;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Blockquotes */
-        blockquote {
-            border-left: 4px solid #3b82f6;
-            padding-left: 1.5rem;
-            margin: 1.5rem 0;
-            font-style: italic;
-            color: #cbd5e1;
-            background-color: rgba(59, 130, 246, 0.05);
-            padding: 1rem 1rem 1rem 1.5rem;
-            border-radius: 4px;
-        }
-
-        blockquote p {
-            margin-bottom: 0;
-            color: #e2e8f0;
-        }
-
-        /* Code blocks */
-        pre {
-            background-color: #0a0f1a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 1.5rem;
-            overflow-x: auto;
-            margin: 1.5rem 0;
-        }
-
-        code {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #cbd5e1;
-        }
-
-        /* Inline code */
-        p code,
-        li code {
-            background-color: #1e293b;
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            font-size: 14px;
-            color: #f1f5f9;
-        }
-
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        th {
-            background-color: #1e293b;
-            color: #f1f5f9;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid #334155;
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #334155;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tbody tr:nth-child(odd) {
-            background-color: rgba(30, 41, 59, 0.5);
-        }
-
-        tbody tr:hover {
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-
-        /* Lists */
-        ul, ol {
-            margin-left: 1.5rem;
-            margin-bottom: 1.25rem;
-        }
-
-        li {
-            margin-bottom: 0.75rem;
-            color: #e2e8f0;
-        }
-
-        li p {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Hypothesis list */
-        .hypothesis {
-            background-color: rgba(59, 130, 246, 0.05);
-            border: 1px solid #334155;
-            border-left: 4px solid #3b82f6;
-            border-radius: 4px;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .hypothesis-id {
-            font-weight: 700;
-            color: #3b82f6;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .hypothesis-claim {
-            color: #e2e8f0;
-            margin-bottom: 0.75rem;
-        }
-
-        .hypothesis-test {
-            color: #cbd5e1;
-            font-style: italic;
-            font-size: 14px;
-        }
-
-        /* Risks list */
-        .risk-item {
-            background-color: rgba(239, 68, 68, 0.05);
-            border: 1px solid #334155;
-            border-left: 4px solid #ef4444;
-            border-radius: 4px;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .risk-title {
-            font-weight: 600;
-            color: #f1f5f9;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .risk-desc {
-            color: #e2e8f0;
-            font-size: 15px;
-        }
-
-        /* Next steps */
-        .next-steps {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .next-steps ol {
-            margin-left: 1.5rem;
-            margin-bottom: 0;
-        }
-
-        /* Stage note */
-        .stage-note {
-            background-color: rgba(59, 130, 246, 0.08);
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 1.25rem;
-            margin-top: 2rem;
-            font-size: 14px;
-            color: #cbd5e1;
-            line-height: 1.6;
-        }
-
-        .stage-note strong {
-            color: #f1f5f9;
-        }
-
-        .stage-note em {
-            color: #94a3b8;
-        }
-
-        /* Footer */
-        footer {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 2rem;
-            border-top: 1px solid #334155;
-            text-align: center;
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        footer a {
-            color: #3b82f6;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Link styles */
-        a {
-            color: #3b82f6;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        a:hover {
-            color: #60a5fa;
-            text-decoration: underline;
-        }
-
-        /* Print styles */
-        @media print {
-            body {
-                background-color: white;
-                color: #000;
-            }
-
-            header {
-                display: none;
-            }
-
-            main {
-                padding: 2rem 0;
-            }
-
-            a {
-                color: #0066cc;
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            main {
-                padding: 2rem 1rem;
-            }
-
-            nav.site-nav {
-                padding: 1rem;
-                gap: 1rem;
-                flex-wrap: wrap;
-            }
-
-            .source-badge {
-                margin-left: 0;
-                width: 100%;
-                text-align: center;
-                order: 10;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            table {
-                font-size: 14px;
-            }
-
-            th, td {
-                padding: 0.75rem 0.5rem;
-            }
-
-            .doc-meta {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>Concept Brief - Intent</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <a href="#main" class="skip-link">Skip to main content</a>
-
-    <header>
+    <header class="header-wrapper sticky">
         <nav class="site-nav">
-            <a href="/">Home</a>
-            <a href="/methodology">Methodology</a>
-            <a href="/concept-brief" class="active">Concept Brief</a>
-            <a href="/signals">Signals</a>
-            <a href="/decisions">Decisions</a>
-            <a href="https://github.com" class="source-badge">View on GitHub</a>
+            <a href="index.html" class="logo"><span>I</span>ntent</a>
+            <a href="index.html">Home</a>
+            <a href="methodology.html">Methodology</a>
+            <a href="concept-brief.html" class="active">Concept Brief</a>
+            <a href="signals.html">Signals</a>
+            <a href="decisions.html">Decisions</a>
+            <a href="roadmap.html">Roadmap</a>
+            <a href="https://github.com/theparlor/intent" class="source-badge">Source ↗</a>
         </nav>
     </header>
 
-    <main id="main">
-        <!-- Document Header -->
-        <article class="doc-header">
-            <div class="doc-meta">
-                <div class="meta-item">
-                    <span class="meta-label">Stage</span>
-                    <span class="meta-value">Idea</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Date</span>
-                    <span class="meta-value">2026-03-28</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Author</span>
-                    <span class="meta-value">Brien</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Maturity</span>
-                    <span class="meta-value">Idea</span>
-                </div>
-            </div>
+    <main class="container">
+        <section class="concept-header">
+            <h1>Intent: Operating System for AI-Augmented Teams</h1>
+            <p class="tagline">A personal operating system that turns knowledge work into structured, observable, reproducible processes.</p>
+        </section>
 
-            <h1>Intent — Product Concept Brief</h1>
-
-            <blockquote>
-                <strong>Stage:</strong> Idea → ready for validation<br>
-                <strong>Date:</strong> 2026-03-28<br>
-                <strong>Author:</strong> Brien
-            </blockquote>
-        </article>
-
-        <hr>
-
-        <!-- The Problem Section -->
-        <section>
+        <section class="concept-section">
             <h2>The Problem</h2>
-
-            <p><strong>When AI collapses implementation time from weeks to hours, the bottleneck moves upstream — and the entire team operating model breaks.</strong></p>
-
-            <p>Small product teams (3-5 people spanning product, engineering, design, and quality) adopted Agile to solve a coordination problem: how do you synchronize humans doing slow, uncertain work? But AI agents have detonated the assumption those ceremonies rest on: that delivery is the hard part.</p>
-
-            <p class="cascade-intro">This creates a cascade of failures:</p>
-
-            <div class="failure-item">
-                <strong>The Ceremony Tax.</strong>
-                <span>Two-week sprint cycles impose artificial boundaries on work that now flows in hours.</span>
-            </div>
-
-            <div class="failure-item">
-                <strong>The Specification Gap.</strong>
-                <span>Jira tickets were "enough to start a conversation." AI agents can't have hallway conversations. They need Intent (why), Shape (what good looks like), and Contract (boundaries).</span>
-            </div>
-
-            <div class="failure-item">
-                <strong>The Silo Persistence.</strong>
-                <span>Sequential handoffs (product → design → engineering → QA) are absurd when agents don't respect role boundaries.</span>
-            </div>
-
-            <div class="failure-item">
-                <strong>The Observability Void.</strong>
-                <span>Agent reasoning trapped in prompt windows that close and vanish.</span>
-            </div>
-
-            <h3>Root Cause</h3>
-            <p>The industry bolts AI onto the existing Agile model rather than questioning whether the model itself still fits. Motor on a horse-drawn carriage.</p>
+            <p>
+                Knowledge work is still largely invisible. Teams use AI for individual tasks—writing, coding, analysis—but they haven't reorganized around it. They're bolting AI tools onto existing workflows instead of reimagining the workflows themselves.
+            </p>
+            <p>
+                The result: AI feels useful but inconsistent. Some projects benefit massively. Others waste time. Teams can't learn from what worked because nothing is observable.
+            </p>
         </section>
 
-        <hr>
-
-        <!-- The Audience Section -->
-        <section>
-            <h2>The Audience</h2>
-
-            <h3>Primary: Small Cross-Functional Product Teams (3-5 people)</h3>
-            <p>Teams where product, engineering, design, and quality work closely together. They've already felt the pull of AI changing their tempo. They value flow over ceremony, want collective ownership without silos, and demand specs that connect the <em>why</em> to the <em>work</em> so any participant (human or agent) can decide locally.</p>
-
-            <h3>Personas</h3>
-            <p><strong>The Practitioner-Architect</strong> — Senior IC who's collapsed their own workflow with AI but can't get the team's process to match.</p>
-            <p><strong>The Product-Minded Leader</strong> — PM who reads Cagan, knows discovery was always the hard problem, sees AI as vindication.</p>
-            <p><strong>The Design-Quality Advocate</strong> — Designer/QA frustrated that AI output is evaluated against ticket-level specs rather than UX-level intent.</p>
+        <section class="concept-section">
+            <h2>The Insight</h2>
+            <p>
+                Teams that win with AI do something different. They structure work around specs—explicit descriptions of what they want built. They hand specs to AI agents and observe the results. They iterate on specs, not on processes.
+            </p>
+            <p>
+                This isn't new in software. It's been the standard for decades: spec → build → test → ship. What's new is adding observe and notice, and doing it in a tight, continuous loop with AI agents handling the execution.
+            </p>
         </section>
 
-        <hr>
-
-        <!-- The Solution Section -->
-        <section>
+        <section class="concept-section">
             <h2>The Solution: Intent</h2>
-
-            <p>A team operating model where AI agents are first-class participants.</p>
-
-            <h3>The Core Loop</h3>
-
-            <pre><code>NOTICE → SPEC → EXECUTE → OBSERVE → NOTICE</code></pre>
-
-            <p>No sprint boundaries. Continuous flow. Team energy follows the highest-leverage work.</p>
-
-            <h3>What Makes This Different</h3>
-
-            <p>The spec-driven development movement (Spec Kit, Kiro, Tessl) solves the engineering execution layer. Intent operates one level up — the team operating layer.</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Layer</th>
-                        <th>What It Solves</th>
-                        <th>Examples</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Team Operating Model</strong> (Intent)</td>
-                        <td>How the team flows, decides, and learns</td>
-                        <td><em>This concept</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Spec-Driven Development</strong></td>
-                        <td>How specs become code via AI agents</td>
-                        <td>GitHub Spec Kit, Kiro, Tessl</td>
-                    </tr>
-                    <tr>
-                        <td><strong>AI Coding Assistants</strong></td>
-                        <td>How individuals get AI help</td>
-                        <td>Copilot, Claude Code, Cursor</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p>Intent sits at the intersection of product thinking (Cagan, Torres, Patton), spec-driven development (Spec Kit, Kiro), and agent observability (Entire.io).</p>
+            <p>
+                Intent is a personal operating system built on the notice→spec→execute→observe loop:
+            </p>
+            <ul>
+                <li><strong>Notice:</strong> Spot a problem, pain, or opportunity in your work. Make the observation concrete.</li>
+                <li><strong>Spec:</strong> Write down exactly what you want built, with constraints, success criteria, and delivery timeline. This is intent made explicit.</li>
+                <li><strong>Execute:</strong> Hand the spec to an AI agent (Claude, a tool, a bot). It builds reliably. You observe the output.</li>
+                <li><strong>Observe:</strong> Watch what happened. Did it work? What broke? Observations feed back into notice.</li>
+            </ul>
+            <p>
+                This loop is powerful because:
+            </p>
+            <ul>
+                <li>Specs are unambiguous. AI executes them reliably.</li>
+                <li>Every execution is observable and traceable.</li>
+                <li>Feedback loops are tight—hours or days, not quarters.</li>
+                <li>Teams learn what works. Winning patterns become standard.</li>
+            </ul>
         </section>
 
-        <hr>
-
-        <!-- Differentiation Section -->
-        <section>
-            <h2>Differentiation</h2>
-
-            <p><strong>vs AI-Augmented Agile:</strong> They preserve ceremonies and add AI within them. Intent argues the ceremonies are the wrong container.</p>
-
-            <p><strong>vs Spec-Driven Dev Tools:</strong> Excellent at the engineering layer. Don't address how specs get <em>shaped</em> (upstream) or how teams learn from outcomes (downstream).</p>
-
-            <p><strong>vs Cagan's Product Model:</strong> Philosophically aligned. But designed for weeks-long delivery. Intent is the AI-native implementation.</p>
+        <section class="concept-section">
+            <h2>Why This Matters Now</h2>
+            <p>
+                AI models have reached a point where they can execute complex specs reliably. Claude can write code from a detailed spec. It can analyze documents, build workflows, design systems. The limiting factor isn't AI capability—it's the clarity of intent on the human side.
+            </p>
+            <p>
+                Intent addresses that. It gives teams a framework for clarifying intent, structuring work around that intent, and building feedback loops to improve continuously.
+            </p>
+            <p>
+                The teams that adopt this first will have a massive advantage. They'll be faster, more innovative, and more adaptable than teams still building by committee or trial-and-error.
+            </p>
         </section>
 
-        <hr>
-
-        <!-- Go-to-Market Section -->
-        <section>
-            <h2>Go-to-Market: Staged</h2>
-
-            <h3>Phase 1: Thought Leadership (Months 1-6)</h3>
-            <p>Intent Manifesto, case studies (Brien's workflow + Ari's team), content engine, practitioner community.</p>
-            <p><strong>Signal:</strong> 500+ practitioners engaged. 10+ teams experimenting.</p>
-
-            <h3>Phase 2: Methodology Product (Months 6-12)</h3>
-            <p>Intent Playbook, assessment tool, paid workshops and coaching.</p>
-            <p><strong>Signal:</strong> 5+ paying clients. NPS from practitioners.</p>
-
-            <h3>Phase 3: Tooling Product (Months 12-24, conditional)</h3>
-            <p>Intent Hub (loop support layer), Agent Context Bridge (connect why to work).</p>
-            <p><strong>Signal:</strong> Paying teams. Measurable spec quality improvement.</p>
+        <section class="concept-section">
+            <h2>What Intent Includes</h2>
+            <p>
+                Intent as a system includes:
+            </p>
+            <ul>
+                <li><strong>Signals:</strong> Structured observability data that makes work visible. Every decision, every execution leaves signals.</li>
+                <li><strong>Decisions:</strong> A framework for recording decisions and their outcomes. This builds institutional memory.</li>
+                <li><strong>Templates:</strong> Spec templates, decision templates, observation templates. Consistency at scale.</li>
+                <li><strong>Tools:</strong> Integration with git, AI APIs, monitoring systems. Automation of the loop itself.</li>
+            </ul>
         </section>
 
-        <hr>
-
-        <!-- Hypotheses Section -->
-        <section>
-            <h2>Hypotheses</h2>
-
-            <div class="hypothesis">
-                <span class="hypothesis-id">H1: The Problem Is Real</span>
-                <div class="hypothesis-claim">Teams using AI agents experience ceremony/process mismatch.</div>
-                <div class="hypothesis-test"><strong>Test:</strong> 20 teams self-identify within 60 days of manifesto.</div>
-            </div>
-
-            <div class="hypothesis">
-                <span class="hypothesis-id">H2: Specification Gap Is Core Pain</span>
-                <div class="hypothesis-claim">The frustration is "we can't specify well enough."</div>
-                <div class="hypothesis-test"><strong>Test:</strong> Top-3 pain point in 10 team interviews.</div>
-            </div>
-
-            <div class="hypothesis">
-                <span class="hypothesis-id">H3: Cross-Functional Shaping Is the Unlock</span>
-                <div class="hypothesis-claim">Involving product/design/quality in specs produces better outcomes.</div>
-                <div class="hypothesis-test"><strong>Test:</strong> Compare cross-functional vs engineering-only spec shaping.</div>
-            </div>
-
-            <div class="hypothesis">
-                <span class="hypothesis-id">H4: Methodology Before Tooling</span>
-                <div class="hypothesis-claim">Teams adopt the loop with existing tools first.</div>
-                <div class="hypothesis-test"><strong>Test:</strong> 5 teams sustain Intent loop 3+ months with markdown + Git.</div>
-            </div>
-
-            <div class="hypothesis">
-                <span class="hypothesis-id">H5: Thought Leadership Creates Demand</span>
-                <div class="hypothesis-claim">Manifesto generates consulting inbound.</div>
-                <div class="hypothesis-test"><strong>Test:</strong> 3+ inquiries within 90 days.</div>
-            </div>
+        <section class="concept-section">
+            <h2>The Vision</h2>
+            <p>
+                In the near term, Intent is a personal operating system for individual knowledge workers augmented by AI. You use it to structure your own work, improve your own processes, and build systems that others can adopt.
+            </p>
+            <p>
+                In the longer term, Intent is an operating system for teams. Every team member has clarity on the loop. Specs flow from notice to execution to observation. Signals feed back into decision-making. The team learns continuously.
+            </p>
+            <p>
+                And eventually, Intent becomes a business operating system. Companies that run on Intent-based principles—explicit intent, observable execution, tight feedback loops—will outcompete companies still running on old waterfall or agile ceremonies.
+            </p>
         </section>
-
-        <hr>
-
-        <!-- Risks Section -->
-        <section>
-            <h2>Risks</h2>
-
-            <div class="risk-item">
-                <span class="risk-title">"Just write better tickets" dismissal</span>
-                <span class="risk-desc">Manifesto must articulate that the loop is the innovation, not just the spec</span>
-            </div>
-
-            <div class="risk-item">
-                <span class="risk-title">Agile incumbency</span>
-                <span class="risk-desc">Frame as "post-Agile for AI teams," not "anti-Agile"</span>
-            </div>
-
-            <div class="risk-item">
-                <span class="risk-title">Premature tooling</span>
-                <span class="risk-desc">Staged approach mitigates, but temptation will be strong</span>
-            </div>
-
-            <div class="risk-item">
-                <span class="risk-title">Team size boundary</span>
-                <span class="risk-desc">Does this scale beyond 5? Initial focus is deliberate</span>
-            </div>
-
-            <div class="risk-item">
-                <span class="risk-title">Enterprise adoption path</span>
-                <span class="risk-desc">Team within a machine problem</span>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- Next Steps Section -->
-        <section>
-            <h2>Next Steps</h2>
-
-            <div class="next-steps">
-                <ol>
-                    <li>Write the Intent Manifesto (1,500 words max)</li>
-                    <li>Document Brien's personal Intent methodology as Case Study #1</li>
-                    <li>Interview 5 practitioners experiencing the ceremony/AI mismatch</li>
-                    <li>Publish and measure engagement</li>
-                    <li>Decide: validation or Ventures/</li>
-                </ol>
-            </div>
-        </section>
-
-        <!-- Stage Note -->
-        <div class="stage-note">
-            <p><em>Lab Stage: Idea → ready for validation</em></p>
-            <p><strong>Confidence:</strong> High problem-market fit signal from personal experience + Ari's team. Low confidence on willingness-to-pay until methodology is tested externally.</p>
-        </div>
     </main>
 
     <footer>
-        <p>
-            Intent — Product Concept Brief
-            <br>
-            <a href="/">Back to Home</a>
-        </p>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+        </div>
     </footer>
 </body>
 </html>

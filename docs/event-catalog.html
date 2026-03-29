@@ -1,126 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Catalog — Intent</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-    .content p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-
-    .event-item { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-    .event-item h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #3b82f6; font-family: monospace; }
-    .event-item p { font-size: 13px; color: #94a3b8; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Catalog - Intent</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html">Home</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html">Decisions</a>
-  </nav>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html">Signals</a>
+        <a href="decisions.html">Decisions</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
-  <div class="content">
-    <h1>Event Catalog</h1>
-    <p>15 events, 6 emission mechanisms, OTel-compatible schema. What gets captured and how, from GitHub Actions to agent self-emission.</p>
+    <header class="page-header">
+        <div class="container">
+            <h1>Event Catalog</h1>
+            <p class="subtitle">Structured events for the Intent system</p>
+        </div>
+    </header>
 
-    <p>All events follow OpenTelemetry conventions and include timestamp, source, trace ID, and span context for end-to-end observability.</p>
+    <main class="container">
+        <section class="event-catalog-intro">
+            <p>
+                The event catalog defines the structured events that flow through the Intent system. These events are the building blocks of observability and allow different tools and processes to communicate.
+            </p>
+        </section>
 
-    <div class="event-item">
-      <h3>signal.created</h3>
-      <p>Emitted when a new signal is captured from work, research, or conversation.</p>
-    </div>
+        <section class="event-types">
+            <h2>Event Types</h2>
+            <p>Events are categorized by the phase of the notice→spec→execute→observe loop they represent:</p>
+            <ul>
+                <li><strong>notice.*</strong> – Problem or opportunity identified</li>
+                <li><strong>spec.*</strong> – Specification created or updated</li>
+                <li><strong>execute.*</strong> – Work executed, results produced</li>
+                <li><strong>observe.*</strong> – Outcomes measured and recorded</li>
+            </ul>
+        </section>
+    </main>
 
-    <div class="event-item">
-      <h3>intent.proposed</h3>
-      <p>Emitted when an intent is created, linking signals to what we want to change.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>intent.approved</h3>
-      <p>Emitted when an intent receives approval to proceed to spec.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>spec.written</h3>
-      <p>Emitted when a spec is created with narrative, acceptance criteria, and contract assertions.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>spec.staged</h3>
-      <p>Emitted when a spec moves from draft to ready-for-execution.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>contract.started</h3>
-      <p>Emitted when an agent begins executing a contract.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>contract.assertion.passed</h3>
-      <p>Emitted when a contract assertion passes.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>contract.assertion.failed</h3>
-      <p>Emitted when a contract assertion fails.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>contract.completed</h3>
-      <p>Emitted when all assertions pass and contract is fulfilled.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>capability.released</h3>
-      <p>Emitted when a capability (reusable building block) is added to the system.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>feature.released</h3>
-      <p>Emitted when a feature ships to production.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>decision.recorded</h3>
-      <p>Emitted when a significant decision is made and documented.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>trace.completed</h3>
-      <p>Emitted when an agent completes execution and all traces are aggregated.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>observation.written</h3>
-      <p>Emitted when the observe layer reads traces and writes findings.</p>
-    </div>
-
-    <div class="event-item">
-      <h3>system.health</h3>
-      <p>Periodic emission of system health metrics: velocity, quality, observability coverage.</p>
-    </div>
-  </div>
-
-  <footer>
-    <p>Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6; text-decoration: none;">theparlor/intent</a> · <a href="index.html" style="color: #3b82f6; text-decoration: none;">← Back to home</a></p>
-  </footer>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+        </div>
+    </footer>
 </body>
 </html>

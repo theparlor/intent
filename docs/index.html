@@ -1,369 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intent — Team Operating Model for AI-Augmented Product Teams</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    /* ─── Nav ─── */
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    /* ─── Hero ─── */
-    .hero { max-width: 900px; margin: 0 auto; padding: 80px 24px 40px; text-align: center; }
-    .hero h1 { font-size: 52px; font-weight: 700; margin-bottom: 20px; background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .hero .tagline { color: #94a3b8; font-size: 19px; margin-bottom: 12px; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.6; }
-    .hero .subline { color: #64748b; font-size: 14px; max-width: 540px; margin: 0 auto 48px; line-height: 1.6; }
-
-    /* ─── Loop Diagram ─── */
-    .loop-section { max-width: 900px; margin: 0 auto; padding: 0 24px 64px; }
-    .loop-row { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .loop-phase { background: #1e293b; border-radius: 10px; padding: 20px 24px; width: 160px; text-align: center; transition: all 0.3s; cursor: default; position: relative; }
-    .loop-phase:hover { transform: translateY(-2px); }
-    .loop-phase .phase-icon { font-size: 22px; margin-bottom: 8px; }
-    .loop-phase h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .loop-phase p { font-size: 11px; color: #94a3b8; line-height: 1.4; }
-    .loop-phase.notice { border-top: 3px solid #f59e0b; }
-    .loop-phase.notice h3 { color: #f59e0b; }
-    .loop-phase.spec { border-top: 3px solid #3b82f6; }
-    .loop-phase.spec h3 { color: #3b82f6; }
-    .loop-phase.execute { border-top: 3px solid #10b981; }
-    .loop-phase.execute h3 { color: #10b981; }
-    .loop-phase.observe { border-top: 3px solid #a855f7; }
-    .loop-phase.observe h3 { color: #a855f7; }
-    .loop-arrow { color: #334155; font-size: 20px; font-weight: 300; }
-    .loop-return { text-align: center; margin-top: 12px; color: #334155; font-size: 12px; }
-    .loop-return span { display: inline-flex; align-items: center; gap: 8px; background: #1e293b; padding: 6px 16px; border-radius: 20px; }
-    .loop-return .a { color: #a855f7; }
-    .loop-return .b { color: #f59e0b; }
-
-    /* ─── Section Layout ─── */
-    .content { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-    .section { margin-bottom: 72px; }
-    .section-header { margin-bottom: 28px; }
-    .section-header .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-    .section-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-    .section-header p { color: #94a3b8; font-size: 14px; line-height: 1.6; max-width: 640px; }
-
-    /* ─── Tier 1: Feature Cards (large, visual, discipline-entry) ─── */
-    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .feature-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 28px; text-decoration: none; color: inherit; transition: all 0.3s; display: block; position: relative; overflow: hidden; }
-    .feature-card:hover { border-color: #475569; transform: translateY(-2px); }
-    .feature-card .card-badge { display: inline-block; font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
-    .feature-card .card-badge.interactive { background: #3b82f620; color: #3b82f6; }
-    .feature-card .card-badge.read { background: #10b98120; color: #10b981; }
-    .feature-card .card-badge.implement { background: #f59e0b20; color: #f59e0b; }
-    .feature-card .card-icon { font-size: 28px; margin-bottom: 14px; display: block; }
-    .feature-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
-    .feature-card p { color: #94a3b8; font-size: 13px; line-height: 1.5; }
-    .feature-card .card-footer { margin-top: 16px; display: flex; align-items: center; gap: 6px; color: #3b82f6; font-size: 12px; font-weight: 500; }
-    .feature-card.hero-card { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; padding: 36px; }
-    .feature-card.hero-card .card-content { }
-    .feature-card.hero-card .card-visual { background: #0f172a; border-radius: 8px; padding: 24px; text-align: center; }
-
-    /* ─── Tier 2: Compact Cards ─── */
-    .compact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .compact-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 20px; text-decoration: none; color: inherit; transition: all 0.3s; display: block; }
-    .compact-card:hover { border-color: #475569; transform: translateY(-1px); }
-    .compact-card .card-icon-sm { font-size: 20px; margin-bottom: 10px; display: block; }
-    .compact-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-    .compact-card p { color: #94a3b8; font-size: 12px; line-height: 1.4; }
-    .compact-card .badge-sm { display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-
-    /* ─── Tier 3: List Items (open development) ─── */
-    .open-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .open-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.3s; display: block; }
-    .open-card:hover { border-color: #475569; }
-    .open-card .open-badge { display: inline-block; font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; background: #10b98120; color: #10b981; }
-    .open-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .open-card p { color: #94a3b8; font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
-    .open-card .stat { display: inline-flex; align-items: center; gap: 6px; color: #64748b; font-size: 12px; }
-    .open-card .stat strong { color: #f1f5f9; font-weight: 600; }
-
-    /* ─── Shift Section ─── */
-    .shift-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .shift-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 20px; }
-    .shift-card .from { color: #ef4444; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .shift-card .to { color: #10b981; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-    .shift-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-    .shift-card p { color: #94a3b8; font-size: 12px; line-height: 1.4; }
-
-    /* ─── Footer ─── */
-    footer { max-width: 900px; margin: 0 auto; padding: 48px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
-    footer a { color: #3b82f6; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-
-    /* ─── Responsive ─── */
-    @media (max-width: 700px) {
-      .hero h1 { font-size: 36px; }
-      .feature-grid, .open-grid { grid-template-columns: 1fr; }
-      .compact-grid, .shift-grid { grid-template-columns: 1fr; }
-      .feature-card.hero-card { grid-template-columns: 1fr; }
-      .loop-row { gap: 8px; }
-      .loop-phase { width: 130px; padding: 14px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intent - Operating System for AI-Augmented Teams</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html" class="active">Home</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html">Decisions</a>
-  </nav>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html" class="active">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html">Signals</a>
+        <a href="decisions.html">Decisions</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
-  <!-- ─── Hero ─── -->
-  <div class="hero">
-    <h1>Intent</h1>
-    <p class="tagline">A team operating model for AI-augmented product teams.</p>
-    <p class="subline">Replaces agile ceremonies with a continuous loop. Work units are declarative specs agents execute against — not tickets humans update. Built in the open.</p>
-  </div>
-
-  <!-- ─── The Loop ─── -->
-  <div class="loop-section">
-    <div class="loop-row">
-      <div class="loop-phase notice">
-        <div class="phase-icon">👁</div>
-        <h3>Notice</h3>
-        <p>Signals rise from work, research, and conversation</p>
-      </div>
-      <div class="loop-arrow">→</div>
-      <div class="loop-phase spec">
-        <div class="phase-icon">📐</div>
-        <h3>Spec</h3>
-        <p>Intent crystallizes into contracts agents can execute against</p>
-      </div>
-      <div class="loop-arrow">→</div>
-      <div class="loop-phase execute">
-        <div class="phase-icon">⚡</div>
-        <h3>Execute</h3>
-        <p>Agents and humans build until assertions pass</p>
-      </div>
-      <div class="loop-arrow">→</div>
-      <div class="loop-phase observe">
-        <div class="phase-icon">🔭</div>
-        <h3>Observe</h3>
-        <p>Traces and outcomes feed back into notice</p>
-      </div>
-    </div>
-    <div class="loop-return">
-      <span><span class="a">Observe</span> → <span class="b">Notice</span> &nbsp;the loop is continuous</span>
-    </div>
-  </div>
-
-  <div class="content">
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- SECTION 1: UNDERSTAND — "What is this?"    -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-label" style="color: #3b82f6;">Understand</div>
-        <h2>What Intent Replaces and Why</h2>
-        <p>AI didn't break your code — it broke your process. Tickets, sprints, and story points were designed for coordinating human labor. When agents do the building, the bottleneck shifts to the quality of what you ask for.</p>
-      </div>
-
-      <div class="feature-grid">
-        <!-- Visual Brief: the visual entry point -->
-        <a href="visual-brief.html" class="feature-card">
-          <span class="card-badge interactive">Interactive</span>
-          <span class="card-icon">🎨</span>
-          <h3>Visual Brief</h3>
-          <p>The full Intent story as an interactive visual experience. Start here if you think in pictures — covers the problem, the loop, the personas, and where we're headed.</p>
-          <div class="card-footer">Explore visually →</div>
-        </a>
-
-        <!-- Methodology: the reader's entry point -->
-        <a href="methodology.html" class="feature-card">
-          <span class="card-badge read">Long-form</span>
-          <span class="card-icon">📖</span>
-          <h3>Methodology</h3>
-          <p>The shift from ceremony to loop. What replaces standup, planning, retro, and backlog grooming — and the heuristics that guide every decision.</p>
-          <div class="card-footer">Read the methodology →</div>
-        </a>
-
-        <!-- Concept Brief: the strategist's entry point -->
-        <a href="concept-brief.html" class="feature-card">
-          <span class="card-badge read">Long-form</span>
-          <span class="card-icon">🧭</span>
-          <h3>Concept Brief</h3>
-          <p>Intent as a product: the problem, audience, solution, differentiation, go-to-market hypotheses, and open risks. For anyone evaluating the venture angle.</p>
-          <div class="card-footer">Read the brief →</div>
-        </a>
-
-        <!-- Work System: the systems thinker's entry point -->
-        <a href="work-system.html" class="feature-card">
-          <span class="card-badge interactive">Interactive</span>
-          <span class="card-icon">🏗️</span>
-          <h3>Work Ontology</h3>
-          <p>The seven-level hierarchy that replaces tickets: Signal → Intent → Spec → Contract → Capability → Feature → Product. With three governance dimensions and an Agile comparison.</p>
-          <div class="card-footer">Explore the system →</div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- SECTION 2: WHAT CHANGES — the paradigm shift -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-label" style="color: #f59e0b;">The Shift</div>
-        <h2>What Changes</h2>
-      </div>
-
-      <div class="shift-grid">
-        <div class="shift-card">
-          <div class="from">Sprint</div>
-          <div class="to">→ Loop</div>
-          <h3>Continuous Flow</h3>
-          <p>No ceremony walls. Work moves based on dependency graphs, not two-week calendar blocks.</p>
+    <header class="hero">
+        <div class="container">
+            <h1>Intent</h1>
+            <p class="subtitle">Operating System for AI-Augmented Teams</p>
+            <p class="description">
+                Intent is a personal operating system for knowledge workers using AI as a team member. It's built on a notice→spec→execute→observe loop that turns everyday work into structured, observable, reproducible processes.
+            </p>
         </div>
-        <div class="shift-card">
-          <div class="from">Ticket</div>
-          <div class="to">→ Contract</div>
-          <h3>Verifiable Units</h3>
-          <p>Done when assertions pass, not when cards move. Agents execute against schemas, not prose.</p>
+    </header>
+
+    <section class="core-concepts">
+        <div class="container">
+            <h2>Core Concepts</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Notice</h3>
+                    <p>Identify problems, opportunities, or patterns in your work. Turn vague dissatisfaction into concrete observations.</p>
+                </div>
+                <div class="card">
+                    <h3>Spec</h3>
+                    <p>Write down what you want to build or change. Specifications make intent explicit and give AI systems something to work with.</p>
+                </div>
+                <div class="card">
+                    <h3>Execute</h3>
+                    <p>Use AI tools to build, automate, or refine. AI agents execute the spec reliably and leave observable traces.</p>
+                </div>
+                <div class="card">
+                    <h3>Observe</h3>
+                    <p>Watch what happened. Build feedback loops that make your work visible and improvable.</p>
+                </div>
+            </div>
         </div>
-        <div class="shift-card">
-          <div class="from">Estimation</div>
-          <div class="to">→ Observation</div>
-          <h3>Evidence over Forecast</h3>
-          <p>Don't guess how long. Observe what happened and let the system learn from its own traces.</p>
+    </section>
+
+    <section class="why-intent">
+        <div class="container">
+            <h2>Why Intent Matters</h2>
+            <p>
+                Most AI tools are built for individual tasks—write an email, code a function, answer a question. But teams that win with AI are structuring entire workflows around it. They're turning vague requests into specs, using AI to execute predictably, and building observation systems to close the loop.
+            </p>
+            <p>
+                Intent is a framework for doing this. It's not about replacing thinking—it's about making thinking visible, executable, and improvable.
+            </p>
         </div>
-        <div class="shift-card">
-          <div class="from">Backlog</div>
-          <div class="to">→ Signal Stream</div>
-          <h3>Living Intake</h3>
-          <p>Signals are captured continuously from work, research, and conversation — not groomed in quarterly rituals.</p>
+    </section>
+
+    <section class="getting-started">
+        <div class="container">
+            <h2>Getting Started</h2>
+            <p><strong>Learn the methodology:</strong> <a href="methodology.html">Read the Intent methodology</a> to understand the notice→spec→execute→observe loop.</p>
+            <p><strong>See it in action:</strong> Explore <a href="signals.html">signals</a>, <a href="decisions.html">decisions</a>, and the <a href="event-catalog.html">event catalog</a> to see how Intent structures observability.</p>
+            <p><strong>Understand the vision:</strong> Read the <a href="concept-brief.html">concept brief</a> for the fuller picture of Intent as a team operating system.</p>
         </div>
-        <div class="shift-card">
-          <div class="from">Standup</div>
-          <div class="to">→ Dashboard</div>
-          <h3>Ambient Visibility</h3>
-          <p>OTel-compatible events make work observable at all times. No status meetings required.</p>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
         </div>
-        <div class="shift-card">
-          <div class="from">Retro</div>
-          <div class="to">→ Observe Cycle</div>
-          <h3>Continuous Learning</h3>
-          <p>An agent reads traces and writes findings daily. Learning is a system property, not a quarterly ceremony.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- SECTION 3: IMPLEMENT — "How does it work?" -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-label" style="color: #10b981;">Implement</div>
-        <h2>How It Works Under the Hood</h2>
-        <p>Intent is file-native and git-tracked. Signals, intents, specs, contracts, decisions, and events live in a <code style="color: #10b981; background: #10b98115; padding: 2px 6px; border-radius: 3px; font-size: 13px;">.intent/</code> directory inside every repo. State changes emit structured events that make work observable.</p>
-      </div>
-
-      <div class="compact-grid">
-        <a href="native-repos.html" class="compact-card">
-          <span class="badge-sm" style="background: #f59e0b20; color: #f59e0b;">Implementation</span>
-          <span class="card-icon-sm">📁</span>
-          <h3>Repo Pattern</h3>
-          <p>The three-layer structure every Intent-native repo follows: .intent/, .claude/, .entire/ — with file schemas and directory conventions.</p>
-        </a>
-
-        <a href="event-catalog.html" class="compact-card">
-          <span class="badge-sm" style="background: #3b82f620; color: #3b82f6;">Interactive</span>
-          <span class="card-icon-sm">⚡</span>
-          <h3>Event Catalog</h3>
-          <p>15 events, 6 emission mechanisms, OTel-compatible schema. What gets captured and how, from GitHub Actions to agent self-emission.</p>
-        </a>
-
-        <a href="flow-diagram.html" class="compact-card">
-          <span class="badge-sm" style="background: #3b82f620; color: #3b82f6;">Interactive</span>
-          <span class="card-icon-sm">↻</span>
-          <h3>Flow Diagram</h3>
-          <p>Five concrete paths through the system with personas (Architect, PM, Design/QA, Agent) and event triggers at every transition.</p>
-        </a>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- SECTION 4: OPEN DEVELOPMENT — transparency  -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-label" style="color: #a855f7;">Open Development</div>
-        <h2>Built in the Open</h2>
-        <p>Intent dogfoods itself. Every signal captured, every decision made, every architectural choice — visible. This is what the observe layer looks like in practice.</p>
-      </div>
-
-      <div class="open-grid">
-        <a href="signals.html" class="open-card">
-          <span class="open-badge">Live</span>
-          <h3>Signal Stream</h3>
-          <p>Observations captured from cowork sessions and agent traces feeding Intent's own development. Each signal has a confidence score, source, and related intents.</p>
-          <div class="stat"><strong>5</strong> signals captured · <strong>3</strong> sources</div>
-        </a>
-
-        <a href="decisions.html" class="open-card">
-          <span class="open-badge">Live</span>
-          <h3>Decision Log</h3>
-          <p>Every significant decision from Intent's founding: naming, positioning, GTM strategy, architecture. With context, alternatives considered, and rationale.</p>
-          <div class="stat"><strong>6</strong> decisions recorded</div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- SECTION 5: ENGAGE — work with us            -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-label" style="color: #ec4899;">Engage</div>
-        <h2>Work With Us</h2>
-        <p>Intent is early. We're looking for practitioners who feel the gap between AI capability and team process — people who've collapsed their own workflow but can't get the organizational model to match. If that's you, we want your perspective shaping what this becomes.</p>
-      </div>
-
-      <div class="feature-grid" style="grid-template-columns: 1fr;">
-        <div class="feature-card" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; text-align: center;">
-          <div>
-            <div style="font-size: 32px; margin-bottom: 8px;">△</div>
-            <h3 style="font-size: 14px; margin-bottom: 4px; color: #f59e0b;">Practitioner-Architect</h3>
-            <p style="font-size: 12px; color: #94a3b8; line-height: 1.4;">Senior IC who's collapsed their own workflow with AI but can't get the team's process to match.</p>
-          </div>
-          <div>
-            <div style="font-size: 32px; margin-bottom: 8px;">◇</div>
-            <h3 style="font-size: 14px; margin-bottom: 4px; color: #3b82f6;">Product-Minded Leader</h3>
-            <p style="font-size: 12px; color: #94a3b8; line-height: 1.4;">PM who reads Cagan. Knows discovery was always the hard problem. Sees AI as vindication, not threat.</p>
-          </div>
-          <div>
-            <div style="font-size: 32px; margin-bottom: 8px;">○</div>
-            <h3 style="font-size: 14px; margin-bottom: 4px; color: #a855f7;">Design-Quality Advocate</h3>
-            <p style="font-size: 12px; color: #94a3b8; line-height: 1.4;">Designer/QA frustrated that AI output is evaluated against ticket-level specs rather than UX-level intent.</p>
-          </div>
-        </div>
-      </div>
-
-      <div style="text-align: center; margin-top: 24px;">
-        <a href="https://github.com/theparlor/intent" style="display: inline-flex; align-items: center; gap: 8px; color: #3b82f6; text-decoration: none; font-size: 14px; font-weight: 500; padding: 12px 24px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; transition: all 0.2s;">View on GitHub →</a>
-      </div>
-    </div>
-
-  </div>
-
-  <footer>
-    <div>Intent · Built by <a href="https://github.com/theparlor">The Parlor</a></div>
-    <div>
-      <a href="https://github.com/theparlor/intent">GitHub</a> ·
-      <a href="signals.html">Signals</a> ·
-      <a href="decisions.html">Decisions</a>
-    </div>
-  </footer>
+    </footer>
 </body>
 </html>
