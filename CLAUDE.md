@@ -10,7 +10,8 @@ Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked
 
 **Owner:** Brien (theparlorhq@gmail.com) — solo practitioner, The Parlor
 **Repo:** github.com/theparlor/intent (private)
-**Status:** Methodology defined, bootstrap kit built, CLI suite operational, validating with real repos.
+**Site:** https://theparlor.github.io/intent/
+**Status:** Methodology defined, bootstrap kit built, CLI suite operational, site live, validating with real repos.
 
 ## Core Concepts
 
@@ -137,7 +138,7 @@ intent/
 │   ├── intent-intent         ← Propose/manage intents
 │   ├── intent-spec           ← Create/manage specs
 │   └── intent-status         ← System status dashboard
-├── docs/                     ← GitHub Pages site (source: main, /docs)
+├── docs/                     ← GitHub Pages site: https://theparlor.github.io/intent/
 │   ├── index.html            ← Product landing page
 │   ├── methodology.html
 │   ├── concept-brief.html
@@ -258,7 +259,7 @@ mcp__github__push_files(owner: "theparlor", repo: "intent", branch: "main", file
 - Major = breaking change to ontology/schema/pattern. Minor = new capability/scope. Patch = fix/clarify.
 
 ### GitHub Pages
-Brien needs to enable GitHub Pages: Settings → Pages → Source: Deploy from branch → Branch: main, /docs. NOT YET ENABLED as of 2026-03-29.
+GitHub Pages is **live** at https://theparlor.github.io/intent/. Source: main branch, /docs folder. Enabled 2026-03-29.
 
 ## Key Decisions (for context)
 
@@ -277,7 +278,7 @@ Intent draws from: Marty Cagan (product operating model), Jeff Patton (story map
 
 ## What's Not Yet Done
 
-- [ ] GitHub Pages not yet enabled by Brien
+- [x] ~~GitHub Pages enabled~~ — live at https://theparlor.github.io/intent/ (2026-03-29)
 - [ ] Install MCP server on Brien's repos and validate end-to-end signal capture
 - [ ] Install .intent/ scaffolds into Brien's 4 repos
 - [ ] Intent dashboard v1 (Observe product)
