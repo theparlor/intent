@@ -3,96 +3,946 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signals - Intent</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Signal Stream — Intent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --green-bright: #22c55e;
+            --red: #ef4444;
+            --gap: 1rem;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Navigation */
+        nav.site-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav.site-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        nav.site-nav a:hover {
+            color: var(--text);
+        }
+
+        nav.site-nav a.logo {
+            color: var(--accent-blue);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-right: 1rem;
+        }
+
+        nav.site-nav a.logo span {
+            background: var(--accent-blue);
+            color: var(--bg);
+            padding: 0 0.4rem;
+            border-radius: 2px;
+        }
+
+        nav.site-nav a.active {
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 0.25rem;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .counts {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .count-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .count-item .label {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .count-item .number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        /* Lifecycle diagram */
+        .lifecycle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        .lifecycle-node {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .lifecycle-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .lifecycle-dot.captured {
+            background: var(--accent-blue);
+        }
+
+        .lifecycle-dot.active {
+            background: var(--accent-amber);
+        }
+
+        .lifecycle-dot.clustered {
+            background: var(--accent-purple);
+        }
+
+        .lifecycle-dot.promoted {
+            background: var(--green-bright);
+        }
+
+        .lifecycle-arrow {
+            color: var(--text-dim);
+        }
+
+        /* Autonomy levels sidebar */
+        .autonomy-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .autonomy-section h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .autonomy-levels {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .autonomy-level {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .autonomy-indicator {
+            width: 4px;
+            height: 32px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .autonomy-level.l0 .autonomy-indicator {
+            background: var(--red);
+        }
+
+        .autonomy-level.l1 .autonomy-indicator {
+            background: var(--accent-amber);
+        }
+
+        .autonomy-level.l2 .autonomy-indicator {
+            background: #eab308;
+        }
+
+        .autonomy-level.l3 .autonomy-indicator {
+            background: var(--accent-green);
+        }
+
+        .autonomy-level.l4 .autonomy-indicator {
+            background: var(--green-bright);
+        }
+
+        .autonomy-info {
+            flex: 1;
+        }
+
+        .autonomy-label {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .autonomy-desc {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        .autonomy-count {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .control-group label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            margin-right: 0.5rem;
+        }
+
+        button {
+            background: var(--surface);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        button.active {
+            background: var(--accent-blue);
+            color: var(--bg);
+            border-color: var(--accent-blue);
+        }
+
+        /* Signal card */
+        .signal-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .signal-card:hover {
+            border-color: var(--accent-blue);
+            background: #253549;
+        }
+
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .signal-id {
+            font-family: "Monaco", "Menlo", "Courier New", monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .signal-title {
+            flex: 1;
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .signal-date {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .signal-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .badge.source {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .badge.cluster {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .badge.trust {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-dot.active {
+            background: var(--accent-amber);
+        }
+
+        .status-dot.promoted {
+            background: var(--accent-blue);
+        }
+
+        .status-dot.dismissed {
+            background: var(--text-dim);
+        }
+
+        .confidence-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--accent-blue);
+            transition: width 0.3s;
+        }
+
+        .trust-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 0.25rem;
+            overflow: hidden;
+        }
+
+        .trust-fill {
+            height: 100%;
+            background: var(--accent-green);
+            transition: width 0.3s;
+        }
+
+        /* Cluster view */
+        .cluster-group {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .cluster-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cluster-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .cluster-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .cluster-count {
+            background: var(--bg);
+            color: var(--text-muted);
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .cluster-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .cluster-item {
+            padding: 0.75rem;
+            background: var(--bg);
+            border-left: 3px solid var(--accent-purple);
+            border-radius: 3px;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .cluster-action {
+            margin-top: 0.75rem;
+        }
+
+        button.promote-btn {
+            background: var(--accent-purple);
+            color: var(--bg);
+            border-color: var(--accent-purple);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        button.promote-btn:hover {
+            background: var(--accent-purple);
+            color: var(--bg);
+        }
+
+        .unclustered {
+            padding: 1.5rem;
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .unclustered-title {
+            color: var(--text);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .signal-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            nav.site-nav {
+                gap: 1rem;
+                font-size: 0.8rem;
+            }
+
+            nav.site-nav a.logo {
+                margin-right: auto;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .lifecycle {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .control-group {
+                width: 100%;
+            }
+
+            .signal-header {
+                flex-direction: column;
+            }
+
+            .signal-date {
+                align-self: flex-start;
+            }
+
+            .cluster-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav class="site-nav">
-        <a href="index.html" class="logo"><span>I</span>ntent</a>
-        <a href="index.html">Home</a>
-        <a href="methodology.html">Methodology</a>
-        <a href="concept-brief.html">Concept Brief</a>
-        <a href="signals.html" class="active">Signals</a>
-        <a href="decisions.html">Decisions</a>
-        <a href="roadmap.html">Roadmap</a>
-    </nav>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="site-nav">
+            <a href="index.html" class="logo"><span>I</span>ntent</a>
+            <a href="index.html">Home</a>
+            <a href="methodology.html">Methodology</a>
+            <a href="concept-brief.html">Concept Brief</a>
+            <a href="signals.html" class="active">Signals</a>
+            <a href="decisions.html">Decisions</a>
+            <a href="roadmap.html">Roadmap</a>
+        </nav>
 
-    <header class="page-header">
-        <div class="container">
-            <h1>Signals</h1>
-            <p class="subtitle">Structured observability for work</p>
-        </div>
-    </header>
-
-    <main class="container">
-        <section class="signals-intro">
-            <p>
-                Signals are the observable traces left by work. Every spec executed, every decision made, every experiment run—these leave signals. Signals make the notice→spec→execute→observe loop visible and improvable.
-            </p>
-        </section>
-
-        <section class="signal-types">
-            <h2>Signal Types</h2>
+        <!-- Header -->
+        <div class="header">
+            <h1>Signal Stream</h1>
+            <p class="subtitle">Observations captured from product development loops. The signal lifecycle: captured → active → (clustered | dismissed | promoted).</p>
             
-            <div class="signal-type">
-                <h3>Execution Signals</h3>
-                <p>Traces left when a spec is executed. Typically includes:</p>
-                <ul>
-                    <li>What was built</li>
-                    <li>When it was built</li>
-                    <li>Who built it (human or AI agent)</li>
-                    <li>What the spec was</li>
-                    <li>Artifacts (code, documents, outputs)</li>
-                    <li>Time taken</li>
-                    <li>Success or failure status</li>
-                </ul>
+            <div class="counts">
+                <div class="count-item">
+                    <span class="label">Total Signals</span>
+                    <span class="number" id="count-total">12</span>
+                </div>
+                <div class="count-item">
+                    <span class="label">Active</span>
+                    <span class="number" id="count-active">8</span>
+                </div>
+                <div class="count-item">
+                    <span class="label">Promoted</span>
+                    <span class="number" id="count-promoted">4</span>
+                </div>
+                <div class="count-item">
+                    <span class="label">Clusters</span>
+                    <span class="number" id="count-clusters">4</span>
+                </div>
             </div>
-
-            <div class="signal-type">
-                <h3>Observation Signals</h3>
-                <p>Data collected when observing the results of execution. Examples:</p>
-                <ul>
-                    <li>Did it work as expected?</li>
-                    <li>What surprised you?</li>
-                    <li>What would you change?</li>
-                    <li>Quantitative metrics (speed, quality, cost)</li>
-                    <li>Qualitative feedback (easy to use, understandable, etc.)</li>
-                </ul>
-            </div>
-
-            <div class="signal-type">
-                <h3>Decision Signals</h3>
-                <p>Signals from decisions made and their outcomes:</p>
-                <ul>
-                    <li>What decision was made</li>
-                    <li>Why (reasoning)</li>
-                    <li>When</li>
-                    <li>Expected outcome</li>
-                    <li>Actual outcome</li>
-                    <li>Decisions that led to it (dependencies)</li>
-                </ul>
-            </div>
-        </section>
-
-        <section class="signal-use-cases">
-            <h2>How Signals Are Used</h2>
-            <p>
-                Signals feed into the observe phase of the loop and then back into notice. As patterns emerge from signals:
-            </p>
-            <ul>
-                <li>You notice recurring problems and opportunities</li>
-                <li>You identify which specs produce the best outcomes</li>
-                <li>You understand which AI agents or tools work best for different tasks</li>
-                <li>You build feedback loops that improve over time</li>
-                <li>You share learnings with your team</li>
-            </ul>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
         </div>
-    </footer>
+
+        <!-- Lifecycle diagram -->
+        <div class="lifecycle">
+            <div class="lifecycle-node">
+                <div class="lifecycle-dot captured"></div>
+                <span>Captured</span>
+            </div>
+            <div class="lifecycle-arrow">→</div>
+            <div class="lifecycle-node">
+                <div class="lifecycle-dot active"></div>
+                <span>Active</span>
+            </div>
+            <div class="lifecycle-arrow">→</div>
+            <div class="lifecycle-node">
+                <div class="lifecycle-dot clustered"></div>
+                <span>Clustered</span>
+            </div>
+            <div class="lifecycle-arrow">→</div>
+            <div class="lifecycle-node">
+                <div class="lifecycle-dot promoted"></div>
+                <span>Promoted</span>
+            </div>
+        </div>
+
+        <!-- Autonomy levels -->
+        <div class="autonomy-section">
+            <h3>Autonomy Levels (Trust-Based)</h3>
+            <div class="autonomy-levels">
+                <div class="autonomy-level l0">
+                    <div class="autonomy-indicator"></div>
+                    <div class="autonomy-info">
+                        <div class="autonomy-label">L0: Human Drives</div>
+                        <div class="autonomy-desc">Trust < 0.2 — No autonomous action</div>
+                    </div>
+                    <div class="autonomy-count"><span id="l0-count">0</span></div>
+                </div>
+                <div class="autonomy-level l1">
+                    <div class="autonomy-indicator"></div>
+                    <div class="autonomy-info">
+                        <div class="autonomy-label">L1: Agent Assists</div>
+                        <div class="autonomy-desc">Trust 0.2–0.4 — Suggests actions</div>
+                    </div>
+                    <div class="autonomy-count"><span id="l1-count">0</span></div>
+                </div>
+                <div class="autonomy-level l2">
+                    <div class="autonomy-indicator"></div>
+                    <div class="autonomy-info">
+                        <div class="autonomy-label">L2: Agent Decides, Human Approves</div>
+                        <div class="autonomy-desc">Trust 0.4–0.6 — Proposes, awaits approval</div>
+                    </div>
+                    <div class="autonomy-count"><span id="l2-count">0</span></div>
+                </div>
+                <div class="autonomy-level l3">
+                    <div class="autonomy-indicator"></div>
+                    <div class="autonomy-info">
+                        <div class="autonomy-label">L3: Agent Executes, Human Monitors</div>
+                        <div class="autonomy-desc">Trust 0.6–0.85 — Acts with oversight</div>
+                    </div>
+                    <div class="autonomy-count"><span id="l3-count">0</span></div>
+                </div>
+                <div class="autonomy-level l4">
+                    <div class="autonomy-indicator"></div>
+                    <div class="autonomy-info">
+                        <div class="autonomy-label">L4: Full Autonomy</div>
+                        <div class="autonomy-desc">Trust ≥ 0.85 — No human intervention</div>
+                    </div>
+                    <div class="autonomy-count"><span id="l4-count">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <label>Status</label>
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="promoted">Promoted</button>
+                <button class="filter-btn" data-filter="dismissed">Dismissed</button>
+            </div>
+            <div class="control-group">
+                <label>View</label>
+                <button class="view-btn active" data-view="list">List</button>
+                <button class="view-btn" data-view="clusters">Clusters</button>
+            </div>
+        </div>
+
+        <!-- Signal List View -->
+        <div id="list-view" class="signal-list">
+            <!-- Signals rendered here by JS -->
+        </div>
+
+        <!-- Cluster View -->
+        <div id="cluster-view" class="hidden">
+            <!-- Clusters rendered here by JS -->
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Intent • Signal management for AI-augmented teams</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+                <a href="methodology.html">Methodology</a> • 
+                <a href="concept-brief.html">Concept Brief</a> • 
+                <a href="roadmap.html">Roadmap</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        const SIGNALS = [
+            { id: "SIG-001", date: "2026-03-28", title: "Teams rewrite AI-generated code because specs were too vague", source: "conversation", confidence: 0.9, status: "promoted", autonomy: null, cluster: null, trust: null },
+            { id: "SIG-002", date: "2026-03-28", title: "Standup updates become meaningless when AI ships in hours", source: "conversation", confidence: 0.85, status: "promoted", autonomy: null, cluster: null, trust: null },
+            { id: "SIG-003", date: "2026-03-28", title: "Sprint planning can't keep up with AI execution speed", source: "conversation", confidence: 0.9, status: "promoted", autonomy: null, cluster: null, trust: null },
+            { id: "SIG-004", date: "2026-03-28", title: "PMs spending 60% of time on ceremony instead of discovery", source: "conversation", confidence: 0.8, status: "promoted", autonomy: null, cluster: null, trust: null },
+            { id: "SIG-005", date: "2026-03-28", title: "AI agents produce better code from contract-style specs than user stories", source: "conversation", confidence: 0.85, status: "promoted", autonomy: null, cluster: null, trust: null },
+            { id: "SIG-006", date: "2026-03-29", title: "Bootstrap gap: Intent describes a world but doesn't yet enable it", source: "build-session", confidence: 0.9, status: "active", autonomy: null, cluster: "enablement", trust: 0.6 },
+            { id: "SIG-007", date: "2026-03-29", title: "Ceremony wall: Sprint 3 team hit resistance adopting new process", source: "build-session", confidence: 0.85, status: "active", autonomy: null, cluster: "adoption", trust: 0.3 },
+            { id: "SIG-008", date: "2026-03-29", title: "Signals die in context switches between tools", source: "build-session", confidence: 0.9, status: "active", autonomy: null, cluster: "capture", trust: 0.7 },
+            { id: "SIG-009", date: "2026-03-29", title: "Four products not one: each loop phase needs its own roadmap", source: "build-session", confidence: 0.95, status: "promoted", autonomy: null, cluster: null, trust: null },
+            { id: "SIG-010", date: "2026-03-29", title: "Ari pattern: tickets become bot specs, refinement becomes design", source: "conversation", confidence: 0.95, status: "active", autonomy: null, cluster: "adoption", trust: 0.4 },
+            { id: "SIG-011", date: "2026-03-29", title: "Multi-surface capture requirement: MCP, CLI, Slack, GitHub, AI plugins", source: "build-session", confidence: 0.9, status: "active", autonomy: null, cluster: "capture", trust: 0.7 },
+            { id: "SIG-012", date: "2026-03-29", title: "Autonomous signal processing with trust-based execution levels", source: "conversation", confidence: 0.95, status: "active", autonomy: null, cluster: "autonomy", trust: 0.5 },
+        ];
+
+        let currentFilter = 'all';
+        let currentView = 'list';
+
+        function getStatusColor(status) {
+            if (status === 'active') return 'active';
+            if (status === 'promoted') return 'promoted';
+            return 'dismissed';
+        }
+
+        function getTrustLevel(trust) {
+            if (trust === null) return null;
+            if (trust < 0.2) return 'L0';
+            if (trust < 0.4) return 'L1';
+            if (trust < 0.6) return 'L2';
+            if (trust < 0.85) return 'L3';
+            return 'L4';
+        }
+
+        function getAutonomyLevel(trust) {
+            if (trust === null) return null;
+            if (trust < 0.2) return 0;
+            if (trust < 0.4) return 1;
+            if (trust < 0.6) return 2;
+            if (trust < 0.85) return 3;
+            return 4;
+        }
+
+        function renderSignalCard(signal) {
+            const statusColor = getStatusColor(signal.status);
+            const trustLevel = getTrustLevel(signal.trust);
+            
+            let html = `
+                <div class="signal-card">
+                    <div class="signal-header">
+                        <div>
+                            <div class="signal-id">${signal.id}</div>
+                            <div class="signal-title">${signal.title}</div>
+                        </div>
+                        <div class="signal-date">${signal.date}</div>
+                    </div>
+                    <div class="signal-meta">
+                        <span class="status-dot ${statusColor}"></span>
+                        <span style="color: var(--text-dim); font-size: 0.8rem;">${signal.status}</span>
+                        <span class="badge source">${signal.source}</span>
+            `;
+            
+            if (signal.cluster) {
+                html += `<span class="badge cluster">${signal.cluster}</span>`;
+            }
+            
+            if (signal.trust !== null) {
+                html += `<span class="badge trust">Trust: ${(signal.trust * 100).toFixed(0)}% (${trustLevel})</span>`;
+            }
+            
+            html += `
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${signal.confidence * 100}%"></div>
+                    </div>
+            `;
+            
+            if (signal.trust !== null) {
+                html += `
+                    <div class="trust-bar">
+                        <div class="trust-fill" style="width: ${signal.trust * 100}%"></div>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+            return html;
+        }
+
+        function renderListView() {
+            const filtered = currentFilter === 'all' 
+                ? SIGNALS 
+                : SIGNALS.filter(s => s.status === currentFilter);
+            
+            const listView = document.getElementById('list-view');
+            listView.innerHTML = filtered.map(signal => renderSignalCard(signal)).join('');
+        }
+
+        function renderClusterView() {
+            const clusters = {};
+            const unclustered = [];
+            
+            SIGNALS.forEach(signal => {
+                if (signal.cluster) {
+                    if (!clusters[signal.cluster]) {
+                        clusters[signal.cluster] = [];
+                    }
+                    clusters[signal.cluster].push(signal);
+                } else {
+                    unclustered.push(signal);
+                }
+            });
+
+            let html = '';
+            
+            Object.keys(clusters).sort().forEach(clusterName => {
+                const signals = clusters[clusterName];
+                html += `
+                    <div class="cluster-group">
+                        <div class="cluster-header">
+                            <div class="cluster-title">
+                                <span class="cluster-name">${clusterName.charAt(0).toUpperCase() + clusterName.slice(1)}</span>
+                                <span class="cluster-count">${signals.length} signal${signals.length !== 1 ? 's' : ''}</span>
+                            </div>
+                        </div>
+                        <div class="cluster-items">
+                `;
+                
+                signals.forEach(signal => {
+                    html += `<div class="cluster-item">${signal.title} <span style="color: var(--text-dim); font-size: 0.75rem;">(${signal.id})</span></div>`;
+                });
+                
+                html += `
+                        </div>
+                        <div class="cluster-action">
+                            <button class="promote-btn" disabled>Promote to Intent</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (unclustered.length > 0) {
+                html += `
+                    <div class="unclustered">
+                        <div class="unclustered-title">Unclustered Signals</div>
+                `;
+                
+                unclustered.forEach(signal => {
+                    html += `<div style="margin-bottom: 0.5rem; text-align: left; color: var(--text);">${signal.title} <span style="color: var(--text-dim); font-size: 0.75rem;">(${signal.id})</span></div>`;
+                });
+                
+                html += `</div>`;
+            }
+            
+            document.getElementById('cluster-view').innerHTML = html;
+        }
+
+        function updateCounts() {
+            const active = SIGNALS.filter(s => s.status === 'active').length;
+            const promoted = SIGNALS.filter(s => s.status === 'promoted').length;
+            const clusters = new Set(SIGNALS.filter(s => s.cluster).map(s => s.cluster)).size;
+            
+            document.getElementById('count-total').textContent = SIGNALS.length;
+            document.getElementById('count-active').textContent = active;
+            document.getElementById('count-promoted').textContent = promoted;
+            document.getElementById('count-clusters').textContent = clusters;
+        }
+
+        function updateAutonomyLevels() {
+            const levels = [0, 0, 0, 0, 0];
+            
+            SIGNALS.forEach(signal => {
+                if (signal.trust !== null) {
+                    const level = getAutonomyLevel(signal.trust);
+                    levels[level]++;
+                }
+            });
+            
+            document.getElementById('l0-count').textContent = levels[0];
+            document.getElementById('l1-count').textContent = levels[1];
+            document.getElementById('l2-count').textContent = levels[2];
+            document.getElementById('l3-count').textContent = levels[3];
+            document.getElementById('l4-count').textContent = levels[4];
+        }
+
+        function updateView() {
+            if (currentView === 'list') {
+                document.getElementById('list-view').classList.remove('hidden');
+                document.getElementById('cluster-view').classList.add('hidden');
+                renderListView();
+            } else {
+                document.getElementById('list-view').classList.add('hidden');
+                document.getElementById('cluster-view').classList.remove('hidden');
+                renderClusterView();
+            }
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                updateView();
+            });
+        });
+
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentView = btn.dataset.view;
+                updateView();
+            });
+        });
+
+        updateCounts();
+        updateAutonomyLevels();
+        renderListView();
+    </script>
 </body>
 </html>
