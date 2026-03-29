@@ -11,7 +11,7 @@ Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked
 **Owner:** Brien (theparlorhq@gmail.com) — solo practitioner, The Parlor
 **Repo:** github.com/theparlor/intent (private)
 **Site:** https://theparlor.github.io/intent/
-**Status:** Methodology defined, bootstrap kit built, CLI suite operational, site live, validating with real repos.
+**Status:** Methodology defined, CLI suite + MCP server operational, signal dashboard live, trust framework specced. Preparing for autonomous agent handoff.
 
 ## Core Concepts
 
@@ -58,6 +58,41 @@ A 5-tier adapter architecture for capturing signals from every surface where pra
 5. **AI Plugins** (Tier 5) — ChatGPT, Copilot, Codex. Specced, not built.
 
 See `spec/signal-capture-system.md` for the full architecture.
+
+### Signal Trust & Autonomous Execution
+
+Signals are not just captured — they are enriched, scored, classified, and routed through an autonomous processing pipeline. The goal: work every signal as far along as it can go, with humans intervening only when something is unsafe or too ambiguous.
+
+**Trust Model:** Every signal gets two scores:
+- **Confidence** (0-1): How likely is this signal real and worth acting on?
+- **Trust** (0-1): How confidently can an agent resolve this without human input?
+
+Trust = clarity × 0.30 + (1/blast_radius) × 0.20 + reversibility × 0.20 + testability × 0.20 + precedent × 0.10
+
+**Autonomy Levels:**
+- L0 (trust < 0.2): Human drives — strategic, ambiguous
+- L1 (0.2–0.4): Agent assists — enriches, human decides
+- L2 (0.4–0.6): Agent decides, human approves — drafts intent+spec
+- L3 (0.6–0.85): Agent executes, human monitors — full loop, observe after
+- L4 (≥ 0.85): Full autonomy — circuit breakers only
+
+**Enrichment Pipeline:** Source Adapter → Dedup Agent → Context Agent → Trust Scorer → Classifier → Router
+
+**Disambiguation Loop:** When an agent hits ambiguity, it generates a new signal asking a better question. The system never dead-ends.
+
+See `spec/signal-trust-framework.md` for the full architecture.
+
+### Deployment Topology
+
+Intent supports a config-driven deployment model. The same tools work in two modes:
+
+**Local mode:** `.intent/` in git is the source of truth. CLI tools read/write files. MCP server reads/writes files. Signal dashboard reads from git. Best for solo practitioners and teams that want full git control.
+
+**Hosted mode (planned):** A service is the source of truth. CLI and MCP become API clients. Dashboard reads from the service. `.intent/` in git becomes an optional sync target. Required for always-on agent processing (Brien's laptop goes offline during travel).
+
+Configuration lives in `.intent/config.yml` (schema in `spec/signal-trust-framework.md`). The same CLI commands, MCP tools, and dashboard work in both modes — only the backend changes.
+
+The processing pipeline (enrichment agents, routing, execution) must run somewhere always-on. Options under evaluation: GitHub Actions (simplest), cloud service (most capable), dedicated machine (interim).
 
 ## CLI Suite
 
@@ -119,7 +154,7 @@ intent/
 ├── .intent/                  ← Intent's own dogfood
 │   ├── INTENT.md             ← Project manifest
 │   ├── decisions.md          ← Decision log (source of truth)
-│   ├── signals/              ← 11 founding signals (SIG-001 through SIG-011)
+│   ├── signals/              ← 13 founding signals (SIG-001 through SIG-013)
 │   ├── intents/              ← Proposed intents
 │   ├── specs/                ← Written specs
 │   ├── events/               ← Event log (events.jsonl)
@@ -157,6 +192,7 @@ intent/
 │   ├── intent-concept-brief.md
 │   ├── autonomous-operations-design.md
 │   ├── signal-capture-system.md  ← 5-tier capture architecture
+│   ├── signal-trust-framework.md   ← Trust scoring, autonomy levels, enrichment pipeline
 │   ├── product-roadmap.md       ← Four-product roadmap
 │   ├── signal-stream.md
 │   ├── decision-log.md
@@ -175,7 +211,7 @@ intent/
 ├── reference/                ← Reference materials
 ├── CLAUDE.md                 ← THIS FILE
 ├── CHANGELOG.md              ← Timestamp-based version history
-├── VERSION                   ← Current: 2026.03.29-0.4.0
+├── VERSION                   ← Current: 2026.03.29-0.5.0
 ├── README.md                 ← Public-facing repo README
 └── TASKS.md                  ← Living task list
 ```
@@ -279,11 +315,39 @@ Intent draws from: Marty Cagan (product operating model), Jeff Patton (story map
 ## What's Not Yet Done
 
 - [x] ~~GitHub Pages enabled~~ — live at https://theparlor.github.io/intent/ (2026-03-29)
+- [x] ~~Signal management dashboard~~ — signals.html with lifecycle, clustering, trust levels (2026-03-29)
+- [x] ~~Signal trust framework spec~~ — spec/signal-trust-framework.md (2026-03-29)
+- [ ] Add trust/autonomy_level/status fields to signal schema and template
+- [ ] Signal management CLI commands: review, dismiss, cluster, promote
+- [ ] Trust scoring agent (first enrichment agent)
+- [ ] .intent/config.yml schema for builder-configurable thresholds
 - [ ] Install MCP server on Brien's repos and validate end-to-end signal capture
 - [ ] Install .intent/ scaffolds into Brien's 4 repos
 - [ ] Intent dashboard v1 (Observe product)
 - [ ] Slack signal capture bot (Notice product, Tier 3)
 - [ ] Spec validation CLI — check completeness against criteria
+- [ ] Hosted deployment mode — always-on processing for travel/multi-machine
+- [ ] Multi-machine file sync via GitHub for library organizational skills
 - [ ] 5 in-depth interviews with teams experiencing AI + Agile friction
 - [ ] Message to Ari about Intent (draft exists)
-- [ ] Deeper positioning and vision work
+
+## Agent Handoff Protocol
+
+Intent is designed to be developed by AI agents (Claude Code) working from this file. When Brien is away, agents should:
+
+1. **Read this file first** — it is the source of truth for project context.
+2. **Check `.intent/signals/` for active signals** — these are work that needs doing.
+3. **Check `spec/` for specced work** — specs with status:approved are ready for execution.
+4. **Use the CLI tools to manage state** — `intent-status` for overview, `intent-signal review` for triage.
+5. **Emit events for all work** — every action writes to `.intent/events/events.jsonl`.
+6. **Push via GitHub MCP** — the sandbox can't git commit directly. Use `mcp__github__push_files`.
+7. **When stuck, generate a disambiguation signal** — don't dead-end. Capture what's ambiguous as a new signal for Brien to review.
+
+### Signal Generation from Conversations
+Brien may generate signals from Cowork sessions, Claude desktop app (iOS/web/desktop), or regular chat. These signals will be formatted as `.intent/signals/` files and committed to the repo. Claude Code agents should monitor for new signals and begin processing them through the enrichment pipeline.
+
+### Priority of Work
+1. Signals with trust ≥ 0.6 that can be auto-executed (L3/L4)
+2. Signals that need enrichment (add context, compute trust)
+3. Specs that are approved and ready for execution
+4. Infrastructure work (tooling, pipeline, config)
