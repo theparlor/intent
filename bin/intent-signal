@@ -1,0 +1,145 @@
+#!/bin/bash
+#
+# intent-signal — Capture a signal from the command line
+#
+# Usage:
+#   intent-signal "OTel traces show 40% of contracts fail on first pass"
+#   intent-signal "Title here" --body "Longer description" --confidence 0.8
+#   intent-signal "Title here" --source pr-review --author brien
+#
+# Writes to .intent/signals/ in the nearest Intent-native repo.
+
+set -euo pipefail
+
+# --- Parse arguments ---
+TITLE=""
+BODY=""
+CONFIDENCE=""
+SOURCE="cli"
+AUTHOR="${USER:-unknown}"
+COMMIT=false
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --body) BODY="$2"; shift 2 ;;
+    --confidence) CONFIDENCE="$2"; shift 2 ;;
+    --source) SOURCE="$2"; shift 2 ;;
+    --author) AUTHOR="$2"; shift 2 ;;
+    --commit) COMMIT=true; shift ;;
+    --help|-h)
+      echo "Usage: intent-signal \"Title\" [--body TEXT] [--confidence 0.0-1.0] [--source NAME] [--author NAME] [--commit]"
+      echo ""
+      echo "Captures a signal in .intent/signals/ of the nearest Intent-native repo."
+      echo ""
+      echo "Options:"
+      echo "  --body TEXT        Longer description of the signal"
+      echo "  --confidence N     Confidence score (0.0 to 1.0)"
+      echo "  --source NAME      Where this signal came from (default: cli)"
+      echo "  --author NAME      Who noticed (default: \$USER)"
+      echo "  --commit           Auto-commit the signal after creating"
+      exit 0
+      ;;
+    *)
+      if [[ -z "$TITLE" ]]; then
+        TITLE="$1"
+      else
+        echo "Error: Unexpected argument '$1'. Did you forget --body?" >&2
+        exit 1
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "$TITLE" ]]; then
+  echo "Error: Signal title required." >&2
+  echo "Usage: intent-signal \"What you noticed\"" >&2
+  exit 1
+fi
+
+# --- Find .intent/ directory ---
+find_intent_root() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.intent" ]]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+REPO_ROOT=$(find_intent_root) || {
+  echo "Error: No .intent/ directory found. Are you in an Intent-native repo?" >&2
+  echo "Run: mkdir -p .intent/signals .intent/events" >&2
+  exit 1
+}
+
+SIGNALS_DIR="$REPO_ROOT/.intent/signals"
+EVENTS_DIR="$REPO_ROOT/.intent/events"
+mkdir -p "$SIGNALS_DIR" "$EVENTS_DIR"
+
+# --- Generate metadata ---
+DATE=$(date -u +"%Y-%m-%d")
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Generate slug from title
+SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs '[:alnum:]' '-' | head -c 60 | sed 's/-$//')
+
+# Generate next signal ID
+NEXT_ID=1
+for f in "$SIGNALS_DIR"/*.md 2>/dev/null; do
+  [[ -f "$f" ]] || continue
+  ID_NUM=$(grep -oP 'id:\s*SIG-\K\d+' "$f" 2>/dev/null || true)
+  if [[ -n "$ID_NUM" ]] && (( ID_NUM >= NEXT_ID )); then
+    NEXT_ID=$((ID_NUM + 1))
+  fi
+done
+SIGNAL_ID=$(printf "SIG-%03d" "$NEXT_ID")
+
+FILENAME="${DATE}-${SLUG}.md"
+FILEPATH="$SIGNALS_DIR/$FILENAME"
+
+# --- Write signal file ---
+{
+  echo "---"
+  echo "id: $SIGNAL_ID"
+  echo "timestamp: $TIMESTAMP"
+  echo "source: $SOURCE"
+  echo "author: $AUTHOR"
+  [[ -n "$CONFIDENCE" ]] && echo "confidence: $CONFIDENCE"
+  echo "---"
+  echo "# $TITLE"
+  if [[ -n "$BODY" ]]; then
+    echo ""
+    echo "$BODY"
+  fi
+} > "$FILEPATH"
+
+# --- Write event ---
+EVENTS_FILE="$EVENTS_DIR/events.jsonl"
+EVENT=$(cat <<EOF
+{"version":"0.1.0","event":"signal.created","timestamp":"$TIMESTAMP","trace_id":null,"span_id":"$SIGNAL_ID","parent_id":null,"source":"cli","data":{"signal_id":"$SIGNAL_ID","title":"$TITLE","confidence":${CONFIDENCE:-null},"author":"$AUTHOR","file":".intent/signals/$FILENAME"}}
+EOF
+)
+echo "$EVENT" >> "$EVENTS_FILE"
+
+# --- Output ---
+REL_PATH=".intent/signals/$FILENAME"
+echo "Signal captured: $SIGNAL_ID"
+echo "File: $REL_PATH"
+echo "Event: signal.created → .intent/events/events.jsonl"
+
+# --- Optional auto-commit ---
+if $COMMIT; then
+  cd "$REPO_ROOT"
+  git add "$REL_PATH" ".intent/events/events.jsonl"
+  git commit -m "signal: ${TITLE:0:50}"
+  echo "Committed."
+else
+  echo ""
+  echo "To commit:"
+  echo "  git add $REL_PATH .intent/events/events.jsonl"
+  echo "  git commit -m 'signal: ${TITLE:0:50}'"
+fi

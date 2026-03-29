@@ -1,0 +1,102 @@
+name: Intent Event Emission
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.intent/signals/**'
+      - '.intent/intents/**'
+      - '.intent/specs/**'
+      - '.intent/decisions/**'
+
+jobs:
+  emit-events:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need previous commit to diff
+
+      - name: Detect intent file changes and emit events
+        run: |
+          EVENTS_FILE=".intent/events/events.jsonl"
+          mkdir -p .intent/events
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          CHANGES_MADE=false
+
+          # Get files changed in this push
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only HEAD)
+
+          for FILE in $CHANGED_FILES; do
+            EVENT_TYPE=""
+            SPAN_ID=""
+            TITLE=""
+
+            case "$FILE" in
+              .intent/signals/*)
+                EVENT_TYPE="signal.created"
+                # Extract signal ID from file
+                SPAN_ID=$(grep -oP 'id:\s*\K\S+' "$FILE" 2>/dev/null || echo "unknown")
+                TITLE=$(grep -oP '^#\s+\K.+' "$FILE" 2>/dev/null || echo "$FILE")
+                ;;
+              .intent/intents/*)
+                EVENT_TYPE="intent.proposed"
+                SPAN_ID=$(grep -oP 'id:\s*\K\S+' "$FILE" 2>/dev/null || echo "unknown")
+                TITLE=$(grep -oP '^#\s+\K.+' "$FILE" 2>/dev/null || echo "$FILE")
+                ;;
+              .intent/specs/*)
+                EVENT_TYPE="spec.written"
+                SPAN_ID=$(grep -oP 'id:\s*\K\S+' "$FILE" 2>/dev/null || echo "unknown")
+                TITLE=$(grep -oP '^#\s+\K.+' "$FILE" 2>/dev/null || echo "$FILE")
+                ;;
+              .intent/decisions/*)
+                EVENT_TYPE="decision.recorded"
+                SPAN_ID=$(basename "$FILE" .md)
+                TITLE=$(grep -oP '^#\s+\K.+' "$FILE" 2>/dev/null || echo "$FILE")
+                ;;
+              *)
+                continue
+                ;;
+            esac
+
+            if [[ -n "$EVENT_TYPE" ]]; then
+              # Write event (escape JSON properly)
+              EVENT=$(jq -cn \
+                --arg version "0.1.0" \
+                --arg event "$EVENT_TYPE" \
+                --arg timestamp "$TIMESTAMP" \
+                --arg span_id "$SPAN_ID" \
+                --arg source "github-action" \
+                --arg title "$TITLE" \
+                --arg file "$FILE" \
+                '{
+                  version: $version,
+                  event: $event,
+                  timestamp: $timestamp,
+                  trace_id: null,
+                  span_id: $span_id,
+                  parent_id: null,
+                  source: $source,
+                  data: {
+                    title: $title,
+                    file: $file
+                  }
+                }')
+              echo "$EVENT" >> "$EVENTS_FILE"
+              echo "Emitted: $EVENT_TYPE for $FILE"
+              CHANGES_MADE=true
+            fi
+          done
+
+          if $CHANGES_MADE; then
+            git config user.name "intent-bot"
+            git config user.email "intent-bot@theparlor.dev"
+            git add "$EVENTS_FILE"
+            git commit -m "event: emit events for intent file changes" || echo "No new events to commit"
+            git push
+          else
+            echo "No intent file changes detected."
+          fi
