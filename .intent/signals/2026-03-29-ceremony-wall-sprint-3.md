@@ -1,15 +1,30 @@
 ---
-id: SIG-007
-timestamp: 2026-03-29T12:00:00Z
-source: conversation
-confidence: 0.9
+id: SIG-008
+timestamp: 2026-03-29T08:00:00Z
+source: cowork-session
 author: brien
-related_intents: [notice-product, methodology]
+confidence: 0.75
+trust: 0.35
+autonomy_level: L0
+status: active
+cluster: autonomous-infrastructure
+parent_signal:
+related_intents: []
 ---
-# Teams using AI agents hit a ceremony wall around sprint 3
+# Signal: "Ceremony wall" — agile ceremonies are becoming expensive overhead
 
-When AI agents start doing significant portions of the implementation, the two-week sprint cycle becomes a bottleneck rather than a cadence. Work completes in hours but waits for the next planning session to get new specs.
+## Observation
 
-This is the founding observation of Intent. The sprint ceremony that was designed to create rhythm instead creates a dam. The water (completed work) pools behind the ceremony wall while the team waits for permission to start the next thing.
+During autonomy level discussions, a team lead mentioned: "We spend 3-4 hours per sprint on ceremonies (standups, planning, retro). With faster autonomous execution, that's now a bottleneck. We're either cutting ceremonies or moving to async specs." This is happening across multiple teams.
 
-Source: Ari conversation, Brien's direct experience across consulting engagements.
+## Why It Matters
+
+As autonomy increases (L2+), team synchronization overhead becomes the constraint. Ceremonies were designed for human-paced work. If agents execute in minutes, humans waiting for the next standup is inefficient. This signals a shift: from ceremony-driven coordination to spec-driven automation.
+
+## Trust Factors
+
+- Clarity: Medium — anecdotal but consistent
+- Blast radius: Medium — affects team structure and process, not code
+- Reversibility: Very High — can revert to ceremonies anytime
+- Testability: Medium — hard to measure ceremony cost in isolation
+- Precedent: High — similar shifts in CI/CD, infrastructure automation

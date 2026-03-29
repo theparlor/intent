@@ -1,72 +1,36 @@
-# Signal: Work Ontology Replacement
+---
+id: SIG-002
+timestamp: 2026-03-28T11:00:00Z
+source: cowork-session
+author: brien
+confidence: 0.95
+trust: 0.75
+autonomy_level: L1
+status: active
+cluster: work-ontology-design
+parent_signal:
+related_intents: []
+---
+# Signal: Work is organized into three nested units: contract, process, tool
 
-ID: SIG-001
-Date: 2026-03-28
-Status: Captured
+## Observation
 
-## Problem
+Across multiple customer engagements (Subaru, Ari's team, internal), the same pattern appears:
 
-Agile's ticket-based model treats work as discrete human labor units ("story points", "estimates"). This is misaligned with AI-augmented teams where agents consume specs as structured input, not narrative stories.
+1. **Contracts** — Agreements with vendors/customers (SLAs, scope, renewal cycles)
+2. **Processes** — Business workflows running within or across contracts (e.g., vendor onboarding, invoice cycle, PR review)
+3. **Tools** — Systems executing processes (Salesforce, Jira, payment platforms, code repos)
 
-## Key Insight
+These nest: a contract spans multiple processes, a process uses multiple tools. This is the "unit structure" that autonomous systems need to reason about.
 
-The atomic unit of work shifts from "human labor" to **"declarative state description"**.
+## Why It Matters
 
-## Proposed Hierarchy
+Autonomous operations (L2-L4) cannot work at the level of individual API calls or tickets. They need to understand *business context*. The work ontology provides it: where business drivers (contracts) create obligations, which decompose into processes, which require tools. A signal about an SLA breach means nothing without knowing the contract. A monitoring alert is just noise without knowing the process it's in.
 
-A seven-level ontology replaces the ticket:
+## Trust Factors
 
-1. **Signal**: Raw observation or request (unstructured)
-   - Source: Design sessions, user feedback, monitoring
-   - Channel: Conversation transcripts, GitHub issues, monitoring alerts
-
-2. **Intent**: Declarative goal or outcome (what we want)
-   - Parsed from signals
-   - Orthogonal to time and implementation
-   - Example: "Users should be able to set a daily budget"
-
-3. **Spec**: Detailed requirements and constraints (how to achieve it)
-   - Business logic, edge cases, acceptance criteria
-   - Agents consume this as program input
-   - Example: "Budget must prevent purchases over limit, with email notification on violation"
-
-4. **Contract**: Interface and guarantees (the boundary)
-   - Input types, output types, error handling
-   - Enables parallelization
-   - Example: Input: {userId, dailyBudgetUSD}, Output: {success: boolean, newBudget: object}
-
-5. **Capability**: Atomic skill or subsystem (can be built by agent, human, or hybrid)
-   - Self-contained, tested independently
-   - Maps 1:1 to a contract
-
-6. **Feature**: Composed capability for users (user-visible behavior)
-   - One or more capabilities composed together
-   - Has acceptance tests, telemetry
-
-7. **Product**: Integrated system for market
-   - Collection of features, versioning, release notes
-
-## Why This Matters for Intent
-
-- **Agents as first-class workers**: Agents read specs, not stories. Specs are executable specifications.
-- **Parallelization**: Contracts define clear boundaries, enabling work to be parallelized without human coordination.
-- **Observability**: Each unit has metadata: creation time, author, status, tests, telemetry.
-- **Traceability**: Link from Product -> Feature -> Capability -> Contract -> Spec -> Intent -> Signal.
-
-## Implementation
-
-Each work unit lives in git:
-- Signals: `.intent/signals/` (markdown)
-- Intents: `.intent/intents/` (YAML)
-- Specs: `.intent/specs/` (YAML + markdown)
-- Contracts: `.intent/contracts/` (TypeScript interfaces or JSON Schema)
-- Capabilities: Git branches / PR model
-- Features: Tags + release notes
-- Product: Version tags + CHANGELOG
-
-## Next Steps
-
-1. Define formal schemas for each unit
-2. Create tooling to convert Signals -> Intents -> Specs
-3. Integrate with CI/CD for automated testing at Contract level
-4. Build dashboard to visualize the hierarchy
+- Clarity: Very High — this structure is observable across all engagements
+- Blast radius: High — this structure defines how everything else is organized
+- Reversibility: High — it's a naming convention, not a code/infra change
+- Testability: High — can check that work units map cleanly to existing systems
+- Precedent: Very High — same pattern in ITIL, work breakdown structures, product management

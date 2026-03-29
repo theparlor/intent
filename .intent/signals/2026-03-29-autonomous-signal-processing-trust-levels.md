@@ -1,35 +1,38 @@
 ---
-id: SIG-012
-timestamp: 2026-03-29T22:00:00Z
-source: conversation
+id: SIG-001
+timestamp: 2026-03-29T07:00:00Z
+source: cowork-session
 author: brien
-confidence: 0.95
-related_intents: [signal-lifecycle, autonomous-execution]
+confidence: 0.9
+trust: 0.85
+autonomy_level: L2
+status: active
+cluster: autonomous-infrastructure
+parent_signal:
+related_intents: []
 ---
-# Autonomous signal processing with trust-based execution levels
+# Signal: Autonomous signal processing needs five trust levels (L0-L4)
 
-During interface design discussion, Brien articulated a fundamental shift in how signals should flow through the system. Rather than all signals requiring human triage and action, signals should be **worked as far along as they can go** with agent autonomy, and humans should only intervene when:
+## Observation
 
-1. Something is deemed **unsafe** (high blast radius, security implications, irreversible)
-2. The original intent is **too ambiguous** for agents to take confident action
+Signals range from "noisy idea" (L0, human review required) to "actionable intelligence" (L3-L4, autonomous execution ok). A five-level framework emerged:
 
-When human intervention IS required, the system should not dead-end — it should **generate a new disambiguation signal** that re-enters the loop with enriched context.
+- **L0**: Captured, needs human review (trust < 0.3)
+- **L1**: Reviewed, pattern confirmed (trust 0.3-0.5)
+- **L2**: Elevated, high-confidence signal (trust 0.5-0.7)
+- **L3**: Autonomous action triggered (trust 0.7-0.9)
+- **L4**: System behavior modified (trust > 0.9)
 
-## Autonomy Levels
+Each level has different actions: L0 → alert, L1 → dashboard, L2 → conditional action, L3 → auto-execute with logging, L4 → system reconfiguration.
 
-- **L0 — Human drives:** Signal → human triages → human specs → human executes
-- **L1 — Agent assists:** Agent enriches signal, human decides
-- **L2 — Agent decides, human approves:** Agent drafts intent+spec, human rubber-stamps
-- **L3 — Agent executes, human monitors:** Full loop for trusted signals, human sees results in Observe
-- **L4 — Full autonomy with circuit breakers:** Agent runs full loop including deploy, generates disambiguation signals when stuck
+## Why It Matters
 
-## New Signal Properties Required
+Without levels, either all signals are ignored or all are acted on. This creates false negatives (missed problems) or alert fatigue (acted on noise). The five levels let the system *calibrate* trust: start conservative, observe outcomes, increase autonomy as confidence grows.
 
-- **Trust score:** Confidence that an agent can resolve this without human input
-- **Autonomy classification:** Recommended level based on trust, blast radius, contract testability
-- **Provenance chain:** Links to parent signals for disambiguation trees
-- **Builder-configurable thresholds:** "Anything above 0.8 trust with blast radius < 3 files can auto-execute"
+## Trust Factors
 
-## Deployment Topology Implication
-
-This also surfaces a deployment model question: local CLI install vs. hosted web interface. The interface needs to support both modes via configuration — same tools, different backends. Start with static HTML reading from git (option 1), fast-follow with hosted service (option 2). The signal management interface is the forcing function for this decision.
+- Clarity: Very High — the framework is testable
+- Blast radius: Very High — defines all downstream automation boundaries
+- Reversibility: High — can adjust thresholds without rewiring systems
+- Testability: Very High — each level has measurable criteria
+- Precedent: Very High — five-level taxonomies are standard (severity, risk, confidence, etc.)

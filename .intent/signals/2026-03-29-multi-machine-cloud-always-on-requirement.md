@@ -1,29 +1,36 @@
 ---
-id: SIG-013
-timestamp: 2026-03-29T23:00:00Z
-source: conversation
+id: SIG-012
+timestamp: 2026-03-29T10:30:00Z
+source: cowork-session
 author: brien
-confidence: 0.95
-related_intents: [deployment-topology, autonomous-execution]
+confidence: 0.85
+trust: 0.70
+autonomy_level: L1
+status: active
+cluster: autonomous-infrastructure
+parent_signal:
+related_intents: []
 ---
-# Multi-machine cloud requirement: can't rely on local laptop being always connected
+# Signal: Multi-machine requirement means cloud processing must be always-on
 
-Brien's primary machine travels with him — goes on planes, gets closed in a bag, loses internet. Signal processing agents can't run on a machine that goes offline unpredictably.
+## Observation
 
-This creates a hard requirement: **the agent processing layer must run somewhere always-on.** Options:
+When developers work offline or switch devices, intent signals must still flow. Processing cannot block on the laptop. This means:
+- Signals must sync to cloud (async)
+- Cloud agents process and store results
+- When laptop comes online, it syncs back results
+- Trust scoring and autonomous actions run in cloud, not locally
 
-1. **GitHub-native:** Signals committed to repo trigger GitHub Actions that run enrichment/processing agents. Always available, no infrastructure to manage.
-2. **Cloud service:** Hosted Intent service that agents connect to via API. More capability but more to build.
-3. **Secondary machine:** Brien has a second machine he could dedicate, but it lacks his organizational skills, library index, and file sync.
+This is different from "cloud-enabled" tools. It requires *persistent cloud infrastructure* running at all times, not just when the user is active.
 
-The multi-machine problem also surfaces a **file sync requirement**: Brien's library organizational skills need to work across machines, likely via GitHub-based sync or a shared storage layer.
+## Why It Matters
 
-## Implication for Architecture
+The bootstrap roadmap assumes L3-L4 autonomous ops running 24/7. This requires always-on cloud processing. A hosted SaaS is not optional; it's architectural. This also affects security/compliance: cloud processing handles customer data, so compliance review is early-path work.
 
-The signal capture → enrichment → routing → execution pipeline must be decomposable:
-- **Capture** can happen anywhere (Cowork, iOS, web browser, CLI)
-- **Processing** must happen somewhere always-on (GitHub Actions or cloud)
-- **Execution** happens in Claude Code sessions (can be on any machine with repo access)
-- **Observe** must be accessible from any device (web dashboard)
+## Trust Factors
 
-This reinforces the config-driven deployment model from SIG-012: same tools, different backends, configurable per-machine.
+- Clarity: High — the requirement is technical and clear
+- Blast radius: Very High — affects deployment, security, and business model
+- Reversibility: Low — architectural decisions are hard to reverse
+- Testability: High — can test sync and cloud execution independently
+- Precedent: Very High — similar to Slack, GitHub, Figma architectures
