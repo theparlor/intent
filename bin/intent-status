@@ -1,0 +1,274 @@
+#!/bin/bash
+#
+# intent-status — Show the current state of the Intent system
+#
+# Usage:
+#   intent-status              Full status overview
+#   intent-status signals      Signal summary
+#   intent-status intents      Intent pipeline
+#   intent-status specs        Spec pipeline
+#   intent-status events       Recent events
+#   intent-status roadmap      Four-product maturity overview
+#
+# Reads from .intent/ in the nearest Intent-native repo.
+
+set -euo pipefail
+
+# --- Find .intent/ directory ---
+find_intent_root() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.intent" ]]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+REPO_ROOT=$(find_intent_root) || {
+  echo "Error: No .intent/ directory found. Are you in an Intent-native repo?" >&2
+  exit 1
+}
+
+INTENT_DIR="$REPO_ROOT/.intent"
+
+# --- Helpers ---
+
+count_files() {
+  local dir="$1"
+  if [[ -d "$dir" ]]; then
+    find "$dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
+  else
+    echo "0"
+  fi
+}
+
+count_by_status() {
+  local dir="$1"
+  local status="$2"
+  if [[ -d "$dir" ]]; then
+    grep -rl "status: $status" "$dir"/*.md 2>/dev/null | wc -l | tr -d ' '
+  else
+    echo "0"
+  fi
+}
+
+count_events() {
+  local file="$INTENT_DIR/events/events.jsonl"
+  if [[ -f "$file" ]]; then
+    wc -l < "$file" | tr -d ' '
+  else
+    echo "0"
+  fi
+}
+
+# --- Subcommands ---
+
+cmd_signals() {
+  local dir="$INTENT_DIR/signals"
+  local count=$(count_files "$dir")
+  echo "Signals: $count"
+  echo ""
+
+  if [[ "$count" -gt 0 ]]; then
+    printf "  %-8s | %-12s | %-8s | %s\n" "ID" "Source" "Conf" "Title"
+    echo "  $(printf '%.0s-' {1..65})"
+
+    for f in $(ls -t "$dir"/*.md 2>/dev/null | head -20); do
+      local id=$(grep -oP 'id:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+      local source=$(grep -oP 'source:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+      local conf=$(grep -oP 'confidence:\s*\K\S+' "$f" 2>/dev/null || echo "-")
+      local title=$(grep -oP '^#\s+\K.+' "$f" 2>/dev/null | head -1 || echo "$f")
+      printf "  %-8s | %-12s | %-8s | %s\n" "$id" "$source" "$conf" "${title:0:45}"
+    done
+  fi
+}
+
+cmd_intents() {
+  local dir="$INTENT_DIR/intents"
+  local total=$(count_files "$dir")
+  local proposed=$(count_by_status "$dir" "proposed")
+  local accepted=$(count_by_status "$dir" "accepted")
+  local specced=$(count_by_status "$dir" "specced")
+  local executing=$(count_by_status "$dir" "executing")
+  local complete=$(count_by_status "$dir" "complete")
+
+  echo "Intents: $total"
+  echo "  proposed: $proposed | accepted: $accepted | specced: $specced | executing: $executing | complete: $complete"
+  echo ""
+
+  if [[ "$total" -gt 0 ]]; then
+    printf "  %-8s | %-10s | %-8s | %-8s | %s\n" "ID" "Status" "Priority" "Product" "Title"
+    echo "  $(printf '%.0s-' {1..70})"
+
+    for f in "$dir"/*.md 2>/dev/null; do
+      [[ -f "$f" ]] || continue
+      local id=$(grep -oP 'id:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+      local status=$(grep -oP 'status:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+      local priority=$(grep -oP 'priority:\s*\K\S+' "$f" 2>/dev/null || echo "-")
+      local product=$(grep -oP 'product:\s*\K\S+' "$f" 2>/dev/null || echo "-")
+      local title=$(grep -oP '^#\s+\K.+' "$f" 2>/dev/null | head -1 || echo "$f")
+      printf "  %-8s | %-10s | %-8s | %-8s | %s\n" "$id" "$status" "$priority" "$product" "${title:0:35}"
+    done
+  fi
+}
+
+cmd_specs() {
+  local dir="$INTENT_DIR/specs"
+  local total=$(count_files "$dir")
+  local draft=$(count_by_status "$dir" "draft")
+  local review=$(count_by_status "$dir" "review")
+  local approved=$(count_by_status "$dir" "approved")
+  local executing=$(count_by_status "$dir" "executing")
+  local complete=$(count_by_status "$dir" "complete")
+
+  echo "Specs: $total"
+  echo "  draft: $draft | review: $review | approved: $approved | executing: $executing | complete: $complete"
+  echo ""
+
+  if [[ "$total" -gt 0 ]]; then
+    printf "  %-9s | %-9s | %-8s | %s\n" "ID" "Status" "Intent" "Title"
+    echo "  $(printf '%.0s-' {1..65})"
+
+    for f in "$dir"/*.md 2>/dev/null; do
+      [[ -f "$f" ]] || continue
+      local id=$(grep -oP 'id:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+      local status=$(grep -oP 'status:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+      local intent=$(grep -oP 'intent:\s*\K\S+' "$f" 2>/dev/null || echo "-")
+      local title=$(grep -oP '^#\s+\K.+' "$f" 2>/dev/null | head -1 || echo "$f")
+      printf "  %-9s | %-9s | %-8s | %s\n" "$id" "$status" "$intent" "${title:0:40}"
+    done
+  fi
+}
+
+cmd_events() {
+  local file="$INTENT_DIR/events/events.jsonl"
+  local count=$(count_events)
+  echo "Events: $count total"
+  echo ""
+
+  if [[ -f "$file" ]] && [[ "$count" -gt 0 ]]; then
+    echo "Last 15 events:"
+    echo ""
+    printf "  %-22s | %-20s | %-8s | %s\n" "Timestamp" "Event" "Span" "Source"
+    echo "  $(printf '%.0s-' {1..75})"
+
+    tail -15 "$file" | while IFS= read -r line; do
+      local ts=$(echo "$line" | grep -oP '"timestamp":\s*"\K[^"]+' 2>/dev/null || echo "?")
+      local event=$(echo "$line" | grep -oP '"event":\s*"\K[^"]+' 2>/dev/null || echo "?")
+      local span=$(echo "$line" | grep -oP '"span_id":\s*"\K[^"]+' 2>/dev/null || echo "?")
+      local source=$(echo "$line" | grep -oP '"source":\s*"\K[^"]+' 2>/dev/null || echo "?")
+      printf "  %-22s | %-20s | %-8s | %s\n" "${ts:0:22}" "$event" "$span" "$source"
+    done
+  fi
+}
+
+cmd_roadmap() {
+  echo "┌──────────────────────────────────────────────────────────────────────┐"
+  echo "│                    INTENT PRODUCT ROADMAP                           │"
+  echo "└──────────────────────────────────────────────────────────────────────┘"
+  echo ""
+
+  local sig_count=$(count_files "$INTENT_DIR/signals")
+  local int_count=$(count_files "$INTENT_DIR/intents")
+  local spec_count=$(count_files "$INTENT_DIR/specs")
+  local event_count=$(count_events)
+
+  # Notice
+  echo "  △◇ NOTICE ─────────────────────────────── Maturity: Operational"
+  echo "     Signals: $sig_count captured"
+  echo "     Tools: MCP server ✓  CLI ✓  GitHub Action ✓"
+  echo "     Next: Slack integration, signal clustering"
+  echo ""
+
+  # Spec
+  echo "  △◇○ SPEC ──────────────────────────────── Maturity: Conceptual"
+  echo "     Intents: $int_count proposed"
+  echo "     Specs: $spec_count written"
+  echo "     Tools: CLI ✓  Templates ✓"
+  echo "     Next: Spec validation, agent-ready format"
+  echo ""
+
+  # Execute
+  echo "  △◉ EXECUTE ────────────────────────────── Maturity: Defined"
+  echo "     Agent traces: not yet instrumented"
+  echo "     Tools: event schema defined"
+  echo "     Next: Agent trace adapter, contract verification"
+  echo ""
+
+  # Observe
+  echo "  ◇○ OBSERVE ────────────────────────────── Maturity: Schema-Ready"
+  echo "     Events: $event_count logged"
+  echo "     Tools: JSONL event log ✓"
+  echo "     Next: Dashboard v1, weekly digest"
+  echo ""
+
+  echo "  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐"
+  echo "  │  NOTICE  │ →  │   SPEC   │ →  │ EXECUTE  │ →  │ OBSERVE  │"
+  echo "  └──────────┘    └──────────┘    └──────────┘    └──────────┘"
+  echo "       ↑                                              │"
+  echo "       └──────────────────────────────────────────────┘"
+}
+
+cmd_overview() {
+  echo "┌──────────────────────────────────────────────────────────────────────┐"
+  echo "│                         INTENT STATUS                               │"
+  echo "└──────────────────────────────────────────────────────────────────────┘"
+  echo ""
+
+  local sig_count=$(count_files "$INTENT_DIR/signals")
+  local int_count=$(count_files "$INTENT_DIR/intents")
+  local spec_count=$(count_files "$INTENT_DIR/specs")
+  local event_count=$(count_events)
+
+  echo "  Signals:  $sig_count     Intents:  $int_count     Specs:  $spec_count     Events:  $event_count"
+  echo ""
+  echo "  Repo: $REPO_ROOT"
+  echo ""
+
+  # Quick pipeline view
+  if [[ "$int_count" -gt 0 ]]; then
+    local proposed=$(count_by_status "$INTENT_DIR/intents" "proposed")
+    local accepted=$(count_by_status "$INTENT_DIR/intents" "accepted")
+    echo "  Intent pipeline:  $proposed proposed → $accepted accepted"
+  fi
+
+  if [[ "$spec_count" -gt 0 ]]; then
+    local draft=$(count_by_status "$INTENT_DIR/specs" "draft")
+    local approved=$(count_by_status "$INTENT_DIR/specs" "approved")
+    echo "  Spec pipeline:    $draft draft → $approved approved"
+  fi
+
+  echo ""
+  echo "  Run 'intent-status signals|intents|specs|events|roadmap' for details."
+}
+
+# --- Main dispatch ---
+
+case "${1:-}" in
+  signals)   cmd_signals ;;
+  intents)   cmd_intents ;;
+  specs)     cmd_specs ;;
+  events)    cmd_events ;;
+  roadmap)   cmd_roadmap ;;
+  --help|-h)
+    echo "Usage:"
+    echo "  intent-status              Full status overview"
+    echo "  intent-status signals      Signal summary"
+    echo "  intent-status intents      Intent pipeline"
+    echo "  intent-status specs        Spec pipeline"
+    echo "  intent-status events       Recent events"
+    echo "  intent-status roadmap      Four-product maturity overview"
+    exit 0
+    ;;
+  "")
+    cmd_overview
+    ;;
+  *)
+    echo "Unknown subcommand: $1" >&2
+    echo "Run intent-status --help for usage." >&2
+    exit 1
+    ;;
+esac

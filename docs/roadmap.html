@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Roadmap — Intent</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
+    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
+    .site-nav .logo span { color: #3b82f6; }
+    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+
+    .content { max-width: 900px; margin: 0 auto; padding: 40px 24px 60px; }
+    .content h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .content > p { color: #94a3b8; font-size: 14px; margin-bottom: 32px; line-height: 1.6; }
+
+    /* Loop diagram */
+    .loop-diagram { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 32px 0 40px; flex-wrap: wrap; }
+    .loop-node { background: #1e293b; border: 2px solid #334155; border-radius: 10px; padding: 12px 20px; text-align: center; min-width: 120px; transition: border-color 0.3s, transform 0.2s; cursor: default; }
+    .loop-node:hover { transform: translateY(-2px); }
+    .loop-node.notice { border-color: #f59e0b; }
+    .loop-node.spec { border-color: #3b82f6; }
+    .loop-node.execute { border-color: #10b981; }
+    .loop-node.observe { border-color: #8b5cf6; }
+    .loop-node .name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+    .loop-node.notice .name { color: #f59e0b; }
+    .loop-node.spec .name { color: #3b82f6; }
+    .loop-node.execute .name { color: #10b981; }
+    .loop-node.observe .name { color: #8b5cf6; }
+    .loop-node .maturity { font-size: 11px; color: #64748b; }
+    .loop-arrow { color: #334155; font-size: 20px; }
+
+    /* Product sections */
+    .product-section { margin-bottom: 40px; }
+    .product-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #334155; }
+    .product-header.notice { border-bottom-color: #f59e0b; }
+    .product-header.spec { border-bottom-color: #3b82f6; }
+    .product-header.execute { border-bottom-color: #10b981; }
+    .product-header.observe { border-bottom-color: #8b5cf6; }
+    .product-header .personas { font-size: 18px; }
+    .product-header h2 { font-size: 22px; font-weight: 700; }
+    .product-header .maturity-badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-left: auto; }
+    .maturity-badge.operational { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .maturity-badge.conceptual { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .maturity-badge.defined { background: rgba(16,185,129,0.15); color: #10b981; }
+    .maturity-badge.schema-ready { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+
+    .product-desc { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+
+    /* Status table */
+    .status-grid { display: grid; grid-template-columns: 1fr auto; gap: 0; margin-bottom: 24px; border: 1px solid #334155; border-radius: 8px; overflow: hidden; }
+    .status-row { display: contents; }
+    .status-row .asset, .status-row .state { padding: 8px 14px; font-size: 13px; border-bottom: 1px solid #1e293b; }
+    .status-row .asset { color: #f1f5f9; }
+    .status-row .state { text-align: right; color: #64748b; }
+    .status-row:last-child .asset, .status-row:last-child .state { border-bottom: none; }
+    .status-row .state.done { color: #10b981; }
+    .status-row .state.not-started { color: #475569; }
+
+    /* Investment cards */
+    .invest-group { margin-bottom: 20px; }
+    .invest-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .invest-label.enhance { color: #f59e0b; }
+    .invest-label.build { color: #10b981; }
+    .invest-label.learn { color: #8b5cf6; }
+    .invest-items { display: flex; flex-direction: column; gap: 6px; }
+    .invest-item { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #94a3b8; line-height: 1.5; }
+
+    /* Priority section */
+    .priority-section { margin-top: 48px; }
+    .priority-section h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+    .priority-group { margin-bottom: 24px; }
+    .priority-group h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+    .priority-group h3.now { color: #f59e0b; }
+    .priority-group h3.next { color: #3b82f6; }
+    .priority-group h3.later { color: #64748b; }
+    .priority-items { display: flex; flex-direction: column; gap: 6px; }
+    .priority-item { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #94a3b8; display: flex; align-items: center; gap: 10px; }
+    .priority-item .num { color: #64748b; font-weight: 700; font-size: 12px; min-width: 18px; }
+
+    /* CLI section */
+    .cli-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid #1e293b; }
+    .cli-section h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .cli-section > p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+    .cli-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cli-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; }
+    .cli-card h3 { font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+    .cli-card code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #10b981; display: block; margin: 8px 0; background: #0f172a; padding: 6px 10px; border-radius: 4px; }
+    .cli-card p { font-size: 12px; color: #64748b; }
+
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .cli-grid { grid-template-columns: 1fr; }
+      .loop-diagram { flex-direction: column; }
+      .loop-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="index.html" class="logo"><span>I</span>ntent</a>
+    <a href="index.html">Home</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="concept-brief.html">Concept Brief</a>
+    <a href="signals.html">Signals</a>
+    <a href="decisions.html">Decisions</a>
+    <a href="roadmap.html" class="active">Roadmap</a>
+  </nav>
+
+  <div class="content">
+    <h1>Product Roadmap</h1>
+    <p>Intent is four products, one value stream. Each phase of the loop has its own maturity level, tooling, and investment needs. This page shows where each product stands and where energy goes next.</p>
+
+    <!-- Loop Diagram -->
+    <div class="loop-diagram">
+      <div class="loop-node notice">
+        <div class="name">NOTICE</div>
+        <div class="maturity">Operational</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node spec">
+        <div class="name">SPEC</div>
+        <div class="maturity">Conceptual</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node execute">
+        <div class="name">EXECUTE</div>
+        <div class="maturity">Defined</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node observe">
+        <div class="name">OBSERVE</div>
+        <div class="maturity">Schema-Ready</div>
+      </div>
+    </div>
+
+    <!-- NOTICE -->
+    <div class="product-section">
+      <div class="product-header notice">
+        <span class="personas">△◇</span>
+        <h2>Notice</h2>
+        <span class="maturity-badge operational">Operational</span>
+      </div>
+      <p class="product-desc">Captures observations — patterns, friction, insights, hunches — from wherever practitioners work, and lands them as structured signals in <code>.intent/signals/</code>.</p>
+
+      <div class="status-grid">
+        <div class="status-row"><div class="asset">Signal schema &amp; template</div><div class="state done">✓ Defined</div></div>
+        <div class="status-row"><div class="asset">CLI capture tool</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">MCP server (Claude Code, Cowork, Cursor)</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">GitHub Action (event emission)</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">Quickstart guide</div><div class="state done">✓ Written</div></div>
+        <div class="status-row"><div class="asset">Slack integration</div><div class="state not-started">Specced</div></div>
+        <div class="status-row"><div class="asset">GitHub native capture</div><div class="state not-started">Specced</div></div>
+        <div class="status-row"><div class="asset">AI tool plugins (ChatGPT, Copilot, Codex)</div><div class="state not-started">Specced</div></div>
+        <div class="status-row"><div class="asset">Signal clustering &amp; pattern detection</div><div class="state not-started">Not started</div></div>
+      </div>
+
+      <div class="invest-group">
+        <div class="invest-label enhance">Enhance</div>
+        <div class="invest-items">
+          <div class="invest-item">Signal deduplication — detect when the same observation is captured from multiple surfaces</div>
+          <div class="invest-item">Confidence scoring enrichment — automated scoring based on frequency, source diversity, recency</div>
+        </div>
+      </div>
+      <div class="invest-group">
+        <div class="invest-label build">Build</div>
+        <div class="invest-items">
+          <div class="invest-item">Slack bot — reaction-based capture (:signal: emoji → PR with signal file)</div>
+          <div class="invest-item">Signal-to-intent promotion — when 3+ signals cluster, suggest creating an intent</div>
+        </div>
+      </div>
+      <div class="invest-group">
+        <div class="invest-label learn">Learn</div>
+        <div class="invest-items">
+          <div class="invest-item">Do practitioners capture signals in flow, or batch them later?</div>
+          <div class="invest-item">Which capture surfaces generate the highest-quality signals?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPEC -->
+    <div class="product-section">
+      <div class="product-header spec">
+        <span class="personas">△◇○</span>
+        <h2>Spec</h2>
+        <span class="maturity-badge conceptual">Conceptual</span>
+      </div>
+      <p class="product-desc">Transforms clustered signals into actionable specifications that AI agents can execute against. The shaping layer between "we noticed something" and "build this."</p>
+
+      <div class="status-grid">
+        <div class="status-row"><div class="asset">Work ontology (7 levels)</div><div class="state done">✓ Defined</div></div>
+        <div class="status-row"><div class="asset">Cross-functional shaping workflow</div><div class="state done">✓ Conceptual</div></div>
+        <div class="status-row"><div class="asset">Intent template</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">Spec template</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">Contract template</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">CLI tools (intent-intent, intent-spec)</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">Spec validation tooling</div><div class="state not-started">Not started</div></div>
+        <div class="status-row"><div class="asset">Spec-to-agent handoff format</div><div class="state not-started">Not started</div></div>
+      </div>
+
+      <div class="invest-group">
+        <div class="invest-label enhance">Enhance</div>
+        <div class="invest-items">
+          <div class="invest-item">Define "spec completeness" criteria — what makes a spec agent-ready vs. human-ready</div>
+          <div class="invest-item">Codify the shaping flow into a checklist, not just a diagram</div>
+        </div>
+      </div>
+      <div class="invest-group">
+        <div class="invest-label build">Build</div>
+        <div class="invest-items">
+          <div class="invest-item">MCP tools: intent_create_spec, intent_validate_spec</div>
+          <div class="invest-item">Spec validation CLI — check completeness against defined criteria</div>
+        </div>
+      </div>
+      <div class="invest-group">
+        <div class="invest-label learn">Learn</div>
+        <div class="invest-items">
+          <div class="invest-item">What's the minimum spec an AI agent can execute against?</div>
+          <div class="invest-item">Does cross-functional shaping happen, or does the architect spec solo?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXECUTE -->
+    <div class="product-section">
+      <div class="product-header execute">
+        <span class="personas">△◉</span>
+        <h2>Execute</h2>
+        <span class="maturity-badge defined">Defined</span>
+      </div>
+      <p class="product-desc">The phase where AI agents implement against specs. Intent is deliberately thin here — agents bring their own capabilities. Execute's job is to ensure specs flow to agents and execution events flow back to Observe.</p>
+
+      <div class="status-grid">
+        <div class="status-row"><div class="asset">Event schema for execution events</div><div class="state done">✓ Defined</div></div>
+        <div class="status-row"><div class="asset">Agent trace capture</div><div class="state not-started">Not started</div></div>
+        <div class="status-row"><div class="asset">Spec-to-agent handoff</div><div class="state not-started">Not started</div></div>
+        <div class="status-row"><div class="asset">Contract verification (pre/post)</div><div class="state not-started">Not started</div></div>
+        <div class="status-row"><div class="asset">Execution observability</div><div class="state not-started">Not started</div></div>
+      </div>
+
+      <div class="invest-group">
+        <div class="invest-label build">Build</div>
+        <div class="invest-items">
+          <div class="invest-item">Agent trace adapter — lightweight hook to emit execution events to events.jsonl</div>
+          <div class="invest-item">Contract verification tool — check implementation against spec contracts</div>
+          <div class="invest-item">Entire.io integration — bridge agent reasoning captures into Intent's event stream</div>
+        </div>
+      </div>
+      <div class="invest-group">
+        <div class="invest-label learn">Learn</div>
+        <div class="invest-items">
+          <div class="invest-item">How much execution observability do teams want? Full traces or just start/stop?</div>
+          <div class="invest-item">Do agents need to read Intent specs natively, or is a human always translating?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OBSERVE -->
+    <div class="product-section">
+      <div class="product-header observe">
+        <span class="personas">◇○</span>
+        <h2>Observe</h2>
+        <span class="maturity-badge schema-ready">Schema-Ready</span>
+      </div>
+      <p class="product-desc">Makes the Intent event stream visible — dashboards, digests, pattern detection, feedback loops. The learning layer that closes the loop back to Notice.</p>
+
+      <div class="status-grid">
+        <div class="status-row"><div class="asset">Event schema (OTel-compatible)</div><div class="state done">✓ Defined</div></div>
+        <div class="status-row"><div class="asset">Event log format (JSONL)</div><div class="state done">✓ Defined</div></div>
+        <div class="status-row"><div class="asset">15 cataloged event types</div><div class="state done">✓ Defined</div></div>
+        <div class="status-row"><div class="asset">GitHub Action event emission</div><div class="state done">✓ Built</div></div>
+        <div class="status-row"><div class="asset">Dashboard</div><div class="state not-started">Not started</div></div>
+        <div class="status-row"><div class="asset">Signal clustering view</div><div class="state not-started">Not started</div></div>
+        <div class="status-row"><div class="asset">Weekly digest / report</div><div class="state not-started">Not started</div></div>
+        <div class="status-row"><div class="asset">Metrics framework</div><div class="state not-started">Not started</div></div>
+      </div>
+
+      <div class="invest-group">
+        <div class="invest-label enhance">Enhance</div>
+        <div class="invest-items">
+          <div class="invest-item">Validate event schema against real data — are all 15 event types the right set?</div>
+        </div>
+      </div>
+      <div class="invest-group">
+        <div class="invest-label build">Build</div>
+        <div class="invest-items">
+          <div class="invest-item">Intent dashboard — signal volume over time, intent status lifecycle, spec completion rates</div>
+          <div class="invest-item">Weekly digest generator — CLI or scheduled action that summarizes the event stream</div>
+          <div class="invest-item">Spec-to-outcome trace — show the full chain from signal through shipped capability</div>
+        </div>
+      </div>
+      <div class="invest-group">
+        <div class="invest-label learn">Learn</div>
+        <div class="invest-items">
+          <div class="invest-item">What do leaders actually want to see? Signal volume? Spec throughput? Cycle time?</div>
+          <div class="invest-item">Does the Observe product generate new signals, closing the loop?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priority Section -->
+    <div class="priority-section">
+      <h2>Investment Priority</h2>
+
+      <div class="priority-group">
+        <h3 class="now">Now</h3>
+        <div class="priority-items">
+          <div class="priority-item"><span class="num">1</span> Validate Notice end-to-end — install MCP server on real repos, capture signals from real work</div>
+          <div class="priority-item"><span class="num">2</span> Enable GitHub Pages — flip the switch, make the site live</div>
+          <div class="priority-item"><span class="num">3</span> First real intents and specs — use the new CLI tools on actual work</div>
+        </div>
+      </div>
+
+      <div class="priority-group">
+        <h3 class="next">Next</h3>
+        <div class="priority-items">
+          <div class="priority-item"><span class="num">4</span> Intent dashboard v1 — HTML page that visualizes the event stream</div>
+          <div class="priority-item"><span class="num">5</span> Slack signal capture — reaction-based bot for team conversations</div>
+          <div class="priority-item"><span class="num">6</span> Spec validation — CLI tool that checks spec completeness</div>
+        </div>
+      </div>
+
+      <div class="priority-group">
+        <h3 class="later">Later</h3>
+        <div class="priority-items">
+          <div class="priority-item"><span class="num">7</span> AI tool plugins — ChatGPT, Copilot, Codex adapters</div>
+          <div class="priority-item"><span class="num">8</span> Agent trace integration — bridge Entire.io into the event stream</div>
+          <div class="priority-item"><span class="num">9</span> Signal intelligence — clustering, pattern detection, promotion suggestions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLI Section -->
+    <div class="cli-section">
+      <h2>CLI Toolkit</h2>
+      <p>Every Intent product has a CLI tool. Install them to your PATH or run from <code>bin/</code> in the repo.</p>
+
+      <div class="cli-grid">
+        <div class="cli-card">
+          <h3>intent-signal</h3>
+          <code>intent-signal "What you noticed"</code>
+          <p>Capture signals from the terminal. Writes to .intent/signals/ with frontmatter and emits signal.created event.</p>
+        </div>
+        <div class="cli-card">
+          <h3>intent-intent</h3>
+          <code>intent-intent "What needs to change"</code>
+          <p>Propose intents, link to signals, set priority and product area. Also: list, show, accept.</p>
+        </div>
+        <div class="cli-card">
+          <h3>intent-spec</h3>
+          <code>intent-spec "What to build" --intent INT-001</code>
+          <p>Create specs linked to parent intents. Also: list, show, approve.</p>
+        </div>
+        <div class="cli-card">
+          <h3>intent-status</h3>
+          <code>intent-status roadmap</code>
+          <p>Full system status: signal counts, intent pipeline, spec pipeline, event log, four-product maturity.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Intent is an open development project by <a href="https://github.com/theparlor">The Parlor</a>. Source on <a href="https://github.com/theparlor/intent">GitHub</a>. Roadmap source: <a href="https://github.com/theparlor/intent/blob/main/spec/product-roadmap.md">spec/product-roadmap.md</a>
+  </footer>
+</body>
+</html>

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Intent Signal Capture MCP Server
+Intent MCP Server
 
-An MCP server that lets practitioners capture signals from any MCP-compatible
-surface (Claude Code, Cowork, Cursor) directly into .intent/signals/.
+An MCP server that lets practitioners capture signals, propose intents,
+and create specs from any MCP-compatible surface (Claude Code, Cowork,
+Cursor) directly into .intent/.
 
 Install: pip install mcp pydantic
 Run: python server.py (stdio transport for local use)
@@ -60,16 +61,28 @@ def slugify(text: str) -> str:
     return text[:60].rstrip('-')
 
 
-def next_signal_id(signals_dir: Path) -> str:
-    """Generate the next SIG-XXX ID based on existing signals."""
-    existing = list(signals_dir.glob("*.md"))
+def next_id(directory: Path, prefix: str) -> str:
+    """Generate the next PREFIX-XXX ID based on existing files."""
+    existing = list(directory.glob("*.md"))
     max_id = 0
     for f in existing:
         content = f.read_text()
-        match = re.search(r'id:\s*SIG-(\d+)', content)
+        match = re.search(rf'id:\s*{prefix}-(\d+)', content)
         if match:
             max_id = max(max_id, int(match.group(1)))
-    return f"SIG-{max_id + 1:03d}"
+    return f"{prefix}-{max_id + 1:03d}"
+
+
+def get_dir(repo_root: Path, subdir: str) -> Path:
+    """Get or create a subdirectory under .intent/."""
+    d = repo_root / ".intent" / subdir
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def next_signal_id(signals_dir: Path) -> str:
+    """Generate the next SIG-XXX ID based on existing signals."""
+    return next_id(signals_dir, "SIG")
 
 
 # --- Tool Input Models ---
@@ -324,6 +337,361 @@ async def get_signal(params: GetSignalInput) -> str:
             return f"File: {f.relative_to(repo_root)}\n\n{content}"
 
     return f"Signal '{params.signal_id}' not found in .intent/signals/."
+
+
+# --- Intent Tools ---
+
+class ProposeIntentInput(BaseModel):
+    """Input for proposing a new intent."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra='forbid')
+
+    title: str = Field(
+        ...,
+        description="What needs to change. Be specific about the problem or opportunity.",
+        min_length=5,
+        max_length=200
+    )
+    problem: Optional[str] = Field(
+        default=None,
+        description="What's wrong today? What signals point to this?"
+    )
+    outcome: Optional[str] = Field(
+        default=None,
+        description="What does done look like? Describe the desired state."
+    )
+    signals: Optional[list[str]] = Field(
+        default_factory=list,
+        description="Signal IDs that led to this intent (e.g., ['SIG-006', 'SIG-008'])."
+    )
+    priority: Optional[str] = Field(
+        default=None,
+        description="Investment priority: now, next, or later."
+    )
+    product: Optional[str] = Field(
+        default=None,
+        description="Which Intent product: notice, spec, execute, observe, or cross-cutting."
+    )
+    author: Optional[str] = Field(
+        default=None,
+        description="Who proposed this intent."
+    )
+    repo_path: Optional[str] = Field(
+        default=None,
+        description="Path to the repo root."
+    )
+
+
+@mcp.tool(
+    name="intent_propose_intent",
+    annotations={
+        "title": "Propose an Intent",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False
+    }
+)
+async def propose_intent(params: ProposeIntentInput) -> str:
+    """
+    Propose a new intent — something that needs to change.
+
+    Use this when signals cluster around a problem or opportunity and
+    it's time to name it as an intent worth pursuing. The intent will
+    be created with status 'proposed' and can be accepted, specced,
+    and executed through the Intent loop.
+    """
+    repo_root = find_intent_root(params.repo_path)
+    if not repo_root:
+        return "Error: No .intent/ directory found."
+
+    intents_dir = get_dir(repo_root, "intents")
+    events_dir = get_events_dir(repo_root)
+
+    now = datetime.now(timezone.utc)
+    date_str = now.strftime("%Y-%m-%d")
+    timestamp = now.isoformat()
+    intent_id = next_id(intents_dir, "INT")
+    slug = slugify(params.title)
+    filename = f"{date_str}-{slug}.md"
+    author = params.author or os.environ.get("USER", "unknown")
+
+    signals_yaml = "[]"
+    if params.signals:
+        signals_yaml = f"[{', '.join(params.signals)}]"
+
+    lines = [
+        "---",
+        f"id: {intent_id}",
+        f'title: "{params.title}"',
+        "status: proposed",
+        f"proposed_by: {author}",
+        f"proposed_date: {timestamp}",
+        "accepted_date:",
+        f"signals: {signals_yaml}",
+        "specs: []",
+        f"owner: {author}",
+        f"priority: {params.priority or ''}",
+        f"product: {params.product or ''}",
+        "---",
+        f"# {params.title}",
+        "",
+        "## Problem",
+        params.problem or "TODO: Describe what's wrong today.",
+        "",
+        "## Desired Outcome",
+        params.outcome or "TODO: What does done look like?",
+        "",
+        "## Evidence",
+        f"Based on signals: {', '.join(params.signals)}" if params.signals else "TODO: Which signals support this?",
+        "",
+        "## Constraints",
+        "TODO: What boundaries should shape the solution?",
+        "",
+        "## Open Questions",
+        "TODO: What don't we know yet?",
+    ]
+
+    intent_path = intents_dir / filename
+    intent_path.write_text("\n".join(lines) + "\n")
+
+    event = {
+        "version": "0.1.0",
+        "event": "intent.proposed",
+        "timestamp": timestamp,
+        "trace_id": intent_id,
+        "span_id": intent_id,
+        "parent_id": None,
+        "source": "mcp",
+        "data": {
+            "intent_id": intent_id,
+            "title": params.title,
+            "author": author,
+            "file": str(intent_path.relative_to(repo_root))
+        }
+    }
+    events_file = events_dir / "events.jsonl"
+    with open(events_file, "a") as f:
+        f.write(json.dumps(event) + "\n")
+
+    return (
+        f"Intent proposed: {intent_id}\n"
+        f"File: {intent_path.relative_to(repo_root)}\n"
+        f"Event: intent.proposed written to .intent/events/events.jsonl\n\n"
+        f"To commit: git add {intent_path.relative_to(repo_root)} .intent/events/events.jsonl && git commit -m 'intent: {params.title[:50]}'"
+    )
+
+
+# --- Spec Tools ---
+
+class CreateSpecInput(BaseModel):
+    """Input for creating a new spec."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra='forbid')
+
+    title: str = Field(
+        ...,
+        description="What to build. Be specific enough for an agent to implement against.",
+        min_length=5,
+        max_length=200
+    )
+    intent: Optional[str] = Field(
+        default=None,
+        description="Parent intent ID (e.g., 'INT-003')."
+    )
+    problem: Optional[str] = Field(
+        default=None,
+        description="What specific problem does this spec solve?"
+    )
+    solution: Optional[str] = Field(
+        default=None,
+        description="What are we building? High-level approach."
+    )
+    author: Optional[str] = Field(
+        default=None,
+        description="Who wrote this spec."
+    )
+    assignee: Optional[str] = Field(
+        default=None,
+        description="Who or what will execute: human name or agent identifier."
+    )
+    repo_path: Optional[str] = Field(
+        default=None,
+        description="Path to the repo root."
+    )
+
+
+@mcp.tool(
+    name="intent_create_spec",
+    annotations={
+        "title": "Create a Spec",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False
+    }
+)
+async def create_spec(params: CreateSpecInput) -> str:
+    """
+    Create a new spec — a structured specification that an AI agent or
+    human can implement against.
+
+    Use this when an intent has been accepted and it's time to define
+    what to build. The spec includes problem statement, solution,
+    contracts, acceptance criteria, and test scenarios.
+    """
+    repo_root = find_intent_root(params.repo_path)
+    if not repo_root:
+        return "Error: No .intent/ directory found."
+
+    specs_dir = get_dir(repo_root, "specs")
+    events_dir = get_events_dir(repo_root)
+
+    now = datetime.now(timezone.utc)
+    date_str = now.strftime("%Y-%m-%d")
+    timestamp = now.isoformat()
+    spec_id = next_id(specs_dir, "SPEC")
+    slug = slugify(params.title)
+    filename = f"{date_str}-{slug}.md"
+    author = params.author or os.environ.get("USER", "unknown")
+
+    lines = [
+        "---",
+        f"id: {spec_id}",
+        f'title: "{params.title}"',
+        "status: draft",
+        f"intent: {params.intent or ''}",
+        f"author: {author}",
+        f"created_date: {timestamp}",
+        "approved_date:",
+        "contracts: []",
+        f"assignee: {params.assignee or ''}",
+        "---",
+        f"# {params.title}",
+        "",
+        "## Problem Statement",
+        params.problem or "TODO: What specific problem does this spec solve?",
+        "",
+        "## Solution",
+        params.solution or "TODO: What are we building?",
+        "",
+        "## Contracts",
+        "",
+        "### Contract 1: [name]",
+        "- **Given:** [precondition]",
+        "- **When:** [action]",
+        "- **Then:** [expected outcome]",
+        "",
+        "## Acceptance Criteria",
+        "TODO: What does done look like beyond the contracts?",
+        "",
+        "## Out of Scope",
+        "TODO: What will NOT be addressed?",
+        "",
+        "## Dependencies",
+        "TODO: What must exist first?",
+        "",
+        "## Test Scenarios",
+        "TODO: How do we verify this works?",
+    ]
+
+    spec_path = specs_dir / filename
+    spec_path.write_text("\n".join(lines) + "\n")
+
+    event = {
+        "version": "0.1.0",
+        "event": "spec.written",
+        "timestamp": timestamp,
+        "trace_id": params.intent,
+        "span_id": spec_id,
+        "parent_id": params.intent,
+        "source": "mcp",
+        "data": {
+            "spec_id": spec_id,
+            "title": params.title,
+            "intent": params.intent,
+            "author": author,
+            "file": str(spec_path.relative_to(repo_root))
+        }
+    }
+    events_file = events_dir / "events.jsonl"
+    with open(events_file, "a") as f:
+        f.write(json.dumps(event) + "\n")
+
+    return (
+        f"Spec created: {spec_id}\n"
+        f"File: {spec_path.relative_to(repo_root)}\n"
+        f"{'Linked to: ' + params.intent if params.intent else ''}\n"
+        f"Event: spec.written written to .intent/events/events.jsonl\n\n"
+        f"To commit: git add {spec_path.relative_to(repo_root)} .intent/events/events.jsonl && git commit -m 'spec: {params.title[:50]}'"
+    )
+
+
+# --- Status Tool ---
+
+class StatusInput(BaseModel):
+    """Input for getting Intent system status."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra='forbid')
+
+    repo_path: Optional[str] = Field(
+        default=None,
+        description="Path to the repo root."
+    )
+
+
+@mcp.tool(
+    name="intent_status",
+    annotations={
+        "title": "Intent System Status",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False
+    }
+)
+async def intent_status(params: StatusInput) -> str:
+    """
+    Get the current status of the Intent system — signal counts,
+    intent pipeline, spec pipeline, and recent events.
+
+    Use this to get an overview of what's happening in the system
+    before making decisions about what to work on next.
+    """
+    repo_root = find_intent_root(params.repo_path)
+    if not repo_root:
+        return "Error: No .intent/ directory found."
+
+    intent_dir = repo_root / ".intent"
+
+    def count_md(subdir):
+        d = intent_dir / subdir
+        if d.is_dir():
+            return len(list(d.glob("*.md")))
+        return 0
+
+    def count_events():
+        ef = intent_dir / "events" / "events.jsonl"
+        if ef.exists():
+            return sum(1 for _ in ef.open())
+        return 0
+
+    sig = count_md("signals")
+    ints = count_md("intents")
+    specs = count_md("specs")
+    evts = count_events()
+
+    lines = [
+        "INTENT STATUS",
+        "",
+        f"  Signals:  {sig}     Intents:  {ints}     Specs:  {specs}     Events:  {evts}",
+        f"  Repo: {repo_root}",
+        "",
+        "  Product Maturity:",
+        "  △◇  Notice   — Operational  (MCP ✓, CLI ✓, Action ✓)",
+        "  △◇○ Spec     — Conceptual   (templates ✓, CLI ✓)",
+        "  △◉  Execute  — Defined      (event schema ✓)",
+        "  ◇○  Observe  — Schema-Ready (15 event types ✓)",
+    ]
+
+    return "\n".join(lines)
 
 
 # --- Entry point ---

@@ -1,0 +1,230 @@
+#!/bin/bash
+#
+# intent-spec — Create and manage specs
+#
+# Usage:
+#   intent-spec "Build Slack signal capture bot" --intent INT-003
+#   intent-spec list
+#   intent-spec show SPEC-001
+#   intent-spec approve SPEC-001
+#
+# Writes to .intent/specs/ in the nearest Intent-native repo.
+
+set -euo pipefail
+
+# --- Find .intent/ directory ---
+find_intent_root() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.intent" ]]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+REPO_ROOT=$(find_intent_root) || {
+  echo "Error: No .intent/ directory found. Are you in an Intent-native repo?" >&2
+  exit 1
+}
+
+SPECS_DIR="$REPO_ROOT/.intent/specs"
+EVENTS_DIR="$REPO_ROOT/.intent/events"
+mkdir -p "$SPECS_DIR" "$EVENTS_DIR"
+
+# --- Subcommands ---
+
+cmd_list() {
+  echo "Specs:"
+  echo ""
+  printf "  %-9s | %-9s | %-8s | %s\n" "ID" "Status" "Intent" "Title"
+  echo "  $(printf '%.0s-' {1..65})"
+
+  for f in "$SPECS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    local id=$(grep -oP 'id:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+    local status=$(grep -oP 'status:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+    local intent=$(grep -oP 'intent:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+    local title=$(grep -oP '^#\s+\K.+' "$f" 2>/dev/null | head -1 || echo "$f")
+    printf "  %-9s | %-9s | %-8s | %s\n" "$id" "$status" "$intent" "${title:0:40}"
+  done
+}
+
+cmd_show() {
+  local target="$1"
+  for f in "$SPECS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    if grep -q "id: $target" "$f" 2>/dev/null || [[ "$f" == *"$target"* ]]; then
+      cat "$f"
+      return 0
+    fi
+  done
+  echo "Spec '$target' not found." >&2
+  return 1
+}
+
+cmd_approve() {
+  local target="$1"
+  for f in "$SPECS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    if grep -q "id: $target" "$f" 2>/dev/null; then
+      sed -i.bak "s/status: draft/status: approved/;s/status: review/status: approved/" "$f" && rm -f "$f.bak"
+      local now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      sed -i.bak "s/approved_date:/approved_date: $now/" "$f" && rm -f "$f.bak"
+
+      local event="{\"version\":\"0.1.0\",\"event\":\"spec.approved\",\"timestamp\":\"$now\",\"trace_id\":null,\"span_id\":\"$target\",\"parent_id\":null,\"source\":\"cli\",\"data\":{\"spec_id\":\"$target\"}}"
+      echo "$event" >> "$EVENTS_DIR/events.jsonl"
+
+      echo "Spec $target approved."
+      return 0
+    fi
+  done
+  echo "Spec '$target' not found." >&2
+  return 1
+}
+
+cmd_create() {
+  local TITLE="$1"; shift
+  local INTENT=""
+  local BODY=""
+  local AUTHOR="${USER:-unknown}"
+  local ASSIGNEE=""
+  local COMMIT=false
+
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --intent) INTENT="$2"; shift 2 ;;
+      --body) BODY="$2"; shift 2 ;;
+      --author) AUTHOR="$2"; shift 2 ;;
+      --assignee) ASSIGNEE="$2"; shift 2 ;;
+      --commit) COMMIT=true; shift ;;
+      *) echo "Unknown option: $1" >&2; exit 1 ;;
+    esac
+  done
+
+  local DATE=$(date -u +"%Y-%m-%d")
+  local TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs '[:alnum:]' '-' | head -c 60 | sed 's/-$//')
+
+  # Generate next spec ID
+  local NEXT_ID=1
+  for f in "$SPECS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    local ID_NUM=$(grep -oP 'id:\s*SPEC-\K\d+' "$f" 2>/dev/null || true)
+    if [[ -n "$ID_NUM" ]] && (( ID_NUM >= NEXT_ID )); then
+      NEXT_ID=$((ID_NUM + 1))
+    fi
+  done
+  local SPEC_ID=$(printf "SPEC-%03d" "$NEXT_ID")
+
+  local FILENAME="${DATE}-${SLUG}.md"
+  local FILEPATH="$SPECS_DIR/$FILENAME"
+
+  {
+    echo "---"
+    echo "id: $SPEC_ID"
+    echo "title: \"$TITLE\""
+    echo "status: draft"
+    echo "intent: ${INTENT:-}"
+    echo "author: $AUTHOR"
+    echo "created_date: $TIMESTAMP"
+    echo "approved_date:"
+    echo "contracts: []"
+    echo "assignee: ${ASSIGNEE:-}"
+    echo "---"
+    echo "# $TITLE"
+    echo ""
+    echo "## Problem Statement"
+    if [[ -n "$BODY" ]]; then
+      echo "$BODY"
+    else
+      echo "TODO: What specific problem does this spec solve?"
+    fi
+    echo ""
+    echo "## Solution"
+    echo "TODO: What are we building? Be specific enough for an agent to implement."
+    echo ""
+    echo "## Contracts"
+    echo ""
+    echo "### Contract 1: [name]"
+    echo "- **Given:** [precondition]"
+    echo "- **When:** [action]"
+    echo "- **Then:** [expected outcome]"
+    echo ""
+    echo "## Acceptance Criteria"
+    echo "TODO: What does done look like beyond the contracts?"
+    echo ""
+    echo "## Out of Scope"
+    echo "TODO: What will NOT be addressed?"
+    echo ""
+    echo "## Dependencies"
+    echo "TODO: What must exist first?"
+    echo ""
+    echo "## Test Scenarios"
+    echo "TODO: How do we verify this works?"
+  } > "$FILEPATH"
+
+  # Write event
+  local EVENT="{\"version\":\"0.1.0\",\"event\":\"spec.written\",\"timestamp\":\"$TIMESTAMP\",\"trace_id\":\"${INTENT:-null}\",\"span_id\":\"$SPEC_ID\",\"parent_id\":\"${INTENT:-null}\",\"source\":\"cli\",\"data\":{\"spec_id\":\"$SPEC_ID\",\"title\":\"$TITLE\",\"intent\":\"${INTENT:-}\",\"author\":\"$AUTHOR\",\"file\":\".intent/specs/$FILENAME\"}}"
+  echo "$EVENT" >> "$EVENTS_DIR/events.jsonl"
+
+  local REL_PATH=".intent/specs/$FILENAME"
+  echo "Spec created: $SPEC_ID"
+  echo "File: $REL_PATH"
+  [[ -n "$INTENT" ]] && echo "Linked to: $INTENT"
+  echo "Event: spec.written → .intent/events/events.jsonl"
+
+  if $COMMIT; then
+    cd "$REPO_ROOT"
+    git add "$REL_PATH" ".intent/events/events.jsonl"
+    git commit -m "spec: ${TITLE:0:50}"
+    echo "Committed."
+  else
+    echo ""
+    echo "To commit:"
+    echo "  git add $REL_PATH .intent/events/events.jsonl"
+    echo "  git commit -m 'spec: ${TITLE:0:50}'"
+  fi
+}
+
+# --- Main dispatch ---
+
+case "${1:-}" in
+  list)
+    cmd_list
+    ;;
+  show)
+    [[ -z "${2:-}" ]] && { echo "Usage: intent-spec show SPEC-XXX" >&2; exit 1; }
+    cmd_show "$2"
+    ;;
+  approve)
+    [[ -z "${2:-}" ]] && { echo "Usage: intent-spec approve SPEC-XXX" >&2; exit 1; }
+    cmd_approve "$2"
+    ;;
+  --help|-h)
+    echo "Usage:"
+    echo "  intent-spec \"Title\"                    Create a new spec"
+    echo "  intent-spec \"Title\" --intent INT-003   Link to parent intent"
+    echo "  intent-spec list                       List all specs"
+    echo "  intent-spec show SPEC-001              Show spec details"
+    echo "  intent-spec approve SPEC-001           Move spec to approved"
+    echo ""
+    echo "Options:"
+    echo "  --intent ID        Parent intent ID (e.g., INT-003)"
+    echo "  --body TEXT         Problem statement"
+    echo "  --assignee NAME    Who will execute (human or agent)"
+    echo "  --author NAME      Who wrote this (default: \$USER)"
+    echo "  --commit           Auto-commit after creating"
+    exit 0
+    ;;
+  "")
+    echo "Error: Spec title or subcommand required." >&2
+    echo "Usage: intent-spec \"What to build\" or intent-spec list|show|approve" >&2
+    exit 1
+    ;;
+  *)
+    cmd_create "$@"
+    ;;
+esac

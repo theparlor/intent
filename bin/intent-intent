@@ -1,0 +1,246 @@
+#!/bin/bash
+#
+# intent-intent — Propose or manage intents
+#
+# Usage:
+#   intent-intent "We need a Slack integration for signal capture"
+#   intent-intent "Title" --signals SIG-006,SIG-008 --priority now --product notice
+#   intent-intent list
+#   intent-intent show INT-003
+#   intent-intent accept INT-003
+#
+# Writes to .intent/intents/ in the nearest Intent-native repo.
+
+set -euo pipefail
+
+# --- Find .intent/ directory ---
+find_intent_root() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.intent" ]]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+REPO_ROOT=$(find_intent_root) || {
+  echo "Error: No .intent/ directory found. Are you in an Intent-native repo?" >&2
+  exit 1
+}
+
+INTENTS_DIR="$REPO_ROOT/.intent/intents"
+EVENTS_DIR="$REPO_ROOT/.intent/events"
+mkdir -p "$INTENTS_DIR" "$EVENTS_DIR"
+
+# --- Subcommands ---
+
+cmd_list() {
+  echo "Intents:"
+  echo ""
+  printf "  %-8s | %-10s | %-8s | %-8s | %s\n" "ID" "Status" "Priority" "Product" "Title"
+  echo "  $(printf '%.0s-' {1..70})"
+
+  for f in "$INTENTS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    local id=$(grep -oP 'id:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+    local status=$(grep -oP 'status:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+    local priority=$(grep -oP 'priority:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+    local product=$(grep -oP 'product:\s*\K\S+' "$f" 2>/dev/null || echo "?")
+    local title=$(grep -oP '^#\s+\K.+' "$f" 2>/dev/null | head -1 || echo "$f")
+    printf "  %-8s | %-10s | %-8s | %-8s | %s\n" "$id" "$status" "$priority" "$product" "${title:0:40}"
+  done
+}
+
+cmd_show() {
+  local target="$1"
+  for f in "$INTENTS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    if grep -q "id: $target" "$f" 2>/dev/null || [[ "$f" == *"$target"* ]]; then
+      cat "$f"
+      return 0
+    fi
+  done
+  echo "Intent '$target' not found." >&2
+  return 1
+}
+
+cmd_accept() {
+  local target="$1"
+  for f in "$INTENTS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    if grep -q "id: $target" "$f" 2>/dev/null; then
+      sed -i.bak "s/status: proposed/status: accepted/" "$f" && rm -f "$f.bak"
+      local now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      sed -i.bak "s/accepted_date:/accepted_date: $now/" "$f" && rm -f "$f.bak"
+
+      # Emit event
+      local event="{\"version\":\"0.1.0\",\"event\":\"intent.accepted\",\"timestamp\":\"$now\",\"trace_id\":\"$target\",\"span_id\":\"$target\",\"parent_id\":null,\"source\":\"cli\",\"data\":{\"intent_id\":\"$target\"}}"
+      echo "$event" >> "$EVENTS_DIR/events.jsonl"
+
+      echo "Intent $target accepted."
+      return 0
+    fi
+  done
+  echo "Intent '$target' not found." >&2
+  return 1
+}
+
+cmd_create() {
+  local TITLE="$1"; shift
+  local SIGNALS=""
+  local PRIORITY=""
+  local PRODUCT=""
+  local BODY=""
+  local OUTCOME=""
+  local AUTHOR="${USER:-unknown}"
+  local COMMIT=false
+
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --signals) SIGNALS="$2"; shift 2 ;;
+      --priority) PRIORITY="$2"; shift 2 ;;
+      --product) PRODUCT="$2"; shift 2 ;;
+      --body) BODY="$2"; shift 2 ;;
+      --outcome) OUTCOME="$2"; shift 2 ;;
+      --author) AUTHOR="$2"; shift 2 ;;
+      --commit) COMMIT=true; shift ;;
+      *) echo "Unknown option: $1" >&2; exit 1 ;;
+    esac
+  done
+
+  local DATE=$(date -u +"%Y-%m-%d")
+  local TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs '[:alnum:]' '-' | head -c 60 | sed 's/-$//')
+
+  # Generate next intent ID
+  local NEXT_ID=1
+  for f in "$INTENTS_DIR"/*.md 2>/dev/null; do
+    [[ -f "$f" ]] || continue
+    local ID_NUM=$(grep -oP 'id:\s*INT-\K\d+' "$f" 2>/dev/null || true)
+    if [[ -n "$ID_NUM" ]] && (( ID_NUM >= NEXT_ID )); then
+      NEXT_ID=$((ID_NUM + 1))
+    fi
+  done
+  local INTENT_ID=$(printf "INT-%03d" "$NEXT_ID")
+
+  local FILENAME="${DATE}-${SLUG}.md"
+  local FILEPATH="$INTENTS_DIR/$FILENAME"
+
+  # Format signals as YAML list
+  local SIGNALS_YAML="[]"
+  if [[ -n "$SIGNALS" ]]; then
+    SIGNALS_YAML="[$(echo "$SIGNALS" | sed 's/,/, /g')]"
+  fi
+
+  {
+    echo "---"
+    echo "id: $INTENT_ID"
+    echo "title: \"$TITLE\""
+    echo "status: proposed"
+    echo "proposed_by: $AUTHOR"
+    echo "proposed_date: $TIMESTAMP"
+    echo "accepted_date:"
+    echo "signals: $SIGNALS_YAML"
+    echo "specs: []"
+    echo "owner: $AUTHOR"
+    [[ -n "$PRIORITY" ]] && echo "priority: $PRIORITY" || echo "priority:"
+    [[ -n "$PRODUCT" ]] && echo "product: $PRODUCT" || echo "product:"
+    echo "---"
+    echo "# $TITLE"
+    echo ""
+    echo "## Problem"
+    if [[ -n "$BODY" ]]; then
+      echo "$BODY"
+    else
+      echo "TODO: Describe what's wrong today."
+    fi
+    echo ""
+    echo "## Desired Outcome"
+    if [[ -n "$OUTCOME" ]]; then
+      echo "$OUTCOME"
+    else
+      echo "TODO: What does done look like?"
+    fi
+    echo ""
+    echo "## Evidence"
+    if [[ -n "$SIGNALS" ]]; then
+      echo "Based on signals: $SIGNALS"
+    else
+      echo "TODO: Which signals support this?"
+    fi
+    echo ""
+    echo "## Constraints"
+    echo "TODO: What boundaries should shape the solution?"
+    echo ""
+    echo "## Open Questions"
+    echo "TODO: What don't we know yet?"
+  } > "$FILEPATH"
+
+  # Write event
+  local EVENT="{\"version\":\"0.1.0\",\"event\":\"intent.proposed\",\"timestamp\":\"$TIMESTAMP\",\"trace_id\":\"$INTENT_ID\",\"span_id\":\"$INTENT_ID\",\"parent_id\":null,\"source\":\"cli\",\"data\":{\"intent_id\":\"$INTENT_ID\",\"title\":\"$TITLE\",\"author\":\"$AUTHOR\",\"file\":\".intent/intents/$FILENAME\"}}"
+  echo "$EVENT" >> "$EVENTS_DIR/events.jsonl"
+
+  local REL_PATH=".intent/intents/$FILENAME"
+  echo "Intent proposed: $INTENT_ID"
+  echo "File: $REL_PATH"
+  echo "Event: intent.proposed → .intent/events/events.jsonl"
+
+  if $COMMIT; then
+    cd "$REPO_ROOT"
+    git add "$REL_PATH" ".intent/events/events.jsonl"
+    git commit -m "intent: ${TITLE:0:50}"
+    echo "Committed."
+  else
+    echo ""
+    echo "To commit:"
+    echo "  git add $REL_PATH .intent/events/events.jsonl"
+    echo "  git commit -m 'intent: ${TITLE:0:50}'"
+  fi
+}
+
+# --- Main dispatch ---
+
+case "${1:-}" in
+  list)
+    cmd_list
+    ;;
+  show)
+    [[ -z "${2:-}" ]] && { echo "Usage: intent-intent show INT-XXX" >&2; exit 1; }
+    cmd_show "$2"
+    ;;
+  accept)
+    [[ -z "${2:-}" ]] && { echo "Usage: intent-intent accept INT-XXX" >&2; exit 1; }
+    cmd_accept "$2"
+    ;;
+  --help|-h)
+    echo "Usage:"
+    echo "  intent-intent \"Title\"                    Propose a new intent"
+    echo "  intent-intent \"Title\" --signals SIG-006  Link to signals"
+    echo "  intent-intent \"Title\" --priority now     Set priority (now|next|later)"
+    echo "  intent-intent \"Title\" --product notice   Set product area"
+    echo "  intent-intent list                       List all intents"
+    echo "  intent-intent show INT-003               Show intent details"
+    echo "  intent-intent accept INT-003             Move intent to accepted"
+    echo ""
+    echo "Options:"
+    echo "  --signals IDS      Comma-separated signal IDs (e.g., SIG-006,SIG-008)"
+    echo "  --priority LEVEL   now | next | later"
+    echo "  --product AREA     notice | spec | execute | observe | cross-cutting"
+    echo "  --body TEXT         Problem description"
+    echo "  --outcome TEXT      Desired outcome"
+    echo "  --author NAME      Who proposed (default: \$USER)"
+    echo "  --commit           Auto-commit after creating"
+    exit 0
+    ;;
+  "")
+    echo "Error: Intent title or subcommand required." >&2
+    echo "Usage: intent-intent \"What needs to change\" or intent-intent list|show|accept" >&2
+    exit 1
+    ;;
+  *)
+    cmd_create "$@"
+    ;;
+esac
