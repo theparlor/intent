@@ -11,6 +11,18 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.03.29-0.4.0
+
+**CLI suite, expanded MCP server, roadmap interfaces**
+
+- Built full CLI suite: `intent-intent` (propose/list/show/accept), `intent-spec` (create/list/show/approve), `intent-status` (signals/intents/specs/events/roadmap dashboard)
+- Expanded MCP server from 3 to 7 tools: added `intent_propose_intent`, `intent_create_spec`, `intent_status`
+- Created templates for all work ontology levels: intent.md, spec.md, contract.md in `.intent/templates/`
+- Built static HTML roadmap page (`docs/roadmap.html`) — four-product view with status grids, Enhance/Build/Learn investments, Now/Next/Later priorities, CLI toolkit grid
+- Built interactive React roadmap artifact (`artifacts/intent-product-roadmap.jsx`) — expand/collapse product cards, progress bars, Products/Priorities toggle
+- Added "Roadmap" to site navigation
+- All CLI tools share consistent architecture: find_intent_root() upward walk, sequential ID generation, markdown+YAML frontmatter, event emission to events.jsonl, optional --commit flag
+
 ## 2026.03.29-0.3.0
 
 **Bootstrap kit, signal capture system, four-product roadmap**

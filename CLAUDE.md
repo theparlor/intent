@@ -10,7 +10,7 @@ Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked
 
 **Owner:** Brien (theparlorhq@gmail.com) — solo practitioner, The Parlor
 **Repo:** github.com/theparlor/intent (private)
-**Status:** Methodology defined, bootstrap kit built, validating with real repos.
+**Status:** Methodology defined, bootstrap kit built, CLI suite operational, validating with real repos.
 
 ## Core Concepts
 
@@ -23,7 +23,7 @@ No sprint boundaries. No ceremony tax. A continuous loop where the team's energy
 ### Four Products
 Intent is four products, not one. Each phase of the loop is a product with its own maturity:
 - **Notice** (Operational) — Signal capture from any surface. MCP server, CLI, GitHub Action built.
-- **Spec** (Conceptual) — Shaping signals into agent-ready specs. Methodology defined, no tooling yet.
+- **Spec** (Conceptual) — Shaping signals into agent-ready specs. Templates, CLI tools built.
 - **Execute** (Defined) — Agent implementation against specs. Event schema defined, no integration yet.
 - **Observe** (Schema-Ready) — Dashboard and learning layer. 15 event types defined, no visualization yet.
 
@@ -50,13 +50,66 @@ Each level has a clear owner, clear transitions, and clear events. This replaces
 
 ### Signal Capture System
 A 5-tier adapter architecture for capturing signals from every surface where practitioners work:
-1. **MCP Server** (Tier 1) — Claude Code, Cowork, Cursor. One server, three surfaces.
-2. **CLI** (Tier 2) — `bin/intent-signal` shell script. Works in any terminal.
+1. **MCP Server** (Tier 1) — Claude Code, Cowork, Cursor. 7 tools: signal capture/list/get, intent propose, spec create, status.
+2. **CLI** (Tier 2) — `bin/intent-signal`, `bin/intent-intent`, `bin/intent-spec`, `bin/intent-status`. Full suite.
 3. **Slack** (Tier 3) — Reaction-based or slash command. Specced, not built.
 4. **GitHub** (Tier 4) — Issue labels, PR comments. Specced, not built.
 5. **AI Plugins** (Tier 5) — ChatGPT, Copilot, Codex. Specced, not built.
 
 See `spec/signal-capture-system.md` for the full architecture.
+
+## CLI Suite
+
+All CLI tools share the same architecture: walk up from `$PWD` to find `.intent/`, generate sequential IDs, write markdown with YAML frontmatter, emit events to `events.jsonl`, optional `--commit` flag.
+
+### intent-signal
+```bash
+intent-signal "What you noticed"           # Capture a signal
+intent-signal "Title" --confidence 0.8     # With confidence score
+intent-signal "Title" --source pr-review   # With source attribution
+```
+
+### intent-intent
+```bash
+intent-intent "What needs to change"                          # Propose an intent
+intent-intent "Title" --signals SIG-006,SIG-008 --priority now # Link to signals
+intent-intent list                                            # List all intents
+intent-intent show INT-003                                    # Show details
+intent-intent accept INT-003                                  # Accept for shaping
+```
+
+### intent-spec
+```bash
+intent-spec "What to build" --intent INT-003    # Create a spec linked to intent
+intent-spec list                                # List all specs
+intent-spec show SPEC-001                       # Show details
+intent-spec approve SPEC-001                    # Move to approved
+```
+
+### intent-status
+```bash
+intent-status              # Full overview: counts + pipeline
+intent-status signals      # Signal table (ID, Source, Conf, Title)
+intent-status intents      # Intent pipeline with status breakdown
+intent-status specs        # Spec pipeline with status breakdown
+intent-status events       # Last 15 events from events.jsonl
+intent-status roadmap      # ASCII four-product maturity view
+```
+
+## MCP Server (7 tools)
+
+The MCP server at `tools/intent-mcp/server.py` provides 7 tools accessible from Claude Code, Cowork, and Cursor:
+
+| Tool | Action | Read-only |
+|------|--------|-----------|
+| `intent_capture_signal` | Capture a signal | No |
+| `intent_list_signals` | List recent signals | Yes |
+| `intent_get_signal` | Get signal details | Yes |
+| `intent_propose_intent` | Propose an intent | No |
+| `intent_create_spec` | Create a spec | No |
+| `intent_status` | System status overview | Yes |
+
+Install: `pip install mcp pydantic` then configure in Claude Code or Cursor settings.
 
 ## Repo Structure
 
@@ -66,24 +119,31 @@ intent/
 │   ├── INTENT.md             ← Project manifest
 │   ├── decisions.md          ← Decision log (source of truth)
 │   ├── signals/              ← 11 founding signals (SIG-001 through SIG-011)
+│   ├── intents/              ← Proposed intents
+│   ├── specs/                ← Written specs
 │   ├── events/               ← Event log (events.jsonl)
-│   └── templates/            ← Signal template
+│   └── templates/            ← Signal, intent, spec, contract templates
 ├── .github/
 │   └── workflows/
 │       └── intent-events.yml ← GitHub Action: emit events on push
 ├── artifacts/                ← React JSX interactive artifacts
 │   ├── intent-event-catalog.jsx
 │   ├── intent-flow-diagram.jsx
+│   ├── intent-product-roadmap.jsx  ← Interactive roadmap (Products/Priorities views)
 │   ├── intent-work-system.jsx
 │   └── intent-visual-brief.jsx
-├── bin/
-│   └── intent-signal         ← CLI signal capture tool
+├── bin/                      ← CLI tools (add to PATH)
+│   ├── intent-signal         ← Capture signals
+│   ├── intent-intent         ← Propose/manage intents
+│   ├── intent-spec           ← Create/manage specs
+│   └── intent-status         ← System status dashboard
 ├── docs/                     ← GitHub Pages site (source: main, /docs)
 │   ├── index.html            ← Product landing page
 │   ├── methodology.html
 │   ├── concept-brief.html
 │   ├── signals.html
 │   ├── decisions.html
+│   ├── roadmap.html          ← Four-product roadmap page
 │   ├── event-catalog.html
 │   ├── flow-diagram.html
 │   ├── work-system.html
@@ -104,7 +164,7 @@ intent/
 │   ├── repo-pattern.md
 │   └── work-ontology.md
 ├── tools/
-│   └── intent-mcp/           ← MCP signal capture server
+│   └── intent-mcp/           ← MCP server (7 tools)
 │       ├── server.py
 │       ├── requirements.txt
 │       └── README.md
@@ -114,7 +174,7 @@ intent/
 ├── reference/                ← Reference materials
 ├── CLAUDE.md                 ← THIS FILE
 ├── CHANGELOG.md              ← Timestamp-based version history
-├── VERSION                   ← Current: 2026.03.29-0.3.0
+├── VERSION                   ← Current: 2026.03.29-0.4.0
 ├── README.md                 ← Public-facing repo README
 └── TASKS.md                  ← Living task list
 ```
@@ -147,6 +207,7 @@ Every page in `docs/` has this nav:
   <a href="concept-brief.html">Concept Brief</a>
   <a href="signals.html">Signals</a>
   <a href="decisions.html">Decisions</a>
+  <a href="roadmap.html">Roadmap</a>
 </nav>
 ```
 The current page gets `class="active"`. Max-width: 900px. Footer with source link to GitHub.
@@ -168,6 +229,17 @@ The index page follows five sections that mirror the loop:
 4. If it has an interactive artifact, create the JSX in `artifacts/`
 5. Link from `docs/index.html` in the appropriate section
 6. Update CHANGELOG.md
+
+### Adding a new CLI tool
+1. Create the script in `bin/` — follow the existing pattern:
+   - `find_intent_root()` to locate `.intent/`
+   - Sequential ID generation (`PREFIX-XXX`)
+   - Markdown with YAML frontmatter output
+   - Event emission to `events.jsonl`
+   - Optional `--commit` flag
+2. Add corresponding MCP tool in `tools/intent-mcp/server.py` with Pydantic input model
+3. Update this file's CLI section
+4. Update `docs/roadmap.html` CLI grid if relevant
 
 ### Editing existing content
 1. Edit the markdown source in `spec/` first
@@ -207,10 +279,10 @@ Intent draws from: Marty Cagan (product operating model), Jeff Patton (story map
 
 - [ ] GitHub Pages not yet enabled by Brien
 - [ ] Install MCP server on Brien's repos and validate end-to-end signal capture
-- [ ] Build Spec templates (intent.md, spec.md, contract.md)
 - [ ] Install .intent/ scaffolds into Brien's 4 repos
 - [ ] Intent dashboard v1 (Observe product)
 - [ ] Slack signal capture bot (Notice product, Tier 3)
+- [ ] Spec validation CLI — check completeness against criteria
 - [ ] 5 in-depth interviews with teams experiencing AI + Agile friction
 - [ ] Message to Ari about Intent (draft exists)
 - [ ] Deeper positioning and vision work
