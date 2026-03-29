@@ -1,37 +1,18 @@
 ---
-id: SIG-007
-timestamp: 2026-03-29T07:30:00Z
-source: cowork-session
+id: SIG-011
+timestamp: 2026-03-29T19:00:00Z
+source: conversation
 author: brien
-confidence: 0.9
-trust: 0.80
-autonomy_level: L1
+confidence: 0.85
+trust: 0.45
+autonomy_level: L2
 status: active
 cluster: signal-capture-surfaces
-parent_signal: SIG-003
-related_intents: []
+parent_signal:
+related_intents: [notice-product, signal-capture]
 ---
-# Signal: Signals must be captured from multiple surfaces: conversation, OTel, Slack, PRs, agent traces
+# Signal capture needs to cover every surface where practitioners work — not just the IDE
 
-## Observation
+Slack, Claude Code, Cowork, Cursor, ChatGPT, GitHub Copilot, Microsoft 365 Copilot, Codex — practitioners work across all of these. A signal capture system that only works in the terminal misses where most insights actually happen: conversations, code reviews, strategic thinking sessions.
 
-During signal framework design, it became clear that no single source captures all observations. Signals come from:
-- **Conversation** — human→AI discussion, reasoning aloud
-- **OTel spans** — system behavior, bottlenecks, errors
-- **Slack** — team observations, incident discussions
-- **PR reviews** — design decisions, technical debt comments
-- **Agent traces** — what agents noticed while executing
-
-Each surface has different latency, noise, and trust profile. Cowork/IDE is high-trust/low-latency. Slack is medium-trust/medium-latency. OTel is automated/always-on but noisy.
-
-## Why It Matters
-
-Signals from a single source miss blind spots. A contract issue might show up in OTel (slow responses) but only get *named* in conversation. A process bottleneck might live in Slack discussion for weeks before a PR comment makes it actionable. The framework must ingest *all* surfaces and synthesize them.
-
-## Trust Factors
-
-- Clarity: Very High — multiple surfaces are observable
-- Blast radius: High — affects architecture of signal ingestion
-- Reversibility: High — can add/remove surfaces without breaking core logic
-- Testability: High — each surface has auditable input
-- Precedent: Very High — modern observability tools do this (Datadog, New Relic, etc.)
+The 5-tier adapter strategy (MCP → CLI → Slack → GitHub → AI Plugins) prioritizes by leverage: MCP covers 3 surfaces with one implementation. CLI works everywhere as a fallback. Slack captures team conversations. GitHub captures structured observations. AI plugins are last because each requires platform-specific development.
