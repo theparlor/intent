@@ -1,61 +1,23 @@
 #!/bin/bash
 #
-# intent-signal — Capture a signal from the command line
+# intent-signal — Capture and manage signals
 #
 # Usage:
 #   intent-signal "OTel traces show 40% of contracts fail on first pass"
 #   intent-signal "Title here" --body "Longer description" --confidence 0.8
-#   intent-signal "Title here" --source pr-review --author brien
+#   intent-signal "Title here" --source pr-review --author brien --trust 0.6
+#   intent-signal review                    # Interactive triage of captured signals
+#   intent-signal review SIG-003            # Review a specific signal
+#   intent-signal dismiss SIG-003 --reason "Duplicate of SIG-001"
+#   intent-signal cluster SIG-003,SIG-005 --name "Bootstrap tooling"
+#   intent-signal promote SIG-003           # Promote signal to intent
+#   intent-signal list                      # List all signals (default: active)
+#   intent-signal list --status captured    # Filter by status
+#   intent-signal show SIG-003              # Show full signal details
 #
 # Writes to .intent/signals/ in the nearest Intent-native repo.
 
 set -euo pipefail
-
-# --- Parse arguments ---
-TITLE=""
-BODY=""
-CONFIDENCE=""
-SOURCE="cli"
-AUTHOR="${USER:-unknown}"
-COMMIT=false
-
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    --body) BODY="$2"; shift 2 ;;
-    --confidence) CONFIDENCE="$2"; shift 2 ;;
-    --source) SOURCE="$2"; shift 2 ;;
-    --author) AUTHOR="$2"; shift 2 ;;
-    --commit) COMMIT=true; shift ;;
-    --help|-h)
-      echo "Usage: intent-signal \"Title\" [--body TEXT] [--confidence 0.0-1.0] [--source NAME] [--author NAME] [--commit]"
-      echo ""
-      echo "Captures a signal in .intent/signals/ of the nearest Intent-native repo."
-      echo ""
-      echo "Options:"
-      echo "  --body TEXT        Longer description of the signal"
-      echo "  --confidence N     Confidence score (0.0 to 1.0)"
-      echo "  --source NAME      Where this signal came from (default: cli)"
-      echo "  --author NAME      Who noticed (default: \$USER)"
-      echo "  --commit           Auto-commit the signal after creating"
-      exit 0
-      ;;
-    *)
-      if [[ -z "$TITLE" ]]; then
-        TITLE="$1"
-      else
-        echo "Error: Unexpected argument '$1'. Did you forget --body?" >&2
-        exit 1
-      fi
-      shift
-      ;;
-  esac
-done
-
-if [[ -z "$TITLE" ]]; then
-  echo "Error: Signal title required." >&2
-  echo "Usage: intent-signal \"What you noticed\"" >&2
-  exit 1
-fi
 
 # --- Find .intent/ directory ---
 find_intent_root() {
@@ -71,75 +33,281 @@ find_intent_root() {
 }
 
 REPO_ROOT=$(find_intent_root) || {
-  echo "Error: No .intent/ directory found. Are you in an Intent-native repo?" >&2
-  echo "Run: mkdir -p .intent/signals .intent/events" >&2
+  echo "Error: No .intent/ directory found. Are you in an Intent repo?"
   exit 1
 }
 
 SIGNALS_DIR="$REPO_ROOT/.intent/signals"
-EVENTS_DIR="$REPO_ROOT/.intent/events"
-mkdir -p "$SIGNALS_DIR" "$EVENTS_DIR"
 
-# --- Generate metadata ---
-DATE=$(date -u +"%Y-%m-%d")
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+# --- Ensure signals directory exists ---
+mkdir -p "$SIGNALS_DIR"
 
-# Generate slug from title
-SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs '[:alnum:]' '-' | head -c 60 | sed 's/-$//')
+# --- Subcommand: capture ---
+capture_signal() {
+  local title="$1"
+  shift
+  local body=""
+  local confidence="0.5"
+  local source="cli"
+  local author=""
+  local trust=""
 
-# Generate next signal ID
-NEXT_ID=1
-for f in "$SIGNALS_DIR"/*.md 2>/dev/null; do
-  [[ -f "$f" ]] || continue
-  ID_NUM=$(grep -oP 'id:\s*SIG-\K\d+' "$f" 2>/dev/null || true)
-  if [[ -n "$ID_NUM" ]] && (( ID_NUM >= NEXT_ID )); then
-    NEXT_ID=$((ID_NUM + 1))
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --body)
+        body="$2"
+        shift 2
+        ;;
+      --confidence)
+        confidence="$2"
+        shift 2
+        ;;
+      --source)
+        source="$2"
+        shift 2
+        ;;
+      --author)
+        author="$2"
+        shift 2
+        ;;
+      --trust)
+        trust="$2"
+        shift 2
+        ;;
+      *)
+        echo "Unknown option: $1"
+        exit 1
+        ;;
+    esac
+  done
+
+  # Generate next signal ID
+  local next_id=1
+  if [[ -f "$SIGNALS_DIR"/*.md ]]; then
+    local last_id=$(grep -h "^id: SIG-" "$SIGNALS_DIR"/*.md 2>/dev/null | sed 's/^id: SIG-//' | sort -n | tail -1)
+    next_id=$((last_id + 1))
   fi
-done
-SIGNAL_ID=$(printf "SIG-%03d" "$NEXT_ID")
+  local sig_id=$(printf "SIG-%03d" $next_id)
 
-FILENAME="${DATE}-${SLUG}.md"
-FILEPATH="$SIGNALS_DIR/$FILENAME"
+  # Generate filename from title
+  local filename=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-\|-$//g')
+  local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local signal_file="$SIGNALS_DIR/${timestamp:0:10}-${filename}.md"
 
-# --- Write signal file ---
-{
-  echo "---"
-  echo "id: $SIGNAL_ID"
-  echo "timestamp: $TIMESTAMP"
-  echo "source: $SOURCE"
-  echo "author: $AUTHOR"
-  [[ -n "$CONFIDENCE" ]] && echo "confidence: $CONFIDENCE"
-  echo "---"
-  echo "# $TITLE"
-  if [[ -n "$BODY" ]]; then
-    echo ""
-    echo "$BODY"
-  fi
-} > "$FILEPATH"
-
-# --- Write event ---
-EVENTS_FILE="$EVENTS_DIR/events.jsonl"
-EVENT=$(cat <<EOF
-{"version":"0.1.0","event":"signal.created","timestamp":"$TIMESTAMP","trace_id":null,"span_id":"$SIGNAL_ID","parent_id":null,"source":"cli","data":{"signal_id":"$SIGNAL_ID","title":"$TITLE","confidence":${CONFIDENCE:-null},"author":"$AUTHOR","file":".intent/signals/$FILENAME"}}
+  # Build frontmatter
+  cat > "$signal_file" <<EOF
+---
+id: $sig_id
+timestamp: $timestamp
+source: $source
 EOF
-)
-echo "$EVENT" >> "$EVENTS_FILE"
 
-# --- Output ---
-REL_PATH=".intent/signals/$FILENAME"
-echo "Signal captured: $SIGNAL_ID"
-echo "File: $REL_PATH"
-echo "Event: signal.created → .intent/events/events.jsonl"
+  if [[ -n "$author" ]]; then
+    echo "author: $author" >> "$signal_file"
+  fi
 
-# --- Optional auto-commit ---
-if $COMMIT; then
-  cd "$REPO_ROOT"
-  git add "$REL_PATH" ".intent/events/events.jsonl"
-  git commit -m "signal: ${TITLE:0:50}"
-  echo "Committed."
-else
+  cat >> "$signal_file" <<EOF
+confidence: $confidence
+EOF
+
+  if [[ -n "$trust" ]]; then
+    echo "trust: $trust" >> "$signal_file"
+  fi
+
+  cat >> "$signal_file" <<EOF
+status: captured
+cluster:
+autonomy_level:
+parent_signal:
+related_intents: []
+---
+# Signal: $title
+
+EOF
+
+  if [[ -n "$body" ]]; then
+    echo "$body" >> "$signal_file"
+  fi
+
+  echo "Captured: $sig_id at $signal_file"
+}
+
+# --- Subcommand: review ---
+review_signal() {
+  local target="${1:-}"
+  if [[ -z "$target" ]]; then
+    echo "Interactive review mode: not yet implemented."
+    echo "Use: intent-signal review SIG-001 to review a specific signal."
+    return
+  fi
+
+  # Find and display signal
+  local signal_file=$(grep -l "^id: $target" "$SIGNALS_DIR"/*.md 2>/dev/null | head -1)
+  if [[ -z "$signal_file" ]]; then
+    echo "Signal $target not found."
+    exit 1
+  fi
+
+  echo "=== $target ==="
+  cat "$signal_file"
+}
+
+# --- Subcommand: dismiss ---
+dismiss_signal() {
+  local sig_id="$1"
+  local reason="${2:-No reason provided}"
+  shift 2 || true
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --reason)
+        reason="$2"
+        shift 2
+        ;;
+      *)
+        echo "Unknown option: $1"
+        exit 1
+        ;;
+    esac
+  done
+
+  local signal_file=$(grep -l "^id: $sig_id" "$SIGNALS_DIR"/*.md 2>/dev/null | head -1)
+  if [[ -z "$signal_file" ]]; then
+    echo "Signal $sig_id not found."
+    exit 1
+  fi
+
+  # Update status to dismissed
+  sed -i "s/^status: .*/status: dismissed/" "$signal_file"
+  echo "Dismissed: $sig_id (reason: $reason)"
+}
+
+# --- Subcommand: cluster ---
+cluster_signal() {
+  local sig_ids="$1"
+  local cluster_name="${2:-}"
+  shift 2 || true
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --name)
+        cluster_name="$2"
+        shift 2
+        ;;
+      *)
+        echo "Unknown option: $1"
+        exit 1
+        ;;
+    esac
+  done
+
+  if [[ -z "$cluster_name" ]]; then
+    echo "Error: --name is required for clustering."
+    exit 1
+  fi
+
+  # Split comma-separated IDs and update each
+  IFS=',' read -ra ids <<< "$sig_ids"
+  for id in "${ids[@]}"; do
+    local signal_file=$(grep -l "^id: $id" "$SIGNALS_DIR"/*.md 2>/dev/null | head -1)
+    if [[ -n "$signal_file" ]]; then
+      sed -i "s/^cluster: .*/cluster: $cluster_name/" "$signal_file"
+      echo "Clustered: $id -> $cluster_name"
+    else
+      echo "Signal $id not found."
+    fi
+  done
+}
+
+# --- Subcommand: promote ---
+promote_signal() {
+  local sig_id="$1"
+
+  local signal_file=$(grep -l "^id: $sig_id" "$SIGNALS_DIR"/*.md 2>/dev/null | head -1)
+  if [[ -z "$signal_file" ]]; then
+    echo "Signal $sig_id not found."
+    exit 1
+  fi
+
+  # Update status to promoted
+  sed -i "s/^status: .*/status: promoted/" "$signal_file"
+  echo "Promoted: $sig_id to intent (manual workflow follows)"
+}
+
+# --- Subcommand: list ---
+list_signals() {
+  local status="active"
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --status)
+        status="$2"
+        shift 2
+        ;;
+      *)
+        echo "Unknown option: $1"
+        exit 1
+        ;;
+    esac
+  done
+
+  echo "Signals (status: $status):"
+  if [[ "$status" == "all" ]]; then
+    grep -h "^id: SIG-" "$SIGNALS_DIR"/*.md 2>/dev/null | sort
+  else
+    for file in "$SIGNALS_DIR"/*.md; do
+      if [[ -f "$file" ]] && grep -q "^status: $status" "$file"; then
+        grep "^id: SIG-" "$file"
+      fi
+    done | sort
+  fi
+}
+
+# --- Subcommand: show ---
+show_signal() {
+  local sig_id="$1"
+  local signal_file=$(grep -l "^id: $sig_id" "$SIGNALS_DIR"/*.md 2>/dev/null | head -1)
+
+  if [[ -z "$signal_file" ]]; then
+    echo "Signal $sig_id not found."
+    exit 1
+  fi
+
+  echo "=== $sig_id ==="
+  cat "$signal_file"
   echo ""
-  echo "To commit:"
-  echo "  git add $REL_PATH .intent/events/events.jsonl"
-  echo "  git commit -m 'signal: ${TITLE:0:50}'"
+  echo "File: $signal_file"
+}
+
+# --- Main dispatch ---
+if [[ $# -eq 0 ]]; then
+  echo "intent-signal: No command provided. Use 'intent-signal review' or 'intent-signal "Title"'"
+  exit 1
 fi
+
+command="$1"
+shift
+
+case "$command" in
+  review)
+    review_signal "$@"
+    ;;
+  dismiss)
+    dismiss_signal "$@"
+    ;;
+  cluster)
+    cluster_signal "$@"
+    ;;
+  promote)
+    promote_signal "$@"
+    ;;
+  list)
+    list_signals "$@"
+    ;;
+  show)
+    show_signal "$@"
+    ;;
+  *)
+    # Default: capture a new signal with the command as title
+    capture_signal "$command" "$@"
+    ;;
+esac
