@@ -16,7 +16,7 @@ Deploy: fastmcp.cloud or `fastmcp run servers/spec.py`
 from fastmcp import FastMCP
 from models import (
     SpecStatus, ContractType, ContractStatus, ContractSeverity,
-    spec_frontmatter, contract_frontmatter, make_event,
+    spec_frontmatter, contract_frontmatter, make_event, TraceContext,
 )
 import json
 from datetime import datetime
@@ -52,6 +52,7 @@ _contracts: dict[str, dict] = {}
 _events: list[str] = []
 _next_spec = 1
 _next_contract = 1
+_trace_ctx = TraceContext()
 
 
 @mcp.tool()
@@ -123,10 +124,13 @@ def create_spec(
 
     _specs[spec_id] = spec
 
+    # Inherit trace context from parent intent
+    trace_id, parent_id = _trace_ctx.register_spec(spec_id, intent_id)
+
     frontmatter = spec_frontmatter(spec_id, title, intent_id, product, author, version)
     event = make_event("spec.created", author, spec_id, {
         "intent": intent_id, "completeness": completeness,
-    })
+    }, trace_id=trace_id, span_id=spec_id, parent_id=parent_id)
     _events.append(event)
 
     return json.dumps({
@@ -237,12 +241,15 @@ def verify_contract(
     con["verified_date"] = datetime.utcnow().isoformat()
     con["verified_by"] = verified_by
 
+    # Inherit trace context from parent spec
+    trace_id, parent_span = _trace_ctx.get_spec_trace(con["spec"])
+
     event_type = "contract.verified" if passed else "contract.failed"
     event = make_event(event_type, verified_by, contract_id, {
         "spec": con["spec"],
         "severity": con["severity"],
         "evidence": evidence,
-    })
+    }, trace_id=trace_id, span_id=contract_id, parent_id=con["spec"])
     _events.append(event)
 
     return json.dumps({

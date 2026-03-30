@@ -18,7 +18,7 @@ from models import (
     SignalSource, SignalStatus, AutonomyLevel,
     compute_trust, trust_to_autonomy, compute_amplification,
     compute_effective_trust, signal_frontmatter, make_event,
-    REFERENCE_WEIGHTS,
+    REFERENCE_WEIGHTS, TraceContext,
 )
 import json
 from datetime import datetime
@@ -48,6 +48,7 @@ mcp = FastMCP(
 _signals: dict[str, dict] = {}
 _events: list[str] = []  # JSONL event log
 _next_id = 1
+_trace_ctx = TraceContext()
 
 
 def _gen_id():
@@ -288,23 +289,31 @@ def promote_to_intent(
     Returns:
         JSON with the created intent and updated signal statuses.
     """
-    # Mark signals as promoted
+    intent_id = f"INT-{len([e for e in _events if 'intent.proposed' in e]) + 1:03d}"
+
+    # Generate trace_id for the new intent
+    trace_id = _trace_ctx.register_intent(intent_id)
+
+    # Mark signals as promoted and backfill with trace_id
     for sid in signal_ids:
         if sid in _signals:
             _signals[sid]["status"] = "promoted"
             event = make_event("signal.promoted", proposed_by, sid, {
-                "intent_title": intent_title,
-            })
+                "intent_title": intent_title, "intent_id": intent_id,
+            }, trace_id=trace_id, span_id=sid, parent_id=intent_id)
             _events.append(event)
-
-    intent_id = f"INT-{len([e for e in _events if 'intent.proposed' in e]) + 1:03d}"
+            # Backfill: link signal to the trace
+            backfill = make_event("signal.updated", "system", sid, {
+                "trace_linked": True, "intent_id": intent_id,
+            }, trace_id=trace_id, span_id=sid, parent_id=intent_id)
+            _events.append(backfill)
 
     intent_event = make_event("intent.proposed", proposed_by, intent_id, {
         "title": intent_title,
         "signals": signal_ids,
         "priority": priority,
         "product": product,
-    })
+    }, trace_id=trace_id, span_id=intent_id)
     _events.append(intent_event)
 
     return json.dumps({

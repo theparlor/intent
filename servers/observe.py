@@ -38,6 +38,7 @@ mcp = FastMCP(
 )
 
 _events: list[dict] = []
+_traces: dict[str, list[dict]] = {}  # trace_id → [events]
 
 
 @mcp.tool()
@@ -47,6 +48,9 @@ def ingest_event(
     ref: str,
     data: dict | None = None,
     source: str = "mcp",
+    trace_id: str | None = None,
+    span_id: str | None = None,
+    parent_id: str | None = None,
 ) -> str:
     """Ingest a structured event into the observe layer.
 
@@ -67,14 +71,22 @@ def ingest_event(
         })
 
     event = {
+        "version": "0.2.0",
         "event": event_type,
         "timestamp": datetime.utcnow().isoformat(),
+        "trace_id": trace_id,
+        "span_id": span_id or ref,
+        "parent_id": parent_id,
         "actor": actor,
         "ref": ref,
         "data": data or {},
         "source": source,
     }
     _events.append(event)
+
+    # Index by trace_id for correlation
+    if trace_id:
+        _traces.setdefault(trace_id, []).append(event)
 
     return json.dumps({
         "ingested": event,

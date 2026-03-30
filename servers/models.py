@@ -14,6 +14,8 @@ from enum import Enum
 from typing import Optional
 import json
 import math
+import os
+import uuid
 
 
 # ─── Enums ────────────────────────────────────────────────────
@@ -156,16 +158,78 @@ EVENT_TYPES = {
 }
 
 
-def make_event(event_type: str, actor: str, ref: str, data: dict = None, source: str = "mcp") -> str:
-    """Create a JSONL-formatted OTel-compatible event."""
+def generate_trace_id() -> str:
+    """Generate a UUID v4 trace ID for an Intent."""
+    return str(uuid.uuid4())
+
+
+def make_event(event_type: str, actor: str, ref: str, data: dict = None, source: str = "mcp",
+               trace_id: str = None, span_id: str = None, parent_id: str = None) -> str:
+    """Create a JSONL-formatted OTel-compatible event with trace context."""
     return json.dumps({
+        "version": "0.2.0",
         "event": event_type,
         "timestamp": datetime.utcnow().isoformat(),
+        "trace_id": trace_id,
+        "span_id": span_id or ref,
+        "parent_id": parent_id,
         "actor": actor,
         "ref": ref,
         "data": data or {},
         "source": source,
     })
+
+
+TRACE_CONTEXT_FILE = "trace-context.json"
+
+
+class TraceContext:
+    """Maps Intent IDs and Spec IDs to their trace context.
+    Persists to .intent/trace-context.json for cross-server correlation."""
+
+    def __init__(self, intent_root: str = "."):
+        self._path = os.path.join(intent_root, ".intent", TRACE_CONTEXT_FILE)
+        self._load()
+
+    def _load(self):
+        try:
+            with open(self._path) as f:
+                data = json.load(f)
+                self._intents = data.get("intents", {})
+                self._specs = {k: tuple(v) for k, v in data.get("specs", {}).items()}
+        except (FileNotFoundError, json.JSONDecodeError):
+            self._intents = {}
+            self._specs = {}
+
+    def _save(self):
+        os.makedirs(os.path.dirname(self._path), exist_ok=True)
+        with open(self._path, "w") as f:
+            json.dump({
+                "intents": self._intents,
+                "specs": {k: list(v) for k, v in self._specs.items()},
+            }, f, indent=2)
+
+    def register_intent(self, intent_id: str) -> str:
+        """Create or retrieve trace_id for an intent."""
+        if intent_id not in self._intents:
+            self._intents[intent_id] = generate_trace_id()
+            self._save()
+        return self._intents[intent_id]
+
+    def get_intent_trace(self, intent_id: str) -> str | None:
+        return self._intents.get(intent_id)
+
+    def register_spec(self, spec_id: str, intent_id: str) -> tuple[str | None, str]:
+        """Register a spec under an intent. Returns (trace_id, parent_id)."""
+        trace_id = self.get_intent_trace(intent_id)
+        if trace_id:
+            self._specs[spec_id] = (trace_id, intent_id)
+            self._save()
+        return trace_id, intent_id
+
+    def get_spec_trace(self, spec_id: str) -> tuple[str | None, str | None]:
+        """Returns (trace_id, parent_id) for a spec."""
+        return self._specs.get(spec_id, (None, None))
 
 
 # ─── Frontmatter Generators ──────────────────────────────────
