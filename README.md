@@ -90,7 +90,7 @@ Intent is the missing top layer.
 - **[Intent Visual Brief](artifacts/intent-visual-brief.jsx)** — Seven-section interactive product brief (Problem cascade, Core Loop, Stack, Personas, GTM, Hypotheses, Competitive)
 - **[Intent-Native Repos](artifacts/intent-native-repos.jsx)** — How to adopt Intent across repos: template structure, adoption tiers, and the Entire.io → Spec feedback loop
 
-If GitHub Pages is enabled, view live at: **[theparlor.github.io/intent](https://theparlor.github.io/intent)**
+**Documentation & marketing site:** [theparlor.github.io/intent-site](https://theparlor.github.io/intent-site/) (separate repo: [theparlor/intent-site](https://github.com/theparlor/intent-site))
 
 ---
 

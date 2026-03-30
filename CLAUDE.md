@@ -10,7 +10,7 @@ Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked
 
 **Owner:** Brien (theparlorhq@gmail.com) — solo practitioner, The Parlor
 **Repo:** github.com/theparlor/intent (private)
-**Site:** https://theparlor.github.io/intent/
+**Site repo:** github.com/theparlor/intent-site → https://theparlor.github.io/intent-site/
 **Status:** Methodology defined, CLI suite + MCP server operational, signal dashboard live, trust framework specced, signal management CLI operational (review/dismiss/cluster/promote). All 13 founding signals scored with trust levels.
 
 ## Core Concepts
@@ -189,20 +189,6 @@ intent/
 │   ├── intent-intent         ← Propose/manage intents
 │   ├── intent-spec           ← Create/manage specs
 │   └── intent-status         ← System status dashboard
-├── docs/                     ← GitHub Pages site: https://theparlor.github.io/intent/
-│   ├── index.html            ← Product landing page
-│   ├── methodology.html
-│   ├── concept-brief.html
-│   ├── signals.html
-│   ├── decisions.html
-│   ├── roadmap.html          ← Four-product roadmap page
-│   ├── event-catalog.html
-│   ├── flow-diagram.html
-│   ├── work-system.html
-│   ├── native-repos.html
-│   ├── visual-brief.html
-│   ├── quickstart.md         ← 5-minute getting started guide
-│   └── visual-brief-app/     ← Vite-built React app
 ├── spec/                     ← Markdown source files (source of truth)
 │   ├── intent-methodology.md
 │   ├── intent-concept-brief.md
@@ -234,132 +220,23 @@ intent/
 
 ## Design System
 
-### Unified Slate Palette
-All site pages and artifacts use this palette:
-- Background: `#0f172a`
-- Surface: `#1e293b`
-- Border: `#334155`
-- Text: `#f1f5f9`
-- Muted text: `#94a3b8`
-- Dim text: `#64748b`
-- Accent blue: `#3b82f6`
-- Accent amber: `#f59e0b`
-- Accent green: `#10b981`
-- Accent purple: `#a855f7`
-- Accent red: `#dc2626`
-
 ### Persona Colors
 - Architect (△): `#f59e0b` (amber)
 - PM (◇): `#3b82f6` (blue)
 - Design/QA (○): `#8b5cf6` (purple)
 - Agent (◉): `#10b981` (green)
 
-### Site Information Architecture (IA v2 — Three Pillars)
+> For the full site design system (slate palette, CSS strategy, IA), see `theparlor/intent-site`.
 
-**IMPORTANT: Read `docs/site-ia.md` for the full IA specification. This section is the summary.**
+### Marketing & Documentation Site
 
-The site is organized into three pillars. The primary nav has exactly 3 links (plus logo). Each pillar has a hero page and depth pages with a sub-nav.
-
-#### Primary Nav (ALL pages)
-```html
-<nav class="site-nav">
-  <a href="index.html" class="logo"><span>I</span>ntent</a>
-  <a href="pitch.html">The Story</a>
-  <a href="work-system.html">The System</a>
-  <a href="architecture.html">The Build</a>
-</nav>
-```
-One pillar link gets `class="active"` based on which pillar the current page belongs to.
-
-#### Pillar 1 — The Story (pitch.html is hero)
-Pages: pitch.html, concept-brief.html, methodology.html, roadmap.html
-Primary nav active: "The Story"
-```html
-<nav class="sub-nav">
-  <a href="pitch.html">Overview</a>
-  <a href="concept-brief.html">Concept Brief</a>
-  <a href="methodology.html">Methodology</a>
-  <a href="roadmap.html">Roadmap</a>
-</nav>
-```
-
-#### Pillar 2 — The System (work-system.html is hero)
-Pages: work-system.html, flow-diagram.html, schemas.html, signals.html, dogfood.html, event-catalog.html
-Primary nav active: "The System"
-```html
-<nav class="sub-nav">
-  <a href="work-system.html">Overview</a>
-  <a href="flow-diagram.html">Flow</a>
-  <a href="schemas.html">Schemas</a>
-  <a href="signals.html">Signals</a>
-  <a href="dogfood.html">Dogfood</a>
-  <a href="event-catalog.html">Events</a>
-</nav>
-```
-
-#### Pillar 3 — The Build (architecture.html is hero)
-Pages: architecture.html, agents.html, deployment.html, arb.html, decisions.html, native-repos.html
-Primary nav active: "The Build"
-```html
-<nav class="sub-nav">
-  <a href="architecture.html">Overview</a>
-  <a href="agents.html">Agents</a>
-  <a href="deployment.html">Deployment</a>
-  <a href="arb.html">ARB</a>
-  <a href="decisions.html">Decisions</a>
-  <a href="native-repos.html">Repos</a>
-</nav>
-```
-
-#### Index Page
-**The pitch IS the home page.** `index.html` contains a meta redirect to `pitch.html`. The logo always links to `index.html`. See `docs/site-ia.md` for the redirect HTML.
-
-#### Visual Brief
-`visual-brief.html` is NOT a nav destination. It's a CTA link on the pitch page.
-
-Max-width: 900px. Footer with source link to GitHub. All shared CSS lives in `docs/styles.css` — page-specific CSS stays in small inline `<style>` blocks.
-
-### CSS Strategy — CRITICAL RULES
-
-**All pages link `styles.css` for shared foundation (nav, palette, typography, footer, grid, cards) AND keep page-specific CSS in inline `<style>` blocks.**
-
-**Light pages** (methodology, concept-brief, decisions, event-catalog, schemas, flow-diagram, visual-brief)
-Small or no `<style>` block. Most styling comes from styles.css.
-
-**Rich pages** (pitch, dogfood, arb, roadmap, signals, architecture, agents, deployment, index, work-system, native-repos)
-Extensive `<style>` blocks with page-specific visual components (scroll animations, SVG diagrams, tab interfaces, timelines, stat grids, agent cards, etc.). **Never strip or reduce inline `<style>` blocks from these pages.** The page-specific CSS IS the page's value.
-
-### Content Preservation Rules
-
-1. **Never reduce a page's file size by more than 20%** without explicit human approval. A dramatic size reduction means content loss.
-2. **Never replace a page with a skeleton/placeholder.** If a page has interactive content (tabs, diagrams, grids, timelines), that content must be preserved.
-3. **Visual components are content.** Tech radar grids, SVG loop diagrams, comparison strips, timeline visualizations, stat box layouts — these are not decoration. They are the page's value.
-4. **When resolving merge conflicts on HTML files, prefer the LARGER version.** The smaller version is almost certainly content-stripped.
-
-### Footer (ALL pages)
-```html
-<footer>
-  <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
-</footer>
-```
-Footer may be wrapped in `<div class="container">` on content pages.
-
-### Site Contracts and Spec
-See `docs/site-spec.md` for the canonical page inventory with CSS strategy, nav tier, file size baselines, and status.
-See `docs/site-contracts.md` for verifiable assertions. **Run contract checks after ANY change to docs/.**
-
-### Site IA Implementation Notes
-The site uses a three-pillar IA (see "Site Information Architecture" above). The pitch page replaces the old index as the primary landing experience. See `docs/site-ia.md` for the full specification, `docs/site-contracts.md` for verifiable assertions, and `docs/site-spec.md` for the page inventory.
+The site has been moved to its own repo: **`theparlor/intent-site`**
+- Live at: https://theparlor.github.io/intent-site/
+- Three-pillar IA: The Story, The System, The Build
+- All site governance (IA spec, contracts, content map) lives in that repo
+- See `content-map.md` in the site repo for how site claims trace back to specs here
 
 ## How to Continue Development
-
-### Adding a new page
-1. Write the markdown source in `spec/` — this is the source of truth
-2. Create the HTML rendering in `docs/` — match the existing nav, palette, and typography
-3. If it's a primary nav item, add it to the nav in ALL pages
-4. If it has an interactive artifact, create the JSX in `artifacts/`
-5. Link from `docs/index.html` in the appropriate section
-6. Update CHANGELOG.md
 
 ### Adding a new CLI tool
 1. Create the script in `bin/` — follow the existing pattern:
@@ -373,23 +250,16 @@ The site uses a three-pillar IA (see "Site Information Architecture" above). The
 4. Update `docs/roadmap.html` CLI grid if relevant
 
 ### Editing existing content
-1. Edit the markdown source in `spec/` first
-2. Then update the HTML in `docs/` to match
-3. For methodology and concept-brief, the HTML is a full rendering of the markdown
-
-### Pushing changes
-The sandbox environment cannot `git commit` directly (no git config). Use the GitHub MCP tool `push_files` to push:
-```
-mcp__github__push_files(owner: "theparlor", repo: "intent", branch: "main", files: [...], message: "...")
-```
+1. Edit the markdown source in `spec/` — this is the source of truth
+2. If the content affects the site, note it — the site repo (`theparlor/intent-site`) has a `content-map.md` that traces site claims back to specs here
 
 ### Versioning
 - Edit `VERSION` with new version string: `YYYY.MM.DD-MAJOR.MINOR.PATCH`
 - Add entry to top of `CHANGELOG.md`
 - Major = breaking change to ontology/schema/pattern. Minor = new capability/scope. Patch = fix/clarify.
 
-### GitHub Pages
-GitHub Pages is **live** at https://theparlor.github.io/intent/. Source: main branch, /docs folder. Enabled 2026-03-29.
+### Site
+The marketing site lives in `theparlor/intent-site` and deploys to https://theparlor.github.io/intent-site/. This repo has no `docs/` folder.
 
 ## Key Decisions (for context)
 
@@ -432,15 +302,11 @@ Intent is designed to be developed by AI agents (Claude Code) working from this 
 ### Before Starting ANY Task
 
 1. **Read these files first, every time:**
-   - `CLAUDE.md` (this file) — project context, design system, CSS rules
-   - `docs/site-ia.md` — three-pillar IA structure, nav templates, page assignments
-   - `docs/site-spec.md` — canonical page inventory, file size baselines, visual components
-   - `docs/site-contracts.md` — verifiable assertions (run after ANY change)
-   - Any task-specific spec in `docs/tasks/` if referenced
+   - `CLAUDE.md` (this file) — project context, architecture, tooling
+   - Any relevant spec in `spec/` for the domain you're working in
+   - `TASKS.md` for pending work items
 
-2. **Load context before acting.** Read all referenced specs upfront. Do not start modifying files until you understand the full picture. Misunderstanding the CSS strategy or nav structure causes cascading damage.
-
-3. **Check `docs/tasks/` for pending task specs.** These are handoff instructions from Cowork (the architect surface). Each task spec includes requirements, verification checks, and commit instructions.
+2. **Load context before acting.** Read all referenced specs upfront. Do not start modifying files until you understand the full picture.
 
 ### Execution Model
 
@@ -453,41 +319,14 @@ Intent is designed to be developed by AI agents (Claude Code) working from this 
 
 **Verify before AND after.** Run relevant contracts from `site-contracts.md` before starting (to know the baseline state) and after finishing (to verify nothing broke). Diff the before/after contract results.
 
-### Verification Checklist (run after EVERY change to docs/)
+### Verification
 
-```bash
-cd ~/Workspaces/Core/frameworks/intent/docs
+Before committing, verify your changes don't break existing functionality:
+- CLI tools: run `intent-status` to confirm the tool suite works
+- Signal files: validate YAML frontmatter format
+- Event log: check `events.jsonl` for valid JSON lines
 
-# Quick smoke test — run these at minimum
-for f in *.html; do
-  SIZE=$(wc -c < "$f")
-  echo "$SIZE $f"
-done | sort -rn
-
-# Then run full contracts from site-contracts.md
-# CON-SITE-001 through CON-SITE-010
-```
-
-**If a contract fails:** Fix the failure before committing. Do not commit with known contract violations. If fixing requires a design decision, stop and generate a disambiguation signal.
-
-### Linting and Cleanup
-
-When touching HTML files, also check for:
-- **Inconsistent indentation** — use 2-space indent for HTML, match surrounding code
-- **Missing alt text on images** — add descriptive alt attributes
-- **Unclosed tags** — validate HTML structure
-- **Orphaned CSS** — if a visual component is removed, remove its CSS too
-- **Stale content** — if a page references a spec file, verify the spec still exists and content matches
-
-### Content Freshness
-
-The site makes claims about the product (trust formula, CLI commands, agent counts, etc.). Before rebuilding or editing a page, verify its claims against the source of truth:
-- CLI tools → check `bin/` for actual scripts
-- Trust formula → check `spec/signal-trust-framework.md`
-- Event types → check `spec/event-catalog.md`
-- Agent definitions → check `frameworks/intent/servers/` (if present)
-
-If a page's content contradicts the source of truth, update the page content to match reality.
+**If something breaks:** Fix before committing. If fixing requires a design decision, generate a disambiguation signal.
 
 ### Signal Generation from Conversations
 Brien may generate signals from Cowork sessions, Claude desktop app (iOS/web/desktop), or regular chat. These signals will be formatted as `.intent/signals/` files and committed to the repo. Claude Code agents should monitor for new signals and begin processing them through the enrichment pipeline.
