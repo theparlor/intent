@@ -1,55 +1,94 @@
 ---
 id: ATOM-XXX
 title: ""
-product: ""        # notice | spec | execute | observe | cross-cutting
-priority: ""       # now | next | later
-size: ""           # S (1 session) | M (2-3 sessions) | L (4+ sessions)
-status: draft      # draft → arb-reviewed → specced → executing → complete
-parent_intent: ""  # INT-XXX if derived from an intent
-parent_cluster: "" # CLU-XXX if derived from a cluster
-dependencies: []   # ATOM-XXX IDs that must complete first
-files: []          # file paths this atom will modify or create
-assignee: ""       # human or agent identifier
-arb_verdict: ""    # approved | approved-with-concerns | blocked | needs-info
+status: draft  # draft | arb-reviewed | executing | complete | closed
+
+# Work stream references
+parent_intent: INT-XXX
+spec: SPEC-XXX           # the spec this atom executes against
+contracts:               # contracts to verify on completion
+  - CON-XXX
+
+# Ownership topology
+product: notice | spec | execute | observe | cross-cutting
+capability: ""           # which capability within the product
+
+# Execution metadata
+priority: now | next | later
+size: S | M | L          # S = single session, M = 2-3 sessions, L = multi-day
+assignee: ""             # human name or "agent"
+autonomy_level: L0 | L1 | L2 | L3 | L4
+trust_score: 0.0
+
+# ARB review
+arb_verdict: pending | approved | approved-with-concerns | blocked | needs-info
 arb_date:
+arb_conditions: []
+
+# Lifecycle
+created_date:
+started_date:
+completed_date:
+closed_date:
 ---
-# Atom: [title]
 
-## Description
-What specifically needs to be built or changed? Write this so that
-Claude Code can execute against it without asking clarifying questions.
-Include the exact files to modify, the pattern to follow, and the
-behavior to implement.
+# {title}
 
-## Acceptance Criteria
-Binary pass/fail assertions. Each one should be testable:
-- [ ] Given [precondition], when [action], then [expected result]
-- [ ] Given [precondition], when [action], then [expected result]
+## Execution Context
+
+What this atom accomplishes in a single pass through the work stream.
+The atom references (does not contain) the spec and contracts below.
+
+## Spec Reference
+
+Spec: [{spec}](.intent/specs/{spec}-slug.md)
+
+Brief summary of the spec's current state and what this atom addresses.
+
+## Contracts to Verify
+
+| Contract | Type | Status | Assertion |
+|----------|------|--------|-----------|
+| CON-XXX  | behavior | pending | Given X, when Y, then Z |
 
 ## Dependencies
-What must exist before this atom can start?
-- [ATOM-XXX or file path or external prerequisite]
+
+- [ ] Dependency 1
+- [ ] Dependency 2
 
 ## Files to Modify
-- `path/to/file` — what changes
-- `path/to/new/file` — what gets created
+
+- `path/to/file.ext`
+
+## Acceptance Criteria
+
+This atom is complete when:
+- [ ] All referenced contracts pass verification
+- [ ] Events emitted for execution start/complete
+- [ ] Spec status updated to reflect progress
 
 ## ARB Review
 
-### Practitioner-Architect (triangle)
-[Does this fit existing patterns? Integration points?]
+### △ Practitioner-Architect
+Assessment:
 
-### Product Leader (diamond)
-[Is this solving a validated problem? Signal-driven?]
+### ◇ Product Leader
+Assessment:
 
-### Quality Advocate (circle)
-[Tech debt risk? Simpler alternative? Test strategy?]
+### ○ Quality Advocate
+Assessment:
 
-### AI Agent (filled circle)
-[Are contracts binary? Scope contained? Context clear?]
+### ◉ AI Agent
+Assessment:
 
-### Claude Code Lens (lightning)
-[Single session? Stack compatible? SIG-014 risk?]
+### ⚡ Claude Code Lens
+Assessment:
 
-## Concerns
-[Any flags from the ARB review. Empty if none.]
+## Execution Log
+
+<!-- Append entries as the atom progresses -->
+
+## Outcome
+
+What happened in this pass. What persists (spec updates, contract verifications).
+What signals emerged for the next cycle.
