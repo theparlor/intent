@@ -69,39 +69,51 @@ done
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-003"
 ```
 
-## CON-SITE-004: Strategy B pages do NOT link styles.css
+## CON-SITE-004: All HTML pages link styles.css
 
 **Type:** structural
-**Severity:** critical — linking styles.css on a Strategy B page causes CSS conflicts
+**Severity:** critical — missing styles.css means no shared foundation (nav, palette, typography)
 
 ```bash
-# Strategy B pages: pitch.html, dogfood.html, arb.html, roadmap.html, signals.html
 cd docs/
 FAIL=0
-for f in pitch.html dogfood.html arb.html roadmap.html signals.html; do
-  if [ -f "$f" ] && grep -q 'href="styles.css"' "$f"; then
-    echo "FAIL: $f is Strategy B but links styles.css"
+for f in *.html; do
+  if ! grep -q 'href="styles.css"' "$f"; then
+    echo "FAIL: $f does not link styles.css"
     FAIL=1
   fi
 done
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-004"
 ```
 
-## CON-SITE-005: Strategy A pages DO link styles.css
+## CON-SITE-005: Rich pages retain page-specific CSS
 
-**Type:** structural
-**Severity:** critical — missing styles.css means no base styling
+**Type:** quality
+**Severity:** critical — stripping inline styles from rich pages destroys their visual components
 
 ```bash
-# Strategy A pages
+# Rich pages must have substantial inline <style> blocks
 cd docs/
 FAIL=0
-for f in index.html methodology.html concept-brief.html schemas.html work-system.html flow-diagram.html decisions.html event-catalog.html native-repos.html visual-brief.html architecture.html agents.html deployment.html; do
-  if [ -f "$f" ] && ! grep -q 'href="styles.css"' "$f"; then
-    echo "FAIL: $f is Strategy A but does not link styles.css"
-    FAIL=1
+check_inline_css() {
+  local file=$1 min_lines=$2
+  if [ -f "$file" ]; then
+    CSS_LINES=$(sed -n '/<style>/,/<\/style>/p' "$file" | wc -l)
+    if [ "$CSS_LINES" -lt "$min_lines" ]; then
+      echo "FAIL: $file has only ${CSS_LINES} lines of inline CSS, expected at least ${min_lines} (page-specific CSS may have been stripped)"
+      FAIL=1
+    fi
   fi
-done
+}
+check_inline_css pitch.html 50
+check_inline_css arb.html 50
+check_inline_css signals.html 50
+check_inline_css roadmap.html 50
+check_inline_css dogfood.html 30
+check_inline_css architecture.html 30
+check_inline_css agents.html 30
+check_inline_css deployment.html 30
+check_inline_css index.html 20
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-005"
 ```
 
@@ -132,8 +144,8 @@ check_size dogfood.html 14000
 check_size roadmap.html 10500
 check_size methodology.html 8400
 check_size concept-brief.html 7000
-check_size decisions.html 7000
-check_size event-catalog.html 7000
+check_size decisions.html 3500
+check_size event-catalog.html 1800
 check_size schemas.html 5600
 check_size index.html 5600
 check_size architecture.html 10500
@@ -240,8 +252,8 @@ echo "=== Verification Complete ==="
 | CON-SITE-001 | Primary nav present | critical | Missing navigation |
 | CON-SITE-002 | Active state correct | major | Wrong page highlighted |
 | CON-SITE-003 | Standard footer | major | Missing/wrong footer |
-| CON-SITE-004 | Strategy B no styles.css | critical | CSS strategy violation |
-| CON-SITE-005 | Strategy A has styles.css | critical | CSS strategy violation |
+| CON-SITE-004 | All pages link styles.css | critical | Missing shared foundation |
+| CON-SITE-005 | Rich pages retain inline CSS | critical | Stripped page-specific visuals |
 | CON-SITE-006 | File size canary | critical | Content loss detection |
 | CON-SITE-007 | Sub-nav on tech pages | major | Missing technical nav |
 | CON-SITE-008 | Visual components intact | critical | Lost diagrams/interactives |

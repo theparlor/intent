@@ -287,17 +287,13 @@ Max-width: 900px. Footer with source link to GitHub. All shared CSS lives in `do
 
 ### CSS Strategy — CRITICAL RULES
 
-**There are two CSS strategies. NEVER convert between them.**
+**All pages link `styles.css` for shared foundation (nav, palette, typography, footer, grid, cards) AND keep page-specific CSS in inline `<style>` blocks.**
 
-**Strategy A: External `styles.css` + inline `<style>` overrides**
-Used by: index.html, methodology.html, concept-brief.html, schemas.html, work-system.html, flow-diagram.html, decisions.html, event-catalog.html, native-repos.html, visual-brief.html, architecture.html, agents.html, deployment.html
+**Light pages** (methodology, concept-brief, decisions, event-catalog, schemas, flow-diagram, visual-brief)
+Small or no `<style>` block. Most styling comes from styles.css.
 
-These pages link `styles.css` AND add page-specific component CSS in a `<style>` tag. The inline styles provide CSS unique to that page. **Never strip inline `<style>` blocks from these pages.**
-
-**Strategy B: Fully self-contained inline CSS**
-Used by: pitch.html, dogfood.html, arb.html, roadmap.html, signals.html
-
-These pages carry ALL their CSS in a single `<style>` tag. They do NOT link styles.css. **NEVER convert a Strategy B page to Strategy A.** These pages have extensive custom visuals (scroll animations, SVG diagrams, tab interfaces, interactive timelines, stat grids) that are self-contained by design. Converting them destroys the page.
+**Rich pages** (pitch, dogfood, arb, roadmap, signals, architecture, agents, deployment, index, work-system, native-repos)
+Extensive `<style>` blocks with page-specific visual components (scroll animations, SVG diagrams, tab interfaces, timelines, stat grids, agent cards, etc.). **Never strip or reduce inline `<style>` blocks from these pages.** The page-specific CSS IS the page's value.
 
 ### Content Preservation Rules
 
@@ -312,7 +308,7 @@ These pages carry ALL their CSS in a single `<style>` tag. They do NOT link styl
   <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
 </footer>
 ```
-Pages using styles.css wrap footer content in `<div class="container">`.
+Footer may be wrapped in `<div class="container">` on content pages.
 
 ### Site Contracts and Spec
 See `docs/site-spec.md` for the canonical page inventory with CSS strategy, nav tier, file size baselines, and status.
