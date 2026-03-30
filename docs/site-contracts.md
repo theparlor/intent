@@ -155,7 +155,7 @@ check_inline_css dogfood.html 30
 check_inline_css architecture.html 30
 check_inline_css agents.html 30
 check_inline_css deployment.html 30
-check_inline_css index.html 20
+# index.html excluded — becomes a redirect to pitch.html per site-ia.md
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-005"
 ```
 

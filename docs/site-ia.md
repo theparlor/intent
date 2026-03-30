@@ -125,7 +125,20 @@ Each pillar's hero page AND depth pages show the same sub-nav below the primary 
 
 ### Index Page
 
-`index.html` becomes a landing/redirect to `pitch.html`, or pitch.html content replaces index.html directly. The logo link always points to `index.html`.
+**The pitch IS the home page. There is no separate home concept.**
+
+`index.html` should contain a meta redirect to `pitch.html`:
+```html
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="refresh" content="0;url=pitch.html">
+<title>Intent</title>
+</head><body>
+<p>Redirecting to <a href="pitch.html">Intent</a>...</p>
+</body></html>
+```
+
+The logo link in the primary nav points to `index.html` (which redirects to pitch). This keeps GitHub Pages happy with a proper index while making the pitch the true landing experience.
 
 ### Visual Brief
 

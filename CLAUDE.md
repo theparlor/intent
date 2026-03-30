@@ -312,7 +312,7 @@ Primary nav active: "The Build"
 ```
 
 #### Index Page
-`index.html` redirects to or mirrors `pitch.html`. The logo always links to `index.html`.
+**The pitch IS the home page.** `index.html` contains a meta redirect to `pitch.html`. The logo always links to `index.html`. See `docs/site-ia.md` for the redirect HTML.
 
 #### Visual Brief
 `visual-brief.html` is NOT a nav destination. It's a CTA link on the pitch page.
@@ -427,21 +427,78 @@ Intent draws from: Marty Cagan (product operating model), Jeff Patton (story map
 
 ## Agent Handoff Protocol
 
-Intent is designed to be developed by AI agents (Claude Code) working from this file. When Brien is away, agents should:
+Intent is designed to be developed by AI agents (Claude Code) working from this file.
 
-1. **Read this file first** — it is the source of truth for project context.
-2. **Check `.intent/signals/` for active signals** — these are work that needs doing.
-3. **Check `spec/` for specced work** — specs with status:approved are ready for execution.
-4. **Use the CLI tools to manage state** — `intent-status` for overview, `intent-signal review` for triage.
-5. **Emit events for all work** — every action writes to `.intent/events/events.jsonl`.
-6. **Push via GitHub MCP** — the sandbox can't git commit directly. Use `mcp__github__push_files`.
-7. **When stuck, generate a disambiguation signal** — don't dead-end. Capture what's ambiguous as a new signal for Brien to review.
+### Before Starting ANY Task
+
+1. **Read these files first, every time:**
+   - `CLAUDE.md` (this file) — project context, design system, CSS rules
+   - `docs/site-ia.md` — three-pillar IA structure, nav templates, page assignments
+   - `docs/site-spec.md` — canonical page inventory, file size baselines, visual components
+   - `docs/site-contracts.md` — verifiable assertions (run after ANY change)
+   - Any task-specific spec in `docs/tasks/` if referenced
+
+2. **Load context before acting.** Read all referenced specs upfront. Do not start modifying files until you understand the full picture. Misunderstanding the CSS strategy or nav structure causes cascading damage.
+
+3. **Check `docs/tasks/` for pending task specs.** These are handoff instructions from Cowork (the architect surface). Each task spec includes requirements, verification checks, and commit instructions.
+
+### Execution Model
+
+**Parallelize aggressively.** When a task involves multiple independent files or pages, use subagents to work on them concurrently. For example:
+- Updating nav on 18 pages → spawn subagents per page or per pillar group
+- Running contract checks → run all 10 contracts in parallel
+- Building independent page sections → parallelize section creation
+
+**Seek permissions and context upfront.** Don't discover mid-task that you need a file you haven't read. Front-load all reads, then execute.
+
+**Verify before AND after.** Run relevant contracts from `site-contracts.md` before starting (to know the baseline state) and after finishing (to verify nothing broke). Diff the before/after contract results.
+
+### Verification Checklist (run after EVERY change to docs/)
+
+```bash
+cd ~/Workspaces/Core/frameworks/intent/docs
+
+# Quick smoke test — run these at minimum
+for f in *.html; do
+  SIZE=$(wc -c < "$f")
+  echo "$SIZE $f"
+done | sort -rn
+
+# Then run full contracts from site-contracts.md
+# CON-SITE-001 through CON-SITE-010
+```
+
+**If a contract fails:** Fix the failure before committing. Do not commit with known contract violations. If fixing requires a design decision, stop and generate a disambiguation signal.
+
+### Linting and Cleanup
+
+When touching HTML files, also check for:
+- **Inconsistent indentation** — use 2-space indent for HTML, match surrounding code
+- **Missing alt text on images** — add descriptive alt attributes
+- **Unclosed tags** — validate HTML structure
+- **Orphaned CSS** — if a visual component is removed, remove its CSS too
+- **Stale content** — if a page references a spec file, verify the spec still exists and content matches
+
+### Content Freshness
+
+The site makes claims about the product (trust formula, CLI commands, agent counts, etc.). Before rebuilding or editing a page, verify its claims against the source of truth:
+- CLI tools → check `bin/` for actual scripts
+- Trust formula → check `spec/signal-trust-framework.md`
+- Event types → check `spec/event-catalog.md`
+- Agent definitions → check `frameworks/intent/servers/` (if present)
+
+If a page's content contradicts the source of truth, update the page content to match reality.
 
 ### Signal Generation from Conversations
 Brien may generate signals from Cowork sessions, Claude desktop app (iOS/web/desktop), or regular chat. These signals will be formatted as `.intent/signals/` files and committed to the repo. Claude Code agents should monitor for new signals and begin processing them through the enrichment pipeline.
 
+### When Stuck
+**Generate a disambiguation signal** — don't dead-end. Capture what's ambiguous as a new signal for Brien to review. Write it to `.intent/signals/` with `status: blocked` and `trust: 0.1`.
+
 ### Priority of Work
-1. Signals with trust ≥ 0.6 that can be auto-executed (L3/L4)
-2. Signals that need enrichment (add context, compute trust)
-3. Specs that are approved and ready for execution
-4. Infrastructure work (tooling, pipeline, config)
+1. Task specs in `docs/tasks/` — explicit handoffs from Cowork
+2. Contract violations — fix any failing contracts
+3. Signals with trust ≥ 0.6 that can be auto-executed (L3/L4)
+4. Signals that need enrichment (add context, compute trust)
+5. Specs that are approved and ready for execution
+6. Infrastructure work (tooling, pipeline, config)
