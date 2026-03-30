@@ -23,6 +23,21 @@
 .arb-content h3{font-size:1rem;font-weight:600;margin-bottom:0.5rem;}
 .subtitle{color:var(--text-muted);font-size:0.9rem;margin-bottom:2rem;line-height:1.7;}
 
+/* Radar Visual (SVG) */
+.radar-visual{display:flex;justify-content:center;margin:2rem 0 3rem;position:relative;}
+.radar-visual svg{max-width:700px;width:100%;}
+.radar-visual .ring-label{font-size:10px;fill:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.radar-visual .quadrant-label{font-size:13px;fill:var(--text-muted);font-weight:700;letter-spacing:0.5px;}
+.radar-visual .blip{cursor:pointer;transition:transform 0.2s;}
+.radar-visual .blip:hover{transform:scale(1.3);}
+.radar-visual .blip-label{font-size:8.5px;fill:var(--text-muted);pointer-events:none;}
+.radar-visual .axis-line{stroke:var(--border);stroke-width:1;}
+.radar-visual .ring-line{fill:none;stroke:var(--border);stroke-width:1;}
+.radar-visual .ring-fill-adopt{fill:rgba(16,185,129,0.06);}
+.radar-visual .ring-fill-trial{fill:rgba(59,130,246,0.04);}
+.radar-visual .ring-fill-assess{fill:rgba(245,158,11,0.03);}
+.radar-visual .ring-fill-hold{fill:rgba(107,114,128,0.02);}
+
 /* Tech Radar */
 .radar-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin:2rem 0;}
 .radar-quadrant{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;}
@@ -120,6 +135,97 @@
 <div id="radar" class="tab-content active">
 <h2>Technology Radar</h2>
 <p class="subtitle">Adoption lifecycle and assessment status</p>
+
+<!-- SVG Radar Visual -->
+<div class="radar-visual">
+<svg viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background rings (outermost first) -->
+  <circle cx="350" cy="350" r="320" class="ring-fill-hold"/>
+  <circle cx="350" cy="350" r="240" class="ring-fill-assess"/>
+  <circle cx="350" cy="350" r="165" class="ring-fill-trial"/>
+  <circle cx="350" cy="350" r="95" class="ring-fill-adopt"/>
+
+  <!-- Ring outlines -->
+  <circle cx="350" cy="350" r="320" class="ring-line"/>
+  <circle cx="350" cy="350" r="240" class="ring-line"/>
+  <circle cx="350" cy="350" r="165" class="ring-line"/>
+  <circle cx="350" cy="350" r="95" class="ring-line"/>
+
+  <!-- Axes -->
+  <line x1="350" y1="30" x2="350" y2="670" class="axis-line"/>
+  <line x1="30" y1="350" x2="670" y2="350" class="axis-line"/>
+
+  <!-- Ring labels (right side) -->
+  <text x="448" y="346" class="ring-label">Adopt</text>
+  <text x="518" y="346" class="ring-label">Trial</text>
+  <text x="594" y="346" class="ring-label">Assess</text>
+  <text x="660" y="346" class="ring-label" style="font-size:9px;">Hold</text>
+
+  <!-- Quadrant labels -->
+  <text x="175" y="56" class="quadrant-label" text-anchor="middle">LANGUAGES &amp; FRAMEWORKS</text>
+  <text x="525" y="56" class="quadrant-label" text-anchor="middle">PLATFORMS &amp; INFRA</text>
+  <text x="175" y="686" class="quadrant-label" text-anchor="middle">TOOLS &amp; TECHNIQUES</text>
+  <text x="525" y="686" class="quadrant-label" text-anchor="middle">DATA &amp; AI</text>
+
+  <!-- ====== QUADRANT 1: Top-Left — Languages & Frameworks ====== -->
+  <!-- Adopt ring -->
+  <g class="blip"><circle cx="295" cy="295" r="6" fill="var(--accent-green)"/><text x="295" y="283" class="blip-label" text-anchor="middle">HTML5/CSS3/JS</text></g>
+  <g class="blip"><circle cx="330" cy="270" r="6" fill="var(--accent-green)"/><text x="330" y="258" class="blip-label" text-anchor="middle">Markdown</text></g>
+  <g class="blip"><circle cx="310" cy="320" r="6" fill="var(--accent-green)"/><text x="310" y="308" class="blip-label" text-anchor="middle">Node.js</text></g>
+  <!-- Trial ring -->
+  <g class="blip"><circle cx="255" cy="240" r="6" fill="var(--accent-blue)"/><text x="255" y="228" class="blip-label" text-anchor="middle">GraphQL</text></g>
+  <g class="blip"><circle cx="215" cy="280" r="6" fill="var(--accent-blue)"/><text x="215" y="268" class="blip-label" text-anchor="middle">WebSockets</text></g>
+  <!-- Assess ring -->
+  <g class="blip"><circle cx="160" cy="215" r="6" fill="var(--accent-amber)"/><text x="160" y="203" class="blip-label" text-anchor="middle">Rust</text></g>
+  <g class="blip"><circle cx="130" cy="260" r="6" fill="var(--accent-amber)"/><text x="130" y="248" class="blip-label" text-anchor="middle">WASM</text></g>
+  <!-- Hold ring -->
+  <g class="blip"><circle cx="80" cy="180" r="5" fill="var(--text-muted)" opacity="0.6"/><text x="80" y="168" class="blip-label" text-anchor="middle">GQL Federation</text></g>
+
+  <!-- ====== QUADRANT 2: Top-Right — Platforms & Infra ====== -->
+  <!-- Adopt ring -->
+  <g class="blip"><circle cx="405" cy="290" r="6" fill="var(--accent-green)"/><text x="405" y="278" class="blip-label" text-anchor="middle">Git + GitHub</text></g>
+  <g class="blip"><circle cx="380" cy="310" r="6" fill="var(--accent-green)"/><text x="380" y="298" class="blip-label" text-anchor="middle">Docker</text></g>
+  <!-- Trial ring -->
+  <g class="blip"><circle cx="470" cy="250" r="6" fill="var(--accent-blue)"/><text x="470" y="238" class="blip-label" text-anchor="middle">Temporal</text></g>
+  <g class="blip"><circle cx="500" cy="290" r="6" fill="var(--accent-blue)"/><text x="500" y="278" class="blip-label" text-anchor="middle">OpenTelemetry</text></g>
+  <!-- Assess ring -->
+  <g class="blip"><circle cx="555" cy="215" r="6" fill="var(--accent-amber)"/><text x="555" y="203" class="blip-label" text-anchor="middle">Prisma ORM</text></g>
+  <g class="blip"><circle cx="580" cy="260" r="6" fill="var(--accent-amber)"/><text x="580" y="248" class="blip-label" text-anchor="middle">Workbench</text></g>
+  <!-- Hold ring -->
+  <g class="blip"><circle cx="620" cy="170" r="5" fill="var(--text-muted)" opacity="0.6"/><text x="620" y="158" class="blip-label" text-anchor="middle">Kubernetes</text></g>
+
+  <!-- ====== QUADRANT 3: Bottom-Left — Tools & Techniques ====== -->
+  <!-- Adopt ring -->
+  <g class="blip"><circle cx="310" cy="395" r="6" fill="var(--accent-green)"/><text x="310" y="410" class="blip-label" text-anchor="middle">Spec-driven dev</text></g>
+  <!-- Trial ring -->
+  <g class="blip"><circle cx="250" cy="440" r="6" fill="var(--accent-blue)"/><text x="250" y="455" class="blip-label" text-anchor="middle">SQLite (embedded)</text></g>
+  <!-- Assess ring -->
+  <g class="blip"><circle cx="170" cy="490" r="6" fill="var(--accent-amber)"/><text x="170" y="505" class="blip-label" text-anchor="middle">Zephyr LLM</text></g>
+  <!-- Hold ring -->
+  <g class="blip"><circle cx="90" cy="540" r="5" fill="var(--text-muted)" opacity="0.6"/><text x="90" y="555" class="blip-label" text-anchor="middle">Blockchain</text></g>
+
+  <!-- ====== QUADRANT 4: Bottom-Right — Data & AI ====== -->
+  <!-- Adopt ring -->
+  <g class="blip"><circle cx="400" cy="400" r="6" fill="var(--accent-green)"/><text x="400" y="415" class="blip-label" text-anchor="middle">Claude API</text></g>
+  <!-- Trial ring -->
+  <!-- (no trial items in this quadrant currently) -->
+  <!-- Assess ring -->
+  <!-- (covered by Zephyr in Q3) -->
+  <!-- Hold ring -->
+  <g class="blip"><circle cx="590" cy="510" r="5" fill="var(--text-muted)" opacity="0.6"/><text x="590" y="525" class="blip-label" text-anchor="middle">Custom ML</text></g>
+  <g class="blip"><circle cx="630" cy="550" r="5" fill="var(--text-muted)" opacity="0.6"/><text x="630" y="565" class="blip-label" text-anchor="middle">Kafka</text></g>
+
+  <!-- Legend -->
+  <g transform="translate(30, 640)">
+    <circle cx="0" cy="0" r="5" fill="var(--accent-green)"/><text x="10" y="4" style="font-size:10px;fill:var(--text-muted);">Adopt</text>
+    <circle cx="70" cy="0" r="5" fill="var(--accent-blue)"/><text x="80" y="4" style="font-size:10px;fill:var(--text-muted);">Trial</text>
+    <circle cx="130" cy="0" r="5" fill="var(--accent-amber)"/><text x="140" y="4" style="font-size:10px;fill:var(--text-muted);">Assess</text>
+    <circle cx="200" cy="0" r="5" fill="var(--text-muted)" opacity="0.6"/><text x="210" y="4" style="font-size:10px;fill:var(--text-muted);">Hold</text>
+  </g>
+</svg>
+</div>
+
+<h3 style="color:var(--text-dim);font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:1.5rem;">Detailed Breakdown</h3>
 <div class="radar-grid">
 <div class="radar-quadrant">
 <div class="radar-title">ADOPT</div>

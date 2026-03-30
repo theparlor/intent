@@ -106,7 +106,7 @@ check_inline_css() {
   fi
 }
 check_inline_css pitch.html 50
-check_inline_css arb.html 50
+check_inline_css arb.html 80
 check_inline_css signals.html 50
 check_inline_css roadmap.html 50
 check_inline_css dogfood.html 30
@@ -139,7 +139,7 @@ check_size() {
 check_size pitch.html 18200
 check_size work-system.html 33600
 check_size signals.html 33600
-check_size arb.html 22400
+check_size arb.html 27300
 check_size dogfood.html 14000
 check_size roadmap.html 10500
 check_size methodology.html 8400
@@ -162,7 +162,7 @@ check_size deployment.html 8400
 ```bash
 cd docs/
 FAIL=0
-for f in architecture.html agents.html deployment.html; do
+for f in architecture.html agents.html deployment.html signals.html dogfood.html; do
   if [ -f "$f" ] && ! grep -q 'class="sub-nav"' "$f"; then
     echo "FAIL: $f missing sub-nav"
     FAIL=1
@@ -190,11 +190,13 @@ if [ -f pitch.html ]; then
   grep -q 'plane-diagram' pitch.html || { echo "FAIL: pitch.html missing two-plane diagram"; FAIL=1; }
 fi
 
-# arb.html must have tab interface and tech radar
+# arb.html must have tab interface, SVG radar visual, and tech radar cards
 if [ -f arb.html ]; then
   grep -q 'switchTab' arb.html || { echo "FAIL: arb.html missing tab interface JS"; FAIL=1; }
   grep -q 'tab-btn' arb.html || { echo "FAIL: arb.html missing tab buttons"; FAIL=1; }
   grep -q 'radar' arb.html || { echo "FAIL: arb.html missing tech radar"; FAIL=1; }
+  grep -q '<svg' arb.html || { echo "FAIL: arb.html missing SVG radar visual"; FAIL=1; }
+  grep -q 'class="blip"' arb.html || { echo "FAIL: arb.html missing radar blips"; FAIL=1; }
 fi
 
 # signals.html must have signal cards

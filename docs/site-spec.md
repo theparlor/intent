@@ -15,7 +15,7 @@
 | Work System | work-system.html | Rich | Work System | 48KB | Live |
 | Flow | flow-diagram.html | Light | Flow | 1.5KB | **NEEDS REBUILD — content stripped** |
 | Schemas | schemas.html | Light | Schemas | 8KB | Live |
-| ARB | arb.html | Rich | ARB | 32KB | Live — verify tab interface intact |
+| ARB | arb.html | Rich | ARB | 39KB | Live — SVG radar visual + tab interface |
 | Dogfood | dogfood.html | Rich | Dogfood | 20KB | Live |
 | Roadmap | roadmap.html | Rich | Roadmap | 15KB | Live |
 
@@ -79,7 +79,8 @@ These are HIGH-VALUE visual elements. Their loss constitutes a critical defect.
 | pitch.html | Two-plane diagram | Work stream + ownership topology rows |
 | pitch.html | Stat boxes | 3-column grid (10×, 0×, ∞) |
 | arb.html | Tab interface | 4 tabs: Tech Radar, Architectural Stack, ARB Panel, Atomized Roadmap |
-| arb.html | Tech radar grid | Quadrant cards: Adopt, Trial, Assess, Hold |
+| arb.html | SVG radar visual | Circular radar with 22 blips, 4 quadrants, concentric rings, legend |
+| arb.html | Tech radar grid | Quadrant detail cards: Adopt, Trial, Assess, Hold |
 | arb.html | Stack layers | Tiered architecture cards |
 | signals.html | Signal cards | 15 signal cards with trust scores, status badges |
 | signals.html | Cluster views | Signal grouping visualization |
@@ -97,7 +98,7 @@ File sizes serve as a canary. A page dropping significantly below its baseline m
 pitch.html        ~26KB (Rich — scroll animations, SVG, fracture grid, timeline, comparison strip)
 work-system.html  ~48KB (Rich — full React work system dashboard)
 signals.html      ~48KB (Rich — 15 signal cards, cluster views, trust scoring)
-arb.html          ~32KB (Rich — tab interface, tech radar, stack, ARB panel, roadmap)
+arb.html          ~39KB (Rich — SVG radar visual, tab interface, tech radar cards, stack, ARB panel, roadmap)
 dogfood.html      ~20KB (Rich — dogfood dashboard, event stream, signal list)
 roadmap.html      ~15KB (Rich — product phase cards, investment sizing, CLI grid)
 architecture.html ~15KB (Rich — server cards, trust table, ASCII diagrams, phase cards)
