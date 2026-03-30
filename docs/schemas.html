@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schemas — Intent</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="index.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html">Concept Brief</a>
+        <a href="signals.html">Signals</a>
+        <a href="decisions.html">Decisions</a>
+        <a href="schemas.html" class="active">Schemas</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>Schemas</h1>
+            <p class="subtitle">Every work artifact in Intent has a typed schema. These schemas are the contracts that make human-agent collaboration reliable.</p>
+        </div>
+    </header>
+
+    <main class="content">
+
+        <!-- Signal Schema -->
+        <section>
+            <h2>Signal</h2>
+            <p>
+                The atomic unit of the Notice layer. A signal is a structured observation — something noticed during work that's worth tracking. Signals have trust scores, autonomy levels, and flow through a lifecycle from captured to promoted.
+            </p>
+            <p>
+                <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/signal.md">.intent/templates/signal.md</a><br>
+                <strong>Storage:</strong> <code>.intent/signals/YYYY-MM-DD-slug.md</code><br>
+                <strong>Live examples:</strong> <a href="signals.html">Signal dashboard</a> (15 signals)
+            </p>
+
+            <h3>Frontmatter Fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>id</code></td><td>string</td><td>Sequential identifier (SIG-001, SIG-002, ...)</td></tr>
+                    <tr><td><code>timestamp</code></td><td>ISO 8601</td><td>When the signal was captured</td></tr>
+                    <tr><td><code>source</code></td><td>enum</td><td>cli | mcp | slack | conversation | pr-review | agent-trace</td></tr>
+                    <tr><td><code>confidence</code></td><td>float</td><td>0.0–1.0 — how confident the capturer is this matters</td></tr>
+                    <tr><td><code>trust</code></td><td>float</td><td>0.0–1.0 — computed from trust factors (see below)</td></tr>
+                    <tr><td><code>autonomy_level</code></td><td>enum</td><td>L0 | L1 | L2 | L3 | L4 — derived from trust score</td></tr>
+                    <tr><td><code>status</code></td><td>enum</td><td>captured | active | clustered | promoted | dismissed</td></tr>
+                    <tr><td><code>cluster</code></td><td>string?</td><td>Cluster name if grouped with related signals</td></tr>
+                    <tr><td><code>author</code></td><td>string</td><td>Who captured the signal</td></tr>
+                    <tr><td><code>related_intents</code></td><td>list</td><td>Intent IDs this signal relates to</td></tr>
+                    <tr><td><code>parent_signal</code></td><td>string?</td><td>SIG-ID if this is a refinement of another signal</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Trust Scoring Formula</h3>
+            <p>
+                <code>trust = clarity × 0.30 + (1/blast_radius) × 0.20 + reversibility × 0.20 + testability × 0.20 + precedent × 0.10</code>
+            </p>
+            <table>
+                <thead>
+                    <tr><th>Factor</th><th>Weight</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Clarity</td><td>30%</td><td>How well-defined is the observation? Vague hunch vs. concrete pattern.</td></tr>
+                    <tr><td>Blast Radius</td><td>20%</td><td>Inverse — high blast radius lowers trust. How much damage if wrong?</td></tr>
+                    <tr><td>Reversibility</td><td>20%</td><td>Can the action taken on this signal be undone?</td></tr>
+                    <tr><td>Testability</td><td>20%</td><td>Can we verify the signal's accuracy before acting?</td></tr>
+                    <tr><td>Precedent</td><td>10%</td><td>Have similar signals been successfully acted on before?</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Autonomy Levels</h3>
+            <table>
+                <thead>
+                    <tr><th>Level</th><th>Trust Range</th><th>Behavior</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>L0</strong></td><td>&lt; 0.2</td><td>Human drives all action. Agent only records.</td></tr>
+                    <tr><td><strong>L1</strong></td><td>0.2 – 0.4</td><td>Agent suggests actions. Human decides.</td></tr>
+                    <tr><td><strong>L2</strong></td><td>0.4 – 0.6</td><td>Agent proposes and awaits approval.</td></tr>
+                    <tr><td><strong>L3</strong></td><td>0.6 – 0.85</td><td>Agent executes with human monitoring.</td></tr>
+                    <tr><td><strong>L4</strong></td><td>≥ 0.85</td><td>Full autonomy with circuit breakers only.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Intent Schema -->
+        <section>
+            <h2>Intent</h2>
+            <p>
+                An intent is a problem worth solving — promoted from clustered signals. It's the bridge between "we keep noticing this" and "let's spec a solution." Intents carry evidence from the signals that spawned them.
+            </p>
+            <p>
+                <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/intent.md">.intent/templates/intent.md</a><br>
+                <strong>Storage:</strong> <code>.intent/intents/INT-NNN-slug.md</code>
+            </p>
+
+            <h3>Frontmatter Fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>id</code></td><td>string</td><td>Sequential identifier (INT-001, INT-002, ...)</td></tr>
+                    <tr><td><code>title</code></td><td>string</td><td>Short description of the problem</td></tr>
+                    <tr><td><code>status</code></td><td>enum</td><td>proposed | accepted | specced | executing | complete | archived</td></tr>
+                    <tr><td><code>proposed_by</code></td><td>string</td><td>Who proposed the intent</td></tr>
+                    <tr><td><code>signals</code></td><td>list</td><td>SIG-IDs that led to this intent</td></tr>
+                    <tr><td><code>specs</code></td><td>list</td><td>SPEC-IDs created from this intent</td></tr>
+                    <tr><td><code>owner</code></td><td>string</td><td>Who is responsible for this intent</td></tr>
+                    <tr><td><code>priority</code></td><td>enum</td><td>now | next | later</td></tr>
+                    <tr><td><code>product</code></td><td>enum</td><td>notice | spec | execute | observe</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Sections</h3>
+            <p>Problem statement, desired outcome, evidence from signals, constraints, and open questions.</p>
+        </section>
+
+        <!-- Spec Schema -->
+        <section>
+            <h2>Spec</h2>
+            <p>
+                A spec is intent made executable. It's the contract between the person shaping work and the agent (or person) building it. Good specs are verifiable — you can test whether they've been fulfilled.
+            </p>
+            <p>
+                <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/spec.md">.intent/templates/spec.md</a><br>
+                <strong>Storage:</strong> <code>spec/SPEC-NNN-slug.md</code>
+            </p>
+
+            <h3>Frontmatter Fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>id</code></td><td>string</td><td>Sequential identifier (SPEC-001, SPEC-002, ...)</td></tr>
+                    <tr><td><code>title</code></td><td>string</td><td>What this spec delivers</td></tr>
+                    <tr><td><code>status</code></td><td>enum</td><td>draft | review | approved | executing | complete</td></tr>
+                    <tr><td><code>intent</code></td><td>string</td><td>Parent intent ID (INT-NNN)</td></tr>
+                    <tr><td><code>author</code></td><td>string</td><td>Who wrote the spec</td></tr>
+                    <tr><td><code>contracts</code></td><td>list</td><td>Contract IDs this spec requires</td></tr>
+                    <tr><td><code>assignee</code></td><td>string</td><td>Who/what is executing this spec</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Sections</h3>
+            <p>Problem statement, solution description, contracts (verifiable assertions), acceptance criteria, out of scope, dependencies, and test scenarios.</p>
+        </section>
+
+        <!-- Contract Schema -->
+        <section>
+            <h2>Contract</h2>
+            <p>
+                A contract is a verifiable assertion about what must be true when a spec is fulfilled. Contracts are the smallest testable unit — like assertions in code, but for any kind of work. They come in four types: interface, behavior, quality, and integration.
+            </p>
+            <p>
+                <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/contract.md">.intent/templates/contract.md</a><br>
+                <strong>Storage:</strong> inline within spec files or standalone in <code>spec/contracts/</code>
+            </p>
+
+            <h3>Frontmatter Fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>id</code></td><td>string</td><td>Sequential identifier (CON-001, CON-002, ...)</td></tr>
+                    <tr><td><code>title</code></td><td>string</td><td>What this contract asserts</td></tr>
+                    <tr><td><code>spec</code></td><td>string</td><td>Parent spec ID (SPEC-NNN)</td></tr>
+                    <tr><td><code>status</code></td><td>enum</td><td>defined | verified | failed | revised</td></tr>
+                    <tr><td><code>type</code></td><td>enum</td><td>interface | behavior | quality | integration</td></tr>
+                    <tr><td><code>verified_date</code></td><td>ISO 8601?</td><td>When last verified</td></tr>
+                    <tr><td><code>verified_by</code></td><td>string?</td><td>Who or what verified it</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Contract Types</h3>
+            <table>
+                <thead>
+                    <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Interface</strong></td><td>API shape, input/output format</td><td>"CLI accepts --format json flag"</td></tr>
+                    <tr><td><strong>Behavior</strong></td><td>What happens when invoked</td><td>"Emits signal.created event on capture"</td></tr>
+                    <tr><td><strong>Quality</strong></td><td>Non-functional requirements</td><td>"Response time under 200ms"</td></tr>
+                    <tr><td><strong>Integration</strong></td><td>Cross-system interaction</td><td>"Event appears in events.jsonl within 5s"</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Event Schema -->
+        <section>
+            <h2>Event</h2>
+            <p>
+                Every action in the Intent system emits a structured event. Events are the raw material for the Observe layer — they tell you what happened, when, and in response to what. The event schema is OTel-compatible by design.
+            </p>
+            <p>
+                <strong>Catalog:</strong> <a href="event-catalog.html">15 event types documented</a><br>
+                <strong>Storage:</strong> <code>.intent/events/events.jsonl</code> (one JSON object per line)
+            </p>
+
+            <h3>Event Envelope</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>event</code></td><td>string</td><td>Event type (e.g., signal.created, intent.proposed)</td></tr>
+                    <tr><td><code>timestamp</code></td><td>ISO 8601</td><td>When the event occurred</td></tr>
+                    <tr><td><code>actor</code></td><td>string</td><td>Who or what triggered the event</td></tr>
+                    <tr><td><code>ref</code></td><td>string</td><td>ID of the artifact affected (SIG-001, SPEC-003, etc.)</td></tr>
+                    <tr><td><code>data</code></td><td>object</td><td>Event-specific payload</td></tr>
+                    <tr><td><code>source</code></td><td>string</td><td>Emission mechanism (cli, mcp, github-action, etc.)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Event Types (15)</h3>
+            <table>
+                <thead>
+                    <tr><th>Category</th><th>Events</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Signal</strong></td><td>signal.created, signal.updated, signal.dismissed, signal.clustered, signal.promoted</td></tr>
+                    <tr><td><strong>Intent</strong></td><td>intent.proposed, intent.accepted, intent.specced, intent.completed</td></tr>
+                    <tr><td><strong>Spec</strong></td><td>spec.created, spec.approved, spec.executing, spec.completed</td></tr>
+                    <tr><td><strong>Contract</strong></td><td>contract.verified, contract.failed</td></tr>
+                    <tr><td><strong>System</strong></td><td>system.status (roadmap/health check)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Work Ontology -->
+        <section>
+            <h2>Work Ontology</h2>
+            <p>
+                Intent organizes all work into a seven-level hierarchy. Each level has a schema, a lifecycle, and clear relationships to the levels above and below. This ontology is what makes Intent spec-driven rather than story-driven.
+            </p>
+            <p>
+                <strong>Full reference:</strong> <a href="work-system.html">Work ontology page</a>
+            </p>
+
+            <table>
+                <thead>
+                    <tr><th>Level</th><th>Name</th><th>Schema</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td><strong>Signal</strong></td><td>signal.md</td><td>Raw observation, unprocessed</td></tr>
+                    <tr><td>2</td><td><strong>Intent</strong></td><td>intent.md</td><td>Problem worth solving, promoted from signals</td></tr>
+                    <tr><td>3</td><td><strong>Spec</strong></td><td>spec.md</td><td>Executable specification with contracts</td></tr>
+                    <tr><td>4</td><td><strong>Contract</strong></td><td>contract.md</td><td>Verifiable assertion (testable)</td></tr>
+                    <tr><td>5</td><td><strong>Task</strong></td><td>—</td><td>Atomic unit of execution</td></tr>
+                    <tr><td>6</td><td><strong>Event</strong></td><td>JSONL</td><td>Structured action record</td></tr>
+                    <tr><td>7</td><td><strong>Trace</strong></td><td>OTel span</td><td>Execution observability</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Signal Amplification -->
+        <section>
+            <h2>Signal Amplification</h2>
+            <p>
+                Signals gain weight through repeated reference — like citation count in academic papers or PageRank for web pages. The amplification system tracks cross-references and adjusts effective trust over time.
+            </p>
+            <p>
+                <strong>Spec:</strong> <a href="https://github.com/theparlor/intent/blob/main/spec/signal-amplification.md">spec/signal-amplification.md</a>
+            </p>
+
+            <h3>Amplification Fields (proposed)</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>referenced_by</code></td><td>list</td><td>IDs of artifacts that reference this signal</td></tr>
+                    <tr><td><code>reference_count</code></td><td>int</td><td>Total reference count</td></tr>
+                    <tr><td><code>last_referenced</code></td><td>ISO 8601?</td><td>Most recent reference timestamp</td></tr>
+                    <tr><td><code>amplification_score</code></td><td>float</td><td>Computed from weighted, time-decayed references</td></tr>
+                    <tr><td><code>effective_trust</code></td><td>float</td><td>min(1.0, base_trust + amplification_score)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Reference Weights</h3>
+            <table>
+                <thead>
+                    <tr><th>Reference Type</th><th>Weight</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Signal → Signal</td><td>0.15</td></tr>
+                    <tr><td>Conversation</td><td>0.10</td></tr>
+                    <tr><td>Commit message</td><td>0.05</td></tr>
+                    <tr><td>Intent / Spec</td><td>0.20</td></tr>
+                </tbody>
+            </table>
+
+            <p>
+                <strong>Decay:</strong> References have a 7-day half-life. Recent references count more than old ones.<br>
+                <strong>Re-evaluation:</strong> When effective_trust crosses an autonomy level boundary, the signal is flagged for review.
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Intent is an open development project by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a> at The Parlor. <a href="https://github.com/theparlor/intent">View source on GitHub</a>.</p>
+        </div>
+    </footer>
+</body>
+</html>
