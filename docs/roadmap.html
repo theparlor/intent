@@ -329,19 +329,19 @@
       color: var(--text-dim);
     }
 
-    /* Footer — matches styles.css */
+    /* Footer — inline CSS version */
     footer {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-      border-top: 1px solid var(--border);
-      color: var(--text-dim);
-      font-size: 0.85rem;
       text-align: center;
+      padding: 2rem 0;
+      color: #64748b;
+      font-size: 0.85rem;
+      border-top: 1px solid #334155;
+      margin-top: 3rem;
     }
 
-    footer a { color: var(--text-muted); }
-    footer a:hover { color: var(--text); }
+    footer a {
+      color: #3b82f6;
+    }
 
     @media (max-width: 640px) {
       .cli-grid { grid-template-columns: 1fr; }
@@ -618,8 +618,8 @@
     </div>
   </div>
 
-  <footer>
-    <p>Intent is an open development project by <a href="https://github.com/theparlor">The Parlor</a>. <a href="https://github.com/theparlor/intent">Source on GitHub</a>. Roadmap source: <a href="https://github.com/theparlor/intent/blob/main/spec/product-roadmap.md">spec/product-roadmap.md</a></p>
+  <footer style="text-align: center; padding: 2rem 0; color: #64748b; font-size: 0.85rem; border-top: 1px solid #334155; margin-top: 3rem;">
+    Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6;">github.com/theparlor/intent</a> · Built with the Intent methodology
   </footer>
 </body>
 </html>
