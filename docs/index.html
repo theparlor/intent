@@ -4,55 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intent — A Team Operating Model for AI-Augmented Product Teams</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-    /* Nav */
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    /* Hero */
-    .hero { max-width: 900px; margin: 0 auto; padding: 56px 24px 40px; }
-    .hero h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; letter-spacing: -1px; }
-    .hero h1 span { color: #3b82f6; }
-    .hero p { color: #94a3b8; font-size: 16px; line-height: 1.7; max-width: 640px; }
+    /* Index page hero */
+    .hero-index { max-width: 900px; margin: 0 auto; padding: 56px 24px 40px; }
+    .hero-index h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; letter-spacing: -1px; }
+    .hero-index h1 span { color: var(--accent-blue); }
+    .hero-index p { color: var(--text-muted); font-size: 16px; line-height: 1.7; max-width: 640px; }
 
     /* Section */
     .section { max-width: 900px; margin: 0 auto; padding: 0 24px 48px; }
-    .section-label { color: #64748b; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+    .section-label { color: var(--text-dim); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+    .section-label.green { color: var(--accent-green); }
 
     /* Cards */
     .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .cards.two-col { grid-template-columns: 1fr 1fr; }
-    .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; text-decoration: none; color: inherit; transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column; }
-    .card:hover { border-color: #3b82f6; transform: translateY(-1px); }
+    .card { text-decoration: none; color: inherit; display: flex; flex-direction: column; }
     .card .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; width: fit-content; }
-    .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #f1f5f9; }
-    .card p { color: #94a3b8; font-size: 13px; line-height: 1.5; flex: 1; }
-    .card .arrow { color: #3b82f6; font-size: 13px; margin-top: 12px; }
+    .card .arrow { color: var(--accent-blue); font-size: 13px; margin-top: 12px; }
+    .card .arrow.green { color: var(--accent-green); }
 
     /* Badge colors */
-    .badge-artifact { background: #3b82f620; color: #3b82f6; }
-    .badge-spec { background: #a855f720; color: #a855f7; }
-    .badge-dogfood { background: #10b98120; color: #10b981; }
+    .badge-artifact { background: rgba(59,130,246,0.125); color: var(--accent-blue); }
+    .badge-spec { background: rgba(168,85,247,0.125); color: #a855f7; }
+    .badge-dogfood { background: rgba(16,185,129,0.125); color: var(--accent-green); }
 
     /* Divider */
     .divider { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-    .divider hr { border: none; border-top: 1px solid #1e293b; }
+    .divider hr { border: none; border-top: 1px solid var(--surface); }
 
     /* Loop diagram */
     .loop-strip { display: flex; align-items: center; gap: 0; margin: 24px 0 0; }
-    .loop-phase { flex: 1; padding: 14px 16px; text-align: center; font-size: 13px; font-weight: 600; border: 1px solid #334155; }
+    .loop-phase { flex: 1; padding: 14px 16px; text-align: center; font-size: 13px; font-weight: 600; border: 1px solid var(--border); }
     .loop-phase:first-child { border-radius: 8px 0 0 8px; }
     .loop-phase:last-child { border-radius: 0 8px 8px 0; }
-    .loop-arrow { color: #64748b; font-size: 16px; margin: 0 -1px; z-index: 1; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
+    .loop-phase.notice { background: rgba(245,158,11,0.08); color: var(--accent-amber); border-color: rgba(245,158,11,0.25); }
+    .loop-phase.spec { background: rgba(59,130,246,0.08); color: var(--accent-blue); border-color: rgba(59,130,246,0.25); }
+    .loop-phase.execute { background: rgba(16,185,129,0.08); color: var(--accent-green); border-color: rgba(16,185,129,0.25); }
+    .loop-phase.observe { background: rgba(168,85,247,0.08); color: #a855f7; border-color: rgba(168,85,247,0.25); }
+    .loop-arrow { color: var(--text-dim); font-size: 16px; margin: 0 -1px; z-index: 1; }
 
     @media (max-width: 700px) {
       .cards { grid-template-columns: 1fr; }
@@ -66,25 +57,29 @@
   <!-- Nav -->
   <nav class="site-nav">
     <a href="index.html" class="logo"><span>I</span>ntent</a>
-    <a href="index.html" class="active">Home</a>
+    <a href="pitch.html">Pitch</a>
     <a href="methodology.html">Methodology</a>
     <a href="concept-brief.html">Concept Brief</a>
-    <a href="signals.html">Signals</a>
-    <a href="decisions.html">Decisions</a>
+    <a href="work-system.html">Work System</a>
+    <a href="flow-diagram.html">Flow</a>
+    <a href="schemas.html">Schemas</a>
+    <a href="arb.html">ARB</a>
+    <a href="dogfood.html">Dogfood</a>
+    <a href="roadmap.html">Roadmap</a>
   </nav>
 
   <!-- Hero -->
-  <div class="hero">
+  <div class="hero-index">
     <h1>A team operating model for<br><span>AI-augmented</span> product teams</h1>
     <p>When AI collapses implementation to hours, the entire SDLC shifts. Intent replaces Agile's ceremony stack with a continuous loop: Notice &rarr; Spec &rarr; Execute &rarr; Observe.</p>
     <div class="loop-strip">
-      <div class="loop-phase" style="background: #f59e0b15; color: #f59e0b; border-color: #f59e0b40;">Notice</div>
+      <div class="loop-phase notice">Notice</div>
       <span class="loop-arrow">&rarr;</span>
-      <div class="loop-phase" style="background: #3b82f615; color: #3b82f6; border-color: #3b82f640;">Spec</div>
+      <div class="loop-phase spec">Spec</div>
       <span class="loop-arrow">&rarr;</span>
-      <div class="loop-phase" style="background: #10b98115; color: #10b981; border-color: #10b98140;">Execute</div>
+      <div class="loop-phase execute">Execute</div>
       <span class="loop-arrow">&rarr;</span>
-      <div class="loop-phase" style="background: #a855f715; color: #a855f7; border-color: #a855f740;">Observe</div>
+      <div class="loop-phase observe">Observe</div>
     </div>
   </div>
 
@@ -116,7 +111,7 @@
   <div class="divider"><hr></div>
 
   <!-- Specs -->
-  <div class="section" style="padding-top: 48px;">
+  <div class="section">
     <div class="section-label">Specifications</div>
     <div class="cards two-col">
       <a class="card" href="methodology.html">
@@ -137,20 +132,20 @@
   <div class="divider"><hr></div>
 
   <!-- Dogfooding -->
-  <div class="section" style="padding-top: 48px;">
-    <div class="section-label" style="color: #10b981;">Dogfooding: Signals &amp; Decisions</div>
+  <div class="section">
+    <div class="section-label green">Dogfooding: Signals &amp; Decisions</div>
     <div class="cards two-col">
       <a class="card" href="signals.html">
         <span class="badge badge-dogfood">Live Signals</span>
         <h3>Signal Stream</h3>
         <p>Observations captured from sessions, agent traces, and research. The raw material feeding the notice layer.</p>
-        <span class="arrow" style="color: #10b981;">&rarr; View signals</span>
+        <span class="arrow green">&rarr; View signals</span>
       </a>
       <a class="card" href="decisions.html">
         <span class="badge badge-dogfood">Decision Log</span>
         <h3>Decisions</h3>
         <p>Every significant decision with context, alternatives considered, and rationale. Institutional memory accumulating in real time.</p>
-        <span class="arrow" style="color: #10b981;">&rarr; View decisions</span>
+        <span class="arrow green">&rarr; View decisions</span>
       </a>
     </div>
   </div>

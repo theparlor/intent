@@ -4,95 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Roadmap — Intent</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --bg: #0f172a;
-      --surface: #1e293b;
-      --border: #334155;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --accent-blue: #3b82f6;
-      --accent-amber: #f59e0b;
-      --accent-purple: #8b5cf6;
-      --accent-green: #10b981;
-      --green-bright: #22c55e;
-      --red: #ef4444;
-    }
-
-    html, body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'Helvetica Neue', sans-serif;
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    a {
-      color: var(--accent-blue);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    a:hover { color: var(--text); }
-
-    code {
-      background: var(--surface);
-      padding: 0.15rem 0.4rem;
-      border-radius: 3px;
-      font-size: 0.9em;
-      color: var(--accent-blue);
-      font-family: 'SF Mono', 'Fira Code', 'Monaco', 'Menlo', monospace;
-    }
-
-    /* Navigation — matches styles.css */
-    nav.site-nav {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 1.5rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-
-    nav.site-nav a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-
-    nav.site-nav a:hover { color: var(--text); }
-
-    nav.site-nav a.logo {
-      color: var(--text);
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin-right: 1rem;
-      letter-spacing: -0.5px;
-    }
-
-    nav.site-nav a.logo span { color: var(--accent-blue); }
-    nav.site-nav a.active { color: var(--text); }
-
-    .content {
+    /* Roadmap content layout */
+    .roadmap-content {
       max-width: 900px;
       margin: 0 auto;
       padding: 2.5rem 1.5rem 4rem;
     }
 
-    .content > h1 {
+    .roadmap-content > h1 {
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
       letter-spacing: -0.5px;
     }
 
-    .content > p {
+    .roadmap-content > p {
       color: var(--text-muted);
       font-size: 0.95rem;
       margin-bottom: 2rem;
@@ -152,10 +80,7 @@
     .product-header.observe { border-bottom-color: var(--accent-purple); }
     .product-header .personas { font-size: 1.1rem; }
 
-    .product-header h2 {
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
+    .product-header h2 { font-size: 1.4rem; font-weight: 700; }
 
     .product-header .maturity-badge {
       font-size: 0.7rem;
@@ -172,14 +97,9 @@
     .maturity-badge.defined { background: rgba(16,185,129,0.15); color: var(--accent-green); }
     .maturity-badge.schema-ready { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
 
-    .product-desc {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      line-height: 1.6;
-      margin-bottom: 1.25rem;
-    }
+    .product-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem; }
 
-    /* Status table */
+    /* Status grid */
     .status-grid {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -189,16 +109,8 @@
       border-radius: 8px;
       overflow: hidden;
     }
-
     .status-row { display: contents; }
-
-    .status-row .asset,
-    .status-row .state {
-      padding: 0.5rem 0.9rem;
-      font-size: 0.85rem;
-      border-bottom: 1px solid rgba(30,41,59,0.8);
-    }
-
+    .status-row .asset, .status-row .state { padding: 0.5rem 0.9rem; font-size: 0.85rem; border-bottom: 1px solid rgba(30,41,59,0.8); }
     .status-row .asset { color: var(--text); }
     .status-row .state { text-align: right; color: var(--text-dim); }
     .status-row:last-child .asset, .status-row:last-child .state { border-bottom: none; }
@@ -207,147 +119,39 @@
 
     /* Investment cards */
     .invest-group { margin-bottom: 1.25rem; }
-
-    .invest-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
-    }
-
+    .invest-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
     .invest-label.enhance { color: var(--accent-amber); }
     .invest-label.build { color: var(--accent-green); }
     .invest-label.learn { color: var(--accent-purple); }
-
     .invest-items { display: flex; flex-direction: column; gap: 0.4rem; }
-
-    .invest-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.65rem 0.9rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
+    .invest-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.9rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
 
     /* Priority section */
     .priority-section { margin-top: 3rem; }
-
-    .priority-section h2 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
-    }
-
+    .priority-section h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.25rem; }
     .priority-group { margin-bottom: 1.5rem; }
-
-    .priority-group h3 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 0.6rem;
-    }
-
+    .priority-group h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.6rem; }
     .priority-group h3.now { color: var(--accent-amber); }
     .priority-group h3.next { color: var(--accent-blue); }
     .priority-group h3.later { color: var(--text-dim); }
-
     .priority-items { display: flex; flex-direction: column; gap: 0.4rem; }
-
-    .priority-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.65rem 0.9rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-
-    .priority-item .num {
-      color: var(--text-dim);
-      font-weight: 700;
-      font-size: 0.8rem;
-      min-width: 1.1rem;
-    }
+    .priority-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.9rem; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.65rem; }
+    .priority-item .num { color: var(--text-dim); font-weight: 700; font-size: 0.8rem; min-width: 1.1rem; }
 
     /* CLI section */
-    .cli-section {
-      margin-top: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .cli-section h2 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .cli-section > p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 1.25rem;
-      line-height: 1.6;
-    }
-
-    .cli-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-
-    .cli-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-    }
-
-    .cli-card h3 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.25rem;
-    }
-
-    .cli-card code {
-      font-size: 0.8rem;
-      color: var(--accent-green);
-      display: block;
-      margin: 0.5rem 0;
-      background: var(--bg);
-      padding: 0.4rem 0.65rem;
-      border-radius: 4px;
-    }
-
-    .cli-card p {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-    }
-
-    /* Footer — inline CSS version */
-    footer {
-      text-align: center;
-      padding: 2rem 0;
-      color: #64748b;
-      font-size: 0.85rem;
-      border-top: 1px solid #334155;
-      margin-top: 3rem;
-    }
-
-    footer a {
-      color: #3b82f6;
-    }
+    .cli-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .cli-section h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .cli-section > p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6; }
+    .cli-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .cli-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+    .cli-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .cli-card code { font-size: 0.8rem; color: var(--accent-green); display: block; margin: 0.5rem 0; background: var(--bg); padding: 0.4rem 0.65rem; border-radius: 4px; }
+    .cli-card p { font-size: 0.8rem; color: var(--text-dim); }
 
     @media (max-width: 640px) {
       .cli-grid { grid-template-columns: 1fr; }
       .loop-diagram { flex-direction: column; }
       .loop-arrow { transform: rotate(90deg); }
-      nav.site-nav { gap: 1rem; }
     }
   </style>
 </head>
@@ -365,7 +169,7 @@
     <a href="roadmap.html" class="active">Roadmap</a>
   </nav>
 
-  <div class="content">
+  <div class="roadmap-content">
     <h1>Product Roadmap</h1>
     <p>Intent is four products, one value stream. Each phase of the loop has its own maturity level, tooling, and investment needs. This page shows where each product stands and where energy goes next.</p>
 
@@ -618,8 +422,8 @@
     </div>
   </div>
 
-  <footer style="text-align: center; padding: 2rem 0; color: #64748b; font-size: 0.85rem; border-top: 1px solid #334155; margin-top: 3rem;">
-    Source: <a href="https://github.com/theparlor/intent" style="color: #3b82f6;">github.com/theparlor/intent</a> · Built with the Intent methodology
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
   </footer>
 </body>
 </html>

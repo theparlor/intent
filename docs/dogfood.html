@@ -4,82 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dogfooding — Intent Building Intent</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; }
-
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; flex-wrap: wrap; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    .content { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
-
-    h1 { font-size: 32px; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
-    h1 .green { color: #10b981; }
-    .subtitle { color: #94a3b8; font-size: 16px; margin-bottom: 40px; max-width: 640px; }
+    /* Dogfood page layout */
+    .dogfood-content { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
+    .dogfood-content h1 { font-size: 32px; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
+    .dogfood-content h1 .green { color: var(--accent-green); }
+    .dogfood-content .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 40px; max-width: 640px; }
 
     /* Stat cards */
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 48px; }
-    .stat { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; text-align: center; }
+    .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; }
     .stat .num { font-size: 32px; font-weight: 800; letter-spacing: -2px; }
-    .stat .num.amber { color: #f59e0b; }
-    .stat .num.blue { color: #3b82f6; }
-    .stat .num.green { color: #10b981; }
+    .stat .num.amber { color: var(--accent-amber); }
+    .stat .num.blue { color: var(--accent-blue); }
+    .stat .num.green { color: var(--accent-green); }
     .stat .num.purple { color: #a855f7; }
-    .stat .label { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat .label { font-size: 12px; color: var(--text-dim); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
     /* Section headers */
-    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #1e293b; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--surface); }
     .section-header h2 { font-size: 18px; font-weight: 700; }
     .section-header .badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .badge-live { background: #10b98120; color: #10b981; }
-    .badge-spec { background: #3b82f620; color: #3b82f6; }
-    .badge-event { background: #a855f720; color: #a855f7; }
+    .badge-live { background: rgba(16,185,129,0.125); color: var(--accent-green); }
+    .badge-spec { background: rgba(59,130,246,0.125); color: var(--accent-blue); }
+    .badge-event { background: rgba(168,85,247,0.125); color: #a855f7; }
 
     /* Signal list */
     .signal-list { display: grid; gap: 8px; margin-bottom: 48px; }
-    .signal-item { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 12px 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-decoration: none; color: inherit; transition: border-color 0.2s; }
-    .signal-item:hover { border-color: #f59e0b40; }
-    .signal-id { font-family: 'SF Mono', monospace; font-size: 11px; color: #f59e0b; font-weight: 600; background: #f59e0b15; padding: 2px 6px; border-radius: 3px; }
-    .signal-title { font-size: 14px; color: #f1f5f9; }
-    .signal-date { font-size: 11px; color: #64748b; font-family: monospace; }
+    .signal-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-decoration: none; color: inherit; transition: border-color 0.2s; }
+    .signal-item:hover { border-color: rgba(245,158,11,0.25); }
+    .signal-id { font-family: 'SF Mono', monospace; font-size: 11px; color: var(--accent-amber); font-weight: 600; background: rgba(245,158,11,0.08); padding: 2px 6px; border-radius: 3px; }
+    .signal-title { font-size: 14px; color: var(--text); }
+    .signal-date { font-size: 11px; color: var(--text-dim); font-family: monospace; }
 
-    /* Spec list */
+    /* Spec grid */
     .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 48px; }
-    .spec-item { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 14px 16px; text-decoration: none; color: inherit; transition: border-color 0.2s; }
-    .spec-item:hover { border-color: #3b82f640; }
-    .spec-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; color: #f1f5f9; }
-    .spec-item p { font-size: 12px; color: #64748b; }
+    .spec-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; text-decoration: none; color: inherit; transition: border-color 0.2s; }
+    .spec-item:hover { border-color: rgba(59,130,246,0.25); }
+    .spec-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
+    .spec-item p { font-size: 12px; color: var(--text-dim); }
 
     /* Event stream */
-    .event-stream { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 48px; font-family: 'SF Mono', monospace; font-size: 12px; max-height: 240px; overflow-y: auto; }
-    .event-line { padding: 3px 0; border-bottom: 1px solid #1e293b; display: flex; gap: 8px; }
-    .event-line .ts { color: #64748b; min-width: 80px; }
+    .event-stream { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 48px; font-family: 'SF Mono', monospace; font-size: 12px; max-height: 240px; overflow-y: auto; }
+    .event-line { padding: 3px 0; border-bottom: 1px solid var(--surface); display: flex; gap: 8px; }
+    .event-line .ts { color: var(--text-dim); min-width: 80px; }
     .event-line .type { font-weight: 600; min-width: 130px; }
-    .event-line .type.signal { color: #f59e0b; }
-    .event-line .type.intent { color: #3b82f6; }
+    .event-line .type.signal { color: var(--accent-amber); }
+    .event-line .type.intent { color: var(--accent-blue); }
     .event-line .type.spec { color: #a855f7; }
-    .event-line .type.system { color: #10b981; }
-    .event-line .ref { color: #94a3b8; }
+    .event-line .type.system { color: var(--accent-green); }
+    .event-line .ref { color: var(--text-muted); }
 
-    /* Meta narrative */
-    .meta-box { background: #10b98108; border: 1px solid #10b98125; border-radius: 8px; padding: 24px; margin-bottom: 48px; }
-    .meta-box h3 { font-size: 16px; font-weight: 700; color: #10b981; margin-bottom: 8px; }
-    .meta-box p { font-size: 14px; color: #94a3b8; margin-bottom: 8px; }
+    /* Meta box */
+    .meta-box { background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.15); border-radius: 8px; padding: 24px; margin-bottom: 48px; }
+    .meta-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-green); margin-bottom: 8px; }
+    .meta-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
     .meta-box p:last-child { margin-bottom: 0; }
 
-    /* Flow diagram */
+    /* Flow strip */
     .flow-strip { display: flex; align-items: center; gap: 0; margin: 24px 0; }
-    .flow-node { flex: 1; padding: 10px 8px; text-align: center; font-size: 12px; font-weight: 600; border: 1px solid #334155; }
+    .flow-node { flex: 1; padding: 10px 8px; text-align: center; font-size: 12px; font-weight: 600; border: 1px solid var(--border); }
     .flow-node:first-child { border-radius: 6px 0 0 6px; }
     .flow-node:last-child { border-radius: 0 6px 6px 0; }
+    .flow-node.notice { background: rgba(245,158,11,0.03); border-color: rgba(245,158,11,0.19); color: var(--accent-amber); }
+    .flow-node.spec { background: rgba(59,130,246,0.03); border-color: rgba(59,130,246,0.19); color: var(--accent-blue); }
+    .flow-node.execute { background: rgba(16,185,129,0.03); border-color: rgba(16,185,129,0.19); color: var(--accent-green); }
+    .flow-node.observe { background: rgba(168,85,247,0.03); border-color: rgba(168,85,247,0.19); color: #a855f7; }
     .flow-node .count { display: block; font-size: 20px; font-weight: 800; letter-spacing: -1px; }
-    .flow-arrow { color: #64748b; font-size: 14px; margin: 0 -1px; z-index: 1; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
+    .flow-arrow { color: var(--text-dim); font-size: 14px; margin: 0 -1px; z-index: 1; }
 
     @media (max-width: 700px) {
       .stats { grid-template-columns: 1fr 1fr; }
@@ -96,13 +89,14 @@
     <a href="methodology.html">Methodology</a>
     <a href="concept-brief.html">Concept Brief</a>
     <a href="work-system.html">Work System</a>
+    <a href="flow-diagram.html">Flow</a>
     <a href="schemas.html">Schemas</a>
     <a href="arb.html">ARB</a>
     <a href="dogfood.html" class="active">Dogfood</a>
     <a href="roadmap.html">Roadmap</a>
   </nav>
 
-  <div class="content">
+  <div class="dogfood-content">
 
     <h1>Intent building <span class="green">Intent</span></h1>
     <p class="subtitle">Every artifact on this site was created using the methodology it describes. This page shows the live state of Intent's own signal stream, specifications, and event log &mdash; proof the system works by working on itself.</p>
@@ -136,19 +130,19 @@
 
     <!-- The Pipeline -->
     <div class="flow-strip">
-      <div class="flow-node" style="background: #f59e0b08; border-color: #f59e0b30; color: #f59e0b;">
+      <div class="flow-node notice">
         <span class="count">16</span> Signals
       </div>
       <span class="flow-arrow">&rarr;</span>
-      <div class="flow-node" style="background: #3b82f608; border-color: #3b82f630; color: #3b82f6;">
+      <div class="flow-node spec">
         <span class="count">14</span> Specs
       </div>
       <span class="flow-arrow">&rarr;</span>
-      <div class="flow-node" style="background: #10b98108; border-color: #10b98130; color: #10b981;">
+      <div class="flow-node execute">
         <span class="count">12</span> Pages
       </div>
       <span class="flow-arrow">&rarr;</span>
-      <div class="flow-node" style="background: #a855f708; border-color: #a855f730; color: #a855f7;">
+      <div class="flow-node observe">
         <span class="count">&infin;</span> Events
       </div>
     </div>
@@ -329,7 +323,7 @@
     <!-- The proof -->
     <div class="meta-box">
       <h3>Why this matters</h3>
-      <p>Most operating models are described in slide decks. Intent is described in its own format. Every signal on this page was captured using <code style="background: #334155; padding: 2px 6px; border-radius: 3px; font-size: 13px; color: #3b82f6;">intent-signal</code>. Every spec was written using the Intent template. Every event was emitted by the Intent GitHub Action.</p>
+      <p>Most operating models are described in slide decks. Intent is described in its own format. Every signal on this page was captured using <code>intent-signal</code>. Every spec was written using the Intent template. Every event was emitted by the Intent GitHub Action.</p>
       <p>This isn't just documentation. It's a live system observing itself. When we notice friction in using Intent to build Intent &mdash; that observation becomes a signal, which feeds the next iteration. The methodology improves by running.</p>
     </div>
 

@@ -4,86 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intent — Agile Was Right. Your Toolchain Isn't.</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; }
+    /* Pitch scroll sections are taller */
+    .scroll-section { padding: 80px 24px; }
 
-    /* Nav */
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
-
-    /* Scroll sections */
-    .scroll-section {
-      max-width: 900px; margin: 0 auto; padding: 80px 24px;
-      opacity: 0; transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .scroll-section.visible { opacity: 1; transform: translateY(0); }
-
-    /* Hero */
+    /* Pitch-specific hero (centered, larger) */
     .hero-pitch { max-width: 900px; margin: 0 auto; padding: 80px 24px 40px; text-align: center; }
-    .hero-pitch .kicker { color: #f59e0b; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+    .hero-pitch .kicker { color: var(--accent-amber); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
     .hero-pitch h1 { font-size: 44px; font-weight: 700; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 20px; }
-    .hero-pitch h1 .accent { color: #3b82f6; }
-    .hero-pitch h1 .dim { color: #64748b; }
-    .hero-pitch .subtitle { color: #94a3b8; font-size: 18px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+    .hero-pitch h1 .accent { color: var(--accent-blue); }
+    .hero-pitch h1 .dim { color: var(--text-dim); }
+    .hero-pitch .subtitle { color: var(--text-muted); font-size: 18px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
 
-    /* Divider with label */
-    .labeled-divider { max-width: 900px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 16px; }
-    .labeled-divider hr { flex: 1; border: none; border-top: 1px solid #1e293b; }
-    .labeled-divider .label { color: #475569; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; }
+    /* Pitch uses larger section-num and section-body */
+    .pitch-section .section-num { font-size: 64px; }
+    .pitch-section .section-body { font-size: 16px; margin-bottom: 32px; }
 
-    /* Section titles */
-    .section-num { color: #334155; font-size: 64px; font-weight: 800; letter-spacing: -3px; margin-bottom: -8px; line-height: 1; }
-    .section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 12px; }
-    .section-title .hl { color: #f59e0b; }
-    .section-title .hl-blue { color: #3b82f6; }
-    .section-title .hl-green { color: #10b981; }
-    .section-body { color: #94a3b8; font-size: 16px; max-width: 640px; margin-bottom: 32px; }
-
-    /* Breaking visual — the fracture diagram */
+    /* Fracture diagram */
     .fracture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
     .fracture-item { position: relative; padding: 20px; border-radius: 8px; overflow: hidden; }
     .fracture-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 8px; }
     .fracture-item.broken { background: #dc262615; border: 1px solid #dc262640; }
     .fracture-item.broken .tag { color: #dc2626; background: #dc262618; }
-    .fracture-item.intact { background: #10b98110; border: 1px solid #10b98130; }
-    .fracture-item.intact .tag { color: #10b981; background: #10b98118; }
+    .fracture-item.intact { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.19); }
+    .fracture-item.intact .tag { color: var(--accent-green); background: rgba(16,185,129,0.09); }
+    .fracture-item.blue { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.19); }
+    .fracture-item.blue .tag { color: var(--accent-blue); background: rgba(59,130,246,0.09); }
+    .fracture-item.green { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.19); }
+    .fracture-item.green .tag { color: var(--accent-green); background: rgba(16,185,129,0.09); }
+    .fracture-item.amber { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.19); }
+    .fracture-item.amber .tag { color: var(--accent-amber); background: rgba(245,158,11,0.09); }
+    .fracture-item.purple { background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.19); }
+    .fracture-item.purple .tag { color: #a855f7; background: rgba(168,85,247,0.09); }
     .fracture-item .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
-    .fracture-item h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: #f1f5f9; }
-    .fracture-item p { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+    .fracture-item h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+    .fracture-item p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
-    /* Timeline visual */
+    /* Timeline */
     .timeline { position: relative; padding-left: 32px; margin-top: 32px; }
-    .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom, #3b82f6, #a855f7, #f59e0b); border-radius: 1px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom, var(--accent-blue), #a855f7, var(--accent-amber)); border-radius: 1px; }
     .timeline-item { position: relative; padding-bottom: 28px; }
-    .timeline-item::before { content: ''; position: absolute; left: -29px; top: 6px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #3b82f6; background: #0f172a; }
+    .timeline-item::before { content: ''; position: absolute; left: -29px; top: 6px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent-blue); background: var(--bg); }
     .timeline-item:nth-child(2)::before { border-color: #a855f7; }
-    .timeline-item:nth-child(3)::before { border-color: #f59e0b; }
-    .timeline-item:nth-child(4)::before { border-color: #10b981; }
+    .timeline-item:nth-child(3)::before { border-color: var(--accent-amber); }
+    .timeline-item:nth-child(4)::before { border-color: var(--accent-green); }
     .timeline-item .era { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+    .timeline-item .era.era-blue { color: var(--accent-blue); }
+    .timeline-item .era.era-purple { color: #a855f7; }
+    .timeline-item .era.era-amber { color: var(--accent-amber); }
+    .timeline-item .era.era-green { color: var(--accent-green); }
     .timeline-item h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-    .timeline-item p { font-size: 14px; color: #94a3b8; }
+    .timeline-item p { font-size: 14px; color: var(--text-muted); }
 
     /* Comparison strip */
-    .compare-strip { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin-top: 32px; border: 1px solid #334155; border-radius: 8px; overflow: hidden; }
+    .compare-strip { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin-top: 32px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
     .compare-col { padding: 24px; }
     .compare-col.old { background: #dc262608; }
-    .compare-col.new { background: #10b98108; }
+    .compare-col.new { background: rgba(16,185,129,0.03); }
     .compare-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
     .compare-col.old h4 { color: #dc2626; }
-    .compare-col.new h4 { color: #10b981; }
-    .compare-divider { width: 1px; background: #334155; }
-    .compare-row { font-size: 14px; color: #94a3b8; padding: 6px 0; border-bottom: 1px solid #1e293b; display: flex; align-items: center; gap: 8px; }
+    .compare-col.new h4 { color: var(--accent-green); }
+    .compare-divider { width: 1px; background: var(--border); }
+    .compare-row { font-size: 14px; color: var(--text-muted); padding: 6px 0; border-bottom: 1px solid var(--surface); display: flex; align-items: center; gap: 8px; }
     .compare-row:last-child { border-bottom: none; }
     .compare-row .icon { font-size: 14px; flex-shrink: 0; }
     .compare-col.old .icon { color: #dc2626; }
-    .compare-col.new .icon { color: #10b981; }
+    .compare-col.new .icon { color: var(--accent-green); }
 
-    /* The loop SVG area */
+    /* Loop SVG area */
     .loop-visual { margin: 40px auto 0; text-align: center; }
     .loop-visual svg { max-width: 100%; }
 
@@ -93,46 +82,23 @@
     .plane-label { width: 140px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; flex-shrink: 0; }
     .plane-node { flex: 1; text-align: center; padding: 14px 8px; font-size: 13px; font-weight: 600; border-radius: 6px; position: relative; }
     .plane-arrow { color: #475569; font-size: 14px; flex-shrink: 0; padding: 0 2px; }
-    .plane-row.work .plane-label { color: #3b82f6; }
-    .plane-row.work .plane-node { background: #3b82f612; border: 1px solid #3b82f630; color: #93c5fd; }
+    .plane-row.work .plane-label { color: var(--accent-blue); }
+    .plane-row.work .plane-node { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.19); color: #93c5fd; }
+    .plane-row.work .plane-node.atom { border-color: rgba(59,130,246,0.38); background: rgba(59,130,246,0.13); }
     .plane-row.own .plane-label { color: #a855f7; }
-    .plane-row.own .plane-node { background: #a855f712; border: 1px solid #a855f730; color: #c4b5fd; }
+    .plane-row.own .plane-node { background: rgba(168,85,247,0.07); border: 1px solid rgba(168,85,247,0.19); color: #c4b5fd; }
     .plane-connector { width: 140px; flex-shrink: 0; }
     .plane-bridge { display: flex; align-items: center; justify-content: center; gap: 2px; margin-bottom: 12px; padding-left: 140px; }
-    .plane-bridge-node { padding: 10px 16px; font-size: 12px; font-weight: 600; border-radius: 6px; background: #f59e0b12; border: 1px solid #f59e0b30; color: #fcd34d; }
-    .plane-bridge-line { width: 24px; height: 1px; background: #f59e0b40; }
-
-    /* CTA */
-    .cta-section { text-align: center; padding: 80px 24px 100px; max-width: 900px; margin: 0 auto; }
-    .cta-section h2 { font-size: 32px; font-weight: 700; letter-spacing: -1px; margin-bottom: 12px; }
-    .cta-section p { color: #94a3b8; font-size: 16px; margin-bottom: 32px; }
-    .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .cta-btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-    .cta-btn.primary { background: #3b82f6; color: #fff; }
-    .cta-btn.primary:hover { background: #2563eb; transform: translateY(-1px); }
-    .cta-btn.secondary { background: #1e293b; color: #f1f5f9; border: 1px solid #334155; }
-    .cta-btn.secondary:hover { border-color: #3b82f6; transform: translateY(-1px); }
-
-    /* Quote callout */
-    .callout { border-left: 3px solid #3b82f6; padding: 20px 24px; margin: 32px 0; background: #1e293b; border-radius: 0 8px 8px 0; }
-    .callout p { font-size: 16px; font-style: italic; color: #cbd5e1; }
-    .callout .attr { font-size: 13px; color: #64748b; font-style: normal; margin-top: 8px; }
-
-    /* Stat row */
-    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 32px 0; }
-    .stat-box { text-align: center; padding: 24px 16px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; }
-    .stat-box .num { font-size: 36px; font-weight: 800; letter-spacing: -2px; color: #f59e0b; }
-    .stat-box .unit { font-size: 13px; color: #94a3b8; margin-top: 4px; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
+    .plane-bridge-node { padding: 10px 16px; font-size: 12px; font-weight: 600; border-radius: 6px; background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.19); color: #fcd34d; }
+    .plane-bridge-line { width: 24px; height: 1px; background: rgba(245,158,11,0.25); }
+    .plane-bridge-spacer { flex: 1; }
+    .plane-node.plane-wide { flex: 2; }
 
     @media (max-width: 700px) {
       .hero-pitch h1 { font-size: 30px; }
       .fracture-grid { grid-template-columns: 1fr; }
       .compare-strip { grid-template-columns: 1fr; }
       .compare-divider { width: auto; height: 1px; }
-      .stat-row { grid-template-columns: 1fr; }
       .plane-row { flex-wrap: wrap; }
       .plane-label { width: 100%; margin-bottom: 8px; }
       .plane-bridge { padding-left: 0; }
@@ -268,22 +234,22 @@
 
     <div class="timeline">
       <div class="timeline-item">
-        <div class="era" style="color: #3b82f6;">2001 — Agile Manifesto</div>
+        <div class="era era-blue">2001 — Agile Manifesto</div>
         <h4>Individuals over processes, working software over documentation</h4>
         <p>The right values. Scrum and Kanban emerged as implementations.</p>
       </div>
       <div class="timeline-item">
-        <div class="era" style="color: #a855f7;">2010s — The Jira Era</div>
+        <div class="era era-purple">2010s — The Jira Era</div>
         <h4>Agile became ticket management</h4>
         <p>Tools ate the methodology. Process became ceremony. Estimation became religion.</p>
       </div>
       <div class="timeline-item">
-        <div class="era" style="color: #f59e0b;">2024 — AI Collapses Implementation</div>
+        <div class="era era-amber">2024 — AI Collapses Implementation</div>
         <h4>The bottleneck flipped overnight</h4>
         <p>Code is cheap. Clarity is expensive. Ceremonies can't keep up.</p>
       </div>
       <div class="timeline-item">
-        <div class="era" style="color: #10b981;">Now — Intent</div>
+        <div class="era era-green">Now — Intent</div>
         <h4>Reclaim agile through first principles</h4>
         <p>Continuous observation. Declarative specs. Verifiable contracts. Observable execution.</p>
       </div>
@@ -345,7 +311,7 @@
         <span class="plane-arrow">&rarr;</span>
         <div class="plane-node">Intent</div>
         <span class="plane-arrow">&rarr;</span>
-        <div class="plane-node" style="border-color: #3b82f660; background: #3b82f620;">Atom</div>
+        <div class="plane-node atom">Atom</div>
         <span class="plane-arrow">&rarr;</span>
         <div class="plane-node">Event</div>
         <span class="plane-arrow">&rarr;</span>
@@ -355,15 +321,15 @@
         <div class="plane-bridge-node">Spec</div>
         <div class="plane-bridge-line"></div>
         <div class="plane-bridge-node">Contract</div>
-        <div style="flex: 1;"></div>
+        <div class="plane-bridge-spacer"></div>
       </div>
       <div class="plane-row own">
         <div class="plane-label">Ownership</div>
-        <div class="plane-node" style="flex: 2;">Product</div>
+        <div class="plane-node plane-wide">Product</div>
         <span class="plane-arrow">&rarr;</span>
-        <div class="plane-node" style="flex: 2;">Capability</div>
+        <div class="plane-node plane-wide">Capability</div>
         <span class="plane-arrow">&rarr;</span>
-        <div class="plane-node" style="flex: 2;">Team</div>
+        <div class="plane-node plane-wide">Team</div>
       </div>
     </div>
   </div>
@@ -424,23 +390,23 @@
     <p class="section-body">In Intent, the atomic unit of work isn't a ticket — it's a <strong>Spec</strong> (a declarative description of behavior) verified by <strong>Contracts</strong> (binary pass/fail assertions). Agents execute against specs. Humans author and review them. Done means the contracts pass, not that a card moved.</p>
 
     <div class="fracture-grid">
-      <div class="fracture-item" style="background: #3b82f610; border-color: #3b82f630;">
-        <span class="tag" style="color: #3b82f6; background: #3b82f618;">Spec</span>
+      <div class="fracture-item blue">
+        <span class="tag">Spec</span>
         <h4>Declarative behavior description</h4>
         <p>What the system should do — stated clearly enough for an agent to execute against. Persists independently. Versioned. Reviewed. The lasting blueprint.</p>
       </div>
-      <div class="fracture-item" style="background: #10b98110; border-color: #10b98130;">
-        <span class="tag" style="color: #10b981; background: #10b98118;">Contract</span>
+      <div class="fracture-item green">
+        <span class="tag">Contract</span>
         <h4>Verifiable assertion</h4>
         <p>Binary pass/fail. Given/When/Then. Can be a CLI command, a test suite, or an automated check. The lasting proof that what was built is what was specified.</p>
       </div>
-      <div class="fracture-item" style="background: #f59e0b10; border-color: #f59e0b30;">
-        <span class="tag" style="color: #f59e0b; background: #f59e0b18;">Atom</span>
+      <div class="fracture-item amber">
+        <span class="tag">Atom</span>
         <h4>Execution envelope</h4>
         <p>A single pass through the work stream. References a Spec and its Contracts. Records what happened in this cycle. Closes when done. The Spec lives on.</p>
       </div>
-      <div class="fracture-item" style="background: #a855f710; border-color: #a855f730;">
-        <span class="tag" style="color: #a855f7; background: #a855f718;">Trust</span>
+      <div class="fracture-item purple">
+        <span class="tag">Trust</span>
         <h4>Autonomy governance</h4>
         <p>Every signal carries a computed trust score. Higher trust = more agent autonomy. L0 (human drives) to L4 (full auto with circuit breakers). Math, not politics.</p>
       </div>

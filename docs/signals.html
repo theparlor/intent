@@ -4,91 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signal Stream — Intent</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --border: #334155;
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
-            --accent-blue: #3b82f6;
-            --accent-amber: #f59e0b;
-            --accent-purple: #8b5cf6;
-            --accent-green: #10b981;
-            --green-bright: #22c55e;
-            --red: #ef4444;
-            --gap: 1rem;
-        }
-
-        html, body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
-            line-height: 1.6;
-            font-size: 15px;
-        }
-
-        a {
-            color: var(--accent-blue);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        a:hover {
-            color: var(--text);
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-
-        /* Navigation */
-        nav.site-nav {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        nav.site-nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        nav.site-nav a:hover {
-            color: var(--text);
-        }
-
-        nav.site-nav a.logo {
-            color: var(--text);
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-right: 1rem;
-            letter-spacing: -0.5px;
-        }
-
-        nav.site-nav a.logo span {
-            color: var(--accent-blue);
-        }
-
-        nav.site-nav a.active {
-            color: var(--text);
-        }
-
         /* Header */
         .header {
             margin-bottom: 2rem;
@@ -255,6 +172,8 @@
             font-size: 0.8rem;
             transition: all 0.2s;
         }
+
+        .pattern-text { color: var(--text-muted); font-size: 0.8rem; }
 
         .pattern-item:hover {
             border-color: var(--accent-purple);
@@ -786,6 +705,8 @@
                 padding-left: 1.5rem;
             }
         }
+
+        .footer-links { margin-top: 0.5rem; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -880,19 +801,19 @@
                 <div class="pattern-output">
                     <div class="pattern-item">
                         <div class="pattern-dot cluster"></div>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;">Clusters form</span>
+                        <span class="pattern-text">Clusters form</span>
                     </div>
                     <div class="pattern-item">
                         <div class="pattern-dot cluster"></div>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;">Frequency grows</span>
+                        <span class="pattern-text">Frequency grows</span>
                     </div>
                     <div class="pattern-item">
                         <div class="pattern-dot intent"></div>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;">Patterns emerge</span>
+                        <span class="pattern-text">Patterns emerge</span>
                     </div>
                     <div class="pattern-item">
                         <div class="pattern-dot spec"></div>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;">Intent clarifies</span>
+                        <span class="pattern-text">Intent clarifies</span>
                     </div>
                 </div>
             </div>
@@ -1034,7 +955,7 @@
         <!-- Footer -->
         <footer>
             <p>Intent — Signal management for AI-augmented teams</p>
-            <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            <p class="footer-links">
                 <a href="methodology.html">Methodology</a> ·
                 <a href="concept-brief.html">Concept Brief</a> ·
                 <a href="roadmap.html">Roadmap</a> ·

@@ -4,99 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intent — Deployment Guide</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; }
+    /* Deployment kicker color */
+    .kicker.hl-green { color: var(--accent-green); }
 
-    /* Nav */
-    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; flex-wrap: wrap; }
-    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
-    .site-nav .logo span { color: #3b82f6; }
-    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
-    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+    /* Deployment-specific callout override */
+    .callout.green { border-left-color: var(--accent-green); background: rgba(16,185,129,0.03); }
+    .callout.green .highlight { color: var(--accent-green); }
 
-    /* Sub-nav */
-    .sub-nav { max-width: 900px; margin: 0 auto; padding: 10px 24px; display: flex; gap: 20px; border-bottom: 1px solid #1e293b20; flex-wrap: wrap; }
-    .sub-nav a { color: #64748b; text-decoration: none; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; transition: color 0.2s; }
-    .sub-nav a:hover, .sub-nav a.active { color: #3b82f6; }
-
-    /* Scroll sections */
-    .scroll-section {
-      max-width: 900px; margin: 0 auto; padding: 60px 24px;
-      opacity: 0; transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .scroll-section.visible { opacity: 1; transform: translateY(0); }
-
-    /* Hero */
-    .hero { max-width: 900px; margin: 0 auto; padding: 60px 24px 20px; }
-    .hero .kicker { color: #10b981; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
-    .hero h1 { font-size: 38px; font-weight: 700; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 16px; }
-    .hero h1 .accent { color: #3b82f6; }
-    .hero .subtitle { color: #94a3b8; font-size: 17px; max-width: 640px; line-height: 1.6; }
-
-    /* Section headings */
-    .section-num { color: #334155; font-size: 56px; font-weight: 800; letter-spacing: -3px; margin-bottom: -8px; line-height: 1; }
-    .section-title { font-size: 26px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 12px; }
-    .section-title .hl { color: #f59e0b; }
-    .section-title .hl-blue { color: #3b82f6; }
-    .section-title .hl-green { color: #10b981; }
-    .section-title .hl-purple { color: #a855f7; }
-    .section-body { color: #94a3b8; font-size: 15px; max-width: 640px; margin-bottom: 24px; }
-
-    /* Code blocks */
-    .code-block { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
-    .code-block .label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; margin-bottom: 12px; }
-    .code-block pre { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.6; color: #cbd5e1; white-space: pre; }
-    .code-block pre .comment { color: #64748b; }
-    .code-block pre .cmd { color: #10b981; }
-    .code-block pre .string { color: #93c5fd; }
-    .code-block pre .key { color: #c4b5fd; }
-    .code-block pre .value { color: #fcd34d; }
-
-    /* Platform comparison table */
+    /* Platform table */
     .platform-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
-    .platform-table th { text-align: left; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 12px; border-bottom: 2px solid #334155; }
-    .platform-table td { padding: 10px 12px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
-    .platform-table td:first-child { font-weight: 600; color: #f1f5f9; }
-    .platform-table .recommended { background: #10b98108; }
-    .platform-table .recommended td:first-child { color: #10b981; }
+    .platform-table th { text-align: left; color: var(--text-dim); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 12px; border-bottom: 2px solid var(--border); }
+    .platform-table td { padding: 10px 12px; border-bottom: 1px solid var(--surface); color: #cbd5e1; }
+    .platform-table td:first-child { font-weight: 600; color: var(--text); }
+    .platform-table .recommended { background: rgba(16,185,129,0.03); }
+    .platform-table .recommended td:first-child { color: var(--accent-green); }
 
     /* Step cards */
     .step-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 24px 0; }
-    .step-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px 24px; display: flex; gap: 16px; align-items: flex-start; }
-    .step-num { font-size: 24px; font-weight: 800; color: #334155; flex-shrink: 0; width: 40px; }
-    .step-card.active .step-num { color: #3b82f6; }
+    .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; display: flex; gap: 16px; align-items: flex-start; }
+    .step-num { font-size: 24px; font-weight: 800; color: var(--border); flex-shrink: 0; width: 40px; }
+    .step-card.active .step-num { color: var(--accent-blue); }
     .step-content h4 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-    .step-content p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
-    .step-content code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: #93c5fd; background: #3b82f612; padding: 2px 6px; border-radius: 3px; }
+    .step-content p { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
 
     /* URL cards */
     .url-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 24px 0; }
-    .url-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; text-align: center; }
+    .url-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
     .url-card .server-name { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-    .url-card.notice .server-name { color: #3b82f6; }
-    .url-card.spec .server-name { color: #f59e0b; }
-    .url-card.observe .server-name { color: #10b981; }
-    .url-card .url { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #94a3b8; word-break: break-all; }
-
-    /* Callout */
-    .callout { border-left: 3px solid #10b981; padding: 16px 20px; margin: 24px 0; background: #10b98108; border-radius: 0 8px 8px 0; }
-    .callout p { font-size: 14px; color: #cbd5e1; }
-    .callout .highlight { color: #10b981; font-weight: 600; }
-
-    /* Divider */
-    .labeled-divider { max-width: 900px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 16px; }
-    .labeled-divider hr { flex: 1; border: none; border-top: 1px solid #1e293b; }
-    .labeled-divider .label { color: #475569; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; }
-
-    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
-    footer a { color: #3b82f6; text-decoration: none; }
+    .url-card.notice .server-name { color: var(--accent-blue); }
+    .url-card.spec .server-name { color: var(--accent-amber); }
+    .url-card.observe .server-name { color: var(--accent-green); }
+    .url-card .url { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--text-muted); word-break: break-all; }
 
     @media (max-width: 700px) {
-      .hero h1 { font-size: 28px; }
+      .hero-page h1 { font-size: 28px; }
       .url-grid { grid-template-columns: 1fr; }
-      .site-nav { gap: 16px; }
     }
   </style>
 </head>
@@ -125,8 +69,8 @@
   </nav>
 
   <!-- Hero -->
-  <div class="hero">
-    <div class="kicker">Deployment Guide</div>
+  <div class="hero-page">
+    <div class="kicker hl-green">Deployment Guide</div>
     <h1>Ship It for <span class="accent">$0/month</span></h1>
     <p class="subtitle">Intent's MCP servers run on FastMCP Cloud's free tier, Cloudflare Workers, or your local machine. Zero infrastructure cost, auto-deploy on push.</p>
   </div>
@@ -178,7 +122,7 @@
       </div>
     </div>
 
-    <div class="callout">
+    <div class="callout green">
       <p><span class="highlight">Total cost: $0/month</span> on FastMCP Cloud free tier or Cloudflare Workers (100K req/day).</p>
     </div>
   </section>
@@ -230,7 +174,7 @@
 <span class="cmd">fastmcp run</span> servers/observe.py <span class="string">--transport streamable-http --port 8003</span></pre>
     </div>
 
-    <p class="section-body">Point Claude Code at <code style="font-family: 'SF Mono', monospace; font-size: 13px; color: #93c5fd; background: #3b82f612; padding: 2px 6px; border-radius: 3px;">http://localhost:800X/mcp</code> for each server.</p>
+    <p class="section-body">Point Claude Code at <code>http://localhost:800X/mcp</code> for each server.</p>
   </section>
 
   <!-- ===== Section 4: Platforms ===== -->
@@ -260,7 +204,7 @@
   <section class="scroll-section">
     <div class="section-num">05</div>
     <h2 class="section-title">Persistence <span class="hl-green">(Phase 4)</span></h2>
-    <p class="section-body">Replace in-memory dicts with file I/O to the <code style="font-family: 'SF Mono', monospace; font-size: 13px; color: #93c5fd; background: #3b82f612; padding: 2px 6px; border-radius: 3px;">.intent/</code> directory. The servers already generate correct frontmatter format &mdash; the transition is swapping dict operations for file read/write + git commit.</p>
+    <p class="section-body">Replace in-memory dicts with file I/O to the <code>.intent/</code> directory. The servers already generate correct frontmatter format &mdash; the transition is swapping dict operations for file read/write + git commit.</p>
 
     <div class="code-block">
       <div class="label">Storage Layout</div>
@@ -280,7 +224,7 @@ spec/contracts/CON-*.md
 <span class="comment"># Use GitHub API for remote read/write</span></pre>
     </div>
 
-    <div class="callout">
+    <div class="callout green">
       <p>The servers already generate correct frontmatter. The transition is: <span class="highlight">swap dict operations for file read/write + git commit</span>. Full audit trail lives in git history.</p>
     </div>
   </section>

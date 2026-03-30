@@ -251,19 +251,35 @@ All site pages and artifacts use this palette:
 - Agent (◉): `#10b981` (green)
 
 ### Site Nav Pattern
-Every page in `docs/` has this nav:
+Every page in `docs/` links `styles.css` and uses this main nav:
 ```html
 <nav class="site-nav">
   <a href="index.html" class="logo"><span>I</span>ntent</a>
-  <a href="index.html">Home</a>
+  <a href="pitch.html">Pitch</a>
   <a href="methodology.html">Methodology</a>
   <a href="concept-brief.html">Concept Brief</a>
-  <a href="signals.html">Signals</a>
-  <a href="decisions.html">Decisions</a>
+  <a href="work-system.html">Work System</a>
+  <a href="flow-diagram.html">Flow</a>
+  <a href="schemas.html">Schemas</a>
+  <a href="arb.html">ARB</a>
+  <a href="dogfood.html">Dogfood</a>
   <a href="roadmap.html">Roadmap</a>
 </nav>
 ```
-The current page gets `class="active"`. Max-width: 900px. Footer with source link to GitHub.
+The current page gets `class="active"`. Pages not in the main nav (signals, decisions, event-catalog, visual-brief, native-repos, architecture, agents, deployment) have no active on any main nav link.
+
+Technical pages (architecture, agents, deployment) also have a sub-nav:
+```html
+<nav class="sub-nav">
+  <a href="architecture.html">Architecture</a>
+  <a href="agents.html">Agents</a>
+  <a href="deployment.html">Deployment</a>
+  <a href="signals.html">Signals</a>
+  <a href="dogfood.html">Dogfood</a>
+</nav>
+```
+
+Max-width: 900px. Footer with source link to GitHub. All shared CSS lives in `docs/styles.css` — page-specific CSS stays in small inline `<style>` blocks.
 
 ### Site Information Architecture
 The index page follows five sections that mirror the loop:
