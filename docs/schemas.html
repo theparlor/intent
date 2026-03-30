@@ -9,13 +9,14 @@
 <body>
     <nav class="site-nav">
         <a href="index.html" class="logo"><span>I</span>ntent</a>
-        <a href="index.html">Home</a>
+        <a href="pitch.html">Pitch</a>
         <a href="methodology.html">Methodology</a>
         <a href="concept-brief.html">Concept Brief</a>
-        <a href="signals.html">Signals</a>
-        <a href="decisions.html">Decisions</a>
+        <a href="work-system.html">Work System</a>
+        <a href="flow-diagram.html">Flow</a>
         <a href="schemas.html" class="active">Schemas</a>
         <a href="arb.html">ARB</a>
+        <a href="dogfood.html">Dogfood</a>
         <a href="roadmap.html">Roadmap</a>
     </nav>
 
@@ -129,7 +130,7 @@
         <section>
             <h2>Spec</h2>
             <p>
-                A spec is intent made executable. It's the contract between the person shaping work and the agent (or person) building it. Good specs are verifiable — you can test whether they've been fulfilled.
+                A spec is intent made executable. It's the contract between the person shaping work and the agent (or person) building it. Good specs are verifiable — you can test whether they've been fulfilled. Specs have an independent lifecycle and may spawn multiple atoms.
             </p>
             <p>
                 <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/spec.md">.intent/templates/spec.md</a><br>
@@ -144,11 +145,16 @@
                 <tbody>
                     <tr><td><code>id</code></td><td>string</td><td>Sequential identifier (SPEC-001, SPEC-002, ...)</td></tr>
                     <tr><td><code>title</code></td><td>string</td><td>What this spec delivers</td></tr>
+                    <tr><td><code>version</code></td><td>string</td><td>Semantic version of this spec (e.g., 1.0, 1.1)</td></tr>
                     <tr><td><code>status</code></td><td>enum</td><td>draft | review | approved | executing | complete</td></tr>
                     <tr><td><code>intent</code></td><td>string</td><td>Parent intent ID (INT-NNN)</td></tr>
+                    <tr><td><code>product</code></td><td>string</td><td>Product boundary this spec addresses</td></tr>
                     <tr><td><code>author</code></td><td>string</td><td>Who wrote the spec</td></tr>
                     <tr><td><code>contracts</code></td><td>list</td><td>Contract IDs this spec requires</td></tr>
+                    <tr><td><code>atoms</code></td><td>list</td><td>Atom IDs (ATOM-NNN) created from this spec</td></tr>
                     <tr><td><code>assignee</code></td><td>string</td><td>Who/what is executing this spec</td></tr>
+                    <tr><td><code>completeness_score</code></td><td>float</td><td>0.0–1.0 — how complete is the specification</td></tr>
+                    <tr><td><code>agent_ready</code></td><td>boolean</td><td>True if spec is structured enough for agent execution</td></tr>
                 </tbody>
             </table>
 
@@ -160,7 +166,7 @@
         <section>
             <h2>Contract</h2>
             <p>
-                A contract is a verifiable assertion about what must be true when a spec is fulfilled. Contracts are the smallest testable unit — like assertions in code, but for any kind of work. They come in four types: interface, behavior, quality, and integration.
+                A contract is a verifiable assertion about what must be true when a spec is fulfilled. Contracts are the smallest testable unit — like assertions in code, but for any kind of work. They come in four types: interface, behavior, quality, and integration. Contracts have an independent lifecycle separate from the specs they verify.
             </p>
             <p>
                 <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/contract.md">.intent/templates/contract.md</a><br>
@@ -178,6 +184,9 @@
                     <tr><td><code>spec</code></td><td>string</td><td>Parent spec ID (SPEC-NNN)</td></tr>
                     <tr><td><code>status</code></td><td>enum</td><td>defined | verified | failed | revised</td></tr>
                     <tr><td><code>type</code></td><td>enum</td><td>interface | behavior | quality | integration</td></tr>
+                    <tr><td><code>severity</code></td><td>enum</td><td>critical | major | minor — impact if contract fails</td></tr>
+                    <tr><td><code>verification_method</code></td><td>enum</td><td>manual | cli-command | test-suite | automated</td></tr>
+                    <tr><td><code>verification_command</code></td><td>string?</td><td>Command or test to verify this contract</td></tr>
                     <tr><td><code>verified_date</code></td><td>ISO 8601?</td><td>When last verified</td></tr>
                     <tr><td><code>verified_by</code></td><td>string?</td><td>Who or what verified it</td></tr>
                 </tbody>
@@ -195,6 +204,42 @@
                     <tr><td><strong>Integration</strong></td><td>Cross-system interaction</td><td>"Event appears in events.jsonl within 5s"</td></tr>
                 </tbody>
             </table>
+        </section>
+
+        <!-- Atom Schema -->
+        <section>
+            <h2>Atom</h2>
+            <p>
+                An atom is an execution envelope — a single pass through the work stream. Atoms are spawned by specs and coordinate execution, but do not contain the specs or contracts themselves. They reference specs for validation logic and contracts for verification, placing them at the intersection of ephemeral and persistent work.
+            </p>
+            <p>
+                <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/atom.md">.intent/templates/atom.md</a><br>
+                <strong>Storage:</strong> <code>.intent/atoms/ATOM-NNN-slug.md</code>
+            </p>
+
+            <h3>Frontmatter Fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>id</code></td><td>string</td><td>Sequential identifier (ATOM-001, ATOM-002, ...)</td></tr>
+                    <tr><td><code>title</code></td><td>string</td><td>Name of this execution unit</td></tr>
+                    <tr><td><code>status</code></td><td>enum</td><td>planned | in-progress | complete | failed | blocked</td></tr>
+                    <tr><td><code>parent_intent</code></td><td>string</td><td>Parent intent ID (INT-NNN)</td></tr>
+                    <tr><td><code>spec</code></td><td>string</td><td>Reference to spec being executed (SPEC-NNN)</td></tr>
+                    <tr><td><code>contracts</code></td><td>list</td><td>Contract IDs (CON-NNN) to be verified</td></tr>
+                    <tr><td><code>product</code></td><td>string</td><td>Product boundary this atom operates within</td></tr>
+                    <tr><td><code>capability</code></td><td>string</td><td>Capability within the product</td></tr>
+                    <tr><td><code>autonomy_level</code></td><td>enum</td><td>L0 | L1 | L2 | L3 | L4 — autonomy granted for execution</td></tr>
+                    <tr><td><code>trust_score</code></td><td>float</td><td>0.0–1.0 — computed trust score for this execution</td></tr>
+                    <tr><td><code>executor</code></td><td>string</td><td>Human or agent identifier performing the work</td></tr>
+                    <tr><td><code>arb_verdict</code></td><td>enum</td><td>proceed | review | block — ARB decision on execution</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Sections</h3>
+            <p>Execution plan, resource requirements, success criteria, risk assessment, and post-execution analysis.</p>
         </section>
 
         <!-- Event Schema -->
@@ -240,28 +285,142 @@
 
         <!-- Work Ontology -->
         <section>
-            <h2>Work Ontology</h2>
+            <h2>Work Ontology v2</h2>
             <p>
-                Intent organizes all work into a seven-level hierarchy. Each level has a schema, a lifecycle, and clear relationships to the levels above and below. This ontology is what makes Intent spec-driven rather than story-driven.
+                Intent v2 organizes work around a two-plane architecture: ephemeral flow entities (Signal → Intent → Atom → Event → Trace) and persistent artifacts (Spec, Contract) that bridge the planes. An independent ownership topology (Product → Capability → Team) provides structural context via the Inverse Conway Maneuver.
             </p>
             <p>
                 <strong>Full reference:</strong> <a href="work-system.html">Work ontology page</a>
             </p>
 
+            <h3>Work Stream (Ephemeral Flow)</h3>
             <table>
                 <thead>
-                    <tr><th>Level</th><th>Name</th><th>Schema</th><th>Description</th></tr>
+                    <tr><th>Entity</th><th>Schema</th><th>Lifecycle</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>1</td><td><strong>Signal</strong></td><td>signal.md</td><td>Raw observation, unprocessed</td></tr>
-                    <tr><td>2</td><td><strong>Intent</strong></td><td>intent.md</td><td>Problem worth solving, promoted from signals</td></tr>
-                    <tr><td>3</td><td><strong>Spec</strong></td><td>spec.md</td><td>Executable specification with contracts</td></tr>
-                    <tr><td>4</td><td><strong>Contract</strong></td><td>contract.md</td><td>Verifiable assertion (testable)</td></tr>
-                    <tr><td>5</td><td><strong>Task</strong></td><td>—</td><td>Atomic unit of execution</td></tr>
-                    <tr><td>6</td><td><strong>Event</strong></td><td>JSONL</td><td>Structured action record</td></tr>
-                    <tr><td>7</td><td><strong>Trace</strong></td><td>OTel span</td><td>Execution observability</td></tr>
+                    <tr><td><strong>Signal</strong></td><td>signal.md</td><td>captured → active → clustered → promoted → dismissed</td><td>Raw observation from work</td></tr>
+                    <tr><td><strong>Intent</strong></td><td>intent.md</td><td>proposed → accepted → specced → executing → complete</td><td>Problem worth solving, promoted from signals</td></tr>
+                    <tr><td><strong>Atom</strong></td><td>atom.md</td><td>planned → in-progress → complete | failed | blocked</td><td>Single pass through execution (ephemeral envelope)</td></tr>
+                    <tr><td><strong>Event</strong></td><td>JSONL</td><td>emitted → ingested → traced</td><td>Structured action record</td></tr>
+                    <tr><td><strong>Trace</strong></td><td>OTel Span</td><td>started → span events → ended</td><td>Execution observability (Span = Atom, Leaf Span = Contract Verification)</td></tr>
                 </tbody>
             </table>
+
+            <h3>Persistent Artifacts (Bridge)</h3>
+            <table>
+                <thead>
+                    <tr><th>Artifact</th><th>Schema</th><th>Lifecycle</th><th>Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Spec</strong></td><td>spec.md</td><td>draft → review → approved → executing → complete</td><td>Intent made executable; referenced by atoms for validation logic</td></tr>
+                    <tr><td><strong>Contract</strong></td><td>contract.md</td><td>defined → verified → failed | revised</td><td>Verifiable assertion; checked during atom execution</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Ownership Topology (Persistent Structure)</h3>
+            <table>
+                <thead>
+                    <tr><th>Level</th><th>Entity</th><th>Schema</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td><strong>Product</strong></td><td>product.md</td><td>Value boundary a team owns; context for Inverse Conway formation</td></tr>
+                    <tr><td>2</td><td><strong>Capability</strong></td><td>—</td><td>Functional grouping within a product</td></tr>
+                    <tr><td>3</td><td><strong>Team</strong></td><td>team.md</td><td>Persistent group of humans and agents that owns products</td></tr>
+                </tbody>
+            </table>
+
+            <h3>OTel Mapping</h3>
+            <table>
+                <thead>
+                    <tr><th>Intent Entity</th><th>OTel Concept</th><th>Mapping</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Intent</td><td>Trace</td><td>A logical work session; the context for all atoms it spawns</td></tr>
+                    <tr><td>Atom</td><td>Span</td><td>A single execution unit; contains contract verifications</td></tr>
+                    <tr><td>Contract Verification</td><td>Leaf Span</td><td>Terminal span that verifies a contract assertion</td></tr>
+                    <tr><td>Signal</td><td>Span Event</td><td>An event emitted within a span's execution</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Product Schema -->
+        <section>
+            <h2>Product</h2>
+            <p>
+                A product is a value boundary that a team owns. It's not a work item but a context boundary — the unit that drives team formation through the Inverse Conway Maneuver. Products contain capabilities and define the persona-centric value stream your team delivers.
+            </p>
+            <p>
+                <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/product.md">.intent/templates/product.md</a><br>
+                <strong>Storage:</strong> <code>.intent/products/PROD-slug.md</code>
+            </p>
+
+            <h3>Frontmatter Fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>id</code></td><td>string</td><td>Product identifier (short slug, e.g., "signals")</td></tr>
+                    <tr><td><code>title</code></td><td>string</td><td>Product name</td></tr>
+                    <tr><td><code>owner</code></td><td>string</td><td>Primary owner (person or team ID)</td></tr>
+                    <tr><td><code>team</code></td><td>list</td><td>Team member identifiers (human or agent)</td></tr>
+                    <tr><td><code>maturity</code></td><td>enum</td><td>operational | conceptual | defined | schema-ready</td></tr>
+                    <tr><td><code>value_stream</code></td><td>string</td><td>How this product delivers value</td></tr>
+                    <tr><td><code>persona_key</code></td><td>string</td><td>Primary persona this product serves</td></tr>
+                    <tr><td><code>capabilities</code></td><td>list</td><td>Capability names or IDs within this product</td></tr>
+                    <tr><td><code>repositories</code></td><td>list</td><td>Repository URLs or slugs related to this product</td></tr>
+                    <tr><td><code>file_paths</code></td><td>list</td><td>Directory paths or file patterns owned by this product</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Sections</h3>
+            <p>Value proposition, personas served, capabilities overview, team charter, and integration points with other products.</p>
+        </section>
+
+        <!-- Team Schema -->
+        <section>
+            <h2>Team</h2>
+            <p>
+                A team is a persistent group of humans and agents that owns products. Teams are formed around product boundaries (Inverse Conway), have defined autonomy boundaries, and escalation paths for decisions that cross boundaries.
+            </p>
+            <p>
+                <strong>Template:</strong> <a href="https://github.com/theparlor/intent/blob/main/.intent/templates/team.md">.intent/templates/team.md</a><br>
+                <strong>Storage:</strong> <code>.intent/teams/TEAM-slug.md</code>
+            </p>
+
+            <h3>Frontmatter Fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>id</code></td><td>string</td><td>Team identifier (short slug, e.g., "signals-team")</td></tr>
+                    <tr><td><code>title</code></td><td>string</td><td>Team name</td></tr>
+                    <tr><td><code>type</code></td><td>enum</td><td>stream-aligned | platform | enabling | complicated-subsystem</td></tr>
+                    <tr><td><code>products</code></td><td>list</td><td>Product IDs this team owns</td></tr>
+                    <tr><td><code>members.humans</code></td><td>list</td><td>Human team member identifiers or email addresses</td></tr>
+                    <tr><td><code>members.agents</code></td><td>list</td><td>Agent identifiers or service names</td></tr>
+                    <tr><td><code>autonomy_boundary</code></td><td>string</td><td>What decisions this team can make independently</td></tr>
+                    <tr><td><code>escalation_path</code></td><td>list</td><td>Chain of escalation for decisions outside autonomy boundary</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Team Types</h3>
+            <table>
+                <thead>
+                    <tr><th>Type</th><th>Description</th><th>Owns</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Stream-Aligned</strong></td><td>Organized around a value stream</td><td>One or more products in a coherent stream</td></tr>
+                    <tr><td><strong>Platform</strong></td><td>Builds internal capabilities</td><td>Shared infrastructure or tools</td></tr>
+                    <tr><td><strong>Enabling</strong></td><td>Coaches and unblocks other teams</td><td>Knowledge, process, observability</td></tr>
+                    <tr><td><strong>Complicated Subsystem</strong></td><td>Owns specialized, complex domain</td><td>Deep expertise area (e.g., cryptography)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Sections</h3>
+            <p>Team charter, success criteria, communication norms, decision-making framework, and quarterly priorities.</p>
         </section>
 
         <!-- Signal Amplification -->
