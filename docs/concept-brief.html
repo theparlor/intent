@@ -7,20 +7,18 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="header-wrapper sticky">
-        <nav class="site-nav">
-            <a href="index.html" class="logo"><span>I</span>ntent</a>
-            <a href="index.html">Home</a>
-            <a href="methodology.html">Methodology</a>
-            <a href="concept-brief.html" class="active">Concept Brief</a>
-            <a href="signals.html">Signals</a>
-            <a href="decisions.html">Decisions</a>
-            <a href="schemas.html">Schemas</a>
-            <a href="arb.html">ARB</a>
-            <a href="roadmap.html">Roadmap</a>
-            <a href="https://github.com/theparlor/intent" class="source-badge">Source ↗</a>
-        </nav>
-    </header>
+    <nav class="site-nav">
+        <a href="index.html" class="logo"><span>I</span>ntent</a>
+        <a href="pitch.html">Pitch</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="concept-brief.html" class="active">Concept Brief</a>
+        <a href="work-system.html">Work System</a>
+        <a href="flow-diagram.html">Flow</a>
+        <a href="schemas.html">Schemas</a>
+        <a href="arb.html">ARB</a>
+        <a href="dogfood.html">Dogfood</a>
+        <a href="roadmap.html">Roadmap</a>
+    </nav>
 
     <main class="container">
         <section class="concept-header">
@@ -97,6 +95,90 @@
         </section>
 
         <section class="concept-section">
+            <h2>Trust-Scored Autonomy</h2>
+            <p>
+                A core innovation in Intent is how we determine how much autonomy an AI agent gets. Instead of binary allow/deny decisions, we use a mathematical trust formula that scores the clarity and safety of any given task.
+            </p>
+            <p>
+                <strong>The Trust Formula:</strong>
+            </p>
+            <p style="font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 4px;">
+                trust = clarity×0.30 + (1/blast_radius)×0.20 + reversibility×0.20 + testability×0.20 + precedent×0.10
+            </p>
+            <p>
+                Each factor is scored 0-1:
+            </p>
+            <ul>
+                <li><strong>Clarity (30%):</strong> How unambiguous is the spec? Are edge cases covered?</li>
+                <li><strong>1/Blast Radius (20%):</strong> How limited are the consequences if the agent gets it wrong? Small blast radius (say, a draft document) scores high. Large blast radius (production data deletion) scores low.</li>
+                <li><strong>Reversibility (20%):</strong> Can we undo this? Git commits are highly reversible (1.0). Sent emails are not (0.0).</li>
+                <li><strong>Testability (20%):</strong> Can we verify the work before it goes live? Code review, staged deployments, and test runs all score high.</li>
+                <li><strong>Precedent (10%):</strong> Have we done something similar before and had good outcomes?</li>
+            </ul>
+            <p>
+                <strong>Autonomy Levels:</strong> The trust score maps to five autonomy levels:
+            </p>
+            <ul>
+                <li><strong>L0 (&lt;0.2):</strong> Human drives. Agent assists, suggests, answers questions. No autonomous execution.</li>
+                <li><strong>L1 (0.2-0.4):</strong> Agent suggests. Human must review and approve before execution.</li>
+                <li><strong>L2 (0.4-0.6):</strong> Agent proposes. Human can veto, but execution happens by default if no veto is given within a time window.</li>
+                <li><strong>L3 (0.6-0.85):</strong> Agent executes with monitoring. Autonomous execution with observability dashboards and circuit breakers. Human can interrupt.</li>
+                <li><strong>L4 (≥0.85):</strong> Full autonomy. Agent executes, logs results, and continues unless an exception condition triggers a circuit breaker.</li>
+            </ul>
+            <p>
+                <strong>The Key Insight:</strong> Math replaces politics. There's no ambiguity about "how much autonomy is too much?" The trust score makes it explicit and auditable.
+            </p>
+        </section>
+
+        <section class="concept-section">
+            <h2>Dogfooding</h2>
+            <p>
+                Intent is being built using the Intent methodology. This isn't theoretical—it's live and measurable.
+            </p>
+            <ul>
+                <li><strong>16 real signals</strong> captured from development sessions, tracking notices, specs written, execution outcomes, and blockers.</li>
+                <li><strong>14 specification documents</strong> driving the product roadmap, architecture, and feature development.</li>
+                <li><strong>Live event stream</strong> tracking all system activity: commits, deployments, decisions made, and outcomes observed.</li>
+            </ul>
+            <p>
+                This means we're continuously improving the methodology based on real data from building Intent itself. See the <a href="dogfood.html">Dogfood Dashboard</a> for the full picture of how Intent is eating its own dog food.
+            </p>
+        </section>
+
+        <section class="concept-section">
+            <h2>Specifications & Artifacts</h2>
+            <p>
+                Intent is documented and built in public. These artifacts form the blueprint:
+            </p>
+            <div class="grid">
+                <a href="methodology.html" class="card">
+                    <h3>Methodology</h3>
+                    <p>Full specification of the notice→spec→execute→observe loop</p>
+                </a>
+                <a href="schemas.html" class="card">
+                    <h3>Schemas</h3>
+                    <p>Signal, decision, and spec schema inventory</p>
+                </a>
+                <a href="arb.html" class="card">
+                    <h3>Architecture Review Board</h3>
+                    <p>System design decisions and trade-offs</p>
+                </a>
+                <a href="roadmap.html" class="card">
+                    <h3>Product Roadmap</h3>
+                    <p>Prioritized features and release timeline</p>
+                </a>
+                <a href="signals.html" class="card">
+                    <h3>Signal Stream</h3>
+                    <p>Live observability data from Intent's own operations</p>
+                </a>
+                <a href="decisions.html" class="card">
+                    <h3>Decision Log</h3>
+                    <p>Key product and technical decisions with rationale</p>
+                </a>
+            </div>
+        </section>
+
+        <section class="concept-section">
             <h2>The Vision</h2>
             <p>
                 In the near term, Intent is a personal operating system for individual knowledge workers augmented by AI. You use it to structure your own work, improve your own processes, and build systems that others can adopt.
@@ -112,7 +194,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+            <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> · Built with the Intent methodology</p>
         </div>
     </footer>
 </body>
