@@ -1,0 +1,62 @@
+# Intent System Configuration
+# Location: .intent/config.yml
+# This file controls trust thresholds, autonomy boundaries,
+# and system behavior for a repo using Intent.
+
+# ── Trust Scoring ──
+trust:
+  # Weight factors for trust score calculation
+  # trust = clarity * w1 + (1/blast_radius) * w2 + reversibility * w3 + testability * w4 + precedent * w5
+  weights:
+    clarity: 0.30
+    blast_radius: 0.20
+    reversibility: 0.20
+    testability: 0.20
+    precedent: 0.10
+
+  # Autonomy level thresholds
+  autonomy_levels:
+    L0: 0.0    # Human drives — trust < 0.2
+    L1: 0.2    # Agent assists — trust 0.2-0.4
+    L2: 0.4    # Agent decides, human approves — trust 0.4-0.6
+    L3: 0.6    # Agent executes, human monitors — trust 0.6-0.85
+    L4: 0.85   # Full autonomy — trust >= 0.85
+
+# ── Signal Amplification ──
+amplification:
+  half_life_days: 7          # Reference weight decays by half every N days
+  min_cluster_size: 3        # Minimum signals to form a cluster
+  min_cluster_weight: 1.0    # Minimum aggregate trust to promote cluster
+  staleness_days: 14         # Cluster signals older than this don't count toward promotion
+
+  # Reference weight types
+  reference_weights:
+    direct_reference: 1.0    # Signal explicitly cites another signal
+    same_cluster: 0.5        # Signals in the same cluster
+    same_author: 0.3         # Signals from the same author
+    temporal_proximity: 0.2  # Signals within 24h of each other
+
+# ── Capture Surfaces ──
+capture:
+  default_source: cli
+  default_author: ""
+  default_confidence: 0.5
+  auto_commit: false         # Whether CLI tools auto-commit after creating artifacts
+
+# ── Event Emission ──
+events:
+  log_path: .intent/events/events.jsonl
+  emit_on_create: true       # Emit events when artifacts are created
+  emit_on_status_change: true # Emit events when status transitions occur
+
+# ── ARB Thresholds ──
+arb:
+  require_review: true       # Whether atoms require ARB review before speccing
+  auto_approve_size_s: false # Whether S-sized atoms skip ARB review
+  min_reviewers: 3           # Minimum persona perspectives required
+
+# ── Digest ──
+digest:
+  period_days: 7             # Default digest period
+  output_path: .intent/digests/
+  auto_commit: true          # Whether digest generation auto-commits
