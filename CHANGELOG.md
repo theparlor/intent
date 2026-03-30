@@ -11,6 +11,26 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.03.30-0.8.0
+
+**Two-plane architecture, storytelling pitch page, dogfood page, ARB complete**
+
+### Architecture
+- Redesigned work ontology as two-plane architecture: Work Stream (Signal → Intent → Atom → Event → Trace) orthogonal to Ownership Topology (Product → Capability → Team)
+- Spec and Contract promoted to independent persistent artifacts with their own lifecycle (not embedded in atoms)
+- Atom redesigned as execution envelope — references specs/contracts, doesn't contain them
+- New templates pushed: atom.md (reference-based), spec.md (independent lifecycle), contract.md (independent lifecycle), product.md (ownership boundary), team.md (persistent group)
+
+### Site
+- Created `docs/pitch.html` — storytelling landing page: narrative arc from AI breaking Scrum/Jira → first principles → Intent's two-plane model. Scroll-reveal sections, inline SVG diagrams, comparison strips, timeline visualization
+- Created `docs/dogfood.html` — "Intent building Intent" page showing live artifacts: 16 signals, 14 specs, event stream, pipeline flow visualization. Proves the methodology works by running on itself
+- Pushed complete `docs/arb.html` — four-tab ARB artifact with tech radar (28 blips), architectural stack (10 layers), ARB panel (4 principles, 6 decisions, 4 constraints, 4 risks), atomized roadmap (21 items across 4 phases)
+- Added ARB nav link to all remaining pages (roadmap, signals, schemas)
+- Original homepage preserved at index.html for A/B testing against pitch.html
+
+### Artifacts
+- Created two-plane model infographic (A3 landscape PDF) — cartographic design philosophy, trust scoring, Scrum→Intent comparison, OTel mapping
+
 ## 2026.03.29-0.7.0
 
 **Schemas page, signals dashboard overhaul, site-wide style normalization**
