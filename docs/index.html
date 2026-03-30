@@ -1,166 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intent — Operating Model for AI-Augmented Teams</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent — A Team Operating Model for AI-Augmented Product Teams</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    /* Nav */
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; }
+    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
+    .site-nav .logo span { color: #3b82f6; }
+    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+
+    /* Hero */
+    .hero { max-width: 900px; margin: 0 auto; padding: 56px 24px 40px; }
+    .hero h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; letter-spacing: -1px; }
+    .hero h1 span { color: #3b82f6; }
+    .hero p { color: #94a3b8; font-size: 16px; line-height: 1.7; max-width: 640px; }
+
+    /* Section */
+    .section { max-width: 900px; margin: 0 auto; padding: 0 24px 48px; }
+    .section-label { color: #64748b; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+
+    /* Cards */
+    .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .cards.two-col { grid-template-columns: 1fr 1fr; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; text-decoration: none; color: inherit; transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column; }
+    .card:hover { border-color: #3b82f6; transform: translateY(-1px); }
+    .card .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; width: fit-content; }
+    .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #f1f5f9; }
+    .card p { color: #94a3b8; font-size: 13px; line-height: 1.5; flex: 1; }
+    .card .arrow { color: #3b82f6; font-size: 13px; margin-top: 12px; }
+
+    /* Badge colors */
+    .badge-artifact { background: #3b82f620; color: #3b82f6; }
+    .badge-spec { background: #a855f720; color: #a855f7; }
+    .badge-dogfood { background: #10b98120; color: #10b981; }
+
+    /* Divider */
+    .divider { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+    .divider hr { border: none; border-top: 1px solid #1e293b; }
+
+    /* Loop diagram */
+    .loop-strip { display: flex; align-items: center; gap: 0; margin: 24px 0 0; }
+    .loop-phase { flex: 1; padding: 14px 16px; text-align: center; font-size: 13px; font-weight: 600; border: 1px solid #334155; }
+    .loop-phase:first-child { border-radius: 8px 0 0 8px; }
+    .loop-phase:last-child { border-radius: 0 8px 8px 0; }
+    .loop-arrow { color: #64748b; font-size: 16px; margin: 0 -1px; z-index: 1; }
+
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+
+    @media (max-width: 700px) {
+      .cards { grid-template-columns: 1fr; }
+      .cards.two-col { grid-template-columns: 1fr; }
+      .loop-strip { flex-wrap: wrap; }
+    }
+  </style>
 </head>
 <body>
-    <nav class="site-nav">
-        <a href="index.html" class="logo"><span>I</span>ntent</a>
-        <a href="pitch.html">Pitch</a>
-        <a href="methodology.html">Methodology</a>
-        <a href="concept-brief.html">Concept Brief</a>
-        <a href="work-system.html">Work System</a>
-        <a href="flow-diagram.html">Flow</a>
-        <a href="schemas.html">Schemas</a>
-        <a href="arb.html">ARB</a>
-        <a href="dogfood.html">Dogfood</a>
-        <a href="roadmap.html">Roadmap</a>
-    </nav>
 
-    <header class="hero">
-        <div class="container">
-            <h1>Intent</h1>
-            <p class="subtitle">The operating model for AI-augmented teams</p>
-            <p class="description">
-                When AI collapses implementation from weeks to hours, the bottleneck moves upstream — from delivery to discovery, specification, and observation. Intent replaces ceremony-driven coordination with a continuous signal-driven loop that scales from a single practitioner to teams of teams working alongside hundreds of agents.
-            </p>
-        </div>
-    </header>
+  <!-- Nav -->
+  <nav class="site-nav">
+    <a href="index.html" class="logo"><span>I</span>ntent</a>
+    <a href="index.html" class="active">Home</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="concept-brief.html">Concept Brief</a>
+    <a href="signals.html">Signals</a>
+    <a href="decisions.html">Decisions</a>
+  </nav>
 
-    <section class="core-concepts">
-        <div class="container">
-            <h2>One Loop, Any Scale</h2>
-            <p class="description" style="color: var(--text-muted); margin-bottom: 2rem;">
-                The same four-phase loop operates at every level of scale. What changes isn't the model — it's the volume of signals and the autonomy level of the agents processing them.
-            </p>
-            <div class="grid">
-                <div class="card notice">
-                    <h3>Notice</h3>
-                    <p>Capture signals from every surface — conversations, code reviews, agent traces, OTel spans, Slack threads. A signal is anything worth paying attention to. One person might capture five a day. A fleet of agents might surface five thousand.</p>
-                </div>
-                <div class="card spec">
-                    <h3>Spec</h3>
-                    <p>Shape signals into agent-ready specifications. Specs are contracts, not stories — verifiable assertions that an AI agent can execute against. Clear specs mean agents work autonomously; vague specs mean expensive human intervention.</p>
-                </div>
-                <div class="card execute">
-                    <h3>Execute</h3>
-                    <p>Agents implement against specs at the autonomy level earned by the signal's trust score. Low trust means human approval. High trust means full autonomy with circuit breakers. The system learns which work it can handle alone.</p>
-                </div>
-                <div class="card observe">
-                    <h3>Observe</h3>
-                    <p>Every action emits structured events. Observe what happened, compare it to what was specified, and feed the delta back as new signals. The loop closes. The system gets smarter. The next cycle starts with better information.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Hero -->
+  <div class="hero">
+    <h1>A team operating model for<br><span>AI-augmented</span> product teams</h1>
+    <p>When AI collapses implementation to hours, the entire SDLC shifts. Intent replaces Agile's ceremony stack with a continuous loop: Notice &rarr; Spec &rarr; Execute &rarr; Observe.</p>
+    <div class="loop-strip">
+      <div class="loop-phase" style="background: #f59e0b15; color: #f59e0b; border-color: #f59e0b40;">Notice</div>
+      <span class="loop-arrow">&rarr;</span>
+      <div class="loop-phase" style="background: #3b82f615; color: #3b82f6; border-color: #3b82f640;">Spec</div>
+      <span class="loop-arrow">&rarr;</span>
+      <div class="loop-phase" style="background: #10b98115; color: #10b981; border-color: #10b98140;">Execute</div>
+      <span class="loop-arrow">&rarr;</span>
+      <div class="loop-phase" style="background: #a855f715; color: #a855f7; border-color: #a855f740;">Observe</div>
+    </div>
+  </div>
 
-    <section>
-        <div class="container">
-            <h2>Signals Are the Architecture</h2>
-            <p class="description" style="color: var(--text-muted);">
-                Most AI tooling focuses on the execute phase — making agents that can write code or draft emails. Intent focuses upstream, on the signal layer that decides <em>what</em> gets executed and <em>how much autonomy</em> the executor gets. Signals are the primitive. Everything else follows.
-            </p>
-            <div class="grid" style="margin-top: 2rem;">
-                <div class="card">
-                    <h3>Trust-Scored</h3>
-                    <p>Every signal gets a trust score computed from clarity, blast radius, reversibility, testability, and precedent. Trust determines autonomy level — from L0 (human drives) to L4 (full agent autonomy, circuit breakers only).</p>
-                </div>
-                <div class="card">
-                    <h3>Amplification-Weighted</h3>
-                    <p>Signals gain weight through repeated reference. The same friction point surfacing across conversations, commits, and agent traces tells the system this matters more than its initial score suggested. Frequency is information.</p>
-                </div>
-                <div class="card">
-                    <h3>Self-Clustering</h3>
-                    <p>Signals that get referenced together reveal emergent problem structure. The system discovers its own architecture — not through top-down design, but through the pattern of what keeps showing up together.</p>
-                </div>
-                <div class="card">
-                    <h3>Pipeline-Processed</h3>
-                    <p>An enrichment pipeline works every signal as far as it can go: dedup, contextualize, score, classify, route. Humans intervene only when something is ambiguous or unsafe. The system never dead-ends — it generates disambiguation signals instead.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Interactive Artifacts -->
+  <div class="section">
+    <div class="section-label">Interactive Artifacts</div>
+    <div class="cards">
+      <a class="card" href="visual-brief.html">
+        <span class="badge badge-artifact">Product Brief</span>
+        <h3>Visual Brief</h3>
+        <p>Problem cascade, core loop, stack positioning, audience personas, GTM evolution, hypotheses, and competitive landscape.</p>
+        <span class="arrow">&rarr; Explore</span>
+      </a>
+      <a class="card" href="native-repos.html">
+        <span class="badge badge-artifact">Adoption Guide</span>
+        <h3>Intent-Native Repos</h3>
+        <p>Repo template structure, four adoption tiers, and the Entire.io &rarr; Spec feedback loop design.</p>
+        <span class="arrow">&rarr; Explore</span>
+      </a>
+      <a class="card" href="work-system.html">
+        <span class="badge badge-artifact">Work System</span>
+        <h3>Intent Work System</h3>
+        <p>Agent-native work ontology, three governance dimensions, agent flow, dashboard, and Agile &rarr; Intent comparison.</p>
+        <span class="arrow">&rarr; Explore</span>
+      </a>
+    </div>
+  </div>
 
-    <section>
-        <div class="container">
-            <h2>Scale by Design</h2>
-            <p class="description" style="color: var(--text-muted); margin-bottom: 2rem;">
-                Intent is architected to grow. The same abstractions that work for one person noticing friction work for an organization processing thousands of signals across dozens of teams and hundreds of agents.
-            </p>
-            <div class="shift-grid">
-                <div class="shift-card">
-                    <div class="from">Sprint ceremonies for 8 people</div>
-                    <div class="to">Continuous signal loop for any team size</div>
-                </div>
-                <div class="shift-card">
-                    <div class="from">Backlogs that grow forever</div>
-                    <div class="to">Signals that decay, amplify, or promote themselves</div>
-                </div>
-                <div class="shift-card">
-                    <div class="from">Stories written for humans to interpret</div>
-                    <div class="to">Specs as contracts that agents execute against</div>
-                </div>
-                <div class="shift-card">
-                    <div class="from">Manual status updates and standups</div>
-                    <div class="to">Structured events emitted by every action</div>
-                </div>
-                <div class="shift-card">
-                    <div class="from">One AI tool for one task</div>
-                    <div class="to">Agent fleets with trust-gated autonomy</div>
-                </div>
-                <div class="shift-card">
-                    <div class="from">Systems that break and wait for humans</div>
-                    <div class="to">Systems that self-heal through the observe→notice loop</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <div class="divider"><hr></div>
 
-    <section>
-        <div class="container">
-            <h2>Where Intent Is Now</h2>
-            <p class="description" style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                Intent is methodology-first — validate with practitioners before building software. Everything is file-native, git-tracked, and OTel-compatible. No lock-in, no proprietary formats.
-            </p>
-            <div class="grid">
-                <div class="card notice">
-                    <h3>Notice — Operational</h3>
-                    <p>MCP server, CLI suite, GitHub Action, signal template. 15 founding signals captured, trust-scored, and clustered. Signal amplification spec drafted.</p>
-                </div>
-                <div class="card spec">
-                    <h3>Spec — Conceptual</h3>
-                    <p>Templates for intents, specs, contracts. CLI tools for proposing, approving, and tracking. Seven-level work ontology defined.</p>
-                </div>
-                <div class="card execute">
-                    <h3>Execute — Defined</h3>
-                    <p>Event schema designed with 15 OTel-compatible events. Agent handoff protocol documented. No integration yet — this is next.</p>
-                </div>
-                <div class="card observe">
-                    <h3>Observe — Schema-Ready</h3>
-                    <p>Event types defined, signal dashboard live, trust visualization operational. Full dashboard and learning layer planned.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Specs -->
+  <div class="section" style="padding-top: 48px;">
+    <div class="section-label">Specifications</div>
+    <div class="cards two-col">
+      <a class="card" href="methodology.html">
+        <span class="badge badge-spec">Methodology Spec</span>
+        <h3>Intent Methodology</h3>
+        <p>The full spec: how work flows from idea to running software when AI collapses implementation to hours. The loop, the toolchain, and what replaces what.</p>
+        <span class="arrow">&rarr; Read</span>
+      </a>
+      <a class="card" href="concept-brief.html">
+        <span class="badge badge-spec">Product Concept</span>
+        <h3>Concept Brief</h3>
+        <p>Intent as a venture: the problem, audience, solution, competitive differentiation, staged GTM, and five falsifiable hypotheses.</p>
+        <span class="arrow">&rarr; Read</span>
+      </a>
+    </div>
+  </div>
 
-    <section class="getting-started">
-        <div class="container">
-            <h2>Go Deeper</h2>
-            <p><strong>Understand the shift:</strong> <a href="methodology.html">Read the methodology</a> — how Intent replaces Agile's ceremony-driven model when AI changes the cost structure of implementation.</p>
-            <p><strong>See the product vision:</strong> The <a href="concept-brief.html">concept brief</a> covers personas, positioning, and the four-product roadmap.</p>
-            <p><strong>Watch it work:</strong> The <a href="signals.html">signal dashboard</a> is live — trust scores, autonomy levels, cluster groupings, lifecycle status for all founding signals.</p>
-            <p><strong>See what's next:</strong> The <a href="roadmap.html">product roadmap</a> maps all four products across Now / Next / Later priorities.</p>
-            <p><strong>Build your own:</strong> <code>mkdir -p .intent/signals .intent/events</code> in any repo. That's it. You're Intent-native.</p>
-        </div>
-    </section>
+  <div class="divider"><hr></div>
 
-    <footer>
-        <div class="container">
-            <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> · Built with the Intent methodology</p>
-        </div>
-    </footer>
+  <!-- Dogfooding -->
+  <div class="section" style="padding-top: 48px;">
+    <div class="section-label" style="color: #10b981;">Dogfooding: Signals &amp; Decisions</div>
+    <div class="cards two-col">
+      <a class="card" href="signals.html">
+        <span class="badge badge-dogfood">Live Signals</span>
+        <h3>Signal Stream</h3>
+        <p>Observations captured from sessions, agent traces, and research. The raw material feeding the notice layer.</p>
+        <span class="arrow" style="color: #10b981;">&rarr; View signals</span>
+      </a>
+      <a class="card" href="decisions.html">
+        <span class="badge badge-dogfood">Decision Log</span>
+        <h3>Decisions</h3>
+        <p>Every significant decision with context, alternatives considered, and rationale. Institutional memory accumulating in real time.</p>
+        <span class="arrow" style="color: #10b981;">&rarr; View decisions</span>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
+  </footer>
+
 </body>
 </html>

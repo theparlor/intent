@@ -1,16 +1,12 @@
 ---
 id: SIG-002
-timestamp: 2026-03-28T12:00:00Z
+date: 2026-03-28
 source: cowork-session
-author: brien
-confidence: 0.9
-trust: 0.2
-autonomy_level: L1
-status: active
-cluster:
-parent_signal:
+confidence: high
 related_intents: []
+status: new
 ---
+
 # Signal: Distributed tracing is the right observability model for Intent work
 
 ## Observation

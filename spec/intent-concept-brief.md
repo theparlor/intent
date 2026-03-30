@@ -4,8 +4,17 @@ type: spec
 maturity: idea
 created: 2026-03-28
 summary: "Full product concept brief for Intent as a venture — problem, audience, solution, competitive differentiation, staged GTM, and falsifiable hypotheses."
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.2
+  content_chars: 6161
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 1
+vocab_density: 0.33
 ---
-
 # Intent — Product Concept Brief
 
 > **Stage:** Idea → ready for validation

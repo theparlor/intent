@@ -1,3 +1,36 @@
+---
+title: Readme
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-29
+technologies:
+  - jira
+thought_leaders:
+  - marty-cagan
+  - jeff-patton
+  - teresa-torres
+  - josh-seiden
+depth_score: 4
+depth_signals:
+  file_size_kb: 3.9
+  content_chars: 3046
+  entity_count: 5
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 1.97
+related_entities:
+  - {pair: consulting-operations ↔ subaru, count: 571, strength: 0.387}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 558, strength: 0.378}
+  - {pair: consulting-operations ↔ engagement-management, count: 483, strength: 0.327}
+  - {pair: consulting-operations ↔ turnberry, count: 321, strength: 0.201}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.17}
+---
 # Intent
 
 > A team operating model for AI-augmented product teams.

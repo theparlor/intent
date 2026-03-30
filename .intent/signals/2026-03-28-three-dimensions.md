@@ -1,21 +1,17 @@
 ---
 id: SIG-004
-timestamp: 2026-03-28T12:00:00Z
+date: 2026-03-28
 source: cowork-session
-author: brien
-confidence: 0.9
-trust: 0.1
-autonomy_level: L0
-status: active
-cluster: work-ontology-design
-parent_signal:
+confidence: high
 related_intents: []
+status: new
 ---
+
 # Signal: Intent needs three governance dimensions, not just the loop
 
 ## Observation
 
-The Intent methodology’s core loop (Notice → Spec → Execute → Observe) addresses the flow of work, but Brien surfaced three orthogonal dimensions that any work system must answer:
+The Intent methodology's core loop (Notice → Spec → Execute → Observe) addresses the flow of work, but Brien surfaced three orthogonal dimensions that any work system must answer:
 
 1. **Right Things** — validate ideas via continuous discovery (Teresa Torres opportunity trees)
 2. **Right Time** — parallelize, sequence, and prioritize via dependency graphs (not sprint commitments)
@@ -35,4 +31,4 @@ All three dimensions can be encoded in the spec file itself — a spec reference
 
 ## Evidence
 
-Brien’s framing: "build the right things at the right time in the right way and make this flow of work visible at all times" — this is the Intent product’s core value proposition stated as a design requirement.
+Brien's framing: "build the right things at the right time in the right way and make this flow of work visible at all times" — this is the Intent product's core value proposition stated as a design requirement.

@@ -4,8 +4,17 @@ type: spec
 maturity: draft
 created: 2026-03-27
 summary: "Design spec for migrating automated workflows from Cowork sandbox to Claude Code CLI native execution with self-healing, intelligence, and full filesystem authority."
+depth_score: 3
+depth_signals:
+  file_size_kb: 3.3
+  content_chars: 3306
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 1
+vocab_density: 0.96
 ---
-
 # Autonomous Operations Layer
 
 > **Purpose**: Turn three operational workflows — Library Index, Digital Declutter, and Workspace Health — into self-healing, intelligent, autonomous agents running natively via Claude Code CLI.

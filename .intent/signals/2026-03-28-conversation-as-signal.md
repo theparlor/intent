@@ -1,16 +1,12 @@
 ---
 id: SIG-003
-timestamp: 2026-03-28T12:00:00Z
+date: 2026-03-28
 source: cowork-session
-author: brien
-confidence: 0.9
-trust: 0.35
-autonomy_level: L1
-status: active
-cluster: signal-capture-surfaces
-parent_signal:
+confidence: high
 related_intents: []
+status: new
 ---
+
 # Signal: Conversations should automatically feed the notice layer
 
 ## Observation

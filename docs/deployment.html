@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent — Deployment Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; }
+
+    /* Nav */
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; flex-wrap: wrap; }
+    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
+    .site-nav .logo span { color: #3b82f6; }
+    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+
+    /* Sub-nav */
+    .sub-nav { max-width: 900px; margin: 0 auto; padding: 10px 24px; display: flex; gap: 20px; border-bottom: 1px solid #1e293b20; flex-wrap: wrap; }
+    .sub-nav a { color: #64748b; text-decoration: none; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; transition: color 0.2s; }
+    .sub-nav a:hover, .sub-nav a.active { color: #3b82f6; }
+
+    /* Scroll sections */
+    .scroll-section {
+      max-width: 900px; margin: 0 auto; padding: 60px 24px;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-section.visible { opacity: 1; transform: translateY(0); }
+
+    /* Hero */
+    .hero { max-width: 900px; margin: 0 auto; padding: 60px 24px 20px; }
+    .hero .kicker { color: #10b981; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+    .hero h1 { font-size: 38px; font-weight: 700; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 .accent { color: #3b82f6; }
+    .hero .subtitle { color: #94a3b8; font-size: 17px; max-width: 640px; line-height: 1.6; }
+
+    /* Section headings */
+    .section-num { color: #334155; font-size: 56px; font-weight: 800; letter-spacing: -3px; margin-bottom: -8px; line-height: 1; }
+    .section-title { font-size: 26px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 12px; }
+    .section-title .hl { color: #f59e0b; }
+    .section-title .hl-blue { color: #3b82f6; }
+    .section-title .hl-green { color: #10b981; }
+    .section-title .hl-purple { color: #a855f7; }
+    .section-body { color: #94a3b8; font-size: 15px; max-width: 640px; margin-bottom: 24px; }
+
+    /* Code blocks */
+    .code-block { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+    .code-block .label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; margin-bottom: 12px; }
+    .code-block pre { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.6; color: #cbd5e1; white-space: pre; }
+    .code-block pre .comment { color: #64748b; }
+    .code-block pre .cmd { color: #10b981; }
+    .code-block pre .string { color: #93c5fd; }
+    .code-block pre .key { color: #c4b5fd; }
+    .code-block pre .value { color: #fcd34d; }
+
+    /* Platform comparison table */
+    .platform-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+    .platform-table th { text-align: left; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 12px; border-bottom: 2px solid #334155; }
+    .platform-table td { padding: 10px 12px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
+    .platform-table td:first-child { font-weight: 600; color: #f1f5f9; }
+    .platform-table .recommended { background: #10b98108; }
+    .platform-table .recommended td:first-child { color: #10b981; }
+
+    /* Step cards */
+    .step-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 24px 0; }
+    .step-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px 24px; display: flex; gap: 16px; align-items: flex-start; }
+    .step-num { font-size: 24px; font-weight: 800; color: #334155; flex-shrink: 0; width: 40px; }
+    .step-card.active .step-num { color: #3b82f6; }
+    .step-content h4 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .step-content p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
+    .step-content code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: #93c5fd; background: #3b82f612; padding: 2px 6px; border-radius: 3px; }
+
+    /* URL cards */
+    .url-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 24px 0; }
+    .url-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; text-align: center; }
+    .url-card .server-name { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .url-card.notice .server-name { color: #3b82f6; }
+    .url-card.spec .server-name { color: #f59e0b; }
+    .url-card.observe .server-name { color: #10b981; }
+    .url-card .url { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #94a3b8; word-break: break-all; }
+
+    /* Callout */
+    .callout { border-left: 3px solid #10b981; padding: 16px 20px; margin: 24px 0; background: #10b98108; border-radius: 0 8px 8px 0; }
+    .callout p { font-size: 14px; color: #cbd5e1; }
+    .callout .highlight { color: #10b981; font-weight: 600; }
+
+    /* Divider */
+    .labeled-divider { max-width: 900px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 16px; }
+    .labeled-divider hr { flex: 1; border: none; border-top: 1px solid #1e293b; }
+    .labeled-divider .label { color: #475569; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; }
+
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+
+    @media (max-width: 700px) {
+      .hero h1 { font-size: 28px; }
+      .url-grid { grid-template-columns: 1fr; }
+      .site-nav { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="site-nav">
+    <a href="index.html" class="logo"><span>I</span>ntent</a>
+    <a href="pitch.html">Pitch</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="concept-brief.html">Concept Brief</a>
+    <a href="work-system.html">Work System</a>
+    <a href="flow-diagram.html">Flow</a>
+    <a href="schemas.html">Schemas</a>
+    <a href="arb.html">ARB</a>
+    <a href="roadmap.html">Roadmap</a>
+  </nav>
+
+  <!-- Technical sub-nav -->
+  <nav class="sub-nav">
+    <a href="architecture.html">Architecture</a>
+    <a href="agents.html">Agents</a>
+    <a href="deployment.html" class="active">Deployment</a>
+    <a href="signals.html">Signals</a>
+    <a href="dogfood.html">Dogfood</a>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="kicker">Deployment Guide</div>
+    <h1>Ship It for <span class="accent">$0/month</span></h1>
+    <p class="subtitle">Intent's MCP servers run on FastMCP Cloud's free tier, Cloudflare Workers, or your local machine. Zero infrastructure cost, auto-deploy on push.</p>
+  </div>
+
+  <!-- ===== Section 1: Fastest Path ===== -->
+  <div class="labeled-divider"><hr><span class="label">Fastest Path</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="section-num">01</div>
+    <h2 class="section-title">FastMCP Cloud <span class="hl-green">(Free)</span></h2>
+    <p class="section-body">Push your servers to GitHub, point FastMCP Cloud at them, and you're live. Auto-redeploys on every push to main.</p>
+
+    <div class="step-grid">
+      <div class="step-card active">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Push servers to your repo</h4>
+          <p>Copy <code>servers/</code> to your intent repo root and push to GitHub.</p>
+        </div>
+      </div>
+      <div class="step-card active">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Sign in to FastMCP Cloud</h4>
+          <p>Go to <code>fastmcp.cloud</code> and authenticate with your GitHub account.</p>
+        </div>
+      </div>
+      <div class="step-card active">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Create three projects</h4>
+          <p>One per server: <code>intent-notice</code> &rarr; servers/notice.py, <code>intent-spec</code> &rarr; servers/spec.py, <code>intent-observe</code> &rarr; servers/observe.py</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="url-grid">
+      <div class="url-card notice">
+        <div class="server-name">intent-notice</div>
+        <div class="url">https://intent-notice.fastmcp.cloud/mcp</div>
+      </div>
+      <div class="url-card spec">
+        <div class="server-name">intent-spec</div>
+        <div class="url">https://intent-spec.fastmcp.cloud/mcp</div>
+      </div>
+      <div class="url-card observe">
+        <div class="server-name">intent-observe</div>
+        <div class="url">https://intent-observe.fastmcp.cloud/mcp</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p><span class="highlight">Total cost: $0/month</span> on FastMCP Cloud free tier or Cloudflare Workers (100K req/day).</p>
+    </div>
+  </section>
+
+  <!-- ===== Section 2: Claude Code Config ===== -->
+  <div class="labeled-divider"><hr><span class="label">Connect</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="section-num">02</div>
+    <h2 class="section-title">Connect to <span class="hl-blue">Claude Code</span></h2>
+    <p class="section-body">Add the servers to your project's Claude Code settings. Each server gets a URL endpoint that Claude Code calls through MCP.</p>
+
+    <div class="code-block">
+      <div class="label">.claude/settings.json</div>
+<pre>{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"intent-notice"</span>: {
+      <span class="key">"type"</span>: <span class="value">"url"</span>,
+      <span class="key">"url"</span>: <span class="string">"https://intent-notice.fastmcp.cloud/mcp"</span>
+    },
+    <span class="key">"intent-spec"</span>: {
+      <span class="key">"type"</span>: <span class="value">"url"</span>,
+      <span class="key">"url"</span>: <span class="string">"https://intent-spec.fastmcp.cloud/mcp"</span>
+    },
+    <span class="key">"intent-observe"</span>: {
+      <span class="key">"type"</span>: <span class="value">"url"</span>,
+      <span class="key">"url"</span>: <span class="string">"https://intent-observe.fastmcp.cloud/mcp"</span>
+    }
+  }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ===== Section 3: Local Dev ===== -->
+  <div class="labeled-divider"><hr><span class="label">Local Dev</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="section-num">03</div>
+    <h2 class="section-title">Local <span class="hl">Development</span></h2>
+    <p class="section-body">Run all three servers locally for development and testing. Each gets its own port. Point Claude Code at localhost.</p>
+
+    <div class="code-block">
+      <div class="label">Terminal Setup</div>
+<pre><span class="cmd">pip install</span> fastmcp
+
+<span class="comment"># Three terminals:</span>
+<span class="cmd">fastmcp run</span> servers/notice.py <span class="string">--transport streamable-http --port 8001</span>
+<span class="cmd">fastmcp run</span> servers/spec.py <span class="string">--transport streamable-http --port 8002</span>
+<span class="cmd">fastmcp run</span> servers/observe.py <span class="string">--transport streamable-http --port 8003</span></pre>
+    </div>
+
+    <p class="section-body">Point Claude Code at <code style="font-family: 'SF Mono', monospace; font-size: 13px; color: #93c5fd; background: #3b82f612; padding: 2px 6px; border-radius: 3px;">http://localhost:800X/mcp</code> for each server.</p>
+  </section>
+
+  <!-- ===== Section 4: Platforms ===== -->
+  <div class="labeled-divider"><hr><span class="label">Alternatives</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="section-num">04</div>
+    <h2 class="section-title">Alternative <span class="hl-purple">Platforms</span></h2>
+    <p class="section-body">FastMCP Cloud is the fastest path, but Intent's servers are standard Python &mdash; they run anywhere.</p>
+
+    <table class="platform-table">
+      <thead>
+        <tr><th>Platform</th><th>Free Tier</th><th>Best For</th></tr>
+      </thead>
+      <tbody>
+        <tr class="recommended"><td>FastMCP Cloud</td><td>Unlimited (beta)</td><td>Fastest, zero config</td></tr>
+        <tr><td>Cloudflare Workers</td><td>100K req/day</td><td>Edge, stateless</td></tr>
+        <tr><td>Railway</td><td>$5 free credit</td><td>24/7, persistent state</td></tr>
+        <tr><td>Render</td><td>750 hrs/month</td><td>Containers</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== Section 5: Persistence ===== -->
+  <div class="labeled-divider"><hr><span class="label">Phase 4</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="section-num">05</div>
+    <h2 class="section-title">Persistence <span class="hl-green">(Phase 4)</span></h2>
+    <p class="section-body">Replace in-memory dicts with file I/O to the <code style="font-family: 'SF Mono', monospace; font-size: 13px; color: #93c5fd; background: #3b82f612; padding: 2px 6px; border-radius: 3px;">.intent/</code> directory. The servers already generate correct frontmatter format &mdash; the transition is swapping dict operations for file read/write + git commit.</p>
+
+    <div class="code-block">
+      <div class="label">Storage Layout</div>
+<pre><span class="comment"># Signals: read/write frontmatter + body</span>
+.intent/signals/*.md
+
+<span class="comment"># Specs: read/write frontmatter + sections</span>
+spec/SPEC-*.md
+
+<span class="comment"># Contracts: one file per contract</span>
+spec/contracts/CON-*.md
+
+<span class="comment"># Events: append-only JSONL</span>
+.intent/events/events.jsonl
+
+<span class="comment"># For cloud-hosted servers:</span>
+<span class="comment"># Use GitHub API for remote read/write</span></pre>
+    </div>
+
+    <div class="callout">
+      <p>The servers already generate correct frontmatter. The transition is: <span class="highlight">swap dict operations for file read/write + git commit</span>. Full audit trail lives in git history.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
+  </footer>
+
+  <!-- Scroll reveal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.scroll-section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.15 });
+      sections.forEach(s => observer.observe(s));
+    });
+  </script>
+
+</body>
+</html>

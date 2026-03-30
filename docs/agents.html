@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent — Subagent Definitions</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; }
+
+    /* Nav */
+    .site-nav { max-width: 900px; margin: 0 auto; padding: 20px 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #1e293b; flex-wrap: wrap; }
+    .site-nav .logo { font-weight: 700; font-size: 17px; color: #f1f5f9; text-decoration: none; letter-spacing: -0.5px; }
+    .site-nav .logo span { color: #3b82f6; }
+    .site-nav a { color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .site-nav a:hover, .site-nav a.active { color: #f1f5f9; }
+
+    /* Sub-nav */
+    .sub-nav { max-width: 900px; margin: 0 auto; padding: 10px 24px; display: flex; gap: 20px; border-bottom: 1px solid #1e293b20; flex-wrap: wrap; }
+    .sub-nav a { color: #64748b; text-decoration: none; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; transition: color 0.2s; }
+    .sub-nav a:hover, .sub-nav a.active { color: #3b82f6; }
+
+    /* Scroll sections */
+    .scroll-section {
+      max-width: 900px; margin: 0 auto; padding: 60px 24px;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-section.visible { opacity: 1; transform: translateY(0); }
+
+    /* Hero */
+    .hero { max-width: 900px; margin: 0 auto; padding: 60px 24px 20px; }
+    .hero .kicker { color: #a855f7; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+    .hero h1 { font-size: 38px; font-weight: 700; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 .accent { color: #3b82f6; }
+    .hero .subtitle { color: #94a3b8; font-size: 17px; max-width: 640px; line-height: 1.6; }
+
+    /* Section headings */
+    .section-title { font-size: 26px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 12px; }
+    .section-title .hl-blue { color: #3b82f6; }
+    .section-title .hl-amber { color: #f59e0b; }
+    .section-title .hl-purple { color: #a855f7; }
+    .section-body { color: #94a3b8; font-size: 15px; max-width: 640px; margin-bottom: 24px; }
+
+    /* Agent cards */
+    .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .agent-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; transition: border-color 0.2s; }
+    .agent-card:hover { border-color: #3b82f640; }
+    .agent-card .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .agent-card h3 { font-size: 17px; font-weight: 600; }
+    .agent-card .model-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.5px; }
+    .model-haiku { color: #10b981; background: #10b98118; }
+    .model-sonnet { color: #3b82f6; background: #3b82f618; }
+    .model-opus { color: #a855f7; background: #a855f718; }
+    .agent-card .phase-label { font-size: 11px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .agent-card .description { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 16px; }
+
+    /* Tool access pills */
+    .tool-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tool-pill { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #93c5fd; background: #3b82f612; border: 1px solid #3b82f625; padding: 2px 8px; border-radius: 4px; }
+
+    /* Workflow steps */
+    .workflow-list { list-style: none; counter-reset: step; margin: 16px 0; }
+    .workflow-list li { counter-increment: step; font-size: 14px; color: #cbd5e1; padding: 8px 0 8px 36px; position: relative; border-bottom: 1px solid #33415520; }
+    .workflow-list li:last-child { border-bottom: none; }
+    .workflow-list li::before { content: counter(step); position: absolute; left: 0; top: 8px; width: 24px; height: 24px; background: #3b82f618; color: #93c5fd; border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+    /* Coordinator card (full width) */
+    .coordinator-card { background: linear-gradient(135deg, #1e293b 0%, #253549 100%); border: 1px solid #334155; border-radius: 8px; padding: 32px; margin: 24px 0; }
+    .coordinator-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .coordinator-card .tagline { font-size: 14px; color: #f59e0b; font-weight: 500; margin-bottom: 16px; }
+    .coordinator-card .description { font-size: 15px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px; max-width: 640px; }
+
+    /* Model routing table */
+    .routing-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+    .routing-table th { text-align: left; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 10px 12px; border-bottom: 2px solid #334155; }
+    .routing-table td { padding: 10px 12px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
+    .routing-table td:first-child { font-weight: 600; color: #f1f5f9; }
+    .routing-table code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; }
+
+    /* Divider */
+    .labeled-divider { max-width: 900px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 16px; }
+    .labeled-divider hr { flex: 1; border: none; border-top: 1px solid #1e293b; }
+    .labeled-divider .label { color: #475569; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; }
+
+    footer { max-width: 900px; margin: 0 auto; padding: 32px 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+    footer a { color: #3b82f6; text-decoration: none; }
+
+    @media (max-width: 700px) {
+      .hero h1 { font-size: 28px; }
+      .agent-grid { grid-template-columns: 1fr; }
+      .site-nav { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="site-nav">
+    <a href="index.html" class="logo"><span>I</span>ntent</a>
+    <a href="pitch.html">Pitch</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="concept-brief.html">Concept Brief</a>
+    <a href="work-system.html">Work System</a>
+    <a href="flow-diagram.html">Flow</a>
+    <a href="schemas.html">Schemas</a>
+    <a href="arb.html">ARB</a>
+    <a href="roadmap.html">Roadmap</a>
+  </nav>
+
+  <!-- Technical sub-nav -->
+  <nav class="sub-nav">
+    <a href="architecture.html">Architecture</a>
+    <a href="agents.html" class="active">Agents</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="signals.html">Signals</a>
+    <a href="dogfood.html">Dogfood</a>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="kicker">Agent Definitions</div>
+    <h1>Six <span class="accent">Subagents</span>, One Loop</h1>
+    <p class="subtitle">Each agent maps to a phase of the Intent loop. They connect to MCP servers through scoped tool access, use model routing for cost efficiency, and never do each other's work.</p>
+  </div>
+
+  <!-- ===== Phase Agents ===== -->
+  <div class="labeled-divider"><hr><span class="label">Notice Phase</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="agent-grid">
+
+      <!-- Signal Capture -->
+      <div class="agent-card">
+        <div class="card-top">
+          <h3>signal-capture</h3>
+          <span class="model-badge model-haiku">Haiku</span>
+        </div>
+        <div class="phase-label">Notice &mdash; Capture</div>
+        <p class="description">Captures raw signals and computes trust scores. Use when noticing something worth tracking &mdash; decisions, risks, requirements, patterns, observations from conversations, code, or agent traces.</p>
+        <p class="description">Every signal needs clear, specific content (not vague summaries), a source attribution, honest trust factor scoring, and a confidence assessment. A single meeting might produce 3&ndash;8 signals of different types.</p>
+        <div class="tool-pills">
+          <span class="tool-pill">create_signal</span>
+          <span class="tool-pill">list_signals</span>
+          <span class="tool-pill">get_signal</span>
+          <span class="tool-pill">Read</span>
+          <span class="tool-pill">Bash</span>
+        </div>
+      </div>
+
+      <!-- Signal Enricher -->
+      <div class="agent-card">
+        <div class="card-top">
+          <h3>signal-enricher</h3>
+          <span class="model-badge model-sonnet">Sonnet</span>
+        </div>
+        <div class="phase-label">Notice &mdash; Enrich</div>
+        <p class="description">Enriches signals: rescores trust, clusters related signals, manages amplification, and promotes clusters to intents. Use when signals need analysis, grouping, or elevation to problems worth solving.</p>
+        <ol class="workflow-list">
+          <li>Review unclustered signals (status: captured or active)</li>
+          <li>Rescore trust if new information warrants it</li>
+          <li>Cluster signals that share emergent themes</li>
+          <li>Promote clusters that reveal a problem worth solving</li>
+          <li>Dismiss signals that are stale, duplicate, or irrelevant</li>
+        </ol>
+        <div class="tool-pills">
+          <span class="tool-pill">score_trust</span>
+          <span class="tool-pill">cluster_signals</span>
+          <span class="tool-pill">promote_to_intent</span>
+          <span class="tool-pill">add_reference</span>
+          <span class="tool-pill">dismiss_signal</span>
+          <span class="tool-pill">list_signals</span>
+          <span class="tool-pill">get_signal</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== Spec Phase ===== -->
+  <div class="labeled-divider"><hr><span class="label">Spec Phase</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="agent-grid">
+
+      <!-- Spec Writer -->
+      <div class="agent-card">
+        <div class="card-top">
+          <h3>spec-writer</h3>
+          <span class="model-badge model-sonnet">Sonnet</span>
+        </div>
+        <div class="phase-label">Spec &mdash; Author</div>
+        <p class="description">Creates specifications and contracts from intents. Specs are contracts, not stories &mdash; precise enough that an AI agent can execute against them autonomously.</p>
+        <p class="description">Every spec needs a problem statement grounded in signal evidence (cite SIG-NNN IDs), solution description, contracts (4 types), testable acceptance criteria, explicit out-of-scope boundaries, and test scenarios.</p>
+        <div class="tool-pills">
+          <span class="tool-pill">create_spec</span>
+          <span class="tool-pill">create_contract</span>
+          <span class="tool-pill">assess_agent_readiness</span>
+          <span class="tool-pill">get_spec</span>
+          <span class="tool-pill">list_specs</span>
+          <span class="tool-pill">get_signal</span>
+          <span class="tool-pill">Read</span>
+          <span class="tool-pill">Write</span>
+          <span class="tool-pill">Bash</span>
+        </div>
+      </div>
+
+      <!-- Contract Verifier -->
+      <div class="agent-card">
+        <div class="card-top">
+          <h3>contract-verifier</h3>
+          <span class="model-badge model-sonnet">Sonnet</span>
+        </div>
+        <div class="phase-label">Execute &mdash; Verify</div>
+        <p class="description">Verifies contracts against implementation. Runs verification commands, inspects outputs, records results. The quality gate between execution and completion.</p>
+        <p class="description">Critical severity failures block completion. Major severity failures flag for review. Minor severity failures are noted but don't block.</p>
+        <div class="tool-pills">
+          <span class="tool-pill">verify_contract</span>
+          <span class="tool-pill">get_spec</span>
+          <span class="tool-pill">list_specs</span>
+          <span class="tool-pill">ingest_event</span>
+          <span class="tool-pill">Read</span>
+          <span class="tool-pill">Bash</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== Observe Phase ===== -->
+  <div class="labeled-divider"><hr><span class="label">Observe Phase</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="agent-grid">
+
+      <!-- Observer -->
+      <div class="agent-card">
+        <div class="card-top">
+          <h3>observer</h3>
+          <span class="model-badge model-sonnet">Sonnet</span>
+        </div>
+        <div class="phase-label">Observe &mdash; Close the Loop</div>
+        <p class="description">Monitors the system, detects deltas, and closes the loop by suggesting new signals from event patterns. The critical feedback mechanism.</p>
+        <p class="description">Watch for: repeated contract failures, unclustered signal backlogs, specs with no contract verifications, and trust boundary crossings.</p>
+        <div class="tool-pills">
+          <span class="tool-pill">ingest_event</span>
+          <span class="tool-pill">detect_spec_delta</span>
+          <span class="tool-pill">detect_trust_drift</span>
+          <span class="tool-pill">system_health</span>
+          <span class="tool-pill">suggest_signals_from_events</span>
+          <span class="tool-pill">Read</span>
+          <span class="tool-pill">Bash</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== Coordinator ===== -->
+  <div class="labeled-divider"><hr><span class="label">Orchestration</span><hr></div>
+
+  <section class="scroll-section">
+    <div class="coordinator-card">
+      <h3>coordinator</h3>
+      <div class="tagline">Orchestrates the full Intent loop across all agents</div>
+      <p class="description">The coordinator plans, delegates, and synthesizes. It never does the work itself. It routes to the right agent, in the right order, with the right model. Start every session by asking the observer for system_health to understand the current pipeline state.</p>
+
+      <h2 class="section-title" style="margin-top: 24px;">Model <span class="hl-amber">Routing</span></h2>
+      <p class="section-body">Cost efficiency through intelligent model selection. Fast, cheap models for simple capture. Reasoning models for judgment calls.</p>
+
+      <table class="routing-table">
+        <thead>
+          <tr><th>Agent</th><th>Model</th><th>Rationale</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>signal-capture</td><td><code style="color: #10b981;">Haiku</code></td><td>Cheap, fast &mdash; simple capture and trust scoring</td></tr>
+          <tr><td>signal-enricher</td><td><code style="color: #3b82f6;">Sonnet</code></td><td>Needs reasoning for clustering and promotion decisions</td></tr>
+          <tr><td>spec-writer</td><td><code style="color: #3b82f6;">Sonnet</code></td><td>Needs precision for contract definition and completeness</td></tr>
+          <tr><td>contract-verifier</td><td><code style="color: #3b82f6;">Sonnet</code></td><td>Needs judgment for verification result interpretation</td></tr>
+          <tr><td>observer</td><td><code style="color: #3b82f6;">Sonnet</code></td><td>Needs pattern detection for delta and drift analysis</td></tr>
+          <tr><td>coordinator</td><td><code style="color: #a855f7;">Opus</code></td><td>Orchestration requires highest reasoning capability</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
+  </footer>
+
+  <!-- Scroll reveal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.scroll-section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.15 });
+      sections.forEach(s => observer.observe(s));
+    });
+  </script>
+
+</body>
+</html>

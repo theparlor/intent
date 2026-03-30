@@ -1,48 +1,42 @@
-# Intent Artifacts
+---
+title: Readme
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-29
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.5
+  content_chars: 1138
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.00
+---
+# Artifacts
 
-Visual and interactive explorations of the Intent work system.
+> Visual and interactive materials.
 
-## Artifacts
+Design artifacts, interactive briefs, diagrams, and presentation materials that support the Intent concept.
 
-1. **intent-visual-brief** (intent-visual-brief.html)
-   - A one-page visual summary of Intent
-   - Seven-unit work ontology (Signal → Intent → Spec → Contract → Capability → Feature → Product)
-   - Three governance dimensions (Right Things, Right Time, Right Way)
-   - Agent workflow model
+---
 
-2. **intent-native-repos** (native-repos.html)
-   - A guide to structuring repositories for Intent
-   - Signal capture (.intent/signals/)
-   - Intent and Spec definitions
-   - Capability atomization
-   - Observable work (git log, CI/CD integration)
+## Contents
 
-3. **intent-work-system** (work-system.html)
-   - The full interactive work system explorer
-   - Tabbed interface for exploring each dimension
-   - Dashboard mockup showing team capability health
-   - Side-by-side Agile ↔ Intent comparison
-   - Click-to-expand detail cards for each work unit
+- **intent-visual-brief.jsx** — Interactive React artifact with seven sections: Problem cascade, Core Loop, Stack positioning, Audience personas, GTM evolution, Hypotheses, and Competitive landscape.
+- **intent-native-repos.jsx** — Interactive guide to adopting Intent across repos: repo template structure, adoption tiers (Observable → Intentional → Autonomous → Self-Observing), and the Entire.io → Spec feedback loop design.
+- **intent-work-system.jsx** — The agent-native work ontology: Signal → Intent → Spec → Contract → Capability → Feature → Product. Includes three governance dimensions (right thing, right time, right way), agent flow model, dashboard mockup, and Agile → Intent comparison table.
 
-## Viewing Options
+---
 
-### GitHub Pages
-All artifacts are live at [theparlor/intent](https://github.com/theparlor/intent):
-- [Visual Brief](https://theparlor.github.io/intent/visual-brief.html)
-- [Native Repos](https://theparlor.github.io/intent/native-repos.html)
-- [Work System](https://theparlor.github.io/intent/work-system.html)
+## Viewing
 
-### Local Development
-```bash
-cd docs
-python3 -m http.server 8000
-```
-Then visit `http://localhost:8000`
+These JSX artifacts render as interactive React components. View them live:
 
-### Claude / Cowork
-- Paste `artifacts/intent-work-system.jsx` into a Claude canvas for interactive editing
-- Use Cowork's artifact system for rapid iteration
-
-## Navigation
-
-All pages include a back-link to `index.html` for easy navigation between artifacts.
+- **GitHub Pages:** [theparlor.github.io/intent](https://theparlor.github.io/intent)
+- **In Claude/Cowork:** Open the .jsx file directly as an artifact

@@ -1,3 +1,33 @@
+---
+title: Concept Review Findings
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-29
+thought_leaders:
+  - marty-cagan
+  - jeff-patton
+  - teresa-torres
+depth_score: 4
+depth_signals:
+  file_size_kb: 2.9
+  content_chars: 2188
+  entity_count: 3
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.91
+related_entities:
+  - {pair: consulting-operations ↔ subaru, count: 571, strength: 0.387}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 558, strength: 0.378}
+  - {pair: consulting-operations ↔ engagement-management, count: 483, strength: 0.327}
+  - {pair: consulting-operations ↔ turnberry, count: 321, strength: 0.201}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.17}
+---
 # Concept Brief Quality Review
 
 > **Date:** 2026-03-28

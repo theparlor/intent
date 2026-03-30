@@ -1,16 +1,12 @@
 ---
 id: SIG-001
-timestamp: 2026-03-28T12:00:00Z
+date: 2026-03-28
 source: cowork-session
-author: brien
-confidence: 0.9
-trust: 0.15
-autonomy_level: L0
-status: active
-cluster: work-ontology-design
-parent_signal:
+confidence: high
 related_intents: []
+status: new
 ---
+
 # Signal: Intent needs a formal work ontology
 
 ## Observation

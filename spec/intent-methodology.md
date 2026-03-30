@@ -3,9 +3,27 @@ title: Intent Methodology
 type: spec
 maturity: draft
 created: 2026-03-28
+thought_leaders:
+  - jeff-patton
+  - teresa-torres
 summary: "A spec-driven SDLC for the AI-augmented practitioner. Replaces Agile ceremony overhead with a continuous loop — notice, spec, execute, observe — where specification quality is the bottleneck, not delivery velocity."
+depth_score: 5
+depth_signals:
+  file_size_kb: 9.5
+  content_chars: 8223
+  entity_count: 2
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 1
+vocab_density: 0.62
+related_entities:
+  - {pair: teresa-torres ↔ marty-cagan, count: 26, strength: 0.182}
+  - {pair: jeff-patton ↔ consulting-operations, count: 24, strength: 0.016}
+  - {pair: teresa-torres ↔ consulting-operations, count: 24, strength: 0.016}
+  - {pair: jeff-patton ↔ marty-cagan, count: 21, strength: 0.15}
+  - {pair: jeff-patton ↔ teresa-torres, count: 16, strength: 0.308}
 ---
-
 # Intent Methodology
 
 > **Purpose**: How work flows from idea to running software when AI collapses implementation to hours.

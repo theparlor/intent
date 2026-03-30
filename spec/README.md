@@ -1,3 +1,23 @@
+---
+title: Readme
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-29
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.5
+  content_chars: 1232
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.00
+---
 # Spec
 
 > Shaped specifications — the team's highest-leverage work.

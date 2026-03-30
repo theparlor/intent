@@ -1,3 +1,33 @@
+---
+title: Ari Conversation
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-29
+technologies:
+  - jira
+thought_leaders:
+  - marty-cagan
+depth_score: 3
+depth_signals:
+  file_size_kb: 2.4
+  content_chars: 1650
+  entity_count: 2
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 1.21
+related_entities:
+  - {pair: consulting-operations ↔ subaru, count: 571, strength: 0.387}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 558, strength: 0.378}
+  - {pair: consulting-operations ↔ engagement-management, count: 483, strength: 0.327}
+  - {pair: consulting-operations ↔ turnberry, count: 321, strength: 0.201}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.17}
+---
 # The Ari Conversation — Primary Signal
 
 > **Date:** 2026-03-28

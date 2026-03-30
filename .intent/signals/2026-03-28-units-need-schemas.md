@@ -1,16 +1,12 @@
 ---
 id: SIG-005
-timestamp: 2026-03-28T12:00:00Z
+date: 2026-03-28
 source: cowork-session
-author: brien
-confidence: 0.6
-trust: 0.5
-autonomy_level: L2
-status: active
-cluster: work-ontology-design
-parent_signal:
+confidence: medium
 related_intents: []
+status: new
 ---
+
 # Signal: Work units need formal schemas to be agent-consumable
 
 ## Observation
@@ -34,4 +30,4 @@ Design the formal schemas for each unit type. Start with Contract (the atom) and
 
 ## Open Question
 
-What’s the right balance between structured YAML (easy for agents) and readable markdown (easy for humans)? YAML frontmatter + markdown body may be the right hybrid.
+What's the right balance between structured YAML (easy for agents) and readable markdown (easy for humans)? YAML frontmatter + markdown body may be the right hybrid.
