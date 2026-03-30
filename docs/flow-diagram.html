@@ -5,6 +5,185 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flow Diagram - Intent</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ================================================
+           Flow Diagram — Page-specific styles
+           ================================================ */
+
+        /* SVG Loop Diagram */
+        .loop-diagram-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 3rem 0 2rem;
+        }
+        .loop-diagram-wrapper svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .loop-diagram-wrapper svg text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* Phase Detail Cards — 2x2 grid */
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 640px) {
+            .phase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .phase-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .phase-card:hover {
+            transform: translateY(-2px);
+        }
+        .phase-card.notice  { border-left: 4px solid var(--accent-amber); }
+        .phase-card.spec    { border-left: 4px solid var(--accent-blue); }
+        .phase-card.execute { border-left: 4px solid var(--accent-green); }
+        .phase-card.observe { border-left: 4px solid var(--accent-purple); }
+
+        .phase-card:hover.notice  { border-color: var(--accent-amber); }
+        .phase-card:hover.spec    { border-color: var(--accent-blue); }
+        .phase-card:hover.execute { border-color: var(--accent-green); }
+        .phase-card:hover.observe { border-color: var(--accent-purple); }
+
+        .phase-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .phase-card.notice h3  { color: var(--accent-amber); }
+        .phase-card.spec h3    { color: var(--accent-blue); }
+        .phase-card.execute h3 { color: var(--accent-green); }
+        .phase-card.observe h3 { color: var(--accent-purple); }
+
+        .phase-card .tagline {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .phase-card .detail-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .phase-card .detail-label {
+            color: var(--text-dim);
+            font-weight: 600;
+            min-width: 60px;
+            flex-shrink: 0;
+        }
+        .phase-card .detail-value {
+            color: var(--text-muted);
+        }
+        .phase-card .detail-value code {
+            font-size: 0.8rem;
+        }
+
+        /* Loop Properties — horizontal strip */
+        .loop-props {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 640px) {
+            .loop-props {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .loop-prop {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .loop-prop:hover {
+            border-color: var(--accent-blue);
+        }
+        .loop-prop .prop-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .loop-prop h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.35rem;
+        }
+        .loop-prop p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Work Ontology Connection */
+        .ontology-flow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1.25rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .ontology-node {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .ontology-node.signal   { background: rgba(245,158,11,0.12); color: var(--accent-amber); }
+        .ontology-node.intent   { background: rgba(59,130,246,0.12); color: var(--accent-blue); }
+        .ontology-node.spec     { background: rgba(59,130,246,0.12); color: var(--accent-blue); }
+        .ontology-node.contract { background: rgba(16,185,129,0.12); color: var(--accent-green); }
+        .ontology-node.cap      { background: rgba(139,92,246,0.12); color: var(--accent-purple); }
+        .ontology-node.feature  { background: rgba(139,92,246,0.12); color: var(--accent-purple); }
+        .ontology-node.product  { background: rgba(241,245,249,0.08); color: var(--text); }
+        .ontology-arrow {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* SVG arrow animation */
+        @keyframes dashFlow {
+            to { stroke-dashoffset: -20; }
+        }
+        .arrow-animated {
+            stroke-dasharray: 8 6;
+            animation: dashFlow 1.2s linear infinite;
+        }
+
+        /* Center label pulse */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 0.85; }
+            50% { opacity: 1; }
+        }
+        .center-label {
+            animation: subtlePulse 3s ease-in-out infinite;
+        }
+    </style>
 </head>
 <body>
     <nav class="site-nav">
@@ -22,24 +201,237 @@
         <a href="event-catalog.html">Events</a>
     </nav>
 
-    <header class="page-header">
-        <div class="container">
-            <h1>Flow Diagram</h1>
-            <p class="subtitle">Visual representation of the Intent loop</p>
-        </div>
-    </header>
+    <!-- Hero -->
+    <div class="hero-page">
+        <div class="kicker" style="color: var(--accent-blue);">The System &mdash; Flow</div>
+        <h1>The Intent <span class="accent">Loop</span></h1>
+        <p class="subtitle">A continuous cycle with no sprint boundaries. Work flows from noticing a signal through specifying, executing, and observing &mdash; then back again. Every transition emits an event.</p>
+    </div>
 
-    <main class="container">
-        <section class="flow-diagram">
-            <p>
-                The notice→spec→execute→observe loop is the core of Intent. Each phase feeds into the next, creating a continuous cycle of improvement.
-            </p>
-        </section>
-    </main>
+    <!-- Labeled divider -->
+    <div class="labeled-divider">
+        <hr><span class="label">Loop Diagram</span><hr>
+    </div>
+
+    <!-- SVG Loop Diagram -->
+    <div class="loop-diagram-wrapper" style="max-width:900px; margin:0 auto; padding:40px 24px 20px;">
+        <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Intent loop diagram showing four phases: Notice, Spec, Execute, Observe arranged in a clockwise cycle.">
+            <!-- Definitions -->
+            <defs>
+                <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#f59e0b"/>
+                </marker>
+                <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#3b82f6"/>
+                </marker>
+                <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#10b981"/>
+                </marker>
+                <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#8b5cf6"/>
+                </marker>
+                <filter id="glow-amber"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#f59e0b" flood-opacity="0.3"/></filter>
+                <filter id="glow-blue"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#3b82f6" flood-opacity="0.3"/></filter>
+                <filter id="glow-green"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#10b981" flood-opacity="0.3"/></filter>
+                <filter id="glow-purple"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#8b5cf6" flood-opacity="0.3"/></filter>
+            </defs>
+
+            <!-- Background circle track -->
+            <circle cx="280" cy="280" r="180" fill="none" stroke="#1e293b" stroke-width="2" stroke-dasharray="6 4" opacity="0.6"/>
+
+            <!-- Center label -->
+            <text x="280" y="270" text-anchor="middle" class="center-label" fill="#f1f5f9" font-size="28" font-weight="800" letter-spacing="-1">Intent</text>
+            <text x="280" y="295" text-anchor="middle" fill="#64748b" font-size="12" font-weight="500" letter-spacing="1">CONTINUOUS LOOP</text>
+
+            <!-- Phase boxes — clockwise from top: Notice, Spec, Execute, Observe -->
+
+            <!-- NOTICE (top) -->
+            <rect x="200" y="28" width="160" height="72" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2" filter="url(#glow-amber)"/>
+            <text x="280" y="58" text-anchor="middle" fill="#f59e0b" font-size="16" font-weight="700">Notice</text>
+            <text x="280" y="80" text-anchor="middle" fill="#94a3b8" font-size="11">Capture signals</text>
+
+            <!-- SPEC (right) -->
+            <rect x="400" y="244" width="160" height="72" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="2" filter="url(#glow-blue)"/>
+            <text x="480" y="274" text-anchor="middle" fill="#3b82f6" font-size="16" font-weight="700">Spec</text>
+            <text x="480" y="296" text-anchor="middle" fill="#94a3b8" font-size="11">Shape into contracts</text>
+
+            <!-- EXECUTE (bottom) -->
+            <rect x="200" y="460" width="160" height="72" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2" filter="url(#glow-green)"/>
+            <text x="280" y="490" text-anchor="middle" fill="#10b981" font-size="16" font-weight="700">Execute</text>
+            <text x="280" y="512" text-anchor="middle" fill="#94a3b8" font-size="11">Agents implement</text>
+
+            <!-- OBSERVE (left) -->
+            <rect x="0" y="244" width="160" height="72" rx="12" fill="#1e293b" stroke="#8b5cf6" stroke-width="2" filter="url(#glow-purple)"/>
+            <text x="80" y="274" text-anchor="middle" fill="#8b5cf6" font-size="16" font-weight="700">Observe</text>
+            <text x="80" y="296" text-anchor="middle" fill="#94a3b8" font-size="11">Measure outcomes</text>
+
+            <!-- Connecting arrows (clockwise) -->
+            <!-- Notice → Spec (top-right arc) -->
+            <path d="M 360,72 Q 440,100 440,244" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-amber)" class="arrow-animated"/>
+
+            <!-- Spec → Execute (bottom-right arc) -->
+            <path d="M 440,316 Q 440,420 360,460" fill="none" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)" class="arrow-animated"/>
+
+            <!-- Execute → Observe (bottom-left arc) -->
+            <path d="M 200,496 Q 120,460 120,316" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)" class="arrow-animated"/>
+
+            <!-- Observe → Notice (top-left arc) -->
+            <path d="M 120,244 Q 120,140 200,100" fill="none" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrow-purple)" class="arrow-animated"/>
+        </svg>
+    </div>
+
+    <!-- Labeled divider -->
+    <div class="labeled-divider">
+        <hr><span class="label">Phase Details</span><hr>
+    </div>
+
+    <!-- Phase Detail Cards -->
+    <div style="max-width:900px; margin:0 auto; padding:32px 24px 0;">
+        <div class="phase-grid">
+            <!-- Notice -->
+            <div class="phase-card notice">
+                <h3>Notice</h3>
+                <p class="tagline">Capture signals from anywhere practitioners work.</p>
+                <div class="detail-row">
+                    <span class="detail-label">Inputs</span>
+                    <span class="detail-value">Error logs, conversations, PR reviews, user feedback</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Output</span>
+                    <span class="detail-value">Signal (scored with confidence + trust)</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Tool</span>
+                    <span class="detail-value"><code>intent-signal</code></span>
+                </div>
+            </div>
+
+            <!-- Spec -->
+            <div class="phase-card spec">
+                <h3>Spec</h3>
+                <p class="tagline">Shape signals into agent-ready specifications.</p>
+                <div class="detail-row">
+                    <span class="detail-label">Inputs</span>
+                    <span class="detail-value">Signals, codebase context, domain knowledge</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Output</span>
+                    <span class="detail-value">Spec with verifiable contracts</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Tool</span>
+                    <span class="detail-value"><code>intent-spec</code></span>
+                </div>
+            </div>
+
+            <!-- Execute -->
+            <div class="phase-card execute">
+                <h3>Execute</h3>
+                <p class="tagline">Agents implement against approved specs.</p>
+                <div class="detail-row">
+                    <span class="detail-label">Inputs</span>
+                    <span class="detail-value">Approved spec with contracts</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Output</span>
+                    <span class="detail-value">Artifacts, code, configuration</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Tool</span>
+                    <span class="detail-value">Claude Code, GitHub Actions</span>
+                </div>
+            </div>
+
+            <!-- Observe -->
+            <div class="phase-card observe">
+                <h3>Observe</h3>
+                <p class="tagline">Measure outcomes and capture learnings.</p>
+                <div class="detail-row">
+                    <span class="detail-label">Inputs</span>
+                    <span class="detail-value">Execution results, runtime telemetry</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Output</span>
+                    <span class="detail-value">Events, dashboards, new signals</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Tool</span>
+                    <span class="detail-value"><code>events.jsonl</code>, dashboards</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Labeled divider -->
+    <div class="labeled-divider" style="margin-top:48px;">
+        <hr><span class="label">Loop Properties</span><hr>
+    </div>
+
+    <!-- Loop Properties -->
+    <div style="max-width:900px; margin:0 auto; padding:32px 24px 0;">
+        <div class="loop-props">
+            <div class="loop-prop">
+                <span class="prop-icon" style="color: var(--accent-amber);">&#8734;</span>
+                <h4>Continuous</h4>
+                <p>No sprint boundaries. Work flows when it's ready, not on a two-week cadence.</p>
+            </div>
+            <div class="loop-prop">
+                <span class="prop-icon" style="color: var(--accent-blue);">&#9201;</span>
+                <h4>Multi-speed</h4>
+                <p>Minutes for a hotfix signal. Weeks for a strategic capability. Same loop.</p>
+            </div>
+            <div class="loop-prop">
+                <span class="prop-icon" style="color: var(--accent-green);">&#9678;</span>
+                <h4>Observable</h4>
+                <p>Every phase transition emits an OTel-compatible event to <code>events.jsonl</code>.</p>
+            </div>
+            <div class="loop-prop">
+                <span class="prop-icon" style="color: var(--accent-purple);">&#9881;</span>
+                <h4>Agent-native</h4>
+                <p>Specs are executable contracts, not prose stories. Agents can act on them directly.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Labeled divider -->
+    <div class="labeled-divider" style="margin-top:48px;">
+        <hr><span class="label">Work Ontology</span><hr>
+    </div>
+
+    <!-- Work Ontology Connection -->
+    <div style="max-width:900px; margin:0 auto; padding:32px 24px 0;">
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.25rem;">
+            The loop operates on a seven-level work ontology. Each level has a clear owner, clear transitions, and emits events when work crosses a boundary. Signals flow up from raw observations into shipped products.
+        </p>
+        <div class="ontology-flow">
+            <span class="ontology-node signal">Signals</span>
+            <span class="ontology-arrow">&rarr;</span>
+            <span class="ontology-node intent">Intents</span>
+            <span class="ontology-arrow">&rarr;</span>
+            <span class="ontology-node spec">Specs</span>
+            <span class="ontology-arrow">+</span>
+            <span class="ontology-node contract">Contracts</span>
+            <span class="ontology-arrow">&rarr;</span>
+            <span class="ontology-node cap">Capabilities</span>
+            <span class="ontology-arrow">&rarr;</span>
+            <span class="ontology-node feature">Features</span>
+            <span class="ontology-arrow">&rarr;</span>
+            <span class="ontology-node product">Products</span>
+        </div>
+        <p style="color: var(--text-dim); font-size: 0.82rem; margin-top: 0.75rem;">
+            Notice captures <strong style="color:var(--accent-amber);">Signals</strong>.
+            Spec shapes them into <strong style="color:var(--accent-blue);">Intents</strong>, <strong style="color:var(--accent-blue);">Specs</strong>, and <strong style="color:var(--accent-green);">Contracts</strong>.
+            Execute builds <strong style="color:var(--accent-purple);">Capabilities</strong> and <strong style="color:var(--accent-purple);">Features</strong>.
+            Observe measures the <strong style="color:var(--text);">Product</strong> and feeds new signals back in.
+        </p>
+    </div>
+
+    <!-- Spacer before footer -->
+    <div style="height: 48px;"></div>
 
     <footer>
         <div class="container">
-            <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> · Built with the Intent methodology</p>
+            <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
         </div>
     </footer>
 </body>
