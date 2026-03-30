@@ -9,13 +9,14 @@
 <body>
     <nav class="site-nav">
         <a href="index.html" class="logo"><span>I</span>ntent</a>
-        <a href="index.html">Home</a>
+        <a href="pitch.html">Pitch</a>
         <a href="methodology.html" class="active">Methodology</a>
         <a href="concept-brief.html">Concept Brief</a>
-        <a href="signals.html">Signals</a>
-        <a href="decisions.html">Decisions</a>
+        <a href="work-system.html">Work System</a>
+        <a href="flow-diagram.html">Flow</a>
         <a href="schemas.html">Schemas</a>
         <a href="arb.html">ARB</a>
+        <a href="dogfood.html">Dogfood</a>
         <a href="roadmap.html">Roadmap</a>
     </nav>
 
@@ -129,11 +130,83 @@
                 <strong>Observe:</strong> The first run posts to Slack. You notice it's missing one field. You update the spec. You execute again. Repeat until it's perfect. Now every Friday it runs automatically.
             </p>
         </section>
+
+        <section class="two-plane-architecture">
+            <h2>Two-Plane Architecture</h2>
+            <p>
+                Intent operates across two independent planes that interact through persistent artifacts.
+            </p>
+
+            <h3>Work Stream Plane</h3>
+            <p>
+                The work stream plane contains ephemeral flow entities that move through the notice→spec→execute→observe cycle:
+            </p>
+            <ul>
+                <li><strong>Signal:</strong> A noticed friction point or opportunity</li>
+                <li><strong>Intent:</strong> The framing of what needs to be addressed</li>
+                <li><strong>Atom:</strong> An execution envelope that references specs and contracts, containing the work and its outcomes</li>
+                <li><strong>Event:</strong> Observable facts about execution (success, failure, metrics)</li>
+                <li><strong>Trace:</strong> The recorded history of execution and observation</li>
+            </ul>
+            <p>
+                These entities flow through the system, grow, transform, and eventually complete. They're temporary by design—they exist to drive work.
+            </p>
+
+            <h3>Ownership Topology Plane</h3>
+            <p>
+                The ownership topology plane contains persistent structures that organize ongoing responsibility:
+            </p>
+            <ul>
+                <li><strong>Product:</strong> A coherent system or offering</li>
+                <li><strong>Capability:</strong> A bundle of skills, patterns, and tools</li>
+                <li><strong>Team:</strong> The people who own and evolve the product</li>
+            </ul>
+            <p>
+                These structures are stable and intentional. They define who is responsible for what and how work gets organized.
+            </p>
+
+            <h3>Bridging Artifacts</h3>
+            <p>
+                Two independent persistent artifacts bridge the two planes:
+            </p>
+            <ul>
+                <li><strong>Spec:</strong> A problem statement with constraints and success criteria. Specs are authored in the ownership plane but consumed by atoms in the work stream plane. A spec persists across multiple atoms—it defines the shape of work.</li>
+                <li><strong>Contract:</strong> An agreement about ownership, governance, and resource allocation. Contracts bind teams to products and capabilities. They persist independently and guide how work gets authorized and executed.</li>
+            </ul>
+            <p>
+                Atoms reference specs and contracts, but they don't contain them. This separation allows a single spec to drive multiple execution attempts and a single contract to govern multiple work streams.
+            </p>
+        </section>
+
+        <section class="interactive-artifacts">
+            <h2>Interactive Artifacts</h2>
+            <p>
+                Explore the Intent system through these interactive resources:
+            </p>
+            <div class="grid">
+                <a href="visual-brief.html" class="card">
+                    <h3>Visual Brief</h3>
+                    <p>Problem cascade, core loop, stack positioning</p>
+                </a>
+                <a href="native-repos.html" class="card">
+                    <h3>Intent-Native Repos</h3>
+                    <p>Repo template, adoption tiers</p>
+                </a>
+                <a href="work-system.html" class="card">
+                    <h3>Work System</h3>
+                    <p>Agent-native ontology, governance, dashboard</p>
+                </a>
+                <a href="flow-diagram.html" class="card">
+                    <h3>Flow Diagram</h3>
+                    <p>Pipeline from signal to deployed artifact</p>
+                </a>
+            </div>
+        </section>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+            <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> · Built with the Intent methodology</p>
         </div>
     </footer>
 </body>
