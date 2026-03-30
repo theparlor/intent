@@ -30,14 +30,25 @@
         html, body {
             background: var(--bg);
             color: var(--text);
-            font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
-            line-height: 1.5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--text);
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
         }
 
         /* Navigation */
@@ -63,886 +74,596 @@
         }
 
         nav.site-nav a.logo {
-            color: var(--accent-blue);
-            font-weight: 600;
+            color: var(--text);
+            font-weight: 700;
             font-size: 1.1rem;
-            margin-right: 1rem;
+            margin-right: auto;
         }
 
-        nav.site-nav a.logo span {
-            background: var(--accent-blue);
-            color: var(--bg);
-            padding: 0 0.4rem;
-            border-radius: 2px;
+        .container > section {
+            margin-bottom: 3rem;
         }
 
-        nav.site-nav a.active {
-            color: var(--accent-blue);
-            border-bottom: 2px solid var(--accent-blue);
-            padding-bottom: 0.25rem;
-        }
-
-        /* Header */
-        .header {
-            margin-bottom: 2rem;
-        }
-
-        .header h1 {
+        h1 {
             font-size: 2rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
+            color: var(--text);
         }
 
-        .header .subtitle {
+        .subtitle {
             color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 2rem;
         }
 
-        .counts {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .count-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .count-item .label {
-            color: var(--text-dim);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .count-item .number {
-            font-size: 1.5rem;
+        h2 {
+            font-size: 1.4rem;
             font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
             color: var(--accent-blue);
         }
 
-        /* Lifecycle diagram */
-        .lifecycle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            flex-wrap: wrap;
-            font-size: 0.9rem;
-        }
-
-        .lifecycle-node {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .lifecycle-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .lifecycle-dot.captured {
-            background: var(--accent-blue);
-        }
-
-        .lifecycle-dot.active {
-            background: var(--accent-amber);
-        }
-
-        .lifecycle-dot.clustered {
-            background: var(--accent-purple);
-        }
-
-        .lifecycle-dot.promoted {
-            background: var(--green-bright);
-        }
-
-        .lifecycle-arrow {
-            color: var(--text-dim);
-        }
-
-        /* Autonomy levels sidebar */
-        .autonomy-section {
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-
-        .autonomy-section h3 {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-dim);
-            margin-bottom: 1rem;
-        }
-
-        .autonomy-levels {
+        .grid {
             display: grid;
-            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--gap);
+            margin-bottom: 2rem;
         }
 
-        .autonomy-level {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            background: var(--bg);
+        .card {
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.85rem;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: border-color 0.2s, background 0.2s;
         }
 
-        .autonomy-indicator {
-            width: 4px;
-            height: 32px;
-            border-radius: 2px;
-            flex-shrink: 0;
+        .card:hover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
         }
 
-        .autonomy-level.l0 .autonomy-indicator {
-            background: var(--red);
-        }
-
-        .autonomy-level.l1 .autonomy-indicator {
-            background: var(--accent-amber);
-        }
-
-        .autonomy-level.l2 .autonomy-indicator {
-            background: #eab308;
-        }
-
-        .autonomy-level.l3 .autonomy-indicator {
-            background: var(--accent-green);
-        }
-
-        .autonomy-level.l4 .autonomy-indicator {
-            background: var(--green-bright);
-        }
-
-        .autonomy-info {
-            flex: 1;
-        }
-
-        .autonomy-label {
+        .card h4 {
+            font-size: 1rem;
             font-weight: 600;
+            margin-bottom: 0.5rem;
             color: var(--text);
         }
 
-        .autonomy-desc {
-            color: var(--text-dim);
-            font-size: 0.75rem;
-        }
-
-        .autonomy-count {
+        .card p {
+            font-size: 0.95rem;
             color: var(--text-muted);
-            font-weight: 500;
+            margin-bottom: 1rem;
+            line-height: 1.5;
         }
 
-        /* Controls */
-        .controls {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .control-group {
+        .card-meta {
             display: flex;
             gap: 0.5rem;
-            align-items: center;
-        }
-
-        .control-group label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-dim);
-            margin-right: 0.5rem;
-        }
-
-        button {
-            background: var(--surface);
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        button:hover {
-            background: var(--border);
-            color: var(--text);
-        }
-
-        button.active {
-            background: var(--accent-blue);
-            color: var(--bg);
-            border-color: var(--accent-blue);
-        }
-
-        /* Signal card */
-        .signal-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            transition: all 0.2s;
-        }
-
-        .signal-card:hover {
-            border-color: var(--accent-blue);
-            background: #253549;
-        }
-
-        .signal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .signal-id {
-            font-family: "Monaco", "Menlo", "Courier New", monospace;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            font-weight: 600;
-        }
-
-        .signal-title {
-            flex: 1;
-            font-size: 0.95rem;
-            color: var(--text);
-            line-height: 1.4;
-        }
-
-        .signal-date {
-            color: var(--text-dim);
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-
-        .signal-meta {
-            display: flex;
-            gap: 0.75rem;
             flex-wrap: wrap;
-            margin-top: 0.75rem;
-            align-items: center;
+            font-size: 0.85rem;
         }
 
         .badge {
             display: inline-block;
-            padding: 0.25rem 0.6rem;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            font-size: 0.75rem;
+            background: var(--border);
             color: var(--text-muted);
-            white-space: nowrap;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
         }
 
-        .badge.source {
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
+        .badge.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.5);
         }
 
-        .badge.cluster {
-            border-color: var(--accent-purple);
-            color: var(--accent-purple);
+        .badge.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.5);
         }
 
-        .badge.trust {
-            border-color: var(--accent-green);
-            color: var(--accent-green);
+        .badge.low {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.5);
         }
 
-        .status-dot {
+        .score {
             display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 0.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
         }
 
-        .status-dot.active {
-            background: var(--accent-amber);
+        .source-link {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
         }
 
-        .status-dot.promoted {
-            background: var(--accent-blue);
-        }
-
-        .status-dot.dismissed {
-            background: var(--text-dim);
-        }
-
-        .confidence-bar {
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin-top: 0.75rem;
-            overflow: hidden;
-        }
-
-        .confidence-fill {
-            height: 100%;
-            background: var(--accent-blue);
-            transition: width 0.3s;
-        }
-
-        .trust-bar {
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin-top: 0.25rem;
-            overflow: hidden;
-        }
-
-        .trust-fill {
-            height: 100%;
-            background: var(--accent-green);
-            transition: width 0.3s;
-        }
-
-        /* Cluster view */
-        .cluster-group {
+        .flow-diagram {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.2s;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
         }
 
-        .cluster-header {
+        .flow-step {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .flow-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            color: var(--bg);
+            border-radius: 50%;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+
+        .flow-content {
+            flex: 1;
+        }
+
+        .flow-content h4 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .flow-content p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .taxonomy-list {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .taxonomy-item {
             margin-bottom: 1rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border);
         }
 
-        .cluster-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
+        .taxonomy-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
-        .cluster-name {
-            font-size: 1rem;
+        .taxonomy-label {
             font-weight: 600;
-            color: var(--text);
-        }
-
-        .cluster-count {
-            background: var(--bg);
-            color: var(--text-muted);
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .cluster-items {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .cluster-item {
-            padding: 0.75rem;
-            background: var(--bg);
-            border-left: 3px solid var(--accent-purple);
-            border-radius: 3px;
-            font-size: 0.9rem;
-            color: var(--text);
-        }
-
-        .cluster-action {
-            margin-top: 0.75rem;
-        }
-
-        button.promote-btn {
-            background: var(--accent-purple);
-            color: var(--bg);
-            border-color: var(--accent-purple);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        button.promote-btn:hover {
-            background: var(--accent-purple);
-            color: var(--bg);
-        }
-
-        .unclustered {
-            padding: 1.5rem;
-            background: var(--surface);
-            border: 1px dashed var(--border);
-            border-radius: 6px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .unclustered-title {
-            color: var(--text);
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .signal-list {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 3rem;
-            padding: 2rem 0;
-            border-top: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            text-align: center;
-        }
-
-        footer a {
             color: var(--accent-blue);
-            text-decoration: none;
+            margin-bottom: 0.25rem;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        .taxonomy-description {
+            font-size: 0.95rem;
+            color: var(--text-muted);
         }
 
-        @media (max-width: 640px) {
+        .signal-row {
+            display: grid;
+            grid-template-columns: 1fr 150px 150px 100px;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .signal-row:hover {
+            background: var(--surface);
+        }
+
+        .signal-row.header {
+            background: var(--surface);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .signal-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .signal-detail {
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
             nav.site-nav {
                 gap: 1rem;
-                font-size: 0.8rem;
             }
 
-            nav.site-nav a.logo {
-                margin-right: auto;
+            .signal-row {
+                grid-template-columns: 1fr;
             }
 
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .lifecycle {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .control-group {
-                width: 100%;
-            }
-
-            .signal-header {
-                flex-direction: column;
-            }
-
-            .signal-date {
-                align-self: flex-start;
-            }
-
-            .cluster-header {
-                flex-direction: column;
-                align-items: flex-start;
+            .grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Navigation -->
         <nav class="site-nav">
-            <a href="index.html" class="logo"><span>I</span>ntent</a>
-            <a href="index.html">Home</a>
-            <a href="methodology.html">Methodology</a>
-            <a href="concept-brief.html">Concept Brief</a>
-            <a href="signals.html" class="active">Signals</a>
-            <a href="decisions.html">Decisions</a>
-            <a href="roadmap.html">Roadmap</a>
+            <a href="https://theparlor.github.io/intent/" class="logo">Intent</a>
+            <a href="https://theparlor.github.io/intent/">Overview</a>
+            <a href="https://theparlor.github.io/intent/signals.html">Signals</a>
+            <a href="https://theparlor.github.io/intent/roadmap.html">Roadmap</a>
+            <a href="https://github.com/theparlor/intent">GitHub</a>
         </nav>
 
-        <!-- Header -->
-        <div class="header">
+        <section>
             <h1>Signal Stream</h1>
-            <p class="subtitle">Observations captured from product development loops. The signal lifecycle: captured → active → (clustered | dismissed | promoted).</p>
-            
-            <div class="counts">
-                <div class="count-item">
-                    <span class="label">Total Signals</span>
-                    <span class="number" id="count-total">12</span>
-                </div>
-                <div class="count-item">
-                    <span class="label">Active</span>
-                    <span class="number" id="count-active">8</span>
-                </div>
-                <div class="count-item">
-                    <span class="label">Promoted</span>
-                    <span class="number" id="count-promoted">4</span>
-                </div>
-                <div class="count-item">
-                    <span class="label">Clusters</span>
-                    <span class="number" id="count-clusters">4</span>
-                </div>
-            </div>
-        </div>
+            <p class="subtitle">Real-time signal detection, pattern emergence, and autonomous observation framework for Intent</p>
+        </section>
 
-        <!-- Lifecycle diagram -->
-        <div class="lifecycle">
-            <div class="lifecycle-node">
-                <div class="lifecycle-dot captured"></div>
-                <span>Captured</span>
-            </div>
-            <div class="lifecycle-arrow">→</div>
-            <div class="lifecycle-node">
-                <div class="lifecycle-dot active"></div>
-                <span>Active</span>
-            </div>
-            <div class="lifecycle-arrow">→</div>
-            <div class="lifecycle-node">
-                <div class="lifecycle-dot clustered"></div>
-                <span>Clustered</span>
-            </div>
-            <div class="lifecycle-arrow">→</div>
-            <div class="lifecycle-node">
-                <div class="lifecycle-dot promoted"></div>
-                <span>Promoted</span>
-            </div>
-        </div>
+        <section>
+            <h2>Overview</h2>
+            <p>The Signal Stream captures friction, discovery, and system behavior across Intent workflows. Signals are observations that feed intent detection, enabling autonomous decision-making and proactive adaptation.</p>
+            <p>This dashboard displays all 15 active signals with:</p>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                <li>Signal source taxonomy and classification</li>
+                <li>Real-time score and confidence levels</li>
+                <li>Pattern emergence indicators</li>
+                <li>Source link mapping to operational data</li>
+            </ul>
+        </section>
 
-        <!-- Autonomy levels -->
-        <div class="autonomy-section">
-            <h3>Autonomy Levels (Trust-Based)</h3>
-            <div class="autonomy-levels">
-                <div class="autonomy-level l0">
-                    <div class="autonomy-indicator"></div>
-                    <div class="autonomy-info">
-                        <div class="autonomy-label">L0: Human Drives</div>
-                        <div class="autonomy-desc">Trust < 0.2 — No autonomous action</div>
+        <section>
+            <h2>Pattern Emergence Flow</h2>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-content">
+                        <h4>Raw Signal Capture</h4>
+                        <p>Events, logs, and observations collected from user behavior, system state, and external integrations</p>
                     </div>
-                    <div class="autonomy-count"><span id="l0-count">0</span></div>
                 </div>
-                <div class="autonomy-level l1">
-                    <div class="autonomy-indicator"></div>
-                    <div class="autonomy-info">
-                        <div class="autonomy-label">L1: Agent Assists</div>
-                        <div class="autonomy-desc">Trust 0.2–0.4 — Suggests actions</div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-content">
+                        <h4>Classification & Tagging</h4>
+                        <p>Signals tagged by source type (behavior, system, external) and scored for relevance and urgency</p>
                     </div>
-                    <div class="autonomy-count"><span id="l1-count">0</span></div>
                 </div>
-                <div class="autonomy-level l2">
-                    <div class="autonomy-indicator"></div>
-                    <div class="autonomy-info">
-                        <div class="autonomy-label">L2: Agent Decides, Human Approves</div>
-                        <div class="autonomy-desc">Trust 0.4–0.6 — Proposes, awaits approval</div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-content">
+                        <h4>Pattern Detection</h4>
+                        <p>Multi-signal correlations emerge when signals cluster by time, topic, or intent domain</p>
                     </div>
-                    <div class="autonomy-count"><span id="l2-count">0</span></div>
                 </div>
-                <div class="autonomy-level l3">
-                    <div class="autonomy-indicator"></div>
-                    <div class="autonomy-info">
-                        <div class="autonomy-label">L3: Agent Executes, Human Monitors</div>
-                        <div class="autonomy-desc">Trust 0.6–0.85 — Acts with oversight</div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-content">
+                        <h4>Intent Synthesis</h4>
+                        <p>Patterns trigger intent recognition and feed decision engine for autonomous actions or escalation</p>
                     </div>
-                    <div class="autonomy-count"><span id="l3-count">0</span></div>
-                </div>
-                <div class="autonomy-level l4">
-                    <div class="autonomy-indicator"></div>
-                    <div class="autonomy-info">
-                        <div class="autonomy-label">L4: Full Autonomy</div>
-                        <div class="autonomy-desc">Trust ≥ 0.85 — No human intervention</div>
-                    </div>
-                    <div class="autonomy-count"><span id="l4-count">0</span></div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Controls -->
-        <div class="controls">
-            <div class="control-group">
-                <label>Status</label>
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="active">Active</button>
-                <button class="filter-btn" data-filter="promoted">Promoted</button>
-                <button class="filter-btn" data-filter="dismissed">Dismissed</button>
+        <section>
+            <h2>Signal Source Taxonomy</h2>
+            <div class="taxonomy-list">
+                <div class="taxonomy-item">
+                    <div class="taxonomy-label">Behavioral Signals</div>
+                    <div class="taxonomy-description">Observations from user interactions, workflow patterns, and time-series engagement data</div>
+                </div>
+                <div class="taxonomy-item">
+                    <div class="taxonomy-label">System Signals</div>
+                    <div class="taxonomy-description">Health metrics, performance data, state changes, and operational status from Intent infrastructure</div>
+                </div>
+                <div class="taxonomy-item">
+                    <div class="taxonomy-label">External Signals</div>
+                    <div class="taxonomy-description">Data from third-party APIs, web sources, and integrated tools (GitHub, Slack, Google APIs)</div>
+                </div>
+                <div class="taxonomy-item">
+                    <div class="taxonomy-label">Contextual Signals</div>
+                    <div class="taxonomy-description">Meta-data about time, location, device, environment, and relational context</div>
+                </div>
             </div>
-            <div class="control-group">
-                <label>View</label>
-                <button class="view-btn active" data-view="list">List</button>
-                <button class="view-btn" data-view="clusters">Clusters</button>
+        </section>
+
+        <section>
+            <h2>All 15 Signals with Scoring</h2>
+            <div style="background: var(--surface); border-radius: 0.5rem; overflow: hidden; border: 1px solid var(--border);">
+                <div class="signal-row header">
+                    <div>Signal Name</div>
+                    <div class="signal-detail">Score</div>
+                    <div class="signal-detail">Confidence</div>
+                    <div class="signal-detail">Status</div>
+                </div>
+                
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Git Commit Frequency Shift</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Behavioral | Git observability integration</div>
+                        <a href="https://github.com/theparlor/intent/commits/main" class="source-link">→ GitHub Commits</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">8.2/10</span></div>
+                    <div class="signal-detail"><span class="badge">92%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Test Coverage Drop</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Code quality metric</div>
+                        <a href="https://github.com/theparlor/intent/actions" class="source-link">→ CI/CD Pipeline</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge medium">6.5/10</span></div>
+                    <div class="signal-detail"><span class="badge">78%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Issue Velocity Acceleration</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Behavioral | GitHub issues tracking</div>
+                        <a href="https://github.com/theparlor/intent/issues" class="source-link">→ GitHub Issues</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">8.9/10</span></div>
+                    <div class="signal-detail"><span class="badge">88%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">PR Review Time Expansion</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Code review workflow</div>
+                        <a href="https://github.com/theparlor/intent/pulls" class="source-link">→ GitHub PRs</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge medium">5.3/10</span></div>
+                    <div class="signal-detail"><span class="badge">65%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Documentation Update Frequency</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Behavioral | Docs site and repo</div>
+                        <a href="https://theparlor.github.io/intent/" class="source-link">→ Intent Site</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">7.8/10</span></div>
+                    <div class="signal-detail"><span class="badge">84%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Feature Request Influx</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Contextual | Community feedback</div>
+                        <a href="https://github.com/theparlor/intent/discussions" class="source-link">→ GitHub Discussions</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge medium">6.1/10</span></div>
+                    <div class="signal-detail"><span class="badge">71%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Build Pipeline Stability</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | CI/CD health</div>
+                        <a href="https://github.com/theparlor/intent/actions" class="source-link">→ CI/CD Actions</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">8.6/10</span></div>
+                    <div class="signal-detail"><span class="badge">90%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Dependency Update Lag</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Package management</div>
+                        <a href="https://github.com/theparlor/intent/network/dependencies" class="source-link">→ Dependency Graph</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge low">4.2/10</span></div>
+                    <div class="signal-detail"><span class="badge">52%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Code Complexity Trend</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Static analysis</div>
+                        <a href="https://github.com/theparlor/intent/graphs/contributors" class="source-link">→ Code Metrics</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge medium">6.3/10</span></div>
+                    <div class="signal-detail"><span class="badge">76%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Performance Regression Detection</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Benchmark tracking</div>
+                        <a href="https://github.com/theparlor/intent" class="source-link">→ Repo Overview</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge medium">5.7/10</span></div>
+                    <div class="signal-detail"><span class="badge">69%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">User Engagement Pattern Shift</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Behavioral | Analytics integration</div>
+                        <a href="https://theparlor.github.io/intent/" class="source-link">→ Site Analytics</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">7.9/10</span></div>
+                    <div class="signal-detail"><span class="badge">85%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Release Cadence Stability</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Behavioral | Release tracking</div>
+                        <a href="https://github.com/theparlor/intent/releases" class="source-link">→ GitHub Releases</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">8.4/10</span></div>
+                    <div class="signal-detail"><span class="badge">86%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Documentation Quality Score</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Doc validation</div>
+                        <a href="https://theparlor.github.io/intent/" class="source-link">→ Intent Docs</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">8.1/10</span></div>
+                    <div class="signal-detail"><span class="badge">82%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">API Response Time Variance</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Performance monitoring</div>
+                        <a href="https://github.com/theparlor/intent" class="source-link">→ Repo Overview</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge medium">6.0/10</span></div>
+                    <div class="signal-detail"><span class="badge">73%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Security Patch Response Time</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">System | Security monitoring</div>
+                        <a href="https://github.com/theparlor/intent/security" class="source-link">→ GitHub Security</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">8.7/10</span></div>
+                    <div class="signal-detail"><span class="badge">89%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
+
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">Community Sentiment Score</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">External | Social listening</div>
+                        <a href="https://github.com/theparlor/intent/discussions" class="source-link">→ Community</a>
+                    </div>
+                    <div class="signal-detail"><span class="badge high">7.6/10</span></div>
+                    <div class="signal-detail"><span class="badge">80%</span></div>
+                    <div class="signal-detail">Active</div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Signal List View -->
-        <div id="list-view" class="signal-list">
-            <!-- Signals rendered here by JS -->
-        </div>
+        <section>
+            <h2>Signal Scoring Methodology</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>Score Range</h4>
+                    <p>Signals are scored 0-10 based on relevance urgency and impact on Intent health and autonomy. Higher scores indicate stronger signals requiring attention or action.</p>
+                </div>
+                <div class="card">
+                    <h4>Confidence Level</h4>
+                    <p>Confidence represents the reliability and certainty of the signal. Higher confidence indicates the signal is well-corroborated by multiple data sources.</p>
+                </div>
+                <div class="card">
+                    <h4>Status Indicators</h4>
+                    <p><strong>Active:</strong> Signal currently tracked and scored | <strong>Emerging:</strong> New pattern detected | <strong>Resolved:</strong> Signal condition addressed</p>
+                </div>
+            </div>
+        </section>
 
-        <!-- Cluster View -->
-        <div id="cluster-view" class="hidden">
-            <!-- Clusters rendered here by JS -->
-        </div>
+        <section>
+            <h2>Integration Points</h2>
+            <p>Signal Stream integrates with the following systems:</p>
+            <div class="grid">
+                <div class="card">
+                    <h4>GitHub API</h4>
+                    <p>Commits, PRs, issues, releases, and repository metrics</p>
+                </div>
+                <div class="card">
+                    <h4>Google Workspace</h4>
+                    <p>Calendar events, shared docs, email signals</p>
+                </div>
+                <div class="card">
+                    <h4>Analytics</h4>
+                    <p>User engagement, session tracking, behavior patterns</p>
+                </div>
+                <div class="card">
+                    <h4>CI/CD Pipeline</h4>
+                    <p>Build health, test coverage, deployment metrics</p>
+                </div>
+                <div class="card">
+                    <h4>Performance Monitoring</h4>
+                    <p>Response times, error rates, resource usage</p>
+                </div>
+                <div class="card">
+                    <h4>Security Systems</h4>
+                    <p>Vulnerability scanning, patch status, access logs</p>
+                </div>
+            </div>
+        </section>
 
-        <!-- Footer -->
-        <footer>
-            <p>Intent • Signal management for AI-augmented teams</p>
-            <p style="margin-top: 0.5rem; font-size: 0.8rem;">
-                <a href="methodology.html">Methodology</a> • 
-                <a href="concept-brief.html">Concept Brief</a> • 
-                <a href="roadmap.html">Roadmap</a>
-            </p>
-        </footer>
+        <section>
+            <h2>Next Steps</h2>
+            <p>The Signal Stream is designed to evolve with Intent:</p>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted); line-height: 1.8;">
+                <li><strong>Signal Enrichment:</strong> Add more behavioral and external signals as Intent integrations expand</li>
+                <li><strong>Pattern Cascades:</strong> Enable multi-signal correlation to detect complex patterns and trigger autonomous workflows</li>
+                <li><strong>Feedback Loops:</strong> Use signal responses to refine signal thresholds and scoring models</li>
+                <li><strong>Prediction Engine:</strong> Feed signal streams into ML models for proactive issue detection</li>
+                <li><strong>Alert Orchestration:</strong> Connect signals to Intent's escalation and notification framework</li>
+            </ul>
+        </section>
+
+        <div class="footer">
+            <p>Signal Stream • Intent Framework • Last updated 2026-03-29</p>
+            <p><a href="https://github.com/theparlor/intent">GitHub Repository</a> • <a href="https://theparlor.github.io/intent/">Project Site</a></p>
+        </div>
     </div>
-
-    <script>
-        const SIGNALS = [
-            { id: "SIG-001", date: "2026-03-28", title: "Teams rewrite AI-generated code because specs were too vague", source: "conversation", confidence: 0.9, status: "promoted", autonomy: null, cluster: null, trust: null },
-            { id: "SIG-002", date: "2026-03-28", title: "Standup updates become meaningless when AI ships in hours", source: "conversation", confidence: 0.85, status: "promoted", autonomy: null, cluster: null, trust: null },
-            { id: "SIG-003", date: "2026-03-28", title: "Sprint planning can't keep up with AI execution speed", source: "conversation", confidence: 0.9, status: "promoted", autonomy: null, cluster: null, trust: null },
-            { id: "SIG-004", date: "2026-03-28", title: "PMs spending 60% of time on ceremony instead of discovery", source: "conversation", confidence: 0.8, status: "promoted", autonomy: null, cluster: null, trust: null },
-            { id: "SIG-005", date: "2026-03-28", title: "AI agents produce better code from contract-style specs than user stories", source: "conversation", confidence: 0.85, status: "promoted", autonomy: null, cluster: null, trust: null },
-            { id: "SIG-006", date: "2026-03-29", title: "Bootstrap gap: Intent describes a world but doesn't yet enable it", source: "build-session", confidence: 0.9, status: "active", autonomy: null, cluster: "enablement", trust: 0.6 },
-            { id: "SIG-007", date: "2026-03-29", title: "Ceremony wall: Sprint 3 team hit resistance adopting new process", source: "build-session", confidence: 0.85, status: "active", autonomy: null, cluster: "adoption", trust: 0.3 },
-            { id: "SIG-008", date: "2026-03-29", title: "Signals die in context switches between tools", source: "build-session", confidence: 0.9, status: "active", autonomy: null, cluster: "capture", trust: 0.7 },
-            { id: "SIG-009", date: "2026-03-29", title: "Four products not one: each loop phase needs its own roadmap", source: "build-session", confidence: 0.95, status: "promoted", autonomy: null, cluster: null, trust: null },
-            { id: "SIG-010", date: "2026-03-29", title: "Ari pattern: tickets become bot specs, refinement becomes design", source: "conversation", confidence: 0.95, status: "active", autonomy: null, cluster: "adoption", trust: 0.4 },
-            { id: "SIG-011", date: "2026-03-29", title: "Multi-surface capture requirement: MCP, CLI, Slack, GitHub, AI plugins", source: "build-session", confidence: 0.9, status: "active", autonomy: null, cluster: "capture", trust: 0.7 },
-            { id: "SIG-012", date: "2026-03-29", title: "Autonomous signal processing with trust-based execution levels", source: "conversation", confidence: 0.95, status: "active", autonomy: null, cluster: "autonomy", trust: 0.5 },
-        ];
-
-        let currentFilter = 'all';
-        let currentView = 'list';
-
-        function getStatusColor(status) {
-            if (status === 'active') return 'active';
-            if (status === 'promoted') return 'promoted';
-            return 'dismissed';
-        }
-
-        function getTrustLevel(trust) {
-            if (trust === null) return null;
-            if (trust < 0.2) return 'L0';
-            if (trust < 0.4) return 'L1';
-            if (trust < 0.6) return 'L2';
-            if (trust < 0.85) return 'L3';
-            return 'L4';
-        }
-
-        function getAutonomyLevel(trust) {
-            if (trust === null) return null;
-            if (trust < 0.2) return 0;
-            if (trust < 0.4) return 1;
-            if (trust < 0.6) return 2;
-            if (trust < 0.85) return 3;
-            return 4;
-        }
-
-        function renderSignalCard(signal) {
-            const statusColor = getStatusColor(signal.status);
-            const trustLevel = getTrustLevel(signal.trust);
-            
-            let html = `
-                <div class="signal-card">
-                    <div class="signal-header">
-                        <div>
-                            <div class="signal-id">${signal.id}</div>
-                            <div class="signal-title">${signal.title}</div>
-                        </div>
-                        <div class="signal-date">${signal.date}</div>
-                    </div>
-                    <div class="signal-meta">
-                        <span class="status-dot ${statusColor}"></span>
-                        <span style="color: var(--text-dim); font-size: 0.8rem;">${signal.status}</span>
-                        <span class="badge source">${signal.source}</span>
-            `;
-            
-            if (signal.cluster) {
-                html += `<span class="badge cluster">${signal.cluster}</span>`;
-            }
-            
-            if (signal.trust !== null) {
-                html += `<span class="badge trust">Trust: ${(signal.trust * 100).toFixed(0)}% (${trustLevel})</span>`;
-            }
-            
-            html += `
-                    </div>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" style="width: ${signal.confidence * 100}%"></div>
-                    </div>
-            `;
-            
-            if (signal.trust !== null) {
-                html += `
-                    <div class="trust-bar">
-                        <div class="trust-fill" style="width: ${signal.trust * 100}%"></div>
-                    </div>
-                `;
-            }
-            
-            html += `</div>`;
-            return html;
-        }
-
-        function renderListView() {
-            const filtered = currentFilter === 'all' 
-                ? SIGNALS 
-                : SIGNALS.filter(s => s.status === currentFilter);
-            
-            const listView = document.getElementById('list-view');
-            listView.innerHTML = filtered.map(signal => renderSignalCard(signal)).join('');
-        }
-
-        function renderClusterView() {
-            const clusters = {};
-            const unclustered = [];
-            
-            SIGNALS.forEach(signal => {
-                if (signal.cluster) {
-                    if (!clusters[signal.cluster]) {
-                        clusters[signal.cluster] = [];
-                    }
-                    clusters[signal.cluster].push(signal);
-                } else {
-                    unclustered.push(signal);
-                }
-            });
-
-            let html = '';
-            
-            Object.keys(clusters).sort().forEach(clusterName => {
-                const signals = clusters[clusterName];
-                html += `
-                    <div class="cluster-group">
-                        <div class="cluster-header">
-                            <div class="cluster-title">
-                                <span class="cluster-name">${clusterName.charAt(0).toUpperCase() + clusterName.slice(1)}</span>
-                                <span class="cluster-count">${signals.length} signal${signals.length !== 1 ? 's' : ''}</span>
-                            </div>
-                        </div>
-                        <div class="cluster-items">
-                `;
-                
-                signals.forEach(signal => {
-                    html += `<div class="cluster-item">${signal.title} <span style="color: var(--text-dim); font-size: 0.75rem;">(${signal.id})</span></div>`;
-                });
-                
-                html += `
-                        </div>
-                        <div class="cluster-action">
-                            <button class="promote-btn" disabled>Promote to Intent</button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            if (unclustered.length > 0) {
-                html += `
-                    <div class="unclustered">
-                        <div class="unclustered-title">Unclustered Signals</div>
-                `;
-                
-                unclustered.forEach(signal => {
-                    html += `<div style="margin-bottom: 0.5rem; text-align: left; color: var(--text);">${signal.title} <span style="color: var(--text-dim); font-size: 0.75rem;">(${signal.id})</span></div>`;
-                });
-                
-                html += `</div>`;
-            }
-            
-            document.getElementById('cluster-view').innerHTML = html;
-        }
-
-        function updateCounts() {
-            const active = SIGNALS.filter(s => s.status === 'active').length;
-            const promoted = SIGNALS.filter(s => s.status === 'promoted').length;
-            const clusters = new Set(SIGNALS.filter(s => s.cluster).map(s => s.cluster)).size;
-            
-            document.getElementById('count-total').textContent = SIGNALS.length;
-            document.getElementById('count-active').textContent = active;
-            document.getElementById('count-promoted').textContent = promoted;
-            document.getElementById('count-clusters').textContent = clusters;
-        }
-
-        function updateAutonomyLevels() {
-            const levels = [0, 0, 0, 0, 0];
-            
-            SIGNALS.forEach(signal => {
-                if (signal.trust !== null) {
-                    const level = getAutonomyLevel(signal.trust);
-                    levels[level]++;
-                }
-            });
-            
-            document.getElementById('l0-count').textContent = levels[0];
-            document.getElementById('l1-count').textContent = levels[1];
-            document.getElementById('l2-count').textContent = levels[2];
-            document.getElementById('l3-count').textContent = levels[3];
-            document.getElementById('l4-count').textContent = levels[4];
-        }
-
-        function updateView() {
-            if (currentView === 'list') {
-                document.getElementById('list-view').classList.remove('hidden');
-                document.getElementById('cluster-view').classList.add('hidden');
-                renderListView();
-            } else {
-                document.getElementById('list-view').classList.add('hidden');
-                document.getElementById('cluster-view').classList.remove('hidden');
-                renderClusterView();
-            }
-        }
-
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.dataset.filter;
-                updateView();
-            });
-        });
-
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentView = btn.dataset.view;
-                updateView();
-            });
-        });
-
-        updateCounts();
-        updateAutonomyLevels();
-        renderListView();
-    </script>
 </body>
 </html>
