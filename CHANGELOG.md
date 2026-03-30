@@ -11,6 +11,18 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.03.29-0.7.0
+
+**Schemas page, signals dashboard overhaul, site-wide style normalization**
+
+- Created `docs/schemas.html` — full schema inventory page covering Signal, Intent, Spec, Contract, and Event schemas with trust scoring formula, autonomy levels, status lifecycles, and links to template files
+- Overhauled `docs/signals.html` — replaced static page with interactive dashboard: source taxonomy (Human Sources, System Sources, Capture Surfaces), pattern emergence timeline (Scatter → Cluster → Emerge), source markdown links per signal card, trust score visualization, autonomy level counts, cluster/list view toggle
+- Added 2 new signals: SIG-014 (agent context drift during multi-file pushes), SIG-015 (signal amplification through reference frequency)
+- Normalized CSS across all 12 docs pages — roadmap.html and signals.html converted from raw hex values to CSS custom properties matching `styles.css`
+- Added Schemas nav link to all 12 site pages for consistent navigation
+- Updated copyright year from 2025 to 2026 across all pages
+- Remediated SIG-014 incident: agent-fabricated signals.html content replaced with verified correct dashboard
+
 ## 2026.03.29-0.6.0
 
 **Signal trust schema, management CLI, all signals scored**
