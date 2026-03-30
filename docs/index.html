@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intent - Operating System for AI-Augmented Teams</title>
+    <title>Intent — Operating Model for AI-Augmented Teams</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,61 +20,143 @@
     <header class="hero">
         <div class="container">
             <h1>Intent</h1>
-            <p class="subtitle">Operating System for AI-Augmented Teams</p>
+            <p class="subtitle">The operating model for AI-augmented teams</p>
             <p class="description">
-                Intent is a personal operating system for knowledge workers using AI as a team member. It's built on a notice→spec→execute→observe loop that turns everyday work into structured, observable, reproducible processes.
+                When AI collapses implementation from weeks to hours, the bottleneck moves upstream — from delivery to discovery, specification, and observation. Intent replaces ceremony-driven coordination with a continuous signal-driven loop that scales from a single practitioner to teams of teams working alongside hundreds of agents.
             </p>
         </div>
     </header>
 
     <section class="core-concepts">
         <div class="container">
-            <h2>Core Concepts</h2>
+            <h2>One Loop, Any Scale</h2>
+            <p class="description" style="color: var(--text-muted); margin-bottom: 2rem;">
+                The same four-phase loop operates at every level of scale. What changes isn't the model — it's the volume of signals and the autonomy level of the agents processing them.
+            </p>
             <div class="grid">
-                <div class="card">
+                <div class="card notice">
                     <h3>Notice</h3>
-                    <p>Identify problems, opportunities, or patterns in your work. Turn vague dissatisfaction into concrete observations.</p>
+                    <p>Capture signals from every surface — conversations, code reviews, agent traces, OTel spans, Slack threads. A signal is anything worth paying attention to. One person might capture five a day. A fleet of agents might surface five thousand.</p>
                 </div>
-                <div class="card">
+                <div class="card spec">
                     <h3>Spec</h3>
-                    <p>Write down what you want to build or change. Specifications make intent explicit and give AI systems something to work with.</p>
+                    <p>Shape signals into agent-ready specifications. Specs are contracts, not stories — verifiable assertions that an AI agent can execute against. Clear specs mean agents work autonomously; vague specs mean expensive human intervention.</p>
                 </div>
-                <div class="card">
+                <div class="card execute">
                     <h3>Execute</h3>
-                    <p>Use AI tools to build, automate, or refine. AI agents execute the spec reliably and leave observable traces.</p>
+                    <p>Agents implement against specs at the autonomy level earned by the signal's trust score. Low trust means human approval. High trust means full autonomy with circuit breakers. The system learns which work it can handle alone.</p>
                 </div>
-                <div class="card">
+                <div class="card observe">
                     <h3>Observe</h3>
-                    <p>Watch what happened. Build feedback loops that make your work visible and improvable.</p>
+                    <p>Every action emits structured events. Observe what happened, compare it to what was specified, and feed the delta back as new signals. The loop closes. The system gets smarter. The next cycle starts with better information.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="why-intent">
+    <section>
         <div class="container">
-            <h2>Why Intent Matters</h2>
-            <p>
-                Most AI tools are built for individual tasks—write an email, code a function, answer a question. But teams that win with AI are structuring entire workflows around it. They're turning vague requests into specs, using AI to execute predictably, and building observation systems to close the loop.
+            <h2>Signals Are the Architecture</h2>
+            <p class="description" style="color: var(--text-muted);">
+                Most AI tooling focuses on the execute phase — making agents that can write code or draft emails. Intent focuses upstream, on the signal layer that decides <em>what</em> gets executed and <em>how much autonomy</em> the executor gets. Signals are the primitive. Everything else follows.
             </p>
-            <p>
-                Intent is a framework for doing this. It's not about replacing thinking—it's about making thinking visible, executable, and improvable.
+            <div class="grid" style="margin-top: 2rem;">
+                <div class="card">
+                    <h3>Trust-Scored</h3>
+                    <p>Every signal gets a trust score computed from clarity, blast radius, reversibility, testability, and precedent. Trust determines autonomy level — from L0 (human drives) to L4 (full agent autonomy, circuit breakers only).</p>
+                </div>
+                <div class="card">
+                    <h3>Amplification-Weighted</h3>
+                    <p>Signals gain weight through repeated reference. The same friction point surfacing across conversations, commits, and agent traces tells the system this matters more than its initial score suggested. Frequency is information.</p>
+                </div>
+                <div class="card">
+                    <h3>Self-Clustering</h3>
+                    <p>Signals that get referenced together reveal emergent problem structure. The system discovers its own architecture — not through top-down design, but through the pattern of what keeps showing up together.</p>
+                </div>
+                <div class="card">
+                    <h3>Pipeline-Processed</h3>
+                    <p>An enrichment pipeline works every signal as far as it can go: dedup, contextualize, score, classify, route. Humans intervene only when something is ambiguous or unsafe. The system never dead-ends — it generates disambiguation signals instead.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Scale by Design</h2>
+            <p class="description" style="color: var(--text-muted); margin-bottom: 2rem;">
+                Intent is architected to grow. The same abstractions that work for one person noticing friction work for an organization processing thousands of signals across dozens of teams and hundreds of agents.
             </p>
+            <div class="shift-grid">
+                <div class="shift-card">
+                    <div class="from">Sprint ceremonies for 8 people</div>
+                    <div class="to">Continuous signal loop for any team size</div>
+                </div>
+                <div class="shift-card">
+                    <div class="from">Backlogs that grow forever</div>
+                    <div class="to">Signals that decay, amplify, or promote themselves</div>
+                </div>
+                <div class="shift-card">
+                    <div class="from">Stories written for humans to interpret</div>
+                    <div class="to">Specs as contracts that agents execute against</div>
+                </div>
+                <div class="shift-card">
+                    <div class="from">Manual status updates and standups</div>
+                    <div class="to">Structured events emitted by every action</div>
+                </div>
+                <div class="shift-card">
+                    <div class="from">One AI tool for one task</div>
+                    <div class="to">Agent fleets with trust-gated autonomy</div>
+                </div>
+                <div class="shift-card">
+                    <div class="from">Systems that break and wait for humans</div>
+                    <div class="to">Systems that self-heal through the observe→notice loop</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Where Intent Is Now</h2>
+            <p class="description" style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Intent is methodology-first — validate with practitioners before building software. Everything is file-native, git-tracked, and OTel-compatible. No lock-in, no proprietary formats.
+            </p>
+            <div class="grid">
+                <div class="card notice">
+                    <h3>Notice — Operational</h3>
+                    <p>MCP server, CLI suite, GitHub Action, signal template. 15 founding signals captured, trust-scored, and clustered. Signal amplification spec drafted.</p>
+                </div>
+                <div class="card spec">
+                    <h3>Spec — Conceptual</h3>
+                    <p>Templates for intents, specs, contracts. CLI tools for proposing, approving, and tracking. Seven-level work ontology defined.</p>
+                </div>
+                <div class="card execute">
+                    <h3>Execute — Defined</h3>
+                    <p>Event schema designed with 15 OTel-compatible events. Agent handoff protocol documented. No integration yet — this is next.</p>
+                </div>
+                <div class="card observe">
+                    <h3>Observe — Schema-Ready</h3>
+                    <p>Event types defined, signal dashboard live, trust visualization operational. Full dashboard and learning layer planned.</p>
+                </div>
+            </div>
         </div>
     </section>
 
     <section class="getting-started">
         <div class="container">
-            <h2>Getting Started</h2>
-            <p><strong>Learn the methodology:</strong> <a href="methodology.html">Read the Intent methodology</a> to understand the notice→spec→execute→observe loop.</p>
-            <p><strong>See it in action:</strong> Explore <a href="signals.html">signals</a>, <a href="decisions.html">decisions</a>, and the <a href="event-catalog.html">event catalog</a> to see how Intent structures observability.</p>
-            <p><strong>Understand the vision:</strong> Read the <a href="concept-brief.html">concept brief</a> for the fuller picture of Intent as a team operating system.</p>
+            <h2>Go Deeper</h2>
+            <p><strong>Understand the shift:</strong> <a href="methodology.html">Read the methodology</a> — how Intent replaces Agile's ceremony-driven model when AI changes the cost structure of implementation.</p>
+            <p><strong>See the product vision:</strong> The <a href="concept-brief.html">concept brief</a> covers personas, positioning, and the four-product roadmap.</p>
+            <p><strong>Watch it work:</strong> The <a href="signals.html">signal dashboard</a> is live — trust scores, autonomy levels, cluster groupings, lifecycle status for all founding signals.</p>
+            <p><strong>See what's next:</strong> The <a href="roadmap.html">product roadmap</a> maps all four products across Now / Next / Later priorities.</p>
+            <p><strong>Build your own:</strong> <code>mkdir -p .intent/signals .intent/events</code> in any repo. That's it. You're Intent-native.</p>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Intent. Built by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a>.</p>
+            <p>Intent is an open development project by <a href="https://www.linkedin.com/in/brienhall/">Brien Hall</a> at The Parlor. <a href="https://github.com/theparlor/intent">View source on GitHub</a>.</p>
         </div>
     </footer>
 </body>
