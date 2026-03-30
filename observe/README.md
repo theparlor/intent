@@ -1,36 +1,72 @@
----
-title: Readme
-type: framework
-maturity: final
-confidentiality: shareable
-reusability: universal
-domains:
-  - consulting-operations
-created: 2026-03-29
-depth_score: 2
-depth_signals:
-  file_size_kb: 0.9
-  content_chars: 542
-  entity_count: 0
-  slide_count: 0
-  sheet_count: 0
-  topic_count: 1
-  has_summary: 0
-vocab_density: 0.00
----
-# Observe
+# Intent Observe — Observability Infrastructure
 
-> Verification findings, quality reviews, and learnings.
+OTel-native distributed tracing for the Intent loop. Connects the event system to Grafana via OpenTelemetry Collector.
 
-After execution, check reality against the contract. But also notice *new* things: edge cases the spec missed, architectural questions surfaced, adjacent workflows affected.
+## Quick Start
 
-Those new observations feed back into Notice. The loop continues.
+### 1. Install adapter dependencies
 
----
+```bash
+cd observe/adapters
+pip install -r requirements.txt
+```
 
-## What Lives Here
+### 2. Run the OTel Collector
 
-- **Quality reviews** of specs and briefs
-- **Validation findings** from practitioner interviews
-- **Learnings** from each cycle of the loop
-- **Market signals** that confirm or challenge hypotheses
+Download the [OTel Collector binary](https://opentelemetry.io/docs/collector/installation/) for your platform, then:
+
+```bash
+otelcol-contrib --config observe/otel-collector-config.yaml
+```
+
+### 3. Run the File Tail Adapter
+
+```bash
+# One-shot: process all existing events
+python observe/adapters/file-tail.py --once
+
+# Daemon: continuously tail new events
+python observe/adapters/file-tail.py
+```
+
+## Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `localhost:4317` | Collector gRPC endpoint |
+| `INTENT_EVENTS_FILE` | `.intent/events/events.jsonl` | Path to event log |
+| `INTENT_CHECKPOINT_FILE` | `.tail-checkpoint` | Byte offset checkpoint |
+| `INTENT_ENV` | `local` | Deployment environment label |
+
+## Grafana Cloud Setup
+
+1. Create a free account at [grafana.com](https://grafana.com)
+2. Go to Connections > Add new connection > OpenTelemetry
+3. Copy the OTLP endpoint and generate an API token
+4. Update `otel-collector-config.yaml`: uncomment the `otlphttp/grafana` exporter and add your endpoint/token
+5. Import `grafana/dashboards/intent-observe.json` via Dashboards > Import
+
+## Architecture
+
+```
+CLI/MCP/GitHub -> events.jsonl -> File Tail Adapter -> OTel Collector -> Grafana Cloud
+                                                                        (Tempo + Mimir + Loki)
+```
+
+See `spec/observability-stack.md` for the full architecture specification.
+
+## Directory Structure
+
+```
+observe/
+├── adapters/
+│   ├── file-tail.py          <- events.jsonl -> OTLP adapter
+│   └── requirements.txt      <- Python dependencies
+├── grafana/
+│   ├── dashboards/
+│   │   └── intent-observe.json  <- Dashboard definition
+│   └── provisioning/
+│       └── datasources.yaml     <- Data source config (Phase 2)
+├── otel-collector-config.yaml   <- Collector pipeline config
+└── README.md                    <- This file
+```
