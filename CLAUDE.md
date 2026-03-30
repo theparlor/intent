@@ -243,6 +243,10 @@ All site pages and artifacts use this palette:
 - Muted text: `#94a3b8`
 - Dim text: `#64748b`
 - Accent blue: `#3b82f6`
+- Accent amber: `#f59e0b`
+- Accent green: `#10b981`
+- Accent purple: `#a855f7`
+- Accent red: `#dc2626`
 
 ### Persona Colors
 - Architect (△): `#f59e0b` (amber)
@@ -251,7 +255,7 @@ All site pages and artifacts use this palette:
 - Agent (◉): `#10b981` (green)
 
 ### Site Nav Pattern
-Every page in `docs/` links `styles.css` and uses this main nav:
+Every page in `docs/` uses this main nav:
 ```html
 <nav class="site-nav">
   <a href="index.html" class="logo"><span>I</span>ntent</a>
@@ -268,7 +272,7 @@ Every page in `docs/` links `styles.css` and uses this main nav:
 ```
 The current page gets `class="active"`. Pages not in the main nav (signals, decisions, event-catalog, visual-brief, native-repos, architecture, agents, deployment) have no active on any main nav link.
 
-Technical pages (architecture, agents, deployment) also have a sub-nav:
+Technical pages (architecture, agents, deployment, signals, dogfood) also have a sub-nav:
 ```html
 <nav class="sub-nav">
   <a href="architecture.html">Architecture</a>
@@ -280,6 +284,39 @@ Technical pages (architecture, agents, deployment) also have a sub-nav:
 ```
 
 Max-width: 900px. Footer with source link to GitHub. All shared CSS lives in `docs/styles.css` — page-specific CSS stays in small inline `<style>` blocks.
+
+### CSS Strategy — CRITICAL RULES
+
+**There are two CSS strategies. NEVER convert between them.**
+
+**Strategy A: External `styles.css` + inline `<style>` overrides**
+Used by: index.html, methodology.html, concept-brief.html, schemas.html, work-system.html, flow-diagram.html, decisions.html, event-catalog.html, native-repos.html, visual-brief.html, architecture.html, agents.html, deployment.html
+
+These pages link `styles.css` AND add page-specific component CSS in a `<style>` tag. The inline styles provide CSS unique to that page. **Never strip inline `<style>` blocks from these pages.**
+
+**Strategy B: Fully self-contained inline CSS**
+Used by: pitch.html, dogfood.html, arb.html, roadmap.html, signals.html
+
+These pages carry ALL their CSS in a single `<style>` tag. They do NOT link styles.css. **NEVER convert a Strategy B page to Strategy A.** These pages have extensive custom visuals (scroll animations, SVG diagrams, tab interfaces, interactive timelines, stat grids) that are self-contained by design. Converting them destroys the page.
+
+### Content Preservation Rules
+
+1. **Never reduce a page's file size by more than 20%** without explicit human approval. A dramatic size reduction means content loss.
+2. **Never replace a page with a skeleton/placeholder.** If a page has interactive content (tabs, diagrams, grids, timelines), that content must be preserved.
+3. **Visual components are content.** Tech radar grids, SVG loop diagrams, comparison strips, timeline visualizations, stat box layouts — these are not decoration. They are the page's value.
+4. **When resolving merge conflicts on HTML files, prefer the LARGER version.** The smaller version is almost certainly content-stripped.
+
+### Footer (ALL pages)
+```html
+<footer>
+  <p>Source: <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a> &middot; Built with the Intent methodology</p>
+</footer>
+```
+Pages using styles.css wrap footer content in `<div class="container">`.
+
+### Site Contracts and Spec
+See `docs/site-spec.md` for the canonical page inventory with CSS strategy, nav tier, file size baselines, and status.
+See `docs/site-contracts.md` for verifiable assertions. **Run contract checks after ANY change to docs/.**
 
 ### Site Information Architecture
 The index page follows five sections that mirror the loop:
