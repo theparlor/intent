@@ -1,1 +1,179 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intent — Tech Radar, ARB & Atomized Roadmap</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface-2: #253549;
+    --border: #334155;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-amber: #f59e0b;
+    --accent-purple: #8b5cf6;
+    --accent-green: #10b981;
+    --green-bright: #22c55e;
+    --red: #ef4444;
+    --pink: #ec4899;
+  }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  a { color: var(--accent-blue); text-decoration: none; }
+  a:hover { color: var(--text); }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Nav tabs */
+  .tab-nav {
+    display: flex; gap: 0; border-bottom: 2px solid var(--border);
+    margin: 2rem 0 0;
+  }
+  .tab-btn {
+    padding: 0.75rem 1.5rem; background: none; border: none;
+    color: var(--text-dim); font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--text-muted); }
+  .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+  .tab-content { display: none; padding: 2rem 0; }
+  .tab-content.active { display: block; }
+
+  h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2rem 0 1rem; }
+  h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; line-height: 1.7; }
+
+  /* ── TECH RADAR ── */
+  .radar-container { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+  .radar-svg-wrap { flex: 0 0 480px; }
+  .radar-legend { flex: 1; min-width: 300px; }
+
+  .ring-section { margin-bottom: 1.5rem; }
+  .ring-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 700; margin-bottom: 0.5rem; padding-bottom: 0.35rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .ring-label.adopt { color: var(--accent-green); border-color: var(--accent-green); }
+  .ring-label.trial { color: var(--accent-blue); border-color: var(--accent-blue); }
+  .ring-label.assess { color: var(--accent-amber); border-color: var(--accent-amber); }
+  .ring-label.hold { color: var(--red); border-color: var(--red); }
+
+  .blip-list { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .blip-tag {
+    font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 3px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-muted); cursor: default; transition: all 0.2s;
+  }
+  .blip-tag:hover { border-color: var(--accent-blue); color: var(--text); }
+  .blip-tag .num { font-weight: 700; margin-right: 0.3rem; color: var(--text-dim); font-size: 0.65rem; }
+
+  .quadrant-key { display: flex; gap: 1.5rem; margin: 1rem 0; flex-wrap: wrap; }
+  .qk-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted); }
+  .qk-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ── ARB PANEL ── */
+  .arb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .arb-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.25rem; transition: border-color 0.2s;
+  }
+  .arb-card:hover { border-color: var(--accent-blue); }
+  .arb-persona {
+    display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+  }
+  .arb-icon { font-size: 1.4rem; }
+  .arb-name { font-weight: 700; font-size: 0.95rem; }
+  .arb-role { font-size: 0.75rem; color: var(--text-dim); }
+  .arb-questions { list-style: none; }
+  .arb-questions li {
+    font-size: 0.82rem; color: var(--text-muted); padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(51,65,85,0.4); line-height: 1.5;
+  }
+  .arb-questions li:last-child { border-bottom: none; }
+  .arb-questions li::before { content: "→ "; color: var(--text-dim); }
+
+  /* ── TECH STACK ── */
+  .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; }
+  .stack-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem;
+  }
+  .stack-layer { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 0.35rem; }
+  .stack-tech { font-weight: 600; font-size: 0.9rem; color: var(--text); }
+  .stack-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  /* ── ATOMIZED ITEMS ── */
+  .atom-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .atom-filter {
+    padding: 0.4rem 0.8rem; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer;
+    transition: all 0.2s; font-weight: 500;
+  }
+  .atom-filter:hover { border-color: var(--accent-blue); color: var(--text); }
+  .atom-filter.active { background: var(--accent-blue); color: var(--bg); border-color: var(--accent-blue); }
+
+  .atom-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.25rem; margin-bottom: 0.75rem; transition: all 0.2s;
+  }
+  .atom-card:hover { border-color: var(--accent-blue); background: var(--surface-2); }
+  .atom-card.expanded .atom-details { display: block; }
+
+  .atom-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; cursor: pointer; }
+  .atom-id { font-family: monospace; font-size: 0.7rem; color: var(--text-dim); font-weight: 600; }
+  .atom-title { font-size: 0.9rem; color: var(--text); line-height: 1.4; flex: 1; }
+  .atom-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .atom-badge {
+    font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 3px;
+    border: 1px solid var(--border); color: var(--text-muted);
+  }
+  .atom-badge.notice { border-color: var(--accent-amber); color: var(--accent-amber); }
+  .atom-badge.spec { border-color: var(--accent-blue); color: var(--accent-blue); }
+  .atom-badge.execute { border-color: var(--accent-green); color: var(--accent-green); }
+  .atom-badge.observe { border-color: var(--accent-purple); color: var(--accent-purple); }
+  .atom-badge.cross { border-color: var(--pink); color: var(--pink); }
+  .atom-badge.size-s { border-color: var(--accent-green); color: var(--accent-green); }
+  .atom-badge.size-m { border-color: var(--accent-amber); color: var(--accent-amber); }
+  .atom-badge.size-l { border-color: var(--red); color: var(--red); }
+
+  .atom-details { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .atom-section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 0.35rem; margin-top: 0.75rem; }
+  .atom-section-label:first-child { margin-top: 0; }
+  .atom-text { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .atom-deps { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .atom-dep {
+    font-size: 0.7rem; padding: 0.15rem 0.4rem; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 3px; color: var(--text-dim);
+  }
+
+  .arb-verdict { margin-top: 0.75rem; padding: 0.75rem; background: var(--bg); border-radius: 4px; border-left: 3px solid var(--accent-purple); }
+  .arb-verdict-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-purple); margin-bottom: 0.35rem; font-weight: 600; }
+  .arb-verdict-text { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+  .concern-flag { margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 4px; }
+  .concern-flag-label { font-size: 0.65rem; text-transform: uppercase; color: var(--red); font-weight: 700; letter-spacing: 0.06em; }
+  .concern-flag-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  /* Footer */
+  footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.8rem; text-align: center; }
+
+  @media (max-width: 640px) {
+    .radar-svg-wrap { flex: 1 1 100%; }
+    .tab-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+    .arb-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
