@@ -1,1 +1,746 @@
-$(cat /sessions/dreamy-keen-faraday/signals_updated.html)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signal Stream — Intent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --green-bright: #22c55e;
+            --red: #ef4444;
+            --gap: 1rem;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Navigation */
+        nav.site-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav.site-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        nav.site-nav a:hover {
+            color: var(--text);
+        }
+
+        nav.site-nav a.logo {
+            color: var(--text);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-right: auto;
+        }
+
+        nav.site-nav a.active {
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 0.25rem;
+        }
+
+        /* Main content */
+        main {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        /* Sidebar */
+        aside.sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .filter-group {
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+        }
+
+        .filter-group h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .filter-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .filter-group input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+        }
+
+        /* Signal stream */
+        .signal-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .signal {
+            padding: 1.25rem;
+            background: var(--surface);
+            border-left: 3px solid var(--border);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .signal:hover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .signal.critical {
+            border-left-color: var(--red);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .signal.warning {
+            border-left-color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .signal.opportunity {
+            border-left-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .signal.insight {
+            border-left-color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .signal.alignment {
+            border-left-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .signal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .signal-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+
+        .signal.critical .signal-badge {
+            background: var(--red);
+        }
+
+        .signal.warning .signal-badge {
+            background: var(--accent-amber);
+        }
+
+        .signal.opportunity .signal-badge {
+            background: var(--accent-green);
+        }
+
+        .signal.insight .signal-badge {
+            background: var(--accent-purple);
+        }
+
+        .signal.alignment .signal-badge {
+            background: var(--accent-blue);
+        }
+
+        .signal-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .signal-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .signal-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .signal-body {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+
+        .signal-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .tag:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .autonomy-level {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 0.5rem;
+        }
+
+        .autonomy-level.L4 {
+            background: var(--green-bright);
+        }
+
+        .autonomy-level.L3 {
+            background: var(--accent-green);
+        }
+
+        .autonomy-level.L2 {
+            background: var(--accent-blue);
+        }
+
+        .autonomy-level.L1 {
+            background: var(--accent-amber);
+        }
+
+        .autonomy-level.L0 {
+            background: var(--red);
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 3rem 1rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .view-toggle button {
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .view-toggle button.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .view-toggle button:hover {
+            border-color: var(--accent-blue);
+        }
+
+        /* List view */
+        .signal-list {
+            display: none;
+        }
+
+        .signal-list.active {
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .signal-list tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .signal-list tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .signal-list td {
+            padding: 0.75rem;
+            vertical-align: top;
+        }
+
+        .signal-list th {
+            padding: 0.75rem;
+            text-align: left;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .signal-list .signal-title {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            aside.sidebar {
+                position: static;
+            }
+
+            nav.site-nav {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="site-nav">
+            <a href="/intent/" class="logo">Intent</a>
+            <a href="/intent/">Dashboard</a>
+            <a href="/intent/signals.html" class="active">Signal Stream</a>
+            <a href="/intent/roadmap.html">Roadmap</a>
+            <a href="/intent/docs.html">Docs</a>
+        </nav>
+
+        <main>
+            <aside class="sidebar">
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Signals</span>
+                        <span class="stat-value" id="totalSignals">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">This Week</span>
+                        <span class="stat-value" id="weekSignals">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Critical</span>
+                        <span class="stat-value" id="criticalCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg Autonomy</span>
+                        <span class="stat-value" id="avgAutonomy">L0</span>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Signal Type</h3>
+                    <label><input type="checkbox" class="filter" data-filter="type" data-value="critical"> Critical</label>
+                    <label><input type="checkbox" class="filter" data-filter="type" data-value="warning"> Warning</label>
+                    <label><input type="checkbox" class="filter" data-filter="type" data-value="opportunity"> Opportunity</label>
+                    <label><input type="checkbox" class="filter" data-filter="type" data-value="insight"> Insight</label>
+                    <label><input type="checkbox" class="filter" data-filter="type" data-value="alignment"> Alignment</label>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Autonomy Level</h3>
+                    <label><input type="checkbox" class="filter" data-filter="autonomy" data-value="L4"> L4 (Full)</label>
+                    <label><input type="checkbox" class="filter" data-filter="autonomy" data-value="L3"> L3 (High)</label>
+                    <label><input type="checkbox" class="filter" data-filter="autonomy" data-value="L2"> L2 (Medium)</label>
+                    <label><input type="checkbox" class="filter" data-filter="autonomy" data-value="L1"> L1 (Low)</label>
+                    <label><input type="checkbox" class="filter" data-filter="autonomy" data-value="L0"> L0 (None)</label>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Status</h3>
+                    <label><input type="checkbox" class="filter" data-filter="status" data-value="active"> Active</label>
+                    <label><input type="checkbox" class="filter" data-filter="status" data-value="resolved"> Resolved</label>
+                </div>
+            </aside>
+
+            <section>
+                <div class="view-toggle">
+                    <button id="cardViewBtn" class="active">Card View</button>
+                    <button id="listViewBtn">List View</button>
+                </div>
+
+                <div class="signal-stream" id="signalStream"></div>
+                <table class="signal-list" id="signalList"></table>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Sample signal data
+        const signals = [
+            {
+                id: 1,
+                title: "L4 autonomy enabled for Intent design phases",
+                type: "alignment",
+                date: "2026-03-28",
+                description: "System has demonstrated stable pattern recognition in Intent methodology refinement. Ready for L4 autonomy on design-phase tasks.",
+                tags: ["intent", "autonomy", "design"],
+                autonomyLevel: "L4",
+                status: "active"
+            },
+            {
+                id: 2,
+                title: "Signal capture frequency increased 40% MoM",
+                type: "opportunity",
+                date: "2026-03-27",
+                description: "Proactive signal capture from Claude Code sessions is now integrated into daily workflow. Friction detection and insight synthesis improving significantly.",
+                tags: ["signals", "workflow", "metrics"],
+                autonomyLevel: "L2",
+                status: "active"
+            },
+            {
+                id: 3,
+                title: "GitHub observability layer stable across 4 repos",
+                type: "insight",
+                date: "2026-03-26",
+                description: "Entire.io integration complete. Commit pattern analysis, contributor insights, and issue correlations now available across all active repositories.",
+                tags: ["infrastructure", "observability", "github"],
+                autonomyLevel: "L3",
+                status: "active"
+            },
+            {
+                id: 4,
+                title: "Intent product naming decision finalized",
+                type: "alignment",
+                date: "2026-03-25",
+                description: "Product brand name 'Intent' confirmed. Sits above spec-driven dev tools in the stack. Messaging framework and positioning developed.",
+                tags: ["product", "branding", "strategy"],
+                autonomyLevel: "L3",
+                status: "resolved"
+            },
+            {
+                id: 5,
+                title: "Work Ontology v2 deployment ready",
+                type: "insight",
+                date: "2026-03-24",
+                description: "Two-plane model (Signal→Atom work stream, orthogonal to Product→Team ownership) tested in three major projects. Contract-independent implementation validated.",
+                tags: ["ontology", "architecture", "ops"],
+                autonomyLevel: "L2",
+                status: "active"
+            },
+            {
+                id: 6,
+                title: "Intent deployment topology config finalized",
+                type: "warning",
+                date: "2026-03-23",
+                description: "Local vs hosted configuration patterns locked down. Always-on processing required when laptop offline. Implementation in progress across 3 environments.",
+                tags: ["deployment", "infrastructure", "config"],
+                autonomyLevel: "L1",
+                status: "active"
+            },
+            {
+                id: 7,
+                title: "Three-layer migration to Claude Code CLI starting Phase 1",
+                type: "critical",
+                date: "2026-03-22",
+                description: "Autonomous Operations Design Phase 0 (Entire) complete. Transitioning from Cowork sandbox to Claude Code CLI. Phase 1 kickoff deferred pending resource allocation.",
+                tags: ["autonomy", "migration", "tooling"],
+                autonomyLevel: "L0",
+                status: "active"
+            },
+            {
+                id: 8,
+                title: "Ari team engineering rewire produces repeateable patterns",
+                type: "opportunity",
+                date: "2026-03-20",
+                description: "Observed team structure changes around AI-driven development. Tickets as bot specs, refinement sessions as design work. Patterns replicable across other teams.",
+                tags: ["patterns", "teams", "process"],
+                autonomyLevel: "L3",
+                status: "active"
+            },
+            {
+                id: 9,
+                title: "Subaru engagement repos (internal + public) live",
+                type: "alignment",
+                date: "2026-03-18",
+                description: "Dual-repo strategy implemented for Subaru MARS project. Internal repo for work, public repo for artifacts. Both tracked in Entire.io observability layer.",
+                tags: ["clients", "repos", "subaru"],
+                autonomyLevel: "L2",
+                status: "active"
+            },
+            {
+                id: 10,
+                title: "Intent reference site live at theparlor.github.io/intent",
+                type: "opportunity",
+                date: "2026-03-15",
+                description: "Reference site with 12 pages: overview, signal dashboard, roadmap, docs. Dynamic content from GitHub-backed data sources. Foundation for public engagement.",
+                tags: ["product", "site", "public"],
+                autonomyLevel: "L3",
+                status: "active"
+            }
+        ];
+
+        // Render signals
+        function renderSignals() {
+            const stream = document.getElementById('signalStream');
+            stream.innerHTML = '';
+
+            const filtered = filterSignals();
+            if (filtered.length === 0) {
+                stream.innerHTML = '<div class="empty-state"><h3>No signals found</h3><p>Try adjusting your filters.</p></div>';
+                return;
+            }
+
+            filtered.forEach(signal => {
+                const div = document.createElement('div');
+                div.className = `signal ${signal.type}`;
+                div.innerHTML = `
+                    <div class="signal-header">
+                        <div>
+                            <span class="signal-badge">${signal.type.toUpperCase()}</span>
+                            <span class="autonomy-level ${signal.autonomyLevel}">${signal.autonomyLevel}</span>
+                        </div>
+                    </div>
+                    <h3 class="signal-title">${signal.title}</h3>
+                    <div class="signal-meta">
+                        <span>📅 ${new Date(signal.date).toLocaleDateString()}</span>
+                        <span>🏷️ ${signal.tags.join(', ')}</span>
+                    </div>
+                    <p class="signal-body">${signal.description}</p>
+                    <div class="signal-tags">
+                        ${signal.tags.map(tag => `<a href="#" class="tag">${tag}</a>`).join('')}
+                    </div>
+                `;
+                stream.appendChild(div);
+            });
+        }
+
+        // Filter signals
+        function filterSignals() {
+            const typeFilters = Array.from(document.querySelectorAll('.filter[data-filter="type"]:checked')).map(el => el.dataset.value);
+            const autonomyFilters = Array.from(document.querySelectorAll('.filter[data-filter="autonomy"]:checked')).map(el => el.dataset.value);
+            const statusFilters = Array.from(document.querySelectorAll('.filter[data-filter="status"]:checked')).map(el => el.dataset.value);
+
+            return signals.filter(signal => {
+                const typeMatch = typeFilters.length === 0 || typeFilters.includes(signal.type);
+                const autonomyMatch = autonomyFilters.length === 0 || autonomyFilters.includes(signal.autonomyLevel);
+                const statusMatch = statusFilters.length === 0 || statusFilters.includes(signal.status);
+                return typeMatch && autonomyMatch && statusMatch;
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            const filtered = filterSignals();
+            const thisWeek = new Date();
+            thisWeek.setDate(thisWeek.getDate() - 7);
+
+            const weekCount = filtered.filter(s => new Date(s.date) >= thisWeek).length;
+            const criticalCount = filtered.filter(s => s.type === 'critical').length;
+            const avgAutonomy = filtered.length > 0
+                ? ['L4', 'L3', 'L2', 'L1', 'L0'].find(level => filtered.filter(s => s.autonomyLevel === level).length > 0)
+                : 'L0';
+
+            document.getElementById('totalSignals').textContent = filtered.length;
+            document.getElementById('weekSignals').textContent = weekCount;
+            document.getElementById('criticalCount').textContent = criticalCount;
+            document.getElementById('avgAutonomy').textContent = avgAutonomy;
+        }
+
+        // Render list view
+        function renderListView() {
+            const table = document.getElementById('signalList');
+            const filtered = filterSignals();
+
+            let html = `
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Autonomy</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            filtered.forEach(signal => {
+                html += `
+                    <tr>
+                        <td><div class="signal-title">${signal.title}</div></td>
+                        <td><span class="signal-badge">${signal.type.toUpperCase()}</span></td>
+                        <td><span class="autonomy-level ${signal.autonomyLevel}">${signal.autonomyLevel}</span></td>
+                        <td>${new Date(signal.date).toLocaleDateString()}</td>
+                        <td>${signal.status}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        // Update autonomy levels
+        function updateAutonomyLevels() {
+            // This could call an API to get current autonomy levels
+            // For now, it's a placeholder
+        }
+
+        // Event listeners
+        document.querySelectorAll('.filter').forEach(filter => {
+            filter.addEventListener('change', () => {
+                renderSignals();
+                updateStats();
+                renderListView();
+            });
+        });
+
+        document.getElementById('cardViewBtn').addEventListener('click', () => {
+            document.getElementById('signalStream').style.display = 'flex';
+            document.getElementById('signalList').classList.remove('active');
+            document.getElementById('cardViewBtn').classList.add('active');
+            document.getElementById('listViewBtn').classList.remove('active');
+        });
+
+        document.getElementById('listViewBtn').addEventListener('click', () => {
+            document.getElementById('signalStream').style.display = 'none';
+            document.getElementById('signalList').classList.add('active');
+            document.getElementById('listViewBtn').classList.add('active');
+            document.getElementById('cardViewBtn').classList.remove('active');
+            renderListView();
+        });
+
+        // Initialize
+        renderSignals();
+        updateStats();
+        updateAutonomyLevels();
+        renderListView();
+    </script>
+</body>
+</html>
