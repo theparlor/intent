@@ -5,606 +5,533 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Intent — Tech Radar, ARB & Atomized Roadmap</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --surface-2: #253549;
-    --border: #334155;
-    --text: #f1f5f9;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
-    --accent-blue: #3b82f6;
-    --accent-amber: #f59e0b;
-    --accent-purple: #8b5cf6;
-    --accent-green: #10b981;
-    --green-bright: #22c55e;
-    --red: #ef4444;
-    --pink: #ec4899;
-  }
-  html, body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    line-height: 1.6;
-    font-size: 15px;
-  }
-  a { color: var(--accent-blue); text-decoration: none; }
-  a:hover { color: var(--text); }
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-
-  /* Nav tabs */
-  .tab-nav {
-    display: flex; gap: 0; border-bottom: 2px solid var(--border);
-    margin: 2rem 0 0;
-  }
-  .tab-btn {
-    padding: 0.75rem 1.5rem; background: none; border: none;
-    color: var(--text-dim); font-size: 0.9rem; font-weight: 600;
-    cursor: pointer; border-bottom: 2px solid transparent;
-    margin-bottom: -2px; transition: all 0.2s;
-  }
-  .tab-btn:hover { color: var(--text-muted); }
-  .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
-  .tab-content { display: none; padding: 2rem 0; }
-  .tab-content.active { display: block; }
-
-  h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
-  h2 { font-size: 1.3rem; font-weight: 700; margin: 2rem 0 1rem; }
-  h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
-  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; line-height: 1.7; }
-
-  /* ── TECH RADAR ── */
-  .radar-container { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
-  .radar-svg-wrap { flex: 0 0 480px; }
-  .radar-legend { flex: 1; min-width: 300px; }
-
-  .ring-section { margin-bottom: 1.5rem; }
-  .ring-label {
-    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
-    font-weight: 700; margin-bottom: 0.5rem; padding-bottom: 0.35rem;
-    border-bottom: 2px solid var(--border);
-  }
-  .ring-label.adopt { color: var(--accent-green); border-color: var(--accent-green); }
-  .ring-label.trial { color: var(--accent-blue); border-color: var(--accent-blue); }
-  .ring-label.assess { color: var(--accent-amber); border-color: var(--accent-amber); }
-  .ring-label.hold { color: var(--red); border-color: var(--red); }
-
-  .blip-list { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-  .blip-tag {
-    font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 3px;
-    background: var(--surface); border: 1px solid var(--border);
-    color: var(--text-muted); cursor: default; transition: all 0.2s;
-  }
-  .blip-tag:hover { border-color: var(--accent-blue); color: var(--text); }
-  .blip-tag .num { font-weight: 700; margin-right: 0.3rem; color: var(--text-dim); font-size: 0.65rem; }
-
-  .quadrant-key { display: flex; gap: 1.5rem; margin: 1rem 0; flex-wrap: wrap; }
-  .qk-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted); }
-  .qk-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-  /* ── ARB PANEL ── */
-  .arb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
-  .arb-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 1.25rem; transition: border-color 0.2s;
-  }
-  .arb-card:hover { border-color: var(--accent-blue); }
-  .arb-persona {
-    display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
-  }
-  .arb-icon { font-size: 1.4rem; }
-  .arb-name { font-weight: 700; font-size: 0.95rem; }
-  .arb-role { font-size: 0.75rem; color: var(--text-dim); }
-  .arb-questions { list-style: none; }
-  .arb-questions li {
-    font-size: 0.82rem; color: var(--text-muted); padding: 0.3rem 0;
-    border-bottom: 1px solid rgba(51,65,85,0.4); line-height: 1.5;
-  }
-  .arb-questions li:last-child { border-bottom: none; }
-  .arb-questions li::before { content: "→ "; color: var(--text-dim); }
-
-  /* ── TECH STACK ── */
-  .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; }
-  .stack-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem;
-  }
-  .stack-layer { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 0.35rem; }
-  .stack-tech { font-weight: 600; font-size: 0.9rem; color: var(--text); }
-  .stack-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
-
-  /* ── ATOMIZED ITEMS ── */
-  .atom-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-  .atom-filter {
-    padding: 0.4rem 0.8rem; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 4px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer;
-    transition: all 0.2s; font-weight: 500;
-  }
-  .atom-filter:hover { border-color: var(--accent-blue); color: var(--text); }
-  .atom-filter.active { background: var(--accent-blue); color: var(--bg); border-color: var(--accent-blue); }
-
-  .atom-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 1.25rem; margin-bottom: 0.75rem; transition: all 0.2s;
-  }
-  .atom-card:hover { border-color: var(--accent-blue); background: var(--surface-2); }
-  .atom-card.expanded .atom-details { display: block; }
-
-  .atom-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; cursor: pointer; }
-  .atom-id { font-family: monospace; font-size: 0.7rem; color: var(--text-dim); font-weight: 600; }
-  .atom-title { font-size: 0.9rem; color: var(--text); line-height: 1.4; flex: 1; }
-  .atom-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem; }
-  .atom-badge {
-    font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 3px;
-    border: 1px solid var(--border); color: var(--text-muted);
-  }
-  .atom-badge.notice { border-color: var(--accent-amber); color: var(--accent-amber); }
-  .atom-badge.spec { border-color: var(--accent-blue); color: var(--accent-blue); }
-  .atom-badge.execute { border-color: var(--accent-green); color: var(--accent-green); }
-  .atom-badge.observe { border-color: var(--accent-purple); color: var(--accent-purple); }
-  .atom-badge.cross { border-color: var(--pink); color: var(--pink); }
-  .atom-badge.size-s { border-color: var(--accent-green); color: var(--accent-green); }
-  .atom-badge.size-m { border-color: var(--accent-amber); color: var(--accent-amber); }
-  .atom-badge.size-l { border-color: var(--red); color: var(--red); }
-
-  .atom-details { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-  .atom-section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 0.35rem; margin-top: 0.75rem; }
-  .atom-section-label:first-child { margin-top: 0; }
-  .atom-text { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
-  .atom-deps { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-  .atom-dep {
-    font-size: 0.7rem; padding: 0.15rem 0.4rem; background: var(--bg);
-    border: 1px solid var(--border); border-radius: 3px; color: var(--text-dim);
-  }
-
-  .arb-verdict { margin-top: 0.75rem; padding: 0.75rem; background: var(--bg); border-radius: 4px; border-left: 3px solid var(--accent-purple); }
-  .arb-verdict-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-purple); margin-bottom: 0.35rem; font-weight: 600; }
-  .arb-verdict-text { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
-
-  .concern-flag { margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 4px; }
-  .concern-flag-label { font-size: 0.65rem; text-transform: uppercase; color: var(--red); font-weight: 700; letter-spacing: 0.06em; }
-  .concern-flag-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
-
-  /* Footer */
-  footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.8rem; text-align: center; }
-
-  @media (max-width: 640px) {
-    .radar-svg-wrap { flex: 1 1 100%; }
-    .tab-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
-    .arb-grid { grid-template-columns: 1fr; }
-  }
+*{margin:0;padding:0;box-sizing:border-box;}:root{--bg:#0f172a;--surface:#1e293b;--surface-2:#253549;--border:#334155;--text:#f1f5f9;--text-muted:#94a3b8;--text-dim:#64748b;--accent-blue:#3b82f6;--accent-amber:#f59e0b;--accent-purple:#8b5cf6;--accent-green:#10b981;--green-bright:#22c55e;--red:#ef4444;--pink:#ec4899;}html, body{background:var(--bg);color:var(--text);font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;line-height:1.6;font-size:15px;}a{color:var(--accent-blue);text-decoration:none;}a:hover{color:var(--text);}.container{max-width:1100px;margin:0 auto;padding:0 1.5rem;}/* Nav tabs */
+.tab-nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin:2rem 0 0;}.tab-btn{padding:0.75rem 1.5rem;background:none;border:none;color:var(--text-dim);font-size:0.9rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}.tab-btn:hover{color:var(--text-muted);}.tab-btn.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue);}.tab-content{display:none;padding:2rem 0;}.tab-content.active{display:block;}h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:0.5rem;}h2{font-size:1.3rem;font-weight:700;margin:2rem 0 1rem;}h3{font-size:1rem;font-weight:600;margin-bottom:0.5rem;}.subtitle{color:var(--text-muted);font-size:0.9rem;margin-bottom:2rem;line-height:1.7;}/* ── TECH RADAR ── */
+.radar-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin:2rem 0;}.radar-quadrant{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;}.radar-title{font-size:1.1rem;font-weight:700;color:var(--accent-blue);margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}.radar-item{margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--surface-2);}.radar-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}.radar-label{font-weight:600;color:var(--text);margin-bottom:0.25rem;}.radar-status{display:inline-block;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}.radar-status.adopt{background:rgba(16,185,129,0.2);color:var(--accent-green);}.radar-status.trial{background:rgba(59,130,246,0.2);color:var(--accent-blue);}.radar-status.assess{background:rgba(245,158,11,0.2);color:var(--accent-amber);}.radar-status.hold{background:rgba(107,114,128,0.2);color:var(--text-muted);}.radar-desc{font-size:0.9rem;color:var(--text-muted);margin-top:0.5rem;line-height:1.5;}/* ── STACK ── */
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;margin:2rem 0;}.stack-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:all 0.2s;}.stack-card:hover{border-color:var(--accent-blue);box-shadow:0 0 20px rgba(59,130,246,0.1);}.stack-layer{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:0.75rem;}.stack-name{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;}.stack-description{font-size:0.9rem;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;}.stack-status{display:inline-block;padding:0.4rem 0.8rem;border-radius:6px;font-size:0.75rem;font-weight:700;text-transform:uppercase;}.stack-status.stable{background:rgba(16,185,129,0.15);color:var(--accent-green);}.stack-status.beta{background:rgba(59,130,246,0.15);color:var(--accent-blue);}.stack-status.experimental{background:rgba(139,92,246,0.15);color:var(--accent-purple);}.stack-status.deprecated{background:rgba(239,68,68,0.15);color:var(--red);}.tech-tags{display:flex;flex-wrap:wrap;gap:0.5rem;}.tech-tag{padding:0.3rem 0.6rem;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:0.8rem;color:var(--text-muted);}.tech-tag:hover{background:var(--border);color:var(--text);cursor:default;}/* ── PANEL ── */
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0;}.panel-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;}.panel-header{font-size:1.1rem;font-weight:700;color:var(--accent-blue);margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}.panel-item{margin-bottom:1.5rem;}.panel-item:last-child{margin-bottom:0;}.panel-label{font-weight:600;color:var(--text);margin-bottom:0.5rem;display:block;}.panel-value{color:var(--text-muted);font-size:0.95rem;}.panel-value a{color:var(--accent-blue);}.panel-value a:hover{color:var(--text);}.panel-list{list-style:none;margin:0;padding:0;}.panel-list li{padding:0.5rem 0;color:var(--text-muted);}.panel-list li:before{content:"→";margin-right:0.75rem;color:var(--accent-blue);font-weight:700;}/* ── ROADMAP ── */
+.roadmap-timeline{position:relative;padding:2rem 0;margin:2rem 0;}.roadmap-phase{margin-bottom:3rem;position:relative;}.roadmap-phase-header{display:flex;align-items:center;margin-bottom:1.5rem;}.roadmap-phase-label{font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);background:var(--surface);padding:0.4rem 0.8rem;border-radius:4px;margin-right:1rem;}.roadmap-phase-date{color:var(--text-muted);font-size:0.9rem;}.roadmap-items{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1.5rem;margin-left:0;}.roadmap-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;transition:all 0.2s;border-left:4px solid var(--accent-blue);}.roadmap-item.phase-0{border-left-color:var(--accent-green);}.roadmap-item.phase-1{border-left-color:var(--accent-amber);}.roadmap-item.phase-2{border-left-color:var(--accent-purple);}.roadmap-item.phase-3{border-left-color:var(--accent-blue);}.roadmap-item:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.3);}.roadmap-item-title{font-weight:700;color:var(--text);margin-bottom:0.5rem;font-size:0.95rem;}.roadmap-item-desc{color:var(--text-muted);font-size:0.85rem;line-height:1.5;}.roadmap-item-status{display:inline-block;margin-top:0.75rem;padding:0.3rem 0.6rem;background:var(--surface-2);border-radius:4px;font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--text-dim);}.separator-hr{height:2px;background:linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-amber));border:none;margin:3rem 0;opacity:0.3;}.footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.9rem;}@media (max-width: 768px){.radar-grid{grid-template-columns:1fr;}.stack-grid{grid-template-columns:1fr;}.panel-grid{grid-template-columns:1fr;}.roadmap-items{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-
-  <div class="container">
-    <h1>Intent</h1>
-    <div class="subtitle">Architectural Review Board: Tech Radar, Review Panel, and Atomized Roadmap</div>
-
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="showTab('radar')">Tech Radar</button>
-      <button class="tab-btn" onclick="showTab('stack')">Tech Stack</button>
-      <button class="tab-btn" onclick="showTab('arb')">ARB Panel</button>
-      <button class="tab-btn" onclick="showTab('atoms')">Atomized Roadmap</button>
-    </div>
-
-    <!-- TAB: TECH RADAR -->
-    <div id="radar" class="tab-content active">
-      <h2>Technology Radar</h2>
-      <p class="subtitle">Signal-driven architectural decisions across four rings: Adopt, Trial, Assess, Hold.</p>
-
-      <div class="radar-container">
-        <div class="radar-svg-wrap">
-          <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" style="background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
-            <!-- Radar rings -->
-            <circle cx="240" cy="240" r="200" fill="none" stroke="var(--border)" stroke-width="1"/>
-            <circle cx="240" cy="240" r="150" fill="none" stroke="var(--border)" stroke-width="1"/>
-            <circle cx="240" cy="240" r="100" fill="none" stroke="var(--border)" stroke-width="1"/>
-            <circle cx="240" cy="240" r="50" fill="none" stroke="var(--border)" stroke-width="1"/>
-            
-            <!-- Axes -->
-            <line x1="40" y1="240" x2="440" y2="240" stroke="var(--border)" stroke-width="1"/>
-            <line x1="240" y1="40" x2="240" y2="440" stroke="var(--border)" stroke-width="1"/>
-
-            <!-- Quadrant labels -->
-            <text x="380" y="30" font-size="12" fill="var(--text-muted)" text-anchor="middle">Platforms</text>
-            <text x="70" y="30" font-size="12" fill="var(--text-muted)" text-anchor="middle">Tools</text>
-            <text x="70" y="455" font-size="12" fill="var(--text-muted)" text-anchor="middle">Languages</text>
-            <text x="380" y="455" font-size="12" fill="var(--text-muted)" text-anchor="middle">Frameworks</text>
-
-            <!-- Blips (dots representing technologies) -->
-            <!-- Adopt ring -->
-            <circle cx="340" cy="160" r="6" fill="var(--accent-green)"/><text x="340" y="145" font-size="10" fill="var(--text-muted)" text-anchor="middle">1</text>
-            <circle cx="280" cy="120" r="6" fill="var(--accent-green)"/><text x="280" y="105" font-size="10" fill="var(--text-muted)" text-anchor="middle">2</text>
-            <circle cx="160" cy="160" r="6" fill="var(--accent-green)"/><text x="160" y="145" font-size="10" fill="var(--text-muted)" text-anchor="middle">3</text>
-
-            <!-- Trial ring -->
-            <circle cx="360" cy="200" r="6" fill="var(--accent-blue)"/><text x="360" y="185" font-size="10" fill="var(--text-muted)" text-anchor="middle">4</text>
-            <circle cx="240" cy="110" r="6" fill="var(--accent-blue)"/><text x="240" y="95" font-size="10" fill="var(--text-muted)" text-anchor="middle">5</text>
-            <circle cx="140" cy="240" r="6" fill="var(--accent-blue)"/><text x="125" y="245" font-size="10" fill="var(--text-muted)" text-anchor="middle">6</text>
-
-            <!-- Assess ring -->
-            <circle cx="300" cy="330" r="6" fill="var(--accent-amber)"/><text x="300" y="350" font-size="10" fill="var(--text-muted)" text-anchor="middle">7</text>
-            <circle cx="180" cy="310" r="6" fill="var(--accent-amber)"/><text x="180" y="330" font-size="10" fill="var(--text-muted)" text-anchor="middle">8</text>
-
-            <!-- Hold ring -->
-            <circle cx="310" cy="380" r="6" fill="var(--red)"/><text x="310" y="400" font-size="10" fill="var(--text-muted)" text-anchor="middle">9</text>
-          </svg>
-        </div>
-
-        <div class="radar-legend">
-          <div class="ring-section">
-            <div class="ring-label adopt">Adopt</div>
-            <div class="blip-list">
-              <div class="blip-tag"><span class="num">1</span>Python 3.11+</div>
-              <div class="blip-tag"><span class="num">2</span>FastAPI</div>
-              <div class="blip-tag"><span class="num">3</span>PostgreSQL</div>
-            </div>
-          </div>
-
-          <div class="ring-section">
-            <div class="ring-label trial">Trial</div>
-            <div class="blip-list">
-              <div class="blip-tag"><span class="num">4</span>Rust (WASM)</div>
-              <div class="blip-tag"><span class="num">5</span>Claude API</div>
-              <div class="blip-tag"><span class="num">6</span>Graph DBs</div>
-            </div>
-          </div>
-
-          <div class="ring-section">
-            <div class="ring-label assess">Assess</div>
-            <div class="blip-list">
-              <div class="blip-tag"><span class="num">7</span>Temporal ML</div>
-              <div class="blip-tag"><span class="num">8</span>HTMX</div>
-            </div>
-          </div>
-
-          <div class="ring-section">
-            <div class="ring-label hold">Hold</div>
-            <div class="blip-list">
-              <div class="blip-tag"><span class="num">9</span>Legacy XML</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <h3 style="margin-top: 2rem;">Quadrant Key</h3>
-      <div class="quadrant-key">
-        <div class="qk-item"><div class="qk-dot" style="background: #ec4899;"></div>Platforms</div>
-        <div class="qk-item"><div class="qk-dot" style="background: #f59e0b;"></div>Tools</div>
-        <div class="qk-item"><div class="qk-dot" style="background: #8b5cf6;"></div>Languages</div>
-        <div class="qk-item"><div class="qk-dot" style="background: #3b82f6;"></div>Frameworks</div>
-      </div>
-    </div>
-
-    <!-- TAB: TECH STACK -->
-    <div id="stack" class="tab-content">
-      <h2>Technology Stack</h2>
-      <p class="subtitle">Layered architecture across compute, data, integration, and intelligence layers.</p>
-
-      <div class="stack-grid">
-        <div class="stack-card">
-          <div class="stack-layer">Compute</div>
-          <div class="stack-tech">Python 3.11+</div>
-          <div class="stack-detail">Core runtime, REPL-driven development</div>
-        </div>
-        <div class="stack-card">
-          <div class="stack-layer">Compute</div>
-          <div class="stack-tech">FastAPI</div>
-          <div class="stack-detail">REST API framework, async native</div>
-        </div>
-        <div class="stack-card">
-          <div class="stack-layer">Data</div>
-          <div class="stack-tech">PostgreSQL</div>
-          <div class="stack-detail">Primary OLTP, signal store</div>
-        </div>
-        <div class="stack-card">
-          <div class="stack-layer">Data</div>
-          <div class="stack-tech">TimeScaleDB</div>
-          <div class="stack-detail">Time-series optimization for signals</div>
-        </div>
-        <div class="stack-card">
-          <div class="stack-layer">Integration</div>
-          <div class="stack-tech">Claude API</div>
-          <div class="stack-detail">AI-native processing, planning, spec generation</div>
-        </div>
-        <div class="stack-card">
-          <div class="stack-layer">Integration</div>
-          <div class="stack-tech">MCP Servers</div>
-          <div class="stack-detail">Pluggable tool ecosystem</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: ARB PANEL -->
-    <div id="arb" class="tab-content">
-      <h2>Architectural Review Board</h2>
-      <p class="subtitle">Perspectives of key technical personas during intent spec and execution.</p>
-
-      <div class="arb-grid">
-        <div class="arb-card">
-          <div class="arb-persona">
-            <div class="arb-icon">🏗️</div>
-            <div>
-              <div class="arb-name">Architect</div>
-              <div class="arb-role">Cowork surface</div>
-            </div>
-          </div>
-          <ul class="arb-questions">
-            <li>Does this spec align with our signal model?</li>
-            <li>What new dependencies or contracts emerge?</li>
-            <li>Could this cause cascading changes?</li>
-            <li>Where are the boundary crossings?</li>
-          </ul>
-        </div>
-
-        <div class="arb-card">
-          <div class="arb-persona">
-            <div class="arb-icon">⚙️</div>
-            <div>
-              <div class="arb-name">Builder</div>
-              <div class="arb-role">Claude Code surface</div>
-            </div>
-          </div>
-          <ul class="arb-questions">
-            <li>Can I execute this spec unambiguously?</li>
-            <li>What's the minimal test path?</li>
-            <li>Are dependencies resolvable locally?</li>
-            <li>What edge cases should I handle?</li>
-          </ul>
-        </div>
-
-        <div class="arb-card">
-          <div class="arb-persona">
-            <div class="arb-icon">🔍</div>
-            <div>
-              <div class="arb-name">Observer</div>
-              <div class="arb-role">Signal capture</div>
-            </div>
-          </div>
-          <ul class="arb-questions">
-            <li>What signals does execution emit?</li>
-            <li>Are success/failure conditions clear?</li>
-            <li>How do we detect surprises or drift?</li>
-            <li>What should we log for future audit?</li>
-          </ul>
-        </div>
-
-        <div class="arb-card">
-          <div class="arb-persona">
-            <div class="arb-icon">🎯</div>
-            <div>
-              <div class="arb-name">Product Owner</div>
-              <div class="arb-role">Intent validator</div>
-            </div>
-          </div>
-          <ul class="arb-questions">
-            <li>Does this solve the actual problem?</li>
-            <li>What's the user experience impact?</li>
-            <li>Are trade-offs acceptable?</li>
-            <li>How do we measure success?</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: ATOMIZED ROADMAP -->
-    <div id="atoms" class="tab-content">
-      <h2>Atomized Roadmap</h2>
-      <p class="subtitle">Discrete, signal-driven work items tied to the notice→spec→execute→observe loop.</p>
-
-      <div class="atom-filters">
-        <div class="atom-filter active" onclick="filterAtoms('all')">All</div>
-        <div class="atom-filter" onclick="filterAtoms('notice')">Notice</div>
-        <div class="atom-filter" onclick="filterAtoms('spec')">Spec</div>
-        <div class="atom-filter" onclick="filterAtoms('execute')">Execute</div>
-        <div class="atom-filter" onclick="filterAtoms('observe')">Observe</div>
-      </div>
-
-      <div id="atom-list">
-        <div class="atom-card" data-phase="notice">
-          <div class="atom-header">
-            <div>
-              <div class="atom-id">#ARB-001</div>
-              <div class="atom-title">Define ARB charter and decision framework</div>
-              <div class="atom-badges">
-                <span class="atom-badge notice">notice</span>
-                <span class="atom-badge size-m">medium</span>
-              </div>
-            </div>
-            <div onclick="toggleAtomDetails(event)" style="cursor: pointer; color: var(--text-muted);">+</div>
-          </div>
-          <div class="atom-details">
-            <div class="atom-section-label">Description</div>
-            <div class="atom-text">Establish ARB roles, decision criteria, and escalation paths for Intent architecture.</div>
-            <div class="atom-section-label">Owner</div>
-            <div class="atom-text">Architect + Builder</div>
-            <div class="atom-section-label">Dependencies</div>
-            <div class="atom-deps">
-              <div class="atom-dep">#INT-010</div>
-              <div class="atom-dep">#INT-011</div>
-            </div>
-            <div class="arb-verdict">
-              <div class="arb-verdict-label">ARB Verdict</div>
-              <div class="arb-verdict-text">Approved. Recommend starting with a lightweight decision log and escalation to full ARB review if cross-subsystem impact is detected.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="atom-card" data-phase="spec">
-          <div class="atom-header">
-            <div>
-              <div class="atom-id">#ARB-002</div>
-              <div class="atom-title">Design signal schema and enrichment pipeline</div>
-              <div class="atom-badges">
-                <span class="atom-badge spec">spec</span>
-                <span class="atom-badge size-l">large</span>
-              </div>
-            </div>
-            <div onclick="toggleAtomDetails(event)" style="cursor: pointer; color: var(--text-muted);">+</div>
-          </div>
-          <div class="atom-details">
-            <div class="atom-section-label">Description</div>
-            <div class="atom-text">Define signal taxonomy, metadata enrichment, and contextual linking to enable trust-driven autonomy decisions.</div>
-            <div class="atom-section-label">Owner</div>
-            <div class="atom-text">Architect + Observer</div>
-            <div class="atom-section-label">Dependencies</div>
-            <div class="atom-deps">
-              <div class="atom-dep">#ARB-001</div>
-            </div>
-            <div class="concern-flag">
-              <div class="concern-flag-label">Concern</div>
-              <div class="concern-flag-text">Ensure signal taxonomy doesn't leak implementation details. Keep ontology normalized to prevent redundancy.</div>
-            </div>
-            <div class="arb-verdict">
-              <div class="arb-verdict-label">ARB Verdict</div>
-              <div class="arb-verdict-text">Approved with caution. Recommend iterative refinement and a versioning strategy for the signal schema.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="atom-card" data-phase="execute">
-          <div class="atom-header">
-            <div>
-              <div class="atom-id">#ARB-003</div>
-              <div class="atom-title">Implement autonomy level L0 (signal capture only)</div>
-              <div class="atom-badges">
-                <span class="atom-badge execute">execute</span>
-                <span class="atom-badge size-m">medium</span>
-              </div>
-            </div>
-            <div onclick="toggleAtomDetails(event)" style="cursor: pointer; color: var(--text-muted);">+</div>
-          </div>
-          <div class="atom-details">
-            <div class="atom-section-label">Description</div>
-            <div class="atom-text">Deploy signal capture infrastructure, logging, and dashboard for observation across all tooling surfaces.</div>
-            <div class="atom-section-label">Owner</div>
-            <div class="atom-text">Builder + Observer</div>
-            <div class="atom-section-label">Dependencies</div>
-            <div class="atom-deps">
-              <div class="atom-dep">#ARB-001</div>
-              <div class="atom-dep">#ARB-002</div>
-            </div>
-            <div class="arb-verdict">
-              <div class="arb-verdict-label">ARB Verdict</div>
-              <div class="arb-verdict-text">Approved. Start with a minimal signal log and expand as patterns emerge.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="atom-card" data-phase="observe">
-          <div class="atom-header">
-            <div>
-              <div class="atom-id">#ARB-004</div>
-              <div class="atom-title">Establish signal-to-insight feedback loop</div>
-              <div class="atom-badges">
-                <span class="atom-badge observe">observe</span>
-                <span class="atom-badge size-s">small</span>
-              </div>
-            </div>
-            <div onclick="toggleAtomDetails(event)" style="cursor: pointer; color: var(--text-muted);">+</div>
-          </div>
-          <div class="atom-details">
-            <div class="atom-section-label">Description</div>
-            <div class="atom-text">Define how signals roll up to high-level insights and trigger new notice-phase items.</div>
-            <div class="atom-section-label">Owner</div>
-            <div class="atom-text">Product Owner + Observer</div>
-            <div class="atom-section-label">Dependencies</div>
-            <div class="atom-deps">
-              <div class="atom-dep">#ARB-003</div>
-            </div>
-            <div class="arb-verdict">
-              <div class="arb-verdict-label">ARB Verdict</div>
-              <div class="arb-verdict-text">Approved. Keep feedback loop lightweight; avoid over-automation early.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="atom-card" data-phase="spec">
-          <div class="atom-header">
-            <div>
-              <div class="atom-id">#ARB-005</div>
-              <div class="atom-title">Design L1-L4 autonomy delegation model</div>
-              <div class="atom-badges">
-                <span class="atom-badge spec">spec</span>
-                <span class="atom-badge size-l">large</span>
-              </div>
-            </div>
-            <div onclick="toggleAtomDetails(event)" style="cursor: pointer; color: var(--text-muted);">+</div>
-          </div>
-          <div class="atom-details">
-            <div class="atom-section-label">Description</div>
-            <div class="atom-text">Define autonomy tiers (L0: signal capture, L1: low-risk decisions, L2: medium decisions, L3: high-risk, L4: reserved).</div>
-            <div class="atom-section-label">Owner</div>
-            <div class="atom-text">Architect + Product Owner</div>
-            <div class="atom-section-label">Dependencies</div>
-            <div class="atom-deps">
-              <div class="atom-dep">#ARB-002</div>
-              <div class="atom-dep">#ARB-003</div>
-            </div>
-            <div class="concern-flag">
-              <div class="concern-flag-label">Concern</div>
-              <div class="concern-flag-text">Autonomy delegation must be reversible and testable. Include rollback and audit trails.</div>
-            </div>
-            <div class="arb-verdict">
-              <div class="arb-verdict-label">ARB Verdict</div>
-              <div class="arb-verdict-text">Approved with guardrails. Require explicit decision logging and escalation thresholds.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <footer>
-    Intent ARB | Last updated March 2026 | <a href="https://github.com/theparlor/intent">github.com/theparlor/intent</a>
-  </footer>
-
-  <script>
-    function showTab(tabName) {
-      const tabs = document.querySelectorAll('.tab-content');
-      const btns = document.querySelectorAll('.tab-btn');
-      
-      tabs.forEach(tab => tab.classList.remove('active'));
-      btns.forEach(btn => btn.classList.remove('active'));
-      
-      document.getElementById(tabName).classList.add('active');
-      event.target.classList.add('active');
-    }
-
-    function toggleAtomDetails(event) {
-      event.stopPropagation();
-      const card = event.target.closest('.atom-card');
-      card.classList.toggle('expanded');
-      event.target.textContent = card.classList.contains('expanded') ? '−' : '+';
-    }
-
-    function filterAtoms(phase) {
-      const cards = document.querySelectorAll('.atom-card');
-      const btns = document.querySelectorAll('.atom-filter');
-      
-      btns.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      
-      cards.forEach(card => {
-        if (phase === 'all' || card.dataset.phase === phase) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    function renderAtoms() {
-      // Placeholder for dynamic atom rendering
-      console.log('Atoms rendered');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      renderAtoms();
-    });
-  </script>
+<div class="container">
+<h1>Intent — ARB & Tech Radar</h1>
+<p class="subtitle">Technology adoption roadmap, architectural blueprint, and atomized delivery phases</p>
+<div class="tab-nav">
+<button class="tab-btn active" onclick="switchTab(event, 'radar')">Tech Radar</button>
+<button class="tab-btn" onclick="switchTab(event, 'stack')">Architectural Stack</button>
+<button class="tab-btn" onclick="switchTab(event, 'panel')">ARB Panel</button>
+<button class="tab-btn" onclick="switchTab(event, 'roadmap')">Atomized Roadmap</button>
+</div>
+<!-- TECH RADAR TAB -->
+<div id="radar" class="tab-content active">
+<h2>Technology Radar</h2>
+<p class="subtitle">Adoption lifecycle and assessment status</p>
+<div class="radar-grid">
+<div class="radar-quadrant">
+<div class="radar-title">ADOPT</div>
+<div class="radar-item">
+<div class="radar-label">Claude API (Claude 3.5 Sonnet)</div>
+<span class="radar-status adopt">Adopt</span>
+<div class="radar-desc">Core LLM backbone. Production inference, batch processing, extended context (200k tokens). Stable, proven reliability.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Git + GitHub</div>
+<span class="radar-status adopt">Adopt</span>
+<div class="radar-desc">Spec versioning, audit trail, collaborative workflow. Mission-critical for Intent as versioned contracts.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Markdown</div>
+<span class="radar-status adopt">Adopt</span>
+<div class="radar-desc">Specification language. Human-readable, version-controllable, LLM-native. Standard for Intent specs.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">HTML5 / CSS3 / JavaScript</div>
+<span class="radar-status adopt">Adopt</span>
+<div class="radar-desc">Web delivery layer. Static site generation, client-side interactivity. Browser-native platform.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Node.js / npm</div>
+<span class="radar-status adopt">Adopt</span>
+<div class="radar-desc">Build tooling, CLI infrastructure. Well-integrated with GitHub workflows, GitHub Actions support.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Docker</div>
+<span class="radar-status adopt">Adopt</span>
+<div class="radar-desc">Container runtime. Reproducibility for offline processing, consistent deployment across environments.</div>
+</div>
+</div>
+<div class="radar-quadrant">
+<div class="radar-title">TRIAL</div>
+<div class="radar-item">
+<div class="radar-label">GraphQL</div>
+<span class="radar-status trial">Trial</span>
+<div class="radar-desc">Query layer for signal index. Under evaluation for efficient spec traversal and dependency graph queries.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">WebSockets</div>
+<span class="radar-status trial">Trial</span>
+<div class="radar-desc">Real-time signal stream delivery. Evaluating for collaborative and live dashboard features.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">SQLite (embedded)</div>
+<span class="radar-status trial">Trial</span>
+<div class="radar-desc">Local signal storage, indexing. Testing as lightweight alternative to server-side persistence.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Temporal (workflow engine)</div>
+<span class="radar-status trial">Trial</span>
+<div class="radar-desc">Durable execution for autonomous agents. Under evaluation for long-running Intent execution chains.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">OpenTelemetry</div>
+<span class="radar-status trial">Trial</span>
+<div class="radar-desc">Observability instrumentation. Piloting for spec execution tracing and signal causality graphs.</div>
+</div>
+</div>
+<div class="radar-quadrant">
+<div class="radar-title">ASSESS</div>
+<div class="radar-item">
+<div class="radar-label">Rust (async runtime)</div>
+<span class="radar-status assess">Assess</span>
+<div class="radar-desc">High-performance signal processing. Evaluating tokio/axum for time-critical paths (agent dispatch, spec compilation).</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">WASM (WebAssembly)</div>
+<span class="radar-status assess">Assess</span>
+<div class="radar-desc">Spec compilation in browser. Exploring for client-side spec parsing and validation without server roundtrip.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Zephyr (multi-modal LLM)</div>
+<span class="radar-status assess">Assess</span>
+<div class="radar-desc">Lightweight inference alternative. Evaluating for on-device Intent execution and offline mode support.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Anthropic Workbench</div>
+<span class="radar-status assess">Assess</span>
+<div class="radar-desc">Prompt engineering toolkit. Under exploration for spec refinement workflows and intent authoring.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Prisma ORM</div>
+<span class="radar-status assess">Assess</span>
+<div class="radar-desc">Schema-driven data layer. Evaluating for signal database abstraction and migration safety.</div>
+</div>
+</div>
+<div class="radar-quadrant">
+<div class="radar-title">HOLD</div>
+<div class="radar-item">
+<div class="radar-label">Kubernetes (full orchestration)</div>
+<span class="radar-status hold">Hold</span>
+<div class="radar-desc">Over-engineered for Intent's current scope. Revisit only when scaling beyond Docker Compose and needing multi-region deployment.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Kafka</div>
+<span class="radar-status hold">Hold</span>
+<div class="radar-desc">High-throughput event streaming. Unnecessary until signal volume requires distributed pubsub beyond WebSockets.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">GraphQL Federation</div>
+<span class="radar-status hold">Hold</span>
+<div class="radar-desc">Multi-service federation layer. Premature; defer until multi-team API composition becomes a blocker.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Machine Learning (custom models)</div>
+<span class="radar-status hold">Hold</span>
+<div class="radar-desc">Custom training pipelines. Stay leveraged on Claude API; custom models create ops burden and moat erosion risk.</div>
+</div>
+<div class="radar-item">
+<div class="radar-label">Blockchain / Smart Contracts</div>
+<span class="radar-status hold">Hold</span>
+<div class="radar-desc">No cryptographic requirement; adds complexity without clarity. Git + signatures sufficient for Intent audit trail.</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ARCHITECTURAL STACK TAB -->
+<div id="stack" class="tab-content">
+<h2>Architectural Stack</h2>
+<p class="subtitle">Layered technology blueprint for Intent platform</p>
+<div class="stack-grid">
+<!-- LAYER 1: SIGNAL LAYER -->
+<div class="stack-card">
+<div class="stack-layer">Layer 1: Signal Ingestion</div>
+<div class="stack-name">Signal API</div>
+<div class="stack-description">Stateless ingestion endpoint. Validates signal shape, enriches with metadata (timestamp, source, causality), persists to signal store.</div>
+<span class="stack-status stable">Stable</span>
+<div class="tech-tags">
+<span class="tech-tag">Node.js + Express</span>
+<span class="tech-tag">OpenAPI spec</span>
+</div>
+</div>
+<div class="stack-card">
+<div class="stack-layer">Layer 1: Signal Ingestion</div>
+<div class="stack-name">Signal Store</div>
+<div class="stack-description">Immutable append-only log of signals. Local SQLite for MVP, PostgreSQL for multi-tenant. Index by source, causality chain, timestamp.</div>
+<span class="stack-status stable">Stable</span>
+<div class="tech-tags">
+<span class="tech-tag">SQLite / PostgreSQL</span>
+<span class="tech-tag">JSONB columns</span>
+</div>
+</div>
+<!-- LAYER 2: SPEC LAYER -->
+<div class="stack-card">
+<div class="stack-layer">Layer 2: Spec Authoring</div>
+<div class="stack-name">Spec Editor</div>
+<div class="stack-description">Web IDE for writing, validating, and versioning Intent specs. Live preview, inline signal binding, markdown-native editing.</div>
+<span class="stack-status beta">Beta</span>
+<div class="tech-tags">
+<span class="tech-tag">React + Monaco Editor</span>
+<span class="tech-tag">GitHub integration</span>
+</div>
+</div>
+<div class="stack-card">
+<div class="stack-layer">Layer 2: Spec Authoring</div>
+<div class="stack-name">Spec Compiler</div>
+<div class="stack-description">Validates spec syntax, resolves signal references, compiles to execution plan. Produces deterministic DAG of tasks and decision points.</div>
+<span class="stack-status stable">Stable</span>
+<div class="tech-tags">
+<span class="tech-tag">Custom parser</span>
+<span class="tech-tag">Markdown AST</span>
+</div>
+</div>
+<!-- LAYER 3: EXECUTION LAYER -->
+<div class="stack-card">
+<div class="stack-layer">Layer 3: Execution</div>
+<div class="stack-name">Agent Runtime</div>
+<div class="stack-description">Executes compiled specs against signal context. Manages tool invocation, LLM calls, state transitions. Observability instrumented.</div>
+<span class="stack-status beta">Beta</span>
+<div class="tech-tags">
+<span class="tech-tag">Claude API</span>
+<span class="tech-tag">Tool use</span>
+</div>
+</div>
+<div class="stack-card">
+<div class="stack-layer">Layer 3: Execution</div>
+<div class="stack-name">Execution Plan Store</div>
+<div class="stack-description">Tracks execution state, outcomes, and decision history. Enables replay, audit, and post-mortem analysis of spec runs.</div>
+<span class="stack-status beta">Beta</span>
+<div class="tech-tags">
+<span class="tech-tag">PostgreSQL</span>
+<span class="tech-tag">Event sourcing</span>
+</div>
+</div>
+<!-- LAYER 4: DELIVERY LAYER -->
+<div class="stack-card">
+<div class="stack-layer">Layer 4: Delivery</div>
+<div class="stack-name">Result Store</div>
+<div class="stack-description">Immutable record of spec outcomes: text, artifacts, side effects, errors. Queryable by execution ID, date, or signal origin.</div>
+<span class="stack-status beta">Beta</span>
+<div class="tech-tags">
+<span class="tech-tag">PostgreSQL JSONB</span>
+<span class="tech-tag">S3-backed artifacts</span>
+</div>
+</div>
+<div class="stack-card">
+<div class="stack-layer">Layer 4: Delivery</div>
+<div class="stack-name">Dashboard</div>
+<div class="stack-description">Real-time visualization of signal flow, spec execution, and system health. Signal digest, execution timeline, decision panel.</div>
+<span class="stack-status beta">Beta</span>
+<div class="tech-tags">
+<span class="tech-tag">React + D3.js</span>
+<span class="tech-tag">WebSockets</span>
+</div>
+</div>
+<!-- LAYER 5: OBSERVABILITY -->
+<div class="stack-card">
+<div class="stack-layer">Layer 5: Observability</div>
+<div class="stack-name">Tracing & Logging</div>
+<div class="stack-description">Structured logging, distributed tracing, and causality graphs. Every signal and execution step tagged with unique IDs.</div>
+<span class="stack-status experimental">Experimental</span>
+<div class="tech-tags">
+<span class="tech-tag">OpenTelemetry</span>
+<span class="tech-tag">Jaeger / Tempo</span>
+</div>
+</div>
+<div class="stack-card">
+<div class="stack-layer">Layer 5: Observability</div>
+<div class="stack-name">Metrics</div>
+<div class="stack-description">Quantitative health: signal volume, spec success rate, execution latency, LLM token usage, error distribution.</div>
+<span class="stack-status experimental">Experimental</span>
+<div class="tech-tags">
+<span class="tech-tag">Prometheus</span>
+<span class="tech-tag">Grafana</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ARB PANEL TAB -->
+<div id="panel" class="tab-content">
+<h2>ARB Panel</h2>
+<p class="subtitle">Architectural Review Board: governance, decision log, and design rationale</p>
+<div class="panel-grid">
+<div class="panel-section">
+<div class="panel-header">Core Principles</div>
+<div class="panel-item">
+<label class="panel-label">1. Spec-Driven Execution</label>
+<div class="panel-value">All intent execution must be declarative (spec-based), not imperative (hardcoded). Specs are versioned, auditable contracts that bridge human intent and agent execution.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">2. Signal-First Architecture</label>
+<div class="panel-value">Signals are the unit of observation. Every spec is triggered by, and responds to, signals in the platform. Causality is traced from signal to outcome.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">3. Autonomy via Trust</label>
+<div class="panel-value">Agents gain autonomy through explicit trust delegation (L0-L4 levels). Each level requires validated execution history and explicit human approval.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">4. Offline-First, Always-On</label>
+<div class="panel-value">Local processing (laptop) is primary. Always-on cloud processing is secondary. Architecture supports graceful degradation when offline.</div>
+</div>
+</div>
+<div class="panel-section">
+<div class="panel-header">Decision Log (Key ARB Decisions)</div>
+<div class="panel-item">
+<label class="panel-label">D1: Markdown for Specs</label>
+<div class="panel-value">Decision: Use Markdown as spec language (not YAML, JSON, or DSL). Rationale: Human-readable, LLM-native, version-control friendly, low learning curve.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">D2: Git as Source of Truth</label>
+<div class="panel-value">Decision: Git repos are authoritative for specs, signals, and execution plans. Rationale: Proven audit trail, distributed ownership, integration with GitHub Actions and CI/CD.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">D3: Claude API as Inference Layer</label>
+<div class="panel-value">Decision: Stable on Claude (3.5 Sonnet). Defer custom models. Rationale: Proven reliability, 200k context, tool use, batch API. Custom models = ops burden.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">D4: SQL over NoSQL</label>
+<div class="panel-value">Decision: Use relational DB (SQLite local, PostgreSQL hosted). Defer document stores. Rationale: Spec and signal data are highly structured; ACID guarantees required for audit trail.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">D5: Static Site for Dashboard</label>
+<div class="panel-value">Decision: Dashboard is static HTML + JavaScript. Optional backend for real-time. Rationale: Simplifies deployment, no server-side rendering, browser-native interactivity.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">D6: Deferred Features (Hold List)</label>
+<div class="panel-value">Kubernetes, Kafka, ML custom training, blockchain. Rationale: Premature optimization. Revisit when scaling becomes a measurable blocker, not speculative.</div>
+</div>
+</div>
+</div>
+<div class="panel-grid">
+<div class="panel-section">
+<div class="panel-header">Implementation Constraints</div>
+<div class="panel-item">
+<label class="panel-label">Single Source of Truth</label>
+<div class="panel-value">Git is authoritative. All state changes recorded as commits. No out-of-band mutations.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">Immutable Signal Log</label>
+<div class="panel-value">Signals are append-only. Never deleted or mutated. Causality chains are traceable from signal ingestion to execution outcome.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">Deterministic Spec Compilation</label>
+<div class="panel-value">Same spec + same signals → same execution plan. Reproducibility requirement for replay and post-mortem analysis.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">Auditability by Design</label>
+<div class="panel-value">Every execution step logged with metadata. Audit trail is queryable and immutable. No "black box" agent decisions.</div>
+</div>
+</div>
+<div class="panel-section">
+<div class="panel-header">Risk Mitigations</div>
+<div class="panel-item">
+<label class="panel-label">Hallucination / Drift</label>
+<div class="panel-value">Mitigation: Spec-based execution with signal binding. LLM output constrained by spec contract, not free-form reasoning.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">Cascading Failures</label>
+<div class="panel-value">Mitigation: Execution plans are DAG-structured. Failures are scoped. Graceful degradation when dependencies unavailable.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">Spec Corruption / Drift</label>
+<div class="panel-value">Mitigation: Git versioning + code review workflow. Breaking changes require explicit human approval and test execution.</div>
+</div>
+<div class="panel-item">
+<label class="panel-label">Data Privacy & Leakage</label>
+<div class="panel-value">Mitigation: Offline-first architecture. Signals and specs stay local by default. Explicit consent for cloud processing.</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ROADMAP TAB -->
+<div id="roadmap" class="tab-content">
+<h2>Atomized Roadmap</h2>
+<p class="subtitle">Spec-driven delivery phases. Deliverable = working spec + integration tests + documentation.</p>
+<hr class="separator-hr">
+<div class="roadmap-timeline">
+<!-- PHASE 0 -->
+<div class="roadmap-phase">
+<div class="roadmap-phase-header">
+<div class="roadmap-phase-label">Phase 0 (Complete)</div>
+<div class="roadmap-phase-date">Jan - Feb 2026</div>
+</div>
+<div class="roadmap-items">
+<div class="roadmap-item phase-0">
+<div class="roadmap-item-title">Signal Ingestion API</div>
+<div class="roadmap-item-desc">Stateless signal endpoint, validation, metadata enrichment. Local SQLite store. OpenAPI spec.</div>
+<div class="roadmap-item-status">Done</div>
+</div>
+<div class="roadmap-item phase-0">
+<div class="roadmap-item-title">Spec Compiler</div>
+<div class="roadmap-item-desc">Markdown parser, syntax validation, signal binding resolution. Produces DAG execution plan.</div>
+<div class="roadmap-item-status">Done</div>
+</div>
+<div class="roadmap-item phase-0">
+<div class="roadmap-item-title">Agent Runtime (MVP)</div>
+<div class="roadmap-item-desc">Execute compiled specs, invoke tools, manage state. Single-threaded, local mode only.</div>
+<div class="roadmap-item-status">Done</div>
+</div>
+<div class="roadmap-item phase-0">
+<div class="roadmap-item-title">Result Store & Basic Dashboard</div>
+<div class="roadmap-item-desc">Record execution outcomes. Static HTML dashboard with execution timeline and signal digest.</div>
+<div class="roadmap-item-status">Done</div>
+</div>
+<div class="roadmap-item phase-0">
+<div class="roadmap-item-title">Git Integration & Versioning</div>
+<div class="roadmap-item-desc">Store specs in Git. Automatic versioning on changes. Integration tests for spec mutations.</div>
+<div class="roadmap-item-status">Done</div>
+</div>
+<div class="roadmap-item phase-0">
+<div class="roadmap-item-title">Documentation & Site</div>
+<div class="roadmap-item-desc">Spec authoring guide, API docs, architecture overview. Live site at theparlor.github.io/intent/.</div>
+<div class="roadmap-item-status">Done</div>
+</div>
+</div>
+</div>
+<hr class="separator-hr">
+<!-- PHASE 1 -->
+<div class="roadmap-phase">
+<div class="roadmap-phase-header">
+<div class="roadmap-phase-label">Phase 1 (In Progress)</div>
+<div class="roadmap-phase-date">Mar - Apr 2026</div>
+</div>
+<div class="roadmap-items">
+<div class="roadmap-item phase-1">
+<div class="roadmap-item-title">Web-Based Spec Editor</div>
+<div class="roadmap-item-desc">Monaco-based IDE with live preview, signal binding, validation errors, markdown syntax highlighting.</div>
+<div class="roadmap-item-status">In Progress</div>
+</div>
+<div class="roadmap-item phase-1">
+<div class="roadmap-item-title">Multi-Signal Binding</div>
+<div class="roadmap-item-desc">Specs can reference multiple signals. Condition logic on signal combinations. Edge case testing.</div>
+<div class="roadmap-item-status">In Progress</div>
+</div>
+<div class="roadmap-item phase-1">
+<div class="roadmap-item-title">Execution Plan Store (PostgreSQL)</div>
+<div class="roadmap-item-desc">Persist execution plans and outcomes. Queryable history. Replay capability for debugging.</div>
+<div class="roadmap-item-status">In Progress</div>
+</div>
+<div class="roadmap-item phase-1">
+<div class="roadmap-item-title">Autonomy Levels (L0-L2)</div>
+<div class="roadmap-item-desc">Implement trust framework. L0 = human approval only. L1 = agent with human review. L2 = agent with guardrails.</div>
+<div class="roadmap-item-status">In Progress</div>
+</div>
+<div class="roadmap-item phase-1">
+<div class="roadmap-item-title">Test & Observability Scaffolding</div>
+<div class="roadmap-item-desc">Integration test framework for spec validation. OpenTelemetry instrumentation. Structured logging.</div>
+<div class="roadmap-item-status">In Progress</div>
+</div>
+</div>
+</div>
+<hr class="separator-hr">
+<!-- PHASE 2 -->
+<div class="roadmap-phase">
+<div class="roadmap-phase-header">
+<div class="roadmap-phase-label">Phase 2 (Planned)</div>
+<div class="roadmap-phase-date">May - Jun 2026</div>
+</div>
+<div class="roadmap-items">
+<div class="roadmap-item phase-2">
+<div class="roadmap-item-title">Advanced Dashboard</div>
+<div class="roadmap-item-desc">Real-time signal feed, execution timeline visualization, decision panel, metrics rollup.</div>
+<div class="roadmap-item-status">Planned</div>
+</div>
+<div class="roadmap-item phase-2">
+<div class="roadmap-item-title">Autonomy Levels (L3-L4)</div>
+<div class="roadmap-item-desc">L3 = full autonomy with audit trail. L4 = multi-agent coordination. Trust scoring, enrichment pipeline.</div>
+<div class="roadmap-item-status">Planned</div>
+</div>
+<div class="roadmap-item phase-2">
+<div class="roadmap-item-title">Spec Composition & Templates</div>
+<div class="roadmap-item-desc">Reusable spec fragments, inheritance, parameter passing. Template library for common patterns.</div>
+<div class="roadmap-item-status">Planned</div>
+</div>
+<div class="roadmap-item phase-2">
+<div class="roadmap-item-title">Signal History & Trend Analysis</div>
+<div class="roadmap-item-desc">Query historical signals, aggregate by source/type, detect anomalies, trend visualization.</div>
+<div class="roadmap-item-status">Planned</div>
+</div>
+<div class="roadmap-item phase-2">
+<div class="roadmap-item-title">Multi-Agent Coordination</div>
+<div class="roadmap-item-desc">Specs can spawn sub-agents, coordinate via shared signal channel. Dependency resolution and deadlock prevention.</div>
+<div class="roadmap-item-status">Planned</div>
+</div>
+</div>
+</div>
+<hr class="separator-hr">
+<!-- PHASE 3 -->
+<div class="roadmap-phase">
+<div class="roadmap-phase-header">
+<div class="roadmap-phase-label">Phase 3 (Future)</div>
+<div class="roadmap-phase-date">Jul 2026+</div>
+</div>
+<div class="roadmap-items">
+<div class="roadmap-item phase-3">
+<div class="roadmap-item-title">Temporal Integration</div>
+<div class="roadmap-item-desc">Durable workflow execution for long-running specs. Failure recovery, heartbeat, timeout management.</div>
+<div class="roadmap-item-status">Future</div>
+</div>
+<div class="roadmap-item phase-3">
+<div class="roadmap-item-title">WASM Spec Compilation</div>
+<div class="roadmap-item-desc">Browser-native spec parsing and validation. Offline spec authoring without server roundtrip.</div>
+<div class="roadmap-item-status">Future</div>
+</div>
+<div class="roadmap-item phase-3">
+<div class="roadmap-item-title">Distributed Execution</div>
+<div class="roadmap-item-desc">Specs can span multiple hosts/agents. Deterministic ordering, eventual consistency model for distributed signals.</div>
+<div class="roadmap-item-status">Future</div>
+</div>
+<div class="roadmap-item phase-3">
+<div class="roadmap-item-title">Custom Inference Optimization</div>
+<div class="roadmap-item-desc">Profile high-frequency specs. Evaluate fine-tuning or specialized models. Only if Claude API becomes bottleneck.</div>
+<div class="roadmap-item-status">Future</div>
+</div>
+<div class="roadmap-item phase-3">
+<div class="roadmap-item-title">Ecosystem & Integrations</div>
+<div class="roadmap-item-desc">Plugin SDK for custom signal sources. Marketplace for spec templates. SDK for embedding Intent in other platforms.</div>
+<div class="roadmap-item-status">Future</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<p>Intent ARB & Roadmap — Last updated 2026-03-30</p>
+<p>Core repos: <a href="https://github.com/theparlor/intent" target="_blank">theparlor/intent</a> | Site: <a href="https://theparlor.github.io/intent/" target="_blank">theparlor.github.io/intent</a></p>
+</div>
+</div>
+<script>
+function switchTab(event, tabName) {
+  // Hide all tab content
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(content => {
+    content.classList.remove('active');
+  });
+  
+  // Deactivate all tab buttons
+  const buttons = document.querySelectorAll('.tab-btn');
+  buttons.forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Show selected tab content
+  const selectedContent = document.getElementById(tabName);
+  if (selectedContent) {
+    selectedContent.classList.add('active');
+  }
+  
+  // Activate clicked button
+  event.currentTarget.classList.add('active');
+}
+</script>
 </body>
 </html>
