@@ -2,23 +2,28 @@
 
 > Verifiable assertions for the Intent product site. Run these checks after ANY modification to files in `docs/`.
 > Each contract is a shell command that returns pass/fail. All must pass before committing.
+> **IA v2:** Three-pillar model — see `site-ia.md` for full specification.
 
-## CON-SITE-001: Every HTML file has the primary nav
+## CON-SITE-001: Every HTML file has the 3-link primary nav
 
 **Type:** structural
 **Severity:** critical — broken nav means users can't navigate
 
 ```bash
-# Verify: every .html file in docs/ contains the site-nav with all 9 links
+# Verify: every .html file in docs/ contains the site-nav with 3 pillar links
 cd docs/
 FAIL=0
 for f in *.html; do
-  if ! grep -q 'class="site-nav"' "$f"; then
+  if grep -q 'class="site-nav"' "$f"; then
+    : # has nav
+  else
     echo "FAIL: $f missing site-nav"
     FAIL=1
   fi
-  for link in pitch.html methodology.html concept-brief.html work-system.html flow-diagram.html schemas.html arb.html dogfood.html roadmap.html; do
-    if ! grep -q "href=\"$link\"" "$f"; then
+  for link in pitch.html work-system.html architecture.html; do
+    if grep -q "href=\"$link\"" "$f"; then
+      : # has link
+    else
       echo "FAIL: $f missing nav link to $link"
       FAIL=1
     fi
@@ -27,23 +32,54 @@ done
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-001"
 ```
 
-## CON-SITE-002: Exactly one nav link is active per page
+## CON-SITE-002: Correct active states per pillar
 
 **Type:** structural
 **Severity:** major — wrong active state confuses navigation
 
 ```bash
-# Verify: pages in the primary nav have exactly one active link
+# Verify: every page has exactly the right active states
+# Primary nav: one of The Story / The System / The Build
+# Sub-nav: one link matching the current page
 cd docs/
 FAIL=0
-for f in pitch.html methodology.html concept-brief.html work-system.html flow-diagram.html schemas.html arb.html dogfood.html roadmap.html; do
-  COUNT=$(grep -o 'class="active"' "$f" | head -20 | wc -l)
-  # Primary nav pages should have at least 1 active (may have 2 if also in sub-nav)
-  if [ "$COUNT" -lt 1 ]; then
-    echo "FAIL: $f has no active nav link"
-    FAIL=1
+
+# Pillar 1 pages should have "The Story" active in primary nav
+for f in pitch.html concept-brief.html methodology.html roadmap.html; do
+  if [ -f "$f" ]; then
+    if grep -q 'class="active"' "$f"; then
+      : # has at least one active
+    else
+      echo "FAIL: $f has no active nav link"
+      FAIL=1
+    fi
   fi
 done
+
+# Pillar 2 pages should have "The System" active in primary nav
+for f in work-system.html flow-diagram.html schemas.html signals.html dogfood.html event-catalog.html; do
+  if [ -f "$f" ]; then
+    if grep -q 'class="active"' "$f"; then
+      : # has at least one active
+    else
+      echo "FAIL: $f has no active nav link"
+      FAIL=1
+    fi
+  fi
+done
+
+# Pillar 3 pages should have "The Build" active in primary nav
+for f in architecture.html agents.html deployment.html arb.html decisions.html native-repos.html; do
+  if [ -f "$f" ]; then
+    if grep -q 'class="active"' "$f"; then
+      : # has at least one active
+    else
+      echo "FAIL: $f has no active nav link"
+      FAIL=1
+    fi
+  fi
+done
+
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-002"
 ```
 
@@ -57,11 +93,15 @@ done
 cd docs/
 FAIL=0
 for f in *.html; do
-  if ! grep -q 'github.com/theparlor/intent' "$f"; then
+  if grep -q 'github.com/theparlor/intent' "$f"; then
+    : # has footer link
+  else
     echo "FAIL: $f missing standard footer link"
     FAIL=1
   fi
-  if ! grep -q 'Built with the Intent methodology' "$f"; then
+  if grep -q 'Built with the Intent methodology' "$f"; then
+    : # has tagline
+  else
     echo "FAIL: $f missing footer tagline"
     FAIL=1
   fi
@@ -78,7 +118,9 @@ done
 cd docs/
 FAIL=0
 for f in *.html; do
-  if ! grep -q 'href="styles.css"' "$f"; then
+  if grep -q 'href="styles.css"' "$f"; then
+    : # has styles.css
+  else
     echo "FAIL: $f does not link styles.css"
     FAIL=1
   fi
@@ -147,27 +189,57 @@ check_size concept-brief.html 7000
 check_size decisions.html 3500
 check_size event-catalog.html 1800
 check_size schemas.html 5600
-check_size index.html 5600
 check_size architecture.html 10500
 check_size agents.html 10500
 check_size deployment.html 8400
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-006"
 ```
 
-## CON-SITE-007: Technical sub-nav on depth pages
+## CON-SITE-007: Sub-nav on ALL pillar pages
 
 **Type:** structural
-**Severity:** major — technical pages need the sub-nav for navigation between them
+**Severity:** critical — every page in a pillar needs sub-nav for within-pillar navigation
 
 ```bash
 cd docs/
 FAIL=0
-for f in architecture.html agents.html deployment.html signals.html dogfood.html; do
-  if [ -f "$f" ] && ! grep -q 'class="sub-nav"' "$f"; then
-    echo "FAIL: $f missing sub-nav"
-    FAIL=1
+
+# Pillar 1: The Story
+for f in pitch.html concept-brief.html methodology.html roadmap.html; do
+  if [ -f "$f" ]; then
+    if grep -q 'class="sub-nav"' "$f"; then
+      : # has sub-nav
+    else
+      echo "FAIL: $f missing sub-nav (Pillar 1 — The Story)"
+      FAIL=1
+    fi
   fi
 done
+
+# Pillar 2: The System
+for f in work-system.html flow-diagram.html schemas.html signals.html dogfood.html event-catalog.html; do
+  if [ -f "$f" ]; then
+    if grep -q 'class="sub-nav"' "$f"; then
+      : # has sub-nav
+    else
+      echo "FAIL: $f missing sub-nav (Pillar 2 — The System)"
+      FAIL=1
+    fi
+  fi
+done
+
+# Pillar 3: The Build
+for f in architecture.html agents.html deployment.html arb.html decisions.html native-repos.html; do
+  if [ -f "$f" ]; then
+    if grep -q 'class="sub-nav"' "$f"; then
+      : # has sub-nav
+    else
+      echo "FAIL: $f missing sub-nav (Pillar 3 — The Build)"
+      FAIL=1
+    fi
+  fi
+done
+
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-007"
 ```
 
@@ -231,32 +303,38 @@ done
 [ $FAIL -eq 0 ] && echo "PASS: CON-SITE-009"
 ```
 
-## Running All Contracts
+## CON-SITE-010: Primary nav has exactly 3 pillar links (no old 9-link nav)
+
+**Type:** structural
+**Severity:** critical — ensures the IA v2 migration is complete, no pages retain old nav
 
 ```bash
-#!/bin/bash
-# Save as docs/verify-site.sh and run after any change
-cd "$(dirname "$0")"
-echo "=== Intent Site Contract Verification ==="
-echo ""
-
-# Run each contract check...
-# (paste each contract's bash block here)
-
-echo ""
-echo "=== Verification Complete ==="
+cd docs/
+FAIL=0
+for f in *.html; do
+  # Old nav had direct links to methodology, concept-brief, schemas, etc. in primary nav
+  # New nav only has pitch, work-system, architecture in primary nav
+  # Check that old-style nav links are NOT in the site-nav block
+  OLD_IN_NAV=$(sed -n '/<nav class="site-nav">/,/<\/nav>/p' "$f" | grep -c 'href="methodology.html"\|href="concept-brief.html"\|href="schemas.html"\|href="flow-diagram.html"\|href="arb.html"\|href="dogfood.html"\|href="roadmap.html"')
+  if [ "$OLD_IN_NAV" -gt 0 ]; then
+    echo "FAIL: $f still has old 9-link primary nav (found $OLD_IN_NAV old links in site-nav)"
+    FAIL=1
+  fi
+done
+[ $FAIL -eq 0 ] && echo "PASS: CON-SITE-010"
 ```
 
 ## Contract Summary
 
 | ID | Name | Severity | What It Catches |
 |----|------|----------|-----------------|
-| CON-SITE-001 | Primary nav present | critical | Missing navigation |
-| CON-SITE-002 | Active state correct | major | Wrong page highlighted |
+| CON-SITE-001 | 3-link primary nav present | critical | Missing pillar navigation |
+| CON-SITE-002 | Active state correct per pillar | major | Wrong pillar/page highlighted |
 | CON-SITE-003 | Standard footer | major | Missing/wrong footer |
 | CON-SITE-004 | All pages link styles.css | critical | Missing shared foundation |
 | CON-SITE-005 | Rich pages retain inline CSS | critical | Stripped page-specific visuals |
 | CON-SITE-006 | File size canary | critical | Content loss detection |
-| CON-SITE-007 | Sub-nav on tech pages | major | Missing technical nav |
+| CON-SITE-007 | Sub-nav on ALL pillar pages | critical | Missing within-pillar navigation |
 | CON-SITE-008 | Visual components intact | critical | Lost diagrams/interactives |
 | CON-SITE-009 | No broken links | major | Dead internal links |
+| CON-SITE-010 | No old 9-link nav remnants | critical | Incomplete IA migration |

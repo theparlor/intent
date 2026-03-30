@@ -254,34 +254,68 @@ All site pages and artifacts use this palette:
 - Design/QA (○): `#8b5cf6` (purple)
 - Agent (◉): `#10b981` (green)
 
-### Site Nav Pattern
-Every page in `docs/` uses this main nav:
+### Site Information Architecture (IA v2 — Three Pillars)
+
+**IMPORTANT: Read `docs/site-ia.md` for the full IA specification. This section is the summary.**
+
+The site is organized into three pillars. The primary nav has exactly 3 links (plus logo). Each pillar has a hero page and depth pages with a sub-nav.
+
+#### Primary Nav (ALL pages)
 ```html
 <nav class="site-nav">
   <a href="index.html" class="logo"><span>I</span>ntent</a>
-  <a href="pitch.html">Pitch</a>
-  <a href="methodology.html">Methodology</a>
+  <a href="pitch.html">The Story</a>
+  <a href="work-system.html">The System</a>
+  <a href="architecture.html">The Build</a>
+</nav>
+```
+One pillar link gets `class="active"` based on which pillar the current page belongs to.
+
+#### Pillar 1 — The Story (pitch.html is hero)
+Pages: pitch.html, concept-brief.html, methodology.html, roadmap.html
+Primary nav active: "The Story"
+```html
+<nav class="sub-nav">
+  <a href="pitch.html">Overview</a>
   <a href="concept-brief.html">Concept Brief</a>
-  <a href="work-system.html">Work System</a>
-  <a href="flow-diagram.html">Flow</a>
-  <a href="schemas.html">Schemas</a>
-  <a href="arb.html">ARB</a>
-  <a href="dogfood.html">Dogfood</a>
+  <a href="methodology.html">Methodology</a>
   <a href="roadmap.html">Roadmap</a>
 </nav>
 ```
-The current page gets `class="active"`. Pages not in the main nav (signals, decisions, event-catalog, visual-brief, native-repos, architecture, agents, deployment) have no active on any main nav link.
 
-Technical pages (architecture, agents, deployment, signals, dogfood) also have a sub-nav:
+#### Pillar 2 — The System (work-system.html is hero)
+Pages: work-system.html, flow-diagram.html, schemas.html, signals.html, dogfood.html, event-catalog.html
+Primary nav active: "The System"
 ```html
 <nav class="sub-nav">
-  <a href="architecture.html">Architecture</a>
-  <a href="agents.html">Agents</a>
-  <a href="deployment.html">Deployment</a>
+  <a href="work-system.html">Overview</a>
+  <a href="flow-diagram.html">Flow</a>
+  <a href="schemas.html">Schemas</a>
   <a href="signals.html">Signals</a>
   <a href="dogfood.html">Dogfood</a>
+  <a href="event-catalog.html">Events</a>
 </nav>
 ```
+
+#### Pillar 3 — The Build (architecture.html is hero)
+Pages: architecture.html, agents.html, deployment.html, arb.html, decisions.html, native-repos.html
+Primary nav active: "The Build"
+```html
+<nav class="sub-nav">
+  <a href="architecture.html">Overview</a>
+  <a href="agents.html">Agents</a>
+  <a href="deployment.html">Deployment</a>
+  <a href="arb.html">ARB</a>
+  <a href="decisions.html">Decisions</a>
+  <a href="native-repos.html">Repos</a>
+</nav>
+```
+
+#### Index Page
+`index.html` redirects to or mirrors `pitch.html`. The logo always links to `index.html`.
+
+#### Visual Brief
+`visual-brief.html` is NOT a nav destination. It's a CTA link on the pitch page.
 
 Max-width: 900px. Footer with source link to GitHub. All shared CSS lives in `docs/styles.css` — page-specific CSS stays in small inline `<style>` blocks.
 
@@ -314,13 +348,8 @@ Footer may be wrapped in `<div class="container">` on content pages.
 See `docs/site-spec.md` for the canonical page inventory with CSS strategy, nav tier, file size baselines, and status.
 See `docs/site-contracts.md` for verifiable assertions. **Run contract checks after ANY change to docs/.**
 
-### Site Information Architecture
-The index page follows five sections that mirror the loop:
-1. **Understand** (blue) — 4 feature cards: Visual Brief, Methodology, Concept Brief, Work Ontology
-2. **The Shift** (amber) — 6 from/to cards showing what changes
-3. **Implement** (green) — 3 cards: Repo Pattern, Event Catalog, Flow Diagram
-4. **Open Development** (purple) — 2 cards: Signal Stream, Decision Log
-5. **Engage** (pink) — 3 persona columns + GitHub CTA
+### Site IA Implementation Notes
+The site uses a three-pillar IA (see "Site Information Architecture" above). The pitch page replaces the old index as the primary landing experience. See `docs/site-ia.md` for the full specification, `docs/site-contracts.md` for verifiable assertions, and `docs/site-spec.md` for the page inventory.
 
 ## How to Continue Development
 
