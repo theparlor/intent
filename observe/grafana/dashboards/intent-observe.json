@@ -1,0 +1,240 @@
+{
+  "uid": "intent-observe",
+  "title": "Intent Observe",
+  "description": "Observability dashboard for the Intent operating model. Traces work from Signal through to Contract verification.",
+  "editable": true,
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["intent", "observe", "otel"],
+  "__requires": [
+    { "type": "datasource", "id": "tempo", "name": "Tempo" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus/Mimir" },
+    { "type": "datasource", "id": "loki", "name": "Loki" }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "source",
+        "type": "custom",
+        "label": "Source",
+        "current": { "text": "All", "value": "" },
+        "options": [
+          { "text": "All", "value": "", "selected": true },
+          { "text": "CLI", "value": "cli" },
+          { "text": "MCP", "value": "mcp" },
+          { "text": "GitHub Action", "value": "github-action" },
+          { "text": "Agent", "value": "agent-trace" }
+        ]
+      },
+      {
+        "name": "autonomy",
+        "type": "custom",
+        "label": "Autonomy Level",
+        "current": { "text": "All", "value": "" },
+        "options": [
+          { "text": "All", "value": "", "selected": true },
+          { "text": "L0", "value": "L0" },
+          { "text": "L1", "value": "L1" },
+          { "text": "L2", "value": "L2" },
+          { "text": "L3", "value": "L3" },
+          { "text": "L4", "value": "L4" }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Active Signals",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "sum(intent_signals_active)",
+          "legendFormat": "Signals"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "#f59e0b" },
+          "thresholds": { "steps": [{ "value": null, "color": "#f59e0b" }] }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 2,
+      "title": "Active Intents",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "sum(intent_intents_active)",
+          "legendFormat": "Intents"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "#3b82f6" },
+          "thresholds": { "steps": [{ "value": null, "color": "#3b82f6" }] }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 3,
+      "title": "Specs In Progress",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "sum(intent_specs_in_progress)",
+          "legendFormat": "Specs"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "#8b5cf6" },
+          "thresholds": { "steps": [{ "value": null, "color": "#8b5cf6" }] }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 4,
+      "title": "Contract Results",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "sum(rate(intent_contracts_total{result=\"pass\"}[7d])) / sum(rate(intent_contracts_total[7d]))",
+          "legendFormat": "Pass Rate"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "mode": "fixed", "fixedColor": "#10b981" },
+          "thresholds": {
+            "steps": [
+              { "value": null, "color": "#ef4444" },
+              { "value": 0.8, "color": "#f59e0b" },
+              { "value": 0.95, "color": "#10b981" }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 5,
+      "title": "Cycle Time",
+      "type": "bargauge",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "histogram_quantile(0.5, rate(intent_cycle_time_signal_to_intent_bucket[7d]))",
+          "legendFormat": "Signal → Intent (p50)"
+        },
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "histogram_quantile(0.95, rate(intent_cycle_time_signal_to_intent_bucket[7d]))",
+          "legendFormat": "Signal → Intent (p95)"
+        },
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "histogram_quantile(0.5, rate(intent_cycle_time_intent_to_spec_bucket[7d]))",
+          "legendFormat": "Intent → Spec (p50)"
+        },
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "histogram_quantile(0.5, rate(intent_cycle_time_spec_to_complete_bucket[7d]))",
+          "legendFormat": "Spec → Complete (p50)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dtdurations",
+          "thresholds": {
+            "steps": [
+              { "value": null, "color": "#10b981" },
+              { "value": 259200, "color": "#f59e0b" },
+              { "value": 604800, "color": "#ef4444" }
+            ]
+          }
+        }
+      },
+      "options": { "orientation": "horizontal", "displayMode": "gradient" }
+    },
+    {
+      "id": 6,
+      "title": "Trust Distribution",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "sum by (autonomy_level) (intent_signals_active)",
+          "legendFormat": "{{autonomy_level}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "L0" }, "properties": [{ "id": "color", "value": { "fixedColor": "#ef4444" } }] },
+          { "matcher": { "id": "byName", "options": "L1" }, "properties": [{ "id": "color", "value": { "fixedColor": "#f59e0b" } }] },
+          { "matcher": { "id": "byName", "options": "L2" }, "properties": [{ "id": "color", "value": { "fixedColor": "#3b82f6" } }] },
+          { "matcher": { "id": "byName", "options": "L3" }, "properties": [{ "id": "color", "value": { "fixedColor": "#10b981" } }] },
+          { "matcher": { "id": "byName", "options": "L4" }, "properties": [{ "id": "color", "value": { "fixedColor": "#059669" } }] }
+        ]
+      },
+      "options": { "orientation": "horizontal", "barWidth": 0.7, "showValue": "always" }
+    },
+    {
+      "id": 7,
+      "title": "Event Stream",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "datasource": { "type": "tempo" },
+          "queryType": "search",
+          "search": "resource.service.name = \"intent\"",
+          "limit": 50
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Span Name" }, "properties": [{ "id": "custom.width", "value": 200 }] }
+        ]
+      },
+      "options": { "showHeader": true, "sortBy": [{ "displayName": "Start time", "desc": true }] }
+    },
+    {
+      "id": 8,
+      "title": "Trace Explorer",
+      "type": "traces",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 20 },
+      "targets": [
+        {
+          "datasource": { "type": "tempo" },
+          "queryType": "traceqlSearch",
+          "query": "{ resource.service.name = \"intent\" }",
+          "limit": 20
+        }
+      ],
+      "options": {}
+    }
+  ],
+  "time": { "from": "now-7d", "to": "now" },
+  "refresh": "30s"
+}
