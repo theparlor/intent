@@ -335,9 +335,10 @@ Brien may generate signals from Cowork sessions, Claude desktop app (iOS/web/des
 **Generate a disambiguation signal** — don't dead-end. Capture what's ambiguous as a new signal for Brien to review. Write it to `.intent/signals/` with `status: blocked` and `trust: 0.1`.
 
 ### Priority of Work
-1. Task specs in `docs/tasks/` — explicit handoffs from Cowork
-2. Contract violations — fix any failing contracts
-3. Signals with trust ≥ 0.6 that can be auto-executed (L3/L4)
-4. Signals that need enrichment (add context, compute trust)
-5. Specs that are approved and ready for execution
-6. Infrastructure work (tooling, pipeline, config)
+1. **Site roadmap** — read `../intent-site/tasks/ROADMAP.md` for the master execution plan. It has phased work with verification scripts. Execute the current phase before moving to product repo tasks.
+2. Task specs in `docs/tasks/` — explicit handoffs from Cowork
+3. Contract violations — fix any failing contracts
+4. Signals with trust ≥ 0.6 that can be auto-executed (L3/L4)
+5. Signals that need enrichment (add context, compute trust)
+6. Specs that are approved and ready for execution
+7. Infrastructure work (tooling, pipeline, config)
