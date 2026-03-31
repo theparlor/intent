@@ -34,11 +34,11 @@ Persona key: △ Practitioner-Architect · ◇ Product-Minded Leader · ○ Desi
 |-------|--------|----------|
 | Signal schema | ✅ Defined | `.intent/templates/signal.md` |
 | CLI capture tool | ✅ Built | `bin/intent-signal` |
-| MCP server (Claude Code, Cowork, Cursor) | ✅ Built | `tools/intent-mcp/server.py` |
+| MCP servers (notice, spec, observe) | ✅ Built (in-memory) | `servers/notice.py`, `servers/spec.py`, `servers/observe.py` |
 | GitHub Action (event emission) | ✅ Built | `.github/workflows/intent-events.yml` |
 | Quickstart guide | ✅ Written | `docs/quickstart.md` |
 | Signal capture architecture | ✅ Specced | `spec/signal-capture-system.md` |
-| 11 founding signals | ✅ Captured | `.intent/signals/` |
+| 24 active signals (SIG-001–024) | ✅ Captured | `.intent/signals/` |
 | Slack integration | ⬜ Specced, not built | Tier 3 in capture spec |
 | GitHub native capture | ⬜ Specced, not built | Tier 4 in capture spec |
 | ChatGPT / Copilot / Codex plugins | ⬜ Specced, not built | Tier 5 in capture spec |
@@ -78,15 +78,18 @@ The Notice product can be installed and used on a real repo today. A practitione
 | Asset | Status | Location |
 |-------|--------|----------|
 | Work ontology (7 levels) | ✅ Defined | `spec/work-ontology.md` |
-| Intent template | ⬜ Not built | — |
-| Spec template | ⬜ Not built | — |
-| Contract template | ⬜ Not built | — |
-| Spec validation tooling | ⬜ Not started | — |
+| Intent template | ✅ Built | `.intent/templates/intent.md` |
+| Spec template | ✅ Built | `.intent/templates/spec.md` |
+| Contract template | ✅ Built | `.intent/templates/contract.md` |
+| All 13 work unit templates | ✅ Built | `.intent/templates/` (signal, intent, spec, contract, atom, cluster, product, team, decision, digest, event, arb-review, config) |
+| `intent-spec` CLI tool | ✅ Built | `bin/intent-spec` |
+| MCP spec tools | ✅ Built (in-memory) | `servers/spec.py` (create_spec, create_contract, verify_contract, assess_agent_readiness, list_specs) |
 | Cross-functional shaping workflow | ✅ Conceptual (flow diagram) | `spec/flow-diagram.md` |
+| Spec validation tooling | ⬜ Not started | — |
 | Spec-to-agent handoff format | ⬜ Not started | — |
 
-### Maturity: **Conceptual**
-The Spec product has strong methodology (the ontology, the shaping flow, the persona model) but zero tooling. A practitioner who reads the docs understands *what* a good spec looks like, but there's no template to start from, no validation to check if a spec is agent-ready, and no structured handoff format that an AI agent can consume.
+### Maturity: **Tooled**
+The Spec product has templates, a CLI tool, and MCP server tooling. A practitioner can create intents, specs, and contracts from the terminal or Claude Code. What's missing is *validation* (is this spec agent-ready?) and a *structured handoff format* that agents can consume directly without human translation.
 
 ### Next Investments
 
@@ -119,13 +122,14 @@ The Spec product has strong methodology (the ontology, the shaping flow, the per
 | Asset | Status | Location |
 |-------|--------|----------|
 | Event schema for execution events | ✅ Defined | `spec/event-catalog.md` |
-| Agent trace capture | ⬜ Not started | — |
+| Trace propagation (trace_id through event chain) | ✅ Task-specced | `tasks/trace-propagation.md` |
+| Entire.io agent trace capture | ✅ Configured | `.entire/settings.json` + `.entire/logs/` |
+| Agent definitions (6 subagents) | ✅ Defined | `servers/AGENT_DEFINITIONS.md` |
 | Spec-to-agent handoff | ⬜ Not started | — |
 | Contract verification (pre/post execution) | ⬜ Not started | — |
-| Execution observability | ⬜ Not started | — |
 
-### Maturity: **Defined**
-Execute has the event types defined (contract.verified, agent-trace events) but no actual integration with any agent system. This is intentional — Intent doesn't want to *be* the execution engine. But it does need to know that execution happened, that contracts were checked, and that work output can be traced back to the spec that authorized it.
+### Maturity: **Defined + Instrumented**
+Execute has the event types, trace propagation is task-specced with explicit code diffs, and Entire.io already captures agent reasoning alongside commits across all 4 repos. The CLAUDE.md agent handoff protocol functions as a de facto spec-to-agent handoff — agents read CLAUDE.md → read task specs → execute. What's missing is *formalization* of that handoff and *contract verification* tooling that checks outcomes against specs.
 
 ### Next Investments
 
@@ -155,17 +159,21 @@ Execute has the event types defined (contract.verified, agent-trace events) but 
 | Asset | Status | Location |
 |-------|--------|----------|
 | Event schema (OTel-compatible) | ✅ Defined | `spec/event-catalog.md` |
-| Event log format (JSONL) | ✅ Defined | `.intent/events/events.jsonl` |
+| Event log format (JSONL) | ✅ Defined | `.intent/events/events.jsonl` (50 events) |
 | 15 cataloged event types | ✅ Defined | `spec/event-catalog.md` |
 | GitHub Action event emission | ✅ Built | `.github/workflows/intent-events.yml` |
-| Dashboard | ⬜ Not started | — |
+| Observability stack spec (27KB) | ✅ Specced | `spec/observability-stack.md` |
+| OTel Collector config | ✅ Built | `observe/otel-collector-config.yaml` |
+| File tail adapter | ✅ Task-specced | `tasks/file-tail-adapter.md` |
+| Grafana dashboard definition | ✅ Task-specced | `tasks/grafana-dashboard.md` |
+| MCP observe server | ✅ Built (in-memory) | `servers/observe.py` (ingest_event, detect_spec_delta, detect_trust_drift, system_health, suggest_signals_from_events) |
 | Signal clustering view | ⬜ Not started | — |
 | Spec-to-outcome traceability | ⬜ Not started | — |
 | Weekly digest / report | ⬜ Not started | — |
 | Metrics (velocity, signal-to-spec ratio, etc.) | ⬜ Not started | — |
 
-### Maturity: **Schema-Ready**
-Observe has the best-defined schema of any product (OTel-compatible events, 15 event types, 6 emission mechanisms) but zero visualization. Events land in a JSONL file that nobody reads. The system is observable in theory but opaque in practice.
+### Maturity: **Specced + Partially Built**
+Observe has the richest specification surface of any product — a 27KB observability stack spec, OTel Collector config, file tail adapter design, Grafana dashboard definition, and a working (in-memory) MCP server with health and drift detection. What blocks it from becoming operational is the trace propagation chain (trace_id must be real before the file tail adapter can export meaningful spans to Grafana). The infrastructure is designed; it needs wiring.
 
 ### Next Investments
 
@@ -192,36 +200,85 @@ Some work doesn't belong to a single product — it benefits the whole value str
 
 **Repo scaffold installer** — one command that adds `.intent/` to any existing repo with all templates, directories, and optionally the MCP config and GitHub Action. Currently specced but not built as a single script.
 
-**GitHub Pages site** — the docs site at `docs/` needs Pages enabled. Brien hasn't flipped the switch yet. Once live, it becomes the canonical reference for the methodology and the starting point for adoption.
+**Marketing/docs site** — `theparlor/intent-site` is live at `theparlor.github.io/intent/` with 23 pages across three pillars (The Story, The System, The Build). Site has its own governance docs and roadmap at `../intent-site/tasks/ROADMAP.md`.
 
-**Versioning and release process** — VERSION file and CHANGELOG exist. The next release (0.3.0) captures the bootstrap kit, signal capture system, and four-product roadmap.
+**Versioning and release process** — VERSION file (`2026.03.29-0.6.0`) and CHANGELOG exist.
 
-**CLAUDE.md continuity** — the continuity guide needs updating with the bootstrap kit, four-product framing, and signal capture system.
+**CLAUDE.md continuity** — Updated March 30 with four-product framing, agent handoff protocol, MCP server docs, and priority of work referencing site roadmap.
 
 ---
 
-## Investment Priority (Now / Next / Later)
+## Investment Priority (Autonomous / Needs-Learning / Blocked)
 
-### Now (this week)
-1. **Validate Notice works end-to-end** — Install MCP server on Brien's repos, capture real signals from real work, verify events land in events.jsonl
-2. **Build Spec templates** — Intent, Spec, and Contract templates so the Spec product has its first tooling
-3. **Enable GitHub Pages** — flip the switch, make the site live
+### Autonomous — Can execute now, well-specced, non-destructive
 
-### Next (this month)
-4. **Intent dashboard v1** — HTML page in `docs/` that reads events.jsonl and shows signal volume, sources, intent status
-5. **Slack signal capture** — reaction-based bot, covers team conversation surface
-6. **Spec validation** — CLI tool that checks spec completeness against defined criteria
+These items have specs, task files, or enough signal density to move without human input. Ordered by dependency chain.
 
-### Later (after validation)
-7. **AI tool plugins** — ChatGPT, Copilot, Codex adapters for signal capture
-8. **Agent trace integration** — bridge Entire.io and agent execution into the event stream
-9. **Signal intelligence** — automated clustering, pattern detection, promotion suggestions
-10. **Metrics framework** — define the Intent-native metrics (signal-to-spec ratio, time-to-shipped, spec quality score)
+1. **Trace propagation** — Wire trace_id through models.py and all 3 MCP servers. Task spec: `tasks/trace-propagation.md`. Dependency: none. Unlocks: everything below.
+2. **File tail adapter** — Build the JSONL-to-OTLP bridge. Task spec: `tasks/file-tail-adapter.md`. Dependency: trace propagation. Unlocks: Grafana dashboard.
+3. **Grafana dashboard** — Deploy dashboard JSON to Grafana Cloud free tier. Task spec: `tasks/grafana-dashboard.md`. Dependency: file tail adapter + OTel Collector running.
+4. **Signal cluster reconciliation** — The 24 signals self-organize into 6 clusters. Emit cluster files to `.intent/` using the cluster template. Dependency: none. Source: signal analysis below.
+5. **Product roadmap self-reconciliation** — THIS UPDATE. Reconcile stale claims against actual repo state. Dependency: none.
+6. **TASKS.md refresh** — Retire completed items, add newly-specced work, update date. Dependency: this roadmap update.
+
+### Needs-Learning — Direction is clear, but requires validation or human voice
+
+These items need Brien's judgment, external input, or practitioner evidence. They generate disambiguation signals.
+
+7. **Intent Manifesto** — Sharp, opinionated, shareable. Requires Brien's voice and conviction. No spec can substitute for that.
+8. **Practitioner interviews (Ari + 4 others)** — External validation of H1-H5. Can't be delegated to agents.
+9. **Vocabulary decision (SIG-019)** — "Notice" and "Execute" aren't landing. Candidate replacements exist but this is a naming decision that cascades everywhere.
+10. **Signal ID strategy (SIG-022/023)** — Sequential IDs collide in distributed environments. UUID v7, ULID, namespaced, composite, or hierarchical? Architecture decision with long-tail consequences.
+11. **Case Study #1** — Brien's own methodology documented. Requires introspection + narrative craft.
+
+### Blocked — Cannot proceed without prerequisite work
+
+12. **Spec-to-agent handoff format** — Depends on vocabulary decision (#9) and at least one spec validation pass.
+13. **Signal intelligence (clustering, promotion)** — Depends on signal ID strategy (#10) and trace propagation (#1).
+14. **Metrics framework** — Depends on Grafana dashboard (#3) being live with real data flowing through it.
+
+---
+
+## Signal Cluster Analysis (as of 2026-03-30)
+
+The 24 signals self-organize into 6 clusters. This is the input to autonomous signal processing.
+
+### Cluster 1: Infrastructure (SIG-016, 018, 021, 024)
+**Theme:** MCP servers exist, deployment options identified, Cowork→Claude Code routing established.
+**Status:** Actionable. Servers built, hosting options researched, deployment topology specced.
+**Next autonomous action:** Deploy notice.py to FastMCP Cloud as walking skeleton.
+
+### Cluster 2: Observability (SIG-002, 017)
+**Theme:** OTel is the right model, deployment is a spectrum not a binary.
+**Status:** Fully specced. 27KB observability-stack.md + 3 task specs + OTel config.
+**Next autonomous action:** Execute trace-propagation task spec.
+
+### Cluster 3: Signal Capture & Processing (SIG-003, 008, 011, 015)
+**Theme:** Multi-surface capture, signal amplification through reference frequency.
+**Status:** Notice product operational. Amplification specced but not built.
+**Next autonomous action:** Add `referenced_by` field to signal schema.
+
+### Cluster 4: Schemas & Identity (SIG-001, 005, 022, 023)
+**Theme:** Work units need formal schemas; signal IDs need distributed-safe strategy.
+**Status:** Templates built (13 types). ID strategy needs architecture decision.
+**Next autonomous action:** None — blocked on ID strategy decision (SIG-022).
+
+### Cluster 5: Methodology & Adoption (SIG-006, 007, 009, 010, 019, 020)
+**Theme:** Founding observations, four-product thesis, vocabulary friction, site IA.
+**Status:** Site IA resolved (23 pages, three pillars). Vocabulary friction unresolved.
+**Next autonomous action:** None — blocked on vocabulary decision (SIG-019).
+
+### Cluster 6: Autonomous Operations (SIG-012, 013, 014)
+**Theme:** Trust-based execution levels, always-on processing, context drift mitigation.
+**Status:** Trust framework specced (L0-L4). Deployment topology specced.
+**Next autonomous action:** Signal enrichment pipeline that computes trust scores on new signals.
 
 ---
 
 ## How to Read This Roadmap
 
-This isn't a Gantt chart or a sprint plan. It's a **current-state assessment** of four products and a **directional investment guide** for where to put energy next. The "Now" items are chosen because they're the constraint — Notice is operational but unvalidated, Spec has no tooling, Observe has no visualization. Execute is intentionally deferred because the agents already work; Intent's job is to make sure they work against good specs.
+This isn't a Gantt chart or a sprint plan. It's a **current-state assessment** of four products, a **signal cluster analysis**, and a **directional investment guide** partitioned by autonomy level — not by time. Items in "Autonomous" can be picked up by agents immediately. Items in "Needs-Learning" generate disambiguation signals when they surface. Items in "Blocked" state their prerequisites explicitly.
 
 The roadmap itself is a living document. As signals come in and intents form, priorities will shift. That's the loop working.
+
+*Last reconciled: 2026-03-30*

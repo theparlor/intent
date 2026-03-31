@@ -301,12 +301,15 @@ Intent is designed to be developed by AI agents (Claude Code) working from this 
 
 ### Before Starting ANY Task
 
-1. **Read these files first, every time:**
+1. **Read these files first, IN THIS ORDER:**
    - `CLAUDE.md` (this file) — project context, architecture, tooling
+   - `tasks/ROADMAP.md` — **master execution plan with phase status, verification scripts, and contracts**
+   - `TASKS.md` — living backlog partitioned by autonomy level
    - Any relevant spec in `spec/` for the domain you're working in
-   - `TASKS.md` for pending work items
 
-2. **Load context before acting.** Read all referenced specs upfront. Do not start modifying files until you understand the full picture.
+2. **Follow the ROADMAP.** It tells you which phase is current, what to execute next, and how to verify. Do NOT skip phases. Do NOT parallelize across phases (except Phase 4, which is explicitly parallelizable).
+
+3. **Load context before acting.** Read all referenced specs upfront. Do not start modifying files until you understand the full picture.
 
 ### Execution Model
 
