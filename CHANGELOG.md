@@ -11,6 +11,35 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.03.30 — v0.9.0
+
+### Added
+- Trace propagation: make_event() now carries trace_id, span_id, parent_id (v0.2.0 events)
+- TraceContext class for cross-server trace correlation via .intent/trace-context.json
+- File Tail Adapter: events.jsonl → OTLP span export (observe/adapters/file-tail.py)
+- OTel Collector config for Grafana Cloud + local development
+- Grafana Observe dashboard definition (8 panels: stats, cycle time, trust, events, traces)
+- Observability stack spec (spec/observability-stack.md)
+- 6 signal clusters emitted to .intent/clusters/ from 24-signal analysis
+- Signal template updated with referenced_by field
+- Product roadmap rewritten: autonomy-partitioned (not time-partitioned)
+- Execution ROADMAP (tasks/ROADMAP.md) for autonomous terminal operation
+
+### Changed
+- Notice server: promote_to_intent now generates trace_id and backfills cluster signals
+- Spec server: create_spec inherits trace_id from parent intent
+- Observe server: ingest_event carries trace context, indexes by trace_id
+- Event version bumped to 0.2.0 (trace context fields)
+- TASKS.md rewritten to match current state
+
+### Site (theparlor/intent-site)
+- 23 pages across 3 pillars (was 18)
+- New: walkthrough, observe, getting-started, system-diagram, observability
+- Expanded: event-catalog (2KB→36KB), decisions (4KB→26KB)
+- Enhanced: work-system dashboard onramp
+- 28 cross-links wired, 4 Mermaid source files
+- All 10 site contracts pass
+
 ## 2026.03.30-0.8.0
 
 **Two-plane architecture, storytelling pitch page, dogfood page, ARB complete**

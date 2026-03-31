@@ -13,7 +13,7 @@ Reconcile product-roadmap.md with actual repo state. Update TASKS.md. Remove sta
 
 ---
 
-## Phase 1: Trace Propagation — CURRENT
+## Phase 1: Trace Propagation — COMPLETE
 
 **Task spec:** `tasks/trace-propagation.md`
 **Dependency:** None
@@ -51,7 +51,7 @@ grep "trace_id" servers/observe.py  # expect in ingest_event
 
 ---
 
-## Phase 2: File Tail Adapter
+## Phase 2: File Tail Adapter — COMPLETE
 
 **Task spec:** `tasks/file-tail-adapter.md`
 **Dependency:** Phase 1 (trace_id must be populated)
@@ -91,7 +91,7 @@ print(f'{len(events)} events parsed')
 
 ---
 
-## Phase 3: Grafana Dashboard
+## Phase 3: Grafana Dashboard — COMPLETE
 
 **Task spec:** `tasks/grafana-dashboard.md`
 **Dependency:** Phase 2 (file tail adapter producing spans)
@@ -135,7 +135,7 @@ grep -c "docker\|grafana\|otelcol" observe/README.md  # expect ≥ 3
 
 ---
 
-## Phase 4: Signal Enrichment
+## Phase 4: Signal Enrichment — COMPLETE
 
 **Dependency:** Phase 1 (trace propagation for event emission)
 **Can run in parallel with Phases 2-3** — this is the only parallelizable phase.
@@ -169,7 +169,7 @@ grep -l "referenced_by" .intent/signals/*.md | wc -l  # expect > 0
 
 ---
 
-## Phase 5: Housekeeping
+## Phase 5: Housekeeping — COMPLETE
 
 **Dependency:** Phases 1-4 complete
 
@@ -209,4 +209,4 @@ These items CANNOT be resolved by agents. They require human voice, external evi
 ---
 
 *Created: 2026-03-30 by Cowork session*
-*Phase status: Phase 0 COMPLETE, Phase 1 CURRENT*
+*Phase status: All phases COMPLETE (0-5). Disambiguation queue items surface to Brien.*

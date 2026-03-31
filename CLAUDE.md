@@ -213,7 +213,7 @@ intent/
 ├── reference/                ← Reference materials
 ├── CLAUDE.md                 ← THIS FILE
 ├── CHANGELOG.md              ← Timestamp-based version history
-├── VERSION                   ← Current: 2026.03.29-0.6.0
+├── VERSION                   ← Current: 2026.03.30-0.9.0
 ├── README.md                 ← Public-facing repo README
 └── TASKS.md                  ← Living task list
 ```
