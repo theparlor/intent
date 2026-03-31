@@ -2,12 +2,12 @@
 id: CLU-003
 name: "signal-capture-processing"
 title: "Signal Capture & Processing"
-status: active
+status: promoted
 signals: [SIG-003, SIG-008, SIG-011, SIG-015]
 weight: 1.95
 formed_date: 2026-03-30
-promoted_to: ""
-promoted_date:
+promoted_to: "INT-002"
+promoted_date: 2026-03-30
 ---
 # Cluster: Signal Capture & Processing
 

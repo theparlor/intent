@@ -2,12 +2,12 @@
 id: CLU-001
 name: "infrastructure"
 title: "Infrastructure"
-status: active
+status: promoted
 signals: [SIG-016, SIG-018, SIG-021, SIG-024]
 weight: 2.0
 formed_date: 2026-03-30
-promoted_to: ""
-promoted_date:
+promoted_to: "INT-001"
+promoted_date: 2026-03-30
 ---
 # Cluster: Infrastructure
 
