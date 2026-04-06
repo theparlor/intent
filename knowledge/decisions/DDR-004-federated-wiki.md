@@ -6,14 +6,14 @@ created: 2026-04-05
 updated: 2026-04-05
 depth_score: 2
 depth_signals:
-  file_size_kb: 3.3
-  content_chars: 3009
+  file_size_kb: 3.5
+  content_chars: 3096
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.33
+vocab_density: 0.32
 status: accepted
 confidence: 0.85
 origin: human

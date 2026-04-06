@@ -1,15 +1,23 @@
 ---
 id: RAT-XXX
 type: rationale
-name: "Rationale Name"
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-related_decisions: []
-related_themes: []
-frameworks: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+thought_leaders:
+  - jeff-patton
+depth_score: 3
+depth_signals:
+  file_size_kb: 0.8
+  content_chars: 682
+  entity_count: 1
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 2.93
+name: Rationale Name
+confidence: 0.00
+origin: human | agent | synthetic
 ---
 # Rationale: Rationale Name
 

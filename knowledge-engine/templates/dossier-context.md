@@ -1,20 +1,25 @@
 ---
 id: DSR-CTX-XXX
 type: dossier
-subtype: context
-name: "Context Name"
-slug: slug-name
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-related_dossiers: []
-related_personas: []
-related_themes: []
-engagement: null
 confidentiality: public | internal | client-confidential | nda
-last_researched: YYYY-MM-DD
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.1
+  content_chars: 776
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+subtype: context
+name: Context Name
+slug: slug-name
+confidence: 0.00
+origin: human | agent | synthetic
+last_researched: YYYY-MM-DD
 ---
 # Context Dossier: Context Name
 

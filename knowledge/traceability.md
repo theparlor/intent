@@ -3,8 +3,8 @@ title: Traceability Matrix
 type: traceability
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.1
-  content_chars: 2036
+  file_size_kb: 2.3
+  content_chars: 2039
   entity_count: 0
   slide_count: 0
   sheet_count: 0
@@ -25,6 +25,8 @@ Raw Source → Persona → Journey Step → Pain Point → DDR → Spec → Cont
 ```
 
 ## Active Chains
+
+> **Note:** Engagement-scoped chains (Subaru) live in Work/Consulting/Engagements/Subaru/knowledge/. Core chains trace methodology only.
 
 ### Chain 1: Specification Quality Problem
 

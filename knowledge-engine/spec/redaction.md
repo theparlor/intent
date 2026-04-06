@@ -4,6 +4,16 @@ type: spec
 maturity: draft
 created: 2026-04-06
 summary: "How Brien's Knowledge Farm maintains full-fidelity named context for solo work while generating redacted projections for sharing, proposals, and cross-engagement reasoning."
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.2
+  content_chars: 6378
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 1
+vocab_density: 0.00
 ---
 # Redaction & Privacy Projection Model
 

@@ -9,7 +9,7 @@ domains:
 created: 2026-04-06
 depth_score: 2
 depth_signals:
-  file_size_kb: 1.1
+  file_size_kb: 1.3
   content_chars: 963
   entity_count: 0
   slide_count: 0

@@ -1,22 +1,23 @@
 ---
 id: PER-XXX
 type: persona
-subtype: product | role | hero | stakeholder | engagement | archetype
-name: "Display Name"
-slug: slug-name
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-derived_from: []
-exemplifies: []
-engagement: null
-related_journeys: []
-related_decisions: []
-related_themes: []
-pain_points: []
-voice_persona: null
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.2
+  content_chars: 803
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+subtype: product | role | hero | stakeholder | engagement | archetype
+name: Display Name
+slug: slug-name
+confidence: 0.00
+origin: human | agent | synthetic
 ---
 # Persona: Display Name
 

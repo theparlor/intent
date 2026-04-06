@@ -1,19 +1,25 @@
 ---
 id: DSR-PRD-XXX
 type: dossier
-subtype: product
-name: "Product Name"
-slug: slug-name
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-related_personas: []
-related_themes: []
-engagement: null
 confidentiality: public | internal | client-confidential | nda
-last_researched: YYYY-MM-DD
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.0
+  content_chars: 690
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 1.45
+subtype: product
+name: Product Name
+slug: slug-name
+confidence: 0.00
+origin: human | agent | synthetic
+last_researched: YYYY-MM-DD
 ---
 # Product Dossier: Product Name
 

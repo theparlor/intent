@@ -1,15 +1,22 @@
 ---
 id: JRN-XXX
 type: journey
-name: "Journey Name"
-persona: PER-NNN
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-related_decisions: []
-related_specs: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.0
+  content_chars: 789
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+name: Journey Name
+persona: PER-NNN
+confidence: 0.00
+origin: human | agent | synthetic
 ---
 # Journey: Journey Name
 

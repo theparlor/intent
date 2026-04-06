@@ -9,8 +9,8 @@ frameworks:
   - Boyd
 depth_score: 4
 depth_signals:
-  file_size_kb: 2.9
-  content_chars: 2623
+  file_size_kb: 3.2
+  content_chars: 2699
   entity_count: 3
   slide_count: 0
   sheet_count: 0

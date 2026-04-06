@@ -5,14 +5,14 @@ created: 2026-04-05
 updated: 2026-04-05
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.4
-  content_chars: 2029
+  file_size_kb: 2.6
+  content_chars: 2096
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.49
+vocab_density: 0.48
 name: Compilation Over Retrieval
 confidence: 0.85
 origin: agent

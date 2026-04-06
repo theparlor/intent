@@ -1,14 +1,22 @@
 ---
 id: DOM-XXX
 type: domain-model
-name: "Model Name"
-scope: glossary | bounded-context | entity-relationship | state-machine
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-related_specs: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 0.8
+  content_chars: 543
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+name: Model Name
+scope: glossary | bounded-context | entity-relationship | state-machine
+confidence: 0.00
+origin: human | agent | synthetic
 ---
 # Domain Model: Model Name
 

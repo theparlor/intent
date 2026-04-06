@@ -1,19 +1,24 @@
 ---
+title: Decision Title
 id: DDR-XXX
 type: decision
-title: "Decision Title"
-status: proposed | accepted | superseded | validated | invalidated
-confidence: 0.0
-origin: human | agent | synthetic
-addresses: []
-persona: PER-NNN
-journey_stage: "JRN-NNN#stage-name"
-sources: []
-related_specs: []
-superseded_by: null
-validated_by: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.1
+  content_chars: 749
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+status: proposed | accepted | superseded | validated | invalidated
+confidence: 0.00
+origin: human | agent | synthetic
+persona: PER-NNN
+journey_stage: JRN-NNN#stage-name
 ---
 # DDR: Decision Title
 

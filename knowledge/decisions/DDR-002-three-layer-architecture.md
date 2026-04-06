@@ -13,20 +13,20 @@ frameworks:
   - transformation-operating-system
 depth_score: 4
 depth_signals:
-  file_size_kb: 3.1
-  content_chars: 2663
+  file_size_kb: 3.8
+  content_chars: 2780
   entity_count: 5
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.38
+vocab_density: 0.36
 related_entities:
-  - {pair: matthew-skelton ↔ mik-kersten, count: 17839, strength: 0.994}
-  - {pair: mik-kersten ↔ john-kotter, count: 17839, strength: 0.993}
-  - {pair: matthew-skelton ↔ john-kotter, count: 17838, strength: 0.992}
-  - {pair: richard-rumelt ↔ matthew-skelton, count: 17837, strength: 0.997}
-  - {pair: richard-rumelt ↔ mik-kersten, count: 17837, strength: 0.997}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 17840, strength: 0.994}
+  - {pair: mik-kersten ↔ john-kotter, count: 17840, strength: 0.993}
+  - {pair: matthew-skelton ↔ john-kotter, count: 17839, strength: 0.992}
+  - {pair: richard-rumelt ↔ matthew-skelton, count: 17838, strength: 0.997}
+  - {pair: richard-rumelt ↔ mik-kersten, count: 17838, strength: 0.997}
 status: accepted
 confidence: 0.90
 origin: human

@@ -16,17 +16,17 @@ thought_leaders:
   - josh-seiden
 depth_score: 6
 depth_signals:
-  file_size_kb: 24.1
-  content_chars: 19143
+  file_size_kb: 27.9
+  content_chars: 19142
   entity_count: 5
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.42
+vocab_density: 0.37
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 791, strength: 0.426}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 769, strength: 0.416}
+  - {pair: consulting-operations ↔ subaru, count: 795, strength: 0.427}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 770, strength: 0.416}
   - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
   - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
   - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}
@@ -371,6 +371,8 @@ Observations ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←
 Lint enforces coverage: every persona must be referenced by at least one journey, every DDR must link to a persona and journey stage, every spec must link to a DDR, orphans are flagged.
 
 ## Key Decisions (for context)
+
+File placement within Workspaces governed by [/Workspaces/AGENTS.md](../../../AGENTS.md) — the authoritative placement resolver. Intent-specific knowledge artifacts follow the federation model in `knowledge-engine/spec/federation.md`.
 
 1. **Named "Intent"** — not "Dev OS", Frame, Premise, or Lucid. The name IS the thing.
 2. **Methodology first, tool second** — validate with practitioners before building software.

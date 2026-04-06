@@ -13,7 +13,7 @@ technologies:
   - slack
 depth_score: 5
 depth_signals:
-  file_size_kb: 19.2
+  file_size_kb: 19.3
   content_chars: 18258
   entity_count: 1
   slide_count: 0
@@ -22,8 +22,8 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.11
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 791, strength: 0.426}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 769, strength: 0.416}
+  - {pair: consulting-operations ↔ subaru, count: 795, strength: 0.427}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 770, strength: 0.416}
   - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
   - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
   - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}

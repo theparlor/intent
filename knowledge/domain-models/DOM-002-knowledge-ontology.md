@@ -5,14 +5,14 @@ created: 2026-04-05
 updated: 2026-04-05
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.3
-  content_chars: 1977
+  file_size_kb: 2.5
+  content_chars: 1992
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.51
+vocab_density: 0.50
 name: Domain Knowledge Ontology
 scope: bounded-context
 confidence: 0.75

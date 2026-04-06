@@ -8,6 +8,22 @@ thought_leaders:
   - teresa-torres
   - jeff-patton
 summary: "How intents become agent-ready specs through self-prompting with specific personas. Each persona interrogates the intent from a different angle, querying the knowledge base, until the spec is rich enough for execution."
+depth_score: 6
+depth_signals:
+  file_size_kb: 9.3
+  content_chars: 9415
+  entity_count: 3
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 1
+vocab_density: 0.11
+related_entities:
+  - {pair: marty-cagan ↔ consulting-operations, count: 98, strength: 0.051}
+  - {pair: marty-cagan ↔ turnberry, count: 46, strength: 0.065}
+  - {pair: teresa-torres ↔ marty-cagan, count: 45, strength: 0.247}
+  - {pair: marty-cagan ↔ mik-kersten, count: 43, strength: 0.002}
+  - {pair: teresa-torres ↔ jeff-patton, count: 36, strength: 0.396}
 ---
 # Spec-Shaping Protocol
 

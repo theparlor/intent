@@ -9,14 +9,14 @@ domains:
 created: 2026-04-06
 depth_score: 2
 depth_signals:
-  file_size_kb: 1.0
-  content_chars: 851
+  file_size_kb: 1.2
+  content_chars: 878
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 1.18
+vocab_density: 1.14
 ---
 # Observations
 

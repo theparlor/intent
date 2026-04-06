@@ -11,14 +11,14 @@ thought_leaders:
 summary: "Specification for the three core operations (ingest, query, lint) that maintain Intent's Layer 1 domain knowledge base. Adapted from Karpathy's LLM Knowledge Base pattern for product-domain artifacts."
 depth_score: 6
 depth_signals:
-  file_size_kb: 8.1
-  content_chars: 8062
+  file_size_kb: 8.7
+  content_chars: 8292
   entity_count: 4
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 1
-vocab_density: 0.38
+vocab_density: 0.37
 related_entities:
   - {pair: christopher-alexander ↔ andrej-karpathy, count: 2, strength: 1.0}
   - {pair: christopher-alexander ↔ stafford-beer, count: 2, strength: 1.0}

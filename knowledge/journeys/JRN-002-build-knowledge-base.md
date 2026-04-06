@@ -5,8 +5,8 @@ created: 2026-04-05
 updated: 2026-04-05
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.9
-  content_chars: 2707
+  file_size_kb: 3.2
+  content_chars: 2820
   entity_count: 0
   slide_count: 0
   sheet_count: 0

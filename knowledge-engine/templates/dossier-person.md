@@ -1,19 +1,25 @@
 ---
 id: DSR-PER-XXX
 type: dossier
-subtype: person
-name: "Full Name"
-slug: slug-name
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-related_personas: []
-related_themes: []
-engagement: null
 confidentiality: public | internal | client-confidential | nda
-last_researched: YYYY-MM-DD
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 1.5
+  content_chars: 1227
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.81
+subtype: person
+name: Full Name
+slug: slug-name
+confidence: 0.00
+origin: human | agent | synthetic
+last_researched: YYYY-MM-DD
 ---
 # Person Dossier: Full Name
 

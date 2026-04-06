@@ -1,16 +1,21 @@
 ---
 id: THM-XXX
 type: theme
-name: "Theme Name"
-confidence: 0.0
-origin: human | agent | synthetic
-sources: []
-related_personas: []
-related_journeys: []
-related_decisions: []
-signals: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+depth_score: 2
+depth_signals:
+  file_size_kb: 0.8
+  content_chars: 618
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 1.62
+name: Theme Name
+confidence: 0.00
+origin: human | agent | synthetic
 ---
 # Theme: Theme Name
 

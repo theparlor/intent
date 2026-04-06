@@ -1,20 +1,27 @@
 ---
 id: DSR-IND-001
 type: dossier
+confidentiality: public
+created: 2026-04-06
+updated: 2026-04-06
+depth_score: 4
+depth_signals:
+  file_size_kb: 14.8
+  content_chars: 14751
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.20
 subtype: industry
-name: "US Automotive OEM"
+name: US Automotive OEM
 slug: automotive-oem-us
 confidence: 0.65
 origin: agent
 sources:
   - raw/research/2026-04-06-automotive-oem-industry-research.md
-related_personas: []
-related_themes: []
-engagement: null
-confidentiality: public
 last_researched: 2026-04-06
-created: 2026-04-06
-updated: 2026-04-06
 ---
 # Industry Dossier: US Automotive OEM
 

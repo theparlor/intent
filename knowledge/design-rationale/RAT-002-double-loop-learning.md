@@ -11,19 +11,19 @@ frameworks:
   - Seiden
 depth_score: 4
 depth_signals:
-  file_size_kb: 3.2
-  content_chars: 2888
+  file_size_kb: 3.8
+  content_chars: 2928
   entity_count: 4
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.35
+vocab_density: 0.34
 related_entities:
-  - {pair: josh-seiden ↔ marty-cagan, count: 25, strength: 0.157}
+  - {pair: josh-seiden ↔ marty-cagan, count: 25, strength: 0.156}
   - {pair: josh-seiden ↔ consulting-operations, count: 23, strength: 0.012}
-  - {pair: josh-seiden ↔ jeff-patton, count: 22, strength: 0.355}
-  - {pair: josh-seiden ↔ teresa-torres, count: 15, strength: 0.167}
+  - {pair: josh-seiden ↔ jeff-patton, count: 22, strength: 0.349}
+  - {pair: josh-seiden ↔ teresa-torres, count: 15, strength: 0.165}
   - {pair: josh-seiden ↔ tim-herbig, count: 9, strength: 0.265}
 name: Double-Loop Learning as the Critical Feedback Path
 confidence: 0.85

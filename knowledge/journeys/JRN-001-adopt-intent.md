@@ -5,14 +5,14 @@ created: 2026-04-05
 updated: 2026-04-05
 depth_score: 2
 depth_signals:
-  file_size_kb: 4.1
-  content_chars: 3783
+  file_size_kb: 4.3
+  content_chars: 3882
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 1.06
+vocab_density: 1.03
 name: Adopting Intent as Team Operating Model
 persona: PER-001
 confidence: 0.60

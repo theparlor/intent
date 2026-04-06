@@ -1,19 +1,24 @@
 ---
+title: Separate Intent (methodology) from Knowledge Engine (product) from Knowledge Farm (instance)
 id: DDR-005
 type: decision
-title: "Separate Intent (methodology) from Knowledge Engine (product) from Knowledge Farm (instance)"
-status: accepted
-confidence: 0.9
-origin: human
-addresses: []
-persona: PER-001
-journey_stage: "JRN-001#compile-understanding"
-sources: []
-related_specs: []
-superseded_by: null
-validated_by: []
 created: 2026-04-06
 updated: 2026-04-06
+depth_score: 2
+depth_signals:
+  file_size_kb: 2.3
+  content_chars: 2116
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 1.42
+status: accepted
+confidence: 0.90
+origin: human
+persona: PER-001
+journey_stage: JRN-001#compile-understanding
 ---
 # DDR: Intent / Knowledge Engine / Knowledge Farm Boundary
 

@@ -3,14 +3,14 @@ title: Domain Knowledge Base Activity Log
 type: log
 depth_score: 2
 depth_signals:
-  file_size_kb: 1.3
-  content_chars: 1298
+  file_size_kb: 4.3
+  content_chars: 4127
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.77
+vocab_density: 0.73
 maintained_by: agent
 ---
 # Knowledge Base — Activity Log
@@ -50,3 +50,15 @@ maintained_by: agent
 [CREATE] 2026-04-06 knowledge/personas/PER-005-martech-practitioner.md — M.A.R.S. developer/engineer. Engagement persona. Engagement: Subaru. Confidence: 0.6
 [CREATE] 2026-04-06 knowledge/personas/PER-006-transformation-consultant.md — Brien as embedded consultant. Role persona. Engagement: Subaru. Confidence: 0.6
 [UPDATE] 2026-04-06 knowledge/_index.md — Added 3 dossiers + DDR-005, artifact count 16→23
+[MOVE] 2026-04-06 PER-003, PER-004, PER-005, PER-006 → Work/Consulting/Engagements/Subaru/knowledge/personas/ | reason: engagement-scoped, client-confidential
+[MOVE] 2026-04-06 DSR-COM-001 → Work/Consulting/Engagements/Subaru/knowledge/dossiers/companies/ | reason: engagement-scoped, client-confidential
+[MOVE] 2026-04-06 DSR-CTX-001 → Work/Consulting/Engagements/Subaru/knowledge/dossiers/contexts/ | reason: engagement-scoped, client-confidential
+[MOVE] 2026-04-06 raw/research/2026-04-06-subaru-of-america-company-research.md → Work/Consulting/Engagements/Subaru/raw/research/ | reason: engagement-scoped
+[DELETE] 2026-04-06 Work/Consulting/Engagements/Subaru/SUBARU_COMPANY_DOSSIER.md | reason: duplicate of DSR-COM-001
+[DELETE] 2026-04-06 Core/reference/industry-dossiers/automotive-oem-us-2026.md | reason: duplicate of DSR-IND-001
+[UPDATE] 2026-04-06 knowledge/_index.md — Removed engagement-scoped artifacts, artifact count 23→16. Federation model enforced.
+[CREATE] 2026-04-06 SIG-031-workspace-hygiene-gap.md — Engagement workspaces lack lifecycle hygiene for stale drafts
+[CREATE] 2026-04-06 INT-004-workspace-hygiene.md — Workspace Lifecycle Hygiene: triage stale working artifacts
+[CREATE] 2026-04-06 SPEC-002-workspace-hygiene.md — 4-pass spec (trust 0.78, L3). 5 contracts (CON-WS-001–005)
+[CREATE] 2026-04-06 contracts-workspace.md — 5 workspace hygiene contracts (CON-WS-001–005)
+[CREATE] 2026-04-06 skills-engine/operations/workspace-hygiene/SKILL.md — Advisory triage skill for engagement working/ directories

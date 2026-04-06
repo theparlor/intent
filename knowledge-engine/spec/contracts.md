@@ -3,6 +3,16 @@ title: Knowledge Engine Contracts
 type: contracts
 created: 2026-04-06
 summary: "Verifiable assertions for the Knowledge Engine product. Each contract is testable — it either passes or fails."
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.4
+  content_chars: 6557
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 1
+vocab_density: 0.16
 ---
 # Knowledge Engine — Contracts
 
