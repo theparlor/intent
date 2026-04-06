@@ -390,6 +390,7 @@ Lint enforces coverage: every persona must be referenced by at least one journey
 16. **Knowledge Engine as new MCP server** — `intent-knowledge` on port 8004 with CLI `intent-knowledge` (ingest/query/lint subcommands). Not bolted onto intent-notice. (2026-04-06)
 17. **Retroactive enrichment = suggested** — Lint detects recompilation opportunities, surfaces as signals. On-demand execution. Not automatic cascades. (2026-04-06)
 18. **Redaction at tool level** — MCP server applies confidentiality projection automatically based on engagement context. Not a flag Brien has to remember. (2026-04-06)
+19. **Spec-shaping is self-prompting through personas** — Intents become specs through four-persona interrogation (△ Shape, ◇ Outcome, ○ Contract, ◉ Readiness). The system self-prompts with each persona querying the knowledge base. Brien reviews specs, not execution. See `spec/spec-shaping-protocol.md`. (2026-04-06)
 
 ## Intellectual Foundations
 
