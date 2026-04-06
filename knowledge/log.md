@@ -40,3 +40,13 @@ maintained_by: agent
 [QUERY] 2026-04-06 "What is the bottleneck shift?" → requested (awaiting agent synthesis)
 [DOSSIER] 2026-04-06 person: Andrej Karpathy → DSR-PER-001 requested (awaiting agent research)
 [DOSSIER] 2026-04-06 company: Subaru of America → DSR-COM-001 requested (awaiting agent research)
+[INGEST] 2026-04-06 raw/research/2026-04-06-subaru-of-america-company-research.md → created: DSR-COM-001 | sources: web research, engagement files
+[INGEST] 2026-04-06 raw/research/2026-04-06-automotive-oem-industry-research.md → created: DSR-IND-001 | sources: web research
+[CREATE] 2026-04-06 knowledge/dossiers/companies/DSR-COM-001-subaru-of-america.md — Subaru of America company dossier. $13.5B US revenue, 643K sales, new CIO, tariff exposure. Confidence: 0.7
+[CREATE] 2026-04-06 knowledge/dossiers/industries/DSR-IND-001-automotive-oem-us.md — US Automotive OEM industry dossier. $680B market, 16.2M units, EV/SDV trends. Confidence: 0.65
+[CREATE] 2026-04-06 knowledge/dossiers/contexts/DSR-CTX-001-subaru-mars-engagement.md — Subaru M.A.R.S. engagement context. 20 weeks, 156 staff, 10 teams, 3 focus areas. Confidence: 0.8
+[CREATE] 2026-04-06 knowledge/personas/PER-003-transformation-sponsor.md — Greg Giuffrida archetype. Stakeholder persona. Engagement: Subaru. Confidence: 0.6
+[CREATE] 2026-04-06 knowledge/personas/PER-004-team-lead-in-transition.md — Scrum Master/team lead in Agile transition. Engagement persona. Engagement: Subaru. Confidence: 0.6
+[CREATE] 2026-04-06 knowledge/personas/PER-005-martech-practitioner.md — M.A.R.S. developer/engineer. Engagement persona. Engagement: Subaru. Confidence: 0.6
+[CREATE] 2026-04-06 knowledge/personas/PER-006-transformation-consultant.md — Brien as embedded consultant. Role persona. Engagement: Subaru. Confidence: 0.6
+[UPDATE] 2026-04-06 knowledge/_index.md — Added 3 dossiers + DDR-005, artifact count 16→23
