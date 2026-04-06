@@ -35,6 +35,41 @@ related_entities:
 
 > This file exists so that any AI agent or human contributor can pick up Intent development without prior session context. Read this first.
 
+## ⚠ CRITICAL: This Repo Contains Two Products
+
+**Read this first. This is the most common source of session drift.**
+
+This repo contains **two distinct products** that share a repo but have different purposes, different users, and different development paths:
+
+### 1. Intent (Methodology)
+An operating model for AI-augmented product teams. **Notice → Spec → Execute → Observe.** Domain-agnostic. Replaces Agile ceremony overhead. Lives in: `spec/`, `.intent/`, `bin/`, `servers/`.
+
+### 2. Knowledge Engine (Product)
+A compiled knowledge base system: `raw/` sources → agent-compiled `knowledge/` artifacts → ingest/query/lint operations. Separable from Intent — can be used without the loop. Lives in: `knowledge-engine/` (AGENTS.md, specs, templates).
+
+### 3. Knowledge Farm (Instance — not in this repo)
+A specific deployment of the Knowledge Engine for a domain. Brien's Knowledge Farm is his consulting practice first-brain (Subaru, ASA, F&G engagements). It spans `Core/` and `Work/Consulting/Engagements/*/`. Brien's farm feeds Intent ONLY because his domain (product strategy) overlaps with Intent's domain — **this is coincidental, not structural.**
+
+### How to tell which product you're working on
+
+| If you're touching... | You're in... |
+|----------------------|-------------|
+| The loop, trust scoring, work ontology, signals, intents | **Intent** (methodology) |
+| AGENTS.md, ingest/query/lint, federation, enrichment, redaction | **Knowledge Engine** (product) |
+| Subaru/ASA/F&G engagement data, Brien's engagement knowledge | **Brien's Knowledge Farm** (instance) |
+
+### Decided Architecture (2026-04-06)
+
+| Decision | Choice |
+|----------|--------|
+| Knowledge Engine MCP server | New `intent-knowledge` server (port 8004), separate from notice/spec/observe |
+| Knowledge Engine CLI | New `intent-knowledge` tool (subcommands: ingest, query, lint) |
+| Retroactive enrichment trigger | Suggested-first (lint detects opportunity, surfaces signal), on-demand second |
+| Engagement rollout order | Subaru → F&G → ASA → Cargill → Footlocker |
+| Redaction enforcement | Tool-level (MCP server applies projection automatically) |
+
+---
+
 ## What Is Intent?
 
 Intent is a **team operating model for AI-augmented product teams**. It replaces Agile's ceremony-driven coordination with a continuous loop: **Notice → Spec → Execute → Observe**. When AI collapses implementation from weeks to hours, the bottleneck moves upstream — from delivery to discovery, specification, and observation. Intent is the operating model for that new reality.
@@ -43,15 +78,13 @@ Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked
 
 ### Three-Layer Architecture (v1.0 — 2026-04-05)
 
-Intent operates as three independent but bidirectionally coupled layers:
+Intent's methodology prescribes three layers that work together:
 
 | Layer | Purpose | Directories | Analogy |
 |-------|---------|-------------|---------|
-| **1. Domain Knowledge Base** | Self-organizing compiled knowledge base that compiles everything the system knows about the problem domain | `raw/`, `knowledge/` | Karpathy's LLM Knowledge Base adapted for product work |
-| **2. Transformation OS** | The notice→spec→execute→observe engine. Domain-agnostic methodology. | `.intent/`, `spec/` (methodology) | The operating system |
-| **3. Software Spec & Code** | Specs, contracts, and running code generated from compiled domain knowledge | `spec/` (generated), `src/` | The output |
-
-**The critical distinction:** Karpathy builds a knowledge artifact (output = understanding). Intent builds a generative engine (output = running software). Layer 1 compiles understanding. Layer 2 transforms it. Layer 3 is what gets produced.
+| **1. Compiled Knowledge Base** | Everything the system knows about the problem domain | `raw/`, `knowledge/` | The Knowledge Engine product provides this |
+| **2. Transformation OS** | The notice→spec→execute→observe engine. Domain-agnostic. | `.intent/`, `spec/` (methodology) | Intent methodology |
+| **3. Software Spec & Code** | Specs, contracts, and running code | `spec/` (generated), `src/` | The output |
 
 **Six bidirectional data flows couple the layers:**
 1. Knowledge → Notice: Lint surfaces signals (gaps, contradictions, staleness)
@@ -61,9 +94,9 @@ Intent operates as three independent but bidirectionally coupled layers:
 5. **Observe → Knowledge (double-loop):** Observations update domain models — questioning assumptions, not just optimizing
 6. Observe → Spec corpus (single-loop): Spec drift detection, living doc sync
 
-**Schema:** See `knowledge-engine/AGENTS.md` for the full compiled knowledge base schema, artifact templates, and operation definitions.
-**Federation:** See `knowledge-engine/spec/federation.md` for how Core and engagement knowledge bases relate (inherit down, promote up, never leak sideways).
-**Source:** See `reference/karpathy-synthesis/` for the research and architectural decisions behind this evolution.
+**Knowledge Engine schema:** `knowledge-engine/AGENTS.md`
+**Knowledge Engine specs:** `knowledge-engine/spec/` (operations, federation, enrichment, redaction, boundary)
+**Research archive:** `reference/karpathy-synthesis/`
 
 **Owner:** Brien (theparlorhq@gmail.com) — solo practitioner, The Parlor
 **Repo:** github.com/theparlor/intent (private)
@@ -352,6 +385,11 @@ Lint enforces coverage: every persona must be referenced by at least one journey
 11. **Double-loop learning** — Observe updates Layer 1 (domain understanding), not just Layer 3 (execution). Without this, system can only optimize, never question. (Argyris)
 12. **Origin tracking** — Every knowledge artifact carries `origin: human | agent | synthetic` for contamination mitigation. (Ango)
 13. **Federated knowledge base architecture** — Core = universal substrate, engagements = bounded instances. Inherit down, promote up, never leak sideways. Mirrors Workspaces topology. (2026-04-05)
+14. **Two products, not one** — Intent (methodology) and Knowledge Engine (product) are distinct. KE is separable — can be used without Intent. Brien's Knowledge Farm is an instance. The domain overlap is coincidental. (2026-04-06, DDR-005)
+15. **Engagement rollout order** — Subaru → F&G → ASA → Cargill → Footlocker. Subaru first (most data, highest learning). (2026-04-06)
+16. **Knowledge Engine as new MCP server** — `intent-knowledge` on port 8004 with CLI `intent-knowledge` (ingest/query/lint subcommands). Not bolted onto intent-notice. (2026-04-06)
+17. **Retroactive enrichment = suggested** — Lint detects recompilation opportunities, surfaces as signals. On-demand execution. Not automatic cascades. (2026-04-06)
+18. **Redaction at tool level** — MCP server applies confidentiality projection automatically based on engagement context. Not a flag Brien has to remember. (2026-04-06)
 
 ## Intellectual Foundations
 
