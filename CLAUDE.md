@@ -425,7 +425,16 @@ Intent is designed to be developed by AI agents (Claude Code) working from this 
    - `knowledge-engine/AGENTS.md` — compiled knowledge base schema, operations, cross-reference conventions
    - `tasks/ROADMAP.md` — **master execution plan with phase status, verification scripts, and contracts**
    - `TASKS.md` — living backlog partitioned by autonomy level
-   - Any relevant spec in `spec/` for the domain you're working in
+   - Any relevant spec in `spec/` or `knowledge-engine/spec/` for the domain you're working in
+
+### Before Making ANY Decision
+
+**Check existing decisions first.** Before choosing between alternatives on anything that outlasts today's task — a library, architecture pattern, API design, naming convention, or deciding NOT to do something:
+
+1. Read `knowledge/decisions/` — scan DDR titles and frontmatter for prior choices on the same topic
+2. Read Key Decisions in this file (§Key Decisions) — 18 numbered decisions with rationale
+3. Read `knowledge-engine/spec/contracts.md` — 10 contracts that constrain implementation choices
+4. **Follow existing decisions unless new information invalidates the reasoning.** If you need to override a prior decision, create a new DDR that explicitly supersedes the old one (`superseded_by: DDR-NNN`). Never silently contradict a recorded decision.
 
 2. **Follow the ROADMAP.** It tells you which phase is current, what to execute next, and how to verify. Do NOT skip phases. Do NOT parallelize across phases (except Phase 4, which is explicitly parallelizable).
 
