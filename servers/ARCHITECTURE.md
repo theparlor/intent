@@ -1,3 +1,23 @@
+---
+title: Architecture
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-31
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.5
+  content_chars: 5664
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.35
+---
 # Intent: Multi-Agent MCP Architecture
 
 ## How This Maps to the Loop

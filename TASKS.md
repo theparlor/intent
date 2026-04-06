@@ -8,6 +8,16 @@ domains:
   - consulting-operations
 created: 2026-03-29
 updated: 2026-03-30
+depth_score: 2
+depth_signals:
+  file_size_kb: 4.8
+  content_chars: 4462
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.45
 ---
 # Tasks
 
@@ -16,6 +26,42 @@ updated: 2026-03-30
 
 ---
 
+## Layer 1 — Domain Knowledge Base Implementation (Three-Layer Architecture)
+
+> Added 2026-04-05. Karpathy LLM Knowledge Base pattern integrated as Layer 1.
+> Schema: `knowledge-engine/AGENTS.md`. Research: `reference/karpathy-synthesis/`.
+
+### Ingest Pipeline
+- [ ] Implement `ingest` operation: drop source in raw/ → LLM compiles into knowledge artifacts → updates _index.md + log.md
+- [ ] Wire ingest into intent-notice MCP server (or new intent-knowledge server)
+- [ ] Test with Intent's own dogfood data as first raw/ corpus
+
+### Query Operation
+- [ ] Implement `query` operation: question → read _index.md → synthesize answer with [[citations]] → offer to file as new knowledge artifact
+- [ ] Wire Flow 2: spec authoring queries knowledge base for personas, journeys, DDRs before writing specs
+
+### Lint Operation
+- [ ] Implement `lint` operation: contradictions, orphans, stale claims, missing cross-refs, coverage gaps
+- [ ] Wire Flow 1: lint findings → suggested signals for Notice phase
+- [ ] Add `lint_specs` tool to intent-observe MCP server (Recommendation #1)
+
+### Bidirectional Flows
+- [ ] Wire Flow 5: observe → domain knowledge base updates (double-loop learning)
+- [ ] Wire Flow 6: observe → spec corpus updates (single-loop learning)
+- [ ] Add `update_domain_knowledge` tool to intent-observe MCP server
+
+### Navigation & Indexing
+- [ ] Adopt _index.md + log.md navigation pattern in .intent/ (Recommendation #2)
+- [ ] Implement compiled capability overview pages (Recommendation #3)
+
+### Contamination & Provenance
+- [ ] Add `origin` field (human | agent | synthetic) to all artifact schemas (Recommendation #6)
+- [ ] Implement origin-aware trust scoring in signal-trust-framework
+
+### Obsidian Bridge
+- [ ] Ensure all markdown is Obsidian-compatible (YAML frontmatter, [[wikilinks]], Dataview-queryable)
+- [ ] Publish Obsidian vault template (Recommendation #7)
+
 ## Autonomous — Agents can execute now
 
 - [ ] Execute trace propagation → `tasks/trace-propagation.md` (unlocks all Observe work)
@@ -23,7 +69,7 @@ updated: 2026-03-30
 - [ ] Execute Grafana dashboard → `tasks/grafana-dashboard.md` (depends: file tail adapter)
 - [ ] Emit signal cluster files to `.intent/` using cluster template (6 clusters identified in product-roadmap.md)
 - [ ] Add `referenced_by` field to signal schema + update amplification scoring in models.py
-- [ ] Refresh VERSION → 0.7.0, update CHANGELOG with MCP servers, templates, observability spec, site separation
+- [ ] Refresh VERSION → 1.0.0, update CHANGELOG with three-layer architecture, domain knowledge base, knowledge-engine/AGENTS.md
 
 ## Completed — Done since last update
 
@@ -57,4 +103,4 @@ updated: 2026-03-30
 
 ---
 
-*Updated: 2026-03-30*
+*Updated: 2026-04-05*

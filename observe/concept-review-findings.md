@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.91
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 571, strength: 0.387}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 558, strength: 0.378}
-  - {pair: consulting-operations ↔ engagement-management, count: 483, strength: 0.327}
-  - {pair: consulting-operations ↔ turnberry, count: 321, strength: 0.201}
-  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.17}
+  - {pair: consulting-operations ↔ subaru, count: 791, strength: 0.426}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 769, strength: 0.416}
+  - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
+  - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}
 ---
 # Concept Brief Quality Review
 

@@ -1,3 +1,23 @@
+---
+title: Signal Trust Framework
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-31
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.3
+  content_chars: 6992
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.14
+---
 # Signal Trust & Autonomous Execution Framework
 
 > How Intent decides what can self-execute and what needs a human.

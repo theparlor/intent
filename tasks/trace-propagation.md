@@ -1,3 +1,23 @@
+---
+title: Trace Propagation
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-31
+depth_score: 4
+depth_signals:
+  file_size_kb: 9.4
+  content_chars: 9233
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.11
+---
 # Task: Add trace_id propagation to event system
 
 > Handoff spec for Claude Code terminal. Updates models.py and all three MCP servers to propagate trace context through the signal → intent → spec → contract chain.

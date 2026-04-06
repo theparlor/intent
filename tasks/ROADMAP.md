@@ -1,3 +1,31 @@
+---
+title: Roadmap
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+topics:
+  - product-strategy
+created: 2026-03-31
+depth_score: 4
+depth_signals:
+  file_size_kb: 8.0
+  content_chars: 7345
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 2
+  has_summary: 0
+vocab_density: 0.14
+related_entities:
+  - {pair: consulting-operations ↔ subaru, count: 791, strength: 0.426}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 769, strength: 0.416}
+  - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
+  - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}
+---
 # Intent Product — Execution Roadmap
 
 > Master execution plan for terminal Claude. Read this FIRST, before any task spec.

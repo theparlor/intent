@@ -17,19 +17,19 @@ thought_leaders:
 depth_score: 4
 depth_signals:
   file_size_kb: 3.9
-  content_chars: 3046
+  content_chars: 3130
   entity_count: 5
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 1.97
+vocab_density: 1.92
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 571, strength: 0.387}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 558, strength: 0.378}
-  - {pair: consulting-operations ↔ engagement-management, count: 483, strength: 0.327}
-  - {pair: consulting-operations ↔ turnberry, count: 321, strength: 0.201}
-  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.17}
+  - {pair: consulting-operations ↔ subaru, count: 791, strength: 0.426}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 769, strength: 0.416}
+  - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
+  - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}
 ---
 # Intent
 

@@ -1,3 +1,31 @@
+---
+title: Signal Stream
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-31
+technologies:
+  - jira
+depth_score: 4
+depth_signals:
+  file_size_kb: 5.4
+  content_chars: 4688
+  entity_count: 1
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.21
+related_entities:
+  - {pair: consulting-operations ↔ subaru, count: 791, strength: 0.426}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 769, strength: 0.416}
+  - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
+  - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}
+---
 # Signal Stream
 
 > Observations captured from Intent's own development. Each signal has a confidence score, source, and related intents. This is what the observe layer looks like in practice.

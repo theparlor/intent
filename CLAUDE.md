@@ -1,3 +1,36 @@
+---
+title: Claude
+type: framework
+maturity: final
+confidentiality: shareable
+reusability: universal
+domains:
+  - consulting-operations
+created: 2026-03-31
+technologies:
+  - slack
+thought_leaders:
+  - marty-cagan
+  - jeff-patton
+  - teresa-torres
+  - josh-seiden
+depth_score: 6
+depth_signals:
+  file_size_kb: 24.1
+  content_chars: 19143
+  entity_count: 5
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.42
+related_entities:
+  - {pair: consulting-operations ↔ subaru, count: 791, strength: 0.426}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 769, strength: 0.416}
+  - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
+  - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
+  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}
+---
 # Intent — Development Continuity Guide
 
 > This file exists so that any AI agent or human contributor can pick up Intent development without prior session context. Read this first.
@@ -7,6 +40,30 @@
 Intent is a **team operating model for AI-augmented product teams**. It replaces Agile's ceremony-driven coordination with a continuous loop: **Notice → Spec → Execute → Observe**. When AI collapses implementation from weeks to hours, the bottleneck moves upstream — from delivery to discovery, specification, and observation. Intent is the operating model for that new reality.
 
 Intent is NOT a SaaS tool (yet). It's a methodology that lives in files, tracked in git, observable through events. Teams adopt it by adding a `.intent/` directory to their repos.
+
+### Three-Layer Architecture (v1.0 — 2026-04-05)
+
+Intent operates as three independent but bidirectionally coupled layers:
+
+| Layer | Purpose | Directories | Analogy |
+|-------|---------|-------------|---------|
+| **1. Domain Knowledge Base** | Self-organizing compiled knowledge base that compiles everything the system knows about the problem domain | `raw/`, `knowledge/` | Karpathy's LLM Knowledge Base adapted for product work |
+| **2. Transformation OS** | The notice→spec→execute→observe engine. Domain-agnostic methodology. | `.intent/`, `spec/` (methodology) | The operating system |
+| **3. Software Spec & Code** | Specs, contracts, and running code generated from compiled domain knowledge | `spec/` (generated), `src/` | The output |
+
+**The critical distinction:** Karpathy builds a knowledge artifact (output = understanding). Intent builds a generative engine (output = running software). Layer 1 compiles understanding. Layer 2 transforms it. Layer 3 is what gets produced.
+
+**Six bidirectional data flows couple the layers:**
+1. Knowledge → Notice: Lint surfaces signals (gaps, contradictions, staleness)
+2. Notice → Spec (via knowledge): Spec authoring queries knowledge base for personas, journeys, DDRs
+3. Spec → Execute: Trust-gated agents build against specs
+4. Execute → Observe: Running code emits events
+5. **Observe → Knowledge (double-loop):** Observations update domain models — questioning assumptions, not just optimizing
+6. Observe → Spec corpus (single-loop): Spec drift detection, living doc sync
+
+**Schema:** See `knowledge-engine/AGENTS.md` for the full compiled knowledge base schema, artifact templates, and operation definitions.
+**Federation:** See `knowledge-engine/spec/federation.md` for how Core and engagement knowledge bases relate (inherit down, promote up, never leak sideways).
+**Source:** See `reference/karpathy-synthesis/` for the research and architectural decisions behind this evolution.
 
 **Owner:** Brien (theparlorhq@gmail.com) — solo practitioner, The Parlor
 **Repo:** github.com/theparlor/intent (private)
@@ -44,8 +101,11 @@ Each level has a clear owner, clear transitions, and clear events. This replaces
 ### Event System
 15 OTel-compatible events across 6 emission mechanisms. Events stored in `.intent/events/events.jsonl`. Schema: version, event, timestamp, trace_id (=Intent), span_id (=work unit), parent_id (=hierarchy), source, data.
 
-### Three-Layer Repo Pattern
+### Three-Layer Repo Pattern (Extended)
+- `raw/` — Immutable source material (research, analytics, competitors, support). LLM reads, never writes.
+- `knowledge/` — LLM-compiled domain knowledge (personas, journeys, DDRs, themes, domain models, rationale). Agent writes, human reviews.
 - `.intent/` — Work artifacts (signals, intents, specs, contracts, decisions, events, templates)
+- `observations/` — Runtime feedback (metrics, incidents) that feeds back into knowledge base and specs
 - `.claude/` — Agent reasoning (project context, session transcripts)
 - `.entire/` — Observability (execution traces from Entire.io)
 
@@ -167,50 +227,52 @@ Install: `pip install mcp pydantic` then configure in Claude Code or Cursor sett
 
 ```
 intent/
-├── .intent/                  ← Intent's own dogfood
+├── raw/                      ← LAYER 1 INPUT: Immutable source material
+│   ├── research/             ← Interview transcripts, surveys
+│   ├── analytics/            ← Exported reports, dashboards
+│   ├── competitors/          ← Market research
+│   └── support/              ← Ticket exports, session recordings
+├── knowledge/                ← LAYER 1 OUTPUT: LLM-compiled domain knowledge
+│   ├── _index.md             ← Master catalog (LLM-maintained, read first)
+│   ├── log.md                ← Append-only activity log
+│   ├── traceability.md       ← Cross-artifact link matrix
+│   ├── personas/             ← PER-NNN files
+│   ├── journeys/             ← JRN-NNN files
+│   ├── decisions/            ← DDR-NNN design decision records
+│   ├── themes/               ← THM-NNN research themes
+│   ├── domain-models/        ← DOM-NNN bounded contexts, glossaries
+│   └── design-rationale/     ← RAT-NNN why-level documentation
+├── .intent/                  ← LAYER 2: Intent's own dogfood
 │   ├── INTENT.md             ← Project manifest
 │   ├── decisions.md          ← Decision log (source of truth)
-│   ├── signals/              ← 13 founding signals (SIG-001 through SIG-013)
+│   ├── signals/              ← 24+ signals (SIG-001 through SIG-025+)
 │   ├── intents/              ← Proposed intents
 │   ├── specs/                ← Written specs
+│   ├── clusters/             ← 6 signal clusters
 │   ├── events/               ← Event log (events.jsonl)
-│   └── templates/            ← Signal, intent, spec, contract templates
+│   └── templates/            ← Signal, intent, spec, contract (knowledge artifact templates moved to knowledge-engine/templates/)
+├── observations/             ← RUNTIME FEEDBACK (feeds Flows 5 & 6)
+│   ├── metrics/              ← Performance, usage, behavioral data
+│   └── incidents/            ← Error reports, anomalies
 ├── .github/
 │   └── workflows/
 │       └── intent-events.yml ← GitHub Action: emit events on push
 ├── artifacts/                ← React JSX interactive artifacts
-│   ├── intent-event-catalog.jsx
-│   ├── intent-flow-diagram.jsx
-│   ├── intent-product-roadmap.jsx  ← Interactive roadmap (Products/Priorities views)
-│   ├── intent-work-system.jsx
-│   └── intent-visual-brief.jsx
 ├── bin/                      ← CLI tools (add to PATH)
 │   ├── intent-signal         ← Capture signals
 │   ├── intent-intent         ← Propose/manage intents
 │   ├── intent-spec           ← Create/manage specs
 │   └── intent-status         ← System status dashboard
-├── spec/                     ← Markdown source files (source of truth)
-│   ├── intent-methodology.md
-│   ├── intent-concept-brief.md
-│   ├── autonomous-operations-design.md
-│   ├── signal-capture-system.md  ← 5-tier capture architecture
-│   ├── signal-trust-framework.md   ← Trust scoring, autonomy levels, enrichment pipeline
-│   ├── product-roadmap.md       ← Four-product roadmap
-│   ├── signal-stream.md
-│   ├── decision-log.md
-│   ├── event-catalog.md
-│   ├── flow-diagram.md
-│   ├── repo-pattern.md
-│   └── work-ontology.md
+├── spec/                     ← Methodology source files (source of truth)
+├── servers/                  ← MCP servers (notice, spec, observe)
 ├── tools/
 │   └── intent-mcp/           ← MCP server (7 tools)
-│       ├── server.py
-│       ├── requirements.txt
-│       └── README.md
+├── reference/                ← Reference materials
+│   └── karpathy-synthesis/   ← Three-layer architecture research & decisions
 ├── notice/                   ← Loop directory: notice phase
 ├── execute/                  ← Loop directory: execute phase
 ├── observe/                  ← Loop directory: observe phase
-├── reference/                ← Reference materials
+├── knowledge-engine/         ← Knowledge Engine product (AGENTS.md, specs, templates)
 ├── CLAUDE.md                 ← THIS FILE
 ├── CHANGELOG.md              ← Timestamp-based version history
 ├── VERSION                   ← Current: 2026.03.30-0.9.0
@@ -261,6 +323,20 @@ The site has been moved to its own repo: **`theparlor/intent-site`**
 ### Site
 The marketing site lives in `theparlor/intent-site` and deploys to https://theparlor.github.io/intent-site/. This repo has no `docs/` folder.
 
+## Traceability Chain
+
+Every link is bidirectional and navigable through `[[wikilinks]]` and YAML frontmatter:
+
+```
+Raw Research → Persona → Journey Step → Pain Point → DDR → Spec → Contract → Code
+                                                                              ↓
+Observations ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←
+  ↓                         (Flow 6: single-loop → spec updates)
+  └→ Knowledge Base updates  (Flow 5: double-loop → assumption questioning)
+```
+
+Lint enforces coverage: every persona must be referenced by at least one journey, every DDR must link to a persona and journey stage, every spec must link to a DDR, orphans are flagged.
+
 ## Key Decisions (for context)
 
 1. **Named "Intent"** — not "Dev OS", Frame, Premise, or Lucid. The name IS the thing.
@@ -271,6 +347,11 @@ The marketing site lives in `theparlor/intent-site` and deploys to https://thepa
 6. **Specs as contracts, not stories** — agents need verifiable assertions, not prose.
 7. **Staged GTM** — thought leadership → methodology product → tooling (conditional).
 8. **Four-product framing** — Notice, Spec, Execute, Observe are distinct products with own roadmaps.
+9. **Three-layer architecture** — Compiled knowledge base (Karpathy pattern) + Transformation OS (Intent loop) + Software Spec/Code. Independent layers, bidirectionally coupled. (2026-04-05)
+10. **Compilation over retrieval** — The knowledge base compiles understanding once and keeps it current. Not RAG. Cross-references already there. Contradictions already flagged.
+11. **Double-loop learning** — Observe updates Layer 1 (domain understanding), not just Layer 3 (execution). Without this, system can only optimize, never question. (Argyris)
+12. **Origin tracking** — Every knowledge artifact carries `origin: human | agent | synthetic` for contamination mitigation. (Ango)
+13. **Federated knowledge base architecture** — Core = universal substrate, engagements = bounded instances. Inherit down, promote up, never leak sideways. Mirrors Workspaces topology. (2026-04-05)
 
 ## Intellectual Foundations
 
@@ -303,6 +384,7 @@ Intent is designed to be developed by AI agents (Claude Code) working from this 
 
 1. **Read these files first, IN THIS ORDER:**
    - `CLAUDE.md` (this file) — project context, architecture, tooling
+   - `knowledge-engine/AGENTS.md` — compiled knowledge base schema, operations, cross-reference conventions
    - `tasks/ROADMAP.md` — **master execution plan with phase status, verification scripts, and contracts**
    - `TASKS.md` — living backlog partitioned by autonomy level
    - Any relevant spec in `spec/` for the domain you're working in
