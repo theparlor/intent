@@ -146,7 +146,18 @@ def compute_effective_trust(base_trust: float, amplification: float) -> float:
     return round(min(1.0, base_trust + amplification), 3)
 
 
-# ─── OTel-Compatible Event Types (15) ────────────────────────
+# ─── Knowledge Artifact Types ──────────────────────────────
+
+class KnowledgeArtifactType(str, Enum):
+    PERSONA = "persona"
+    JOURNEY = "journey"
+    DECISION = "decision"
+    THEME = "theme"
+    DOMAIN_MODEL = "domain-model"
+    DESIGN_RATIONALE = "rationale"
+
+
+# ─── OTel-Compatible Event Types (18) ────────────────────────
 
 EVENT_TYPES = {
     "signal.created", "signal.updated", "signal.dismissed",
@@ -154,6 +165,7 @@ EVENT_TYPES = {
     "intent.proposed", "intent.accepted", "intent.specced", "intent.completed",
     "spec.created", "spec.approved", "spec.executing", "spec.completed",
     "contract.verified", "contract.failed",
+    "knowledge.ingested", "knowledge.queried", "knowledge.linted",
     "system.status",
 }
 

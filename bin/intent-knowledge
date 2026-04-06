@@ -1,0 +1,371 @@
+#!/bin/bash
+#
+# intent-knowledge — Knowledge Engine CLI: ingest, query, lint
+#
+# Usage:
+#   intent-knowledge ingest raw/research/source.md     # Compile source into knowledge artifacts
+#   intent-knowledge query "What personas exist?"       # Query compiled knowledge base
+#   intent-knowledge lint                               # Scan for contradictions, gaps, staleness
+#   intent-knowledge status                             # Knowledge base summary
+#
+# Writes to knowledge/ in the nearest Intent-native repo.
+# Schema: knowledge-engine/AGENTS.md
+
+set -euo pipefail
+
+# --- Find .intent/ directory ---
+find_intent_root() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.intent" ]]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+REPO_ROOT=$(find_intent_root) || {
+  echo "Error: No .intent/ directory found. Are you in an Intent-native repo?" >&2
+  exit 1
+}
+
+KNOWLEDGE_DIR="$REPO_ROOT/knowledge"
+RAW_DIR="$REPO_ROOT/raw"
+EVENTS_DIR="$REPO_ROOT/.intent/events"
+SIGNALS_DIR="$REPO_ROOT/.intent/signals"
+INDEX_FILE="$KNOWLEDGE_DIR/_index.md"
+LOG_FILE="$KNOWLEDGE_DIR/log.md"
+EVENTS_FILE="$EVENTS_DIR/events.jsonl"
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+DATE_STAMP=$(date -u +"%Y-%m-%d")
+
+mkdir -p "$KNOWLEDGE_DIR" "$EVENTS_DIR"
+
+# --- Helpers ---
+emit_event() {
+  local event_type="$1"
+  local ref="$2"
+  local data="$3"
+  local event="{\"version\":\"0.2.0\",\"event\":\"${event_type}\",\"timestamp\":\"${TIMESTAMP}\",\"trace_id\":null,\"span_id\":\"${ref}\",\"parent_id\":null,\"source\":\"cli\",\"data\":${data}}"
+  echo "$event" >> "$EVENTS_FILE"
+}
+
+append_log() {
+  local entry="$1"
+  echo "$entry" >> "$LOG_FILE"
+}
+
+count_artifacts() {
+  find "$KNOWLEDGE_DIR" -name "*.md" \
+    ! -name "_index.md" \
+    ! -name "log.md" \
+    ! -name "traceability.md" \
+    -type f 2>/dev/null | wc -l | tr -d ' '
+}
+
+list_artifacts() {
+  find "$KNOWLEDGE_DIR" -name "*.md" \
+    ! -name "_index.md" \
+    ! -name "log.md" \
+    ! -name "traceability.md" \
+    -type f 2>/dev/null | sort
+}
+
+get_field() {
+  local file="$1"
+  local field="$2"
+  grep -m1 "^${field}:" "$file" 2>/dev/null | sed "s/^${field}:[[:space:]]*//" || true
+}
+
+get_title() {
+  local file="$1"
+  grep -m1 '^# ' "$file" 2>/dev/null | sed 's/^# //' || echo "(untitled)"
+}
+
+# --- Commands ---
+
+cmd_status() {
+  echo "═══════════════════════════════════════════════"
+  echo "  Knowledge Engine Status"
+  echo "═══════════════════════════════════════════════"
+  echo ""
+
+  local total=$(count_artifacts)
+  echo "  Total artifacts:  $total"
+
+  # Count by type
+  for subdir in personas journeys decisions themes domain-models design-rationale; do
+    local count=$(find "$KNOWLEDGE_DIR/$subdir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    printf "  %-18s %s\n" "$subdir:" "$count"
+  done
+
+  echo ""
+
+  # Raw sources
+  local raw_count=$(find "$RAW_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+  echo "  Raw sources:      $raw_count"
+
+  # Last ingest
+  local last_ingest=$(grep '^\[INGEST\]' "$LOG_FILE" 2>/dev/null | tail -1 || echo "  (none)")
+  echo "  Last ingest:      $last_ingest"
+
+  echo ""
+
+  # Average confidence
+  local conf_sum=0
+  local conf_count=0
+  while IFS= read -r f; do
+    local conf=$(get_field "$f" "confidence")
+    if [[ -n "$conf" && "$conf" != "0.0" ]]; then
+      conf_sum=$(echo "$conf_sum + $conf" | bc -l 2>/dev/null || echo "$conf_sum")
+      conf_count=$((conf_count + 1))
+    fi
+  done < <(list_artifacts)
+
+  if [[ $conf_count -gt 0 ]]; then
+    local avg=$(echo "scale=2; $conf_sum / $conf_count" | bc -l 2>/dev/null || echo "?")
+    echo "  Avg confidence:   $avg (across $conf_count artifacts)"
+  fi
+
+  echo ""
+  echo "═══════════════════════════════════════════════"
+}
+
+cmd_ingest() {
+  local source_file="$1"
+
+  if [[ ! -f "$source_file" ]]; then
+    # Try relative to REPO_ROOT
+    source_file="$REPO_ROOT/$1"
+    if [[ ! -f "$source_file" ]]; then
+      echo "Error: Source file not found: $1" >&2
+      exit 1
+    fi
+  fi
+
+  # Check if it's markdown
+  if [[ "${source_file##*.}" != "md" ]]; then
+    echo "Warning: Non-markdown source ($source_file). Skipping — only .md supported in v1." >&2
+    exit 1
+  fi
+
+  local rel_path="${source_file#$REPO_ROOT/}"
+  local basename=$(basename "$source_file" .md)
+
+  echo "Ingesting: $rel_path"
+  echo ""
+  echo "This operation requires an LLM agent to compile the source into"
+  echo "knowledge artifacts. The CLI prepares the environment; the agent"
+  echo "performs the compilation."
+  echo ""
+  echo "To complete this ingest, provide the following to your LLM agent:"
+  echo ""
+  echo "  ┌────────────────────────────────────────────────────────────┐"
+  echo "  │  Ingest source: $rel_path"
+  echo "  │  Schema: knowledge-engine/AGENTS.md"
+  echo "  │  Index: knowledge/_index.md"
+  echo "  │  Operations: knowledge-engine/spec/operations.md §4.1"
+  echo "  │"
+  echo "  │  Process:"
+  echo "  │  1. Read the source file"
+  echo "  │  2. Read knowledge/_index.md for current state"
+  echo "  │  3. Create/update knowledge artifacts per AGENTS.md schema"
+  echo "  │  4. Update _index.md, log.md, traceability.md"
+  echo "  │  5. Emit knowledge.ingested event"
+  echo "  └────────────────────────────────────────────────────────────┘"
+  echo ""
+
+  # Check if source was already ingested
+  if grep -rq "$rel_path" "$KNOWLEDGE_DIR" 2>/dev/null; then
+    echo "Note: This source appears in existing knowledge artifacts."
+    echo "The agent should UPDATE existing artifacts, not create duplicates."
+    echo ""
+  fi
+
+  # Emit event that ingest was requested
+  emit_event "knowledge.ingested" "$basename" "{\"source\":\"$rel_path\",\"status\":\"requested\"}"
+  append_log "[INGEST] $DATE_STAMP $rel_path → requested (awaiting agent compilation)"
+}
+
+cmd_query() {
+  local question="$*"
+
+  if [[ -z "$question" ]]; then
+    echo "Usage: intent-knowledge query \"Your question here\"" >&2
+    exit 1
+  fi
+
+  echo "Query: $question"
+  echo ""
+  echo "This operation requires an LLM agent to synthesize an answer"
+  echo "from compiled knowledge artifacts."
+  echo ""
+  echo "  ┌────────────────────────────────────────────────────────────┐"
+  echo "  │  Question: $question"
+  echo "  │  Index: knowledge/_index.md"
+  echo "  │  Operations: knowledge-engine/spec/operations.md §4.2"
+  echo "  │"
+  echo "  │  Process:"
+  echo "  │  1. Read knowledge/_index.md to find relevant artifacts"
+  echo "  │  2. Read identified artifacts"
+  echo "  │  3. Synthesize answer with [[citations]]"
+  echo "  │  4. Offer to file significant insights as new artifacts"
+  echo "  │  5. Append to log.md and emit event"
+  echo "  └────────────────────────────────────────────────────────────┘"
+  echo ""
+
+  emit_event "knowledge.queried" "query" "{\"question\":\"$question\",\"status\":\"requested\"}"
+  append_log "[QUERY] $DATE_STAMP \"$question\" → requested (awaiting agent synthesis)"
+}
+
+cmd_lint() {
+  echo "Knowledge Engine Lint"
+  echo "═══════════════════════════════════════════════"
+  echo ""
+
+  local findings=0
+
+  # Check 1: Orphans (artifacts with no inbound references)
+  echo "Checking for orphans..."
+  while IFS= read -r f; do
+    local basename=$(basename "$f" .md)
+    local refs=$(grep -rl "$basename" "$KNOWLEDGE_DIR" 2>/dev/null | grep -v "$f" | wc -l | tr -d ' ')
+    if [[ "$refs" -eq 0 ]]; then
+      echo "  ORPHAN: $f (no inbound references)"
+      findings=$((findings + 1))
+    fi
+  done < <(list_artifacts)
+
+  echo ""
+
+  # Check 2: Missing confidence
+  echo "Checking for missing/invalid confidence..."
+  while IFS= read -r f; do
+    local conf=$(get_field "$f" "confidence")
+    if [[ -z "$conf" ]]; then
+      echo "  MISSING: $f has no confidence score"
+      findings=$((findings + 1))
+    fi
+  done < <(list_artifacts)
+
+  echo ""
+
+  # Check 3: Stale artifacts (updated > 30 days ago)
+  echo "Checking for staleness..."
+  while IFS= read -r f; do
+    local updated=$(get_field "$f" "updated")
+    if [[ -n "$updated" ]]; then
+      local updated_epoch=$(date -j -f "%Y-%m-%d" "$updated" "+%s" 2>/dev/null || echo "0")
+      local now_epoch=$(date "+%s")
+      local days_ago=$(( (now_epoch - updated_epoch) / 86400 ))
+      if [[ $days_ago -gt 30 ]]; then
+        echo "  STALE: $f (last updated $days_ago days ago)"
+        findings=$((findings + 1))
+      fi
+    fi
+  done < <(list_artifacts)
+
+  echo ""
+
+  # Check 4: Coverage gaps
+  echo "Checking coverage gaps..."
+
+  # Personas without journeys
+  if [[ -d "$KNOWLEDGE_DIR/personas" ]]; then
+    for f in "$KNOWLEDGE_DIR/personas/"*.md; do
+      [[ -f "$f" ]] || continue
+      local per_id=$(get_field "$f" "id")
+      local has_journey=$(grep -rl "persona: $per_id" "$KNOWLEDGE_DIR/journeys/" 2>/dev/null | wc -l | tr -d ' ')
+      if [[ "$has_journey" -eq 0 ]]; then
+        echo "  GAP: $per_id has no journey map"
+        findings=$((findings + 1))
+      fi
+    done
+  fi
+
+  # DDRs without specs
+  if [[ -d "$KNOWLEDGE_DIR/decisions" ]]; then
+    for f in "$KNOWLEDGE_DIR/decisions/"*.md; do
+      [[ -f "$f" ]] || continue
+      local ddr_id=$(get_field "$f" "id")
+      local has_spec=$(get_field "$f" "related_specs")
+      if [[ -z "$has_spec" || "$has_spec" == "[]" ]]; then
+        echo "  GAP: $ddr_id has no linked spec"
+        findings=$((findings + 1))
+      fi
+    done
+  fi
+
+  echo ""
+
+  # Check 5: Index drift
+  echo "Checking index accuracy..."
+  local actual=$(count_artifacts)
+  local claimed=$(grep "artifact_count:" "$INDEX_FILE" 2>/dev/null | grep -o '[0-9]*' || echo "0")
+  if [[ "$actual" != "$claimed" ]]; then
+    echo "  DRIFT: _index.md claims $claimed artifacts but $actual exist"
+    findings=$((findings + 1))
+  fi
+
+  echo ""
+
+  # Check 6: Provenance drift
+  echo "Checking provenance..."
+  while IFS= read -r f; do
+    local origin=$(get_field "$f" "origin")
+    local conf=$(get_field "$f" "confidence")
+    if [[ "$origin" == "agent" || "$origin" == "synthetic" ]]; then
+      if [[ -n "$conf" ]] && (( $(echo "$conf > 0.5" | bc -l 2>/dev/null || echo 0) )); then
+        echo "  PROVENANCE: $f has origin=$origin but confidence=$conf (>0.5 requires human review)"
+        findings=$((findings + 1))
+      fi
+    fi
+  done < <(list_artifacts)
+
+  echo ""
+  echo "═══════════════════════════════════════════════"
+  echo "  Total findings: $findings"
+  echo "═══════════════════════════════════════════════"
+
+  if [[ $findings -gt 0 ]]; then
+    echo ""
+    echo "To create signals from these findings:"
+    echo "  intent-signal \"Knowledge lint: $findings findings\" --source knowledge-lint"
+  fi
+
+  emit_event "knowledge.linted" "lint" "{\"findings\":$findings}"
+  append_log "[LINT] $DATE_STAMP findings: $findings"
+}
+
+# --- Dispatch ---
+
+case "${1:-}" in
+  ingest)
+    shift
+    cmd_ingest "${1:?Usage: intent-knowledge ingest <source-file>}"
+    ;;
+  query)
+    shift
+    cmd_query "$@"
+    ;;
+  lint)
+    cmd_lint
+    ;;
+  status)
+    cmd_status
+    ;;
+  *)
+    echo "intent-knowledge — Knowledge Engine CLI"
+    echo ""
+    echo "Usage:"
+    echo "  intent-knowledge ingest <source.md>   Compile source into knowledge artifacts"
+    echo "  intent-knowledge query \"question\"     Query compiled knowledge base"
+    echo "  intent-knowledge lint                  Scan for contradictions, gaps, staleness"
+    echo "  intent-knowledge status                Knowledge base summary"
+    echo ""
+    echo "Schema: knowledge-engine/AGENTS.md"
+    echo "Spec:   knowledge-engine/spec/operations.md"
+    ;;
+esac

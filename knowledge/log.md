@@ -35,3 +35,6 @@ maintained_by: agent
 [CREATE] 2026-04-06 knowledge-engine/spec/enrichment.md — Recompilation cascade: new capabilities reapplied against prior engagement knowledge
 [CREATE] 2026-04-06 knowledge-engine/spec/redaction.md — Privacy projection model: full fidelity for solo work, redacted views for sharing/cross-engagement
 [CREATE] 2026-04-06 knowledge/decisions/DDR-005-knowledge-engine-boundary.md — Three-level boundary decision (methodology/product/instance)
+[LINT] 2026-04-06 findings: 15
+[INGEST] 2026-04-06 raw/research/2026-04-02-karpathy-llm-knowledge-bases.md → requested (awaiting agent compilation)
+[QUERY] 2026-04-06 "What is the bottleneck shift?" → requested (awaiting agent synthesis)
