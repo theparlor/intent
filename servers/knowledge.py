@@ -448,3 +448,117 @@ def knowledge_lint() -> str:
     _append_log(f"[LINT] {datetime.utcnow().strftime('%Y-%m-%d')} findings: {len(findings)}")
 
     return "\n".join(result)
+
+
+# ─── Dossier types and mappings ──────────────────────────────
+
+DOSSIER_TYPES = {
+    "person":   {"prefix": "DSR-PER", "dir": "people",      "skill": "individual-research"},
+    "company":  {"prefix": "DSR-COM", "dir": "companies",    "skill": "company-dossier"},
+    "product":  {"prefix": "DSR-PRD", "dir": "products",     "skill": "product-analysis"},
+    "service":  {"prefix": "DSR-SVC", "dir": "services",     "skill": None},
+    "industry": {"prefix": "DSR-IND", "dir": "industries",   "skill": "industry-scan"},
+    "context":  {"prefix": "DSR-CTX", "dir": "contexts",     "skill": None},
+}
+
+
+@mcp.tool()
+def knowledge_dossier(entity_type: str, name: str) -> str:
+    """
+    Generate an entity dossier — a structured profile of a person, company,
+    product, service, industry, or context. Returns research instructions
+    and the template for the LLM to compile.
+
+    Args:
+        entity_type: One of: person, company, product, service, industry, context
+        name: The name of the entity to research
+    """
+    if entity_type not in DOSSIER_TYPES:
+        return f"Error: Unknown dossier type '{entity_type}'. Valid: {', '.join(DOSSIER_TYPES.keys())}"
+
+    dtype = DOSSIER_TYPES[entity_type]
+    dossier_dir = os.path.join(KNOWLEDGE_DIR, "dossiers", dtype["dir"])
+    os.makedirs(dossier_dir, exist_ok=True)
+
+    # Get next ID
+    max_id = 0
+    if os.path.isdir(dossier_dir):
+        for f in os.listdir(dossier_dir):
+            if f.endswith(".md"):
+                content = _read_file(os.path.join(dossier_dir, f))
+                fid = _get_frontmatter_field(content, "id")
+                try:
+                    num = int(fid.split("-")[-1])
+                    if num > max_id:
+                        max_id = num
+                except (ValueError, IndexError):
+                    pass
+    next_id = max_id + 1
+    dossier_id = f"{dtype['prefix']}-{next_id:03d}"
+
+    slug = name.lower().replace(" ", "-")
+    slug = re.sub(r"[^a-z0-9-]", "", slug)
+
+    # Read the template
+    template_path = os.path.join(ROOT, "knowledge-engine", "templates", f"dossier-{entity_type}.md")
+    template = _read_file(template_path)
+
+    # Check for existing dossier
+    existing = None
+    for f in os.listdir(dossier_dir) if os.path.isdir(dossier_dir) else []:
+        if f.endswith(".md"):
+            content = _read_file(os.path.join(dossier_dir, f))
+            if name.lower() in content.lower():
+                existing = f
+                break
+
+    result = [
+        "# Dossier Request",
+        "",
+        f"**Entity:** {name}",
+        f"**Type:** {entity_type}",
+        f"**ID:** {dossier_id}",
+        f"**Output:** knowledge/dossiers/{dtype['dir']}/{dossier_id}-{slug}.md",
+        "",
+    ]
+
+    if existing:
+        result.append(f"⚠ Existing dossier found: {existing}. UPDATE it instead of creating a duplicate.")
+        result.append("")
+
+    if dtype["skill"]:
+        result.extend([
+            f"## Skills Engine Integration",
+            "",
+            f"Run the `{dtype['skill']}` skill from Core/skills-engine/ first:",
+            f"  This produces a research output that feeds the dossier template.",
+            "",
+        ])
+
+    result.extend([
+        "## Template",
+        "",
+        template,
+        "",
+        "## Instructions",
+        "",
+        "1. Research the entity using available sources (web search, existing raw/ material, Skills Engine output)",
+        "2. Apply depth guarantees (5 checks: adjacent, temporal, contrarian, network, implication)",
+        "3. Fill the template with compiled findings",
+        "4. Set confidence based on evidence strength",
+        "5. Set origin to 'agent' (will need human review for confidence > 0.5)",
+        "6. Update knowledge/_index.md and knowledge/log.md",
+        "",
+        "## Post-Dossier Generation",
+        "",
+        "After creating the dossier, consider:",
+        "- Person dossiers → generate a hero persona (PER-NNN) from the dossier",
+        "- Company dossiers → generate domain models (DOM) and themes (THM)",
+        "- Industry dossiers → generate themes (THM) and design rationale (RAT)",
+        "- Context dossiers → use as engagement scoping for all subsequent work",
+    ])
+
+    _emit_event("knowledge.ingested", dossier_id, {
+        "type": "dossier", "subtype": entity_type, "name": name, "status": "requested"
+    })
+    _append_log(f"[DOSSIER] {datetime.utcnow().strftime('%Y-%m-%d')} {entity_type}: {name} → {dossier_id} requested")

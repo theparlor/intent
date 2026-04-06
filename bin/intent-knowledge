@@ -96,9 +96,17 @@ cmd_status() {
   echo "  Total artifacts:  $total"
 
   # Count by type
+  echo "  Compiled knowledge:"
   for subdir in personas journeys decisions themes domain-models design-rationale; do
     local count=$(find "$KNOWLEDGE_DIR/$subdir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    printf "  %-18s %s\n" "$subdir:" "$count"
+    printf "    %-18s %s\n" "$subdir:" "$count"
+  done
+
+  echo ""
+  echo "  Entity dossiers:"
+  for subdir in people companies products services industries contexts; do
+    local count=$(find "$KNOWLEDGE_DIR/dossiers/$subdir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    printf "    %-18s %s\n" "$subdir:" "$count"
   done
 
   echo ""
@@ -339,6 +347,92 @@ cmd_lint() {
   append_log "[LINT] $DATE_STAMP findings: $findings"
 }
 
+DOSSIER_DIR="$KNOWLEDGE_DIR/dossiers"
+
+cmd_dossier() {
+  local dtype="$1"
+  shift
+  local name="$*"
+
+  if [[ -z "$name" ]]; then
+    echo "Usage: intent-knowledge dossier <type> <name>" >&2
+    echo "Types: person, company, product, service, industry, context" >&2
+    exit 1
+  fi
+
+  local valid_types="person company product service industry context"
+  if [[ ! " $valid_types " =~ " $dtype " ]]; then
+    echo "Error: Unknown dossier type '$dtype'" >&2
+    echo "Valid types: $valid_types" >&2
+    exit 1
+  fi
+
+  # Map type to prefix and directory
+  local prefix subdir skills_engine_skill
+  case "$dtype" in
+    person)   prefix="DSR-PER"; subdir="people";      skills_engine_skill="individual-research" ;;
+    company)  prefix="DSR-COM"; subdir="companies";    skills_engine_skill="company-dossier" ;;
+    product)  prefix="DSR-PRD"; subdir="products";     skills_engine_skill="product-analysis" ;;
+    service)  prefix="DSR-SVC"; subdir="services";     skills_engine_skill="(manual or new skill)" ;;
+    industry) prefix="DSR-IND"; subdir="industries";   skills_engine_skill="industry-scan" ;;
+    context)  prefix="DSR-CTX"; subdir="contexts";     skills_engine_skill="(composite)" ;;
+  esac
+
+  mkdir -p "$DOSSIER_DIR/$subdir"
+
+  # Get next ID
+  local max_id=0
+  if [[ -d "$DOSSIER_DIR/$subdir" ]]; then
+    for f in "$DOSSIER_DIR/$subdir/"*.md; do
+      [[ -f "$f" ]] || continue
+      local fid=$(get_field "$f" "id" | grep -o '[0-9]*$')
+      if [[ -n "$fid" && "$fid" -gt "$max_id" ]]; then
+        max_id="$fid"
+      fi
+    done
+  fi
+  local next_id=$((max_id + 1))
+  local padded_id=$(printf "%03d" $next_id)
+  local dossier_id="${prefix}-${padded_id}"
+
+  local slug=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g')
+  local filename="${dossier_id}-${slug}.md"
+
+  echo "Dossier: $dtype / $name"
+  echo "ID: $dossier_id"
+  echo ""
+  echo "This operation requires an LLM agent to research and compile"
+  echo "the dossier. The CLI prepares the environment."
+  echo ""
+  echo "  ┌────────────────────────────────────────────────────────────┐"
+  echo "  │  Entity: $name"
+  echo "  │  Type: $dtype"
+  echo "  │  ID: $dossier_id"
+  echo "  │  Output: knowledge/dossiers/$subdir/$filename"
+  echo "  │  Template: knowledge-engine/templates/dossier-${dtype}.md"
+  echo "  │  Skills Engine skill: $skills_engine_skill"
+  echo "  │"
+  echo "  │  Process:"
+  echo "  │  1. Run Skills Engine '$skills_engine_skill' on '$name'"
+  echo "  │     (or research manually if no skill exists)"
+  echo "  │  2. Create dossier from template with compiled findings"
+  echo "  │  3. Apply depth guarantees (5 checks)"
+  echo "  │  4. Update knowledge/_index.md and log.md"
+  echo "  │  5. If hero persona needed: generate PER-NNN from dossier"
+  echo "  └────────────────────────────────────────────────────────────┘"
+  echo ""
+
+  # Check if dossier already exists for this entity
+  if grep -rq "name: \"$name\"" "$DOSSIER_DIR/$subdir/" 2>/dev/null; then
+    echo "Note: A dossier for '$name' may already exist in $subdir/."
+    echo "The agent should UPDATE the existing dossier, not create a duplicate."
+    echo ""
+  fi
+
+  emit_event "knowledge.ingested" "$dossier_id" "{\"type\":\"dossier\",\"subtype\":\"$dtype\",\"name\":\"$name\",\"status\":\"requested\"}"
+  append_log "[DOSSIER] $DATE_STAMP $dtype: $name → $dossier_id requested (awaiting agent research)"
+}
+
 # --- Dispatch ---
 
 case "${1:-}" in
@@ -356,14 +450,27 @@ case "${1:-}" in
   status)
     cmd_status
     ;;
+  dossier)
+    shift
+    cmd_dossier "${1:?Usage: intent-knowledge dossier <type> <name>}" "${@:2}"
+    ;;
   *)
     echo "intent-knowledge — Knowledge Engine CLI"
     echo ""
     echo "Usage:"
-    echo "  intent-knowledge ingest <source.md>   Compile source into knowledge artifacts"
-    echo "  intent-knowledge query \"question\"     Query compiled knowledge base"
-    echo "  intent-knowledge lint                  Scan for contradictions, gaps, staleness"
-    echo "  intent-knowledge status                Knowledge base summary"
+    echo "  intent-knowledge ingest <source.md>     Compile source into knowledge artifacts"
+    echo "  intent-knowledge query \"question\"       Query compiled knowledge base"
+    echo "  intent-knowledge lint                    Scan for contradictions, gaps, staleness"
+    echo "  intent-knowledge status                  Knowledge base summary"
+    echo "  intent-knowledge dossier <type> <name>   Generate entity dossier"
+    echo ""
+    echo "Dossier types: person, company, product, service, industry, context"
+    echo ""
+    echo "Examples:"
+    echo "  intent-knowledge dossier person \"Andrej Karpathy\""
+    echo "  intent-knowledge dossier company \"Subaru of America\""
+    echo "  intent-knowledge dossier industry \"Automotive OEM\""
+    echo "  intent-knowledge dossier context \"Subaru Engagement Q2 2026\""
     echo ""
     echo "Schema: knowledge-engine/AGENTS.md"
     echo "Spec:   knowledge-engine/spec/operations.md"

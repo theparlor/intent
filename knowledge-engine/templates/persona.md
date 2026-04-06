@@ -1,15 +1,20 @@
 ---
 id: PER-XXX
 type: persona
+subtype: product | role | hero | stakeholder | engagement | archetype
 name: "Display Name"
 slug: slug-name
 confidence: 0.0
 origin: human | agent | synthetic
 sources: []
+derived_from: []
+exemplifies: []
+engagement: null
 related_journeys: []
 related_decisions: []
 related_themes: []
 pain_points: []
+voice_persona: null
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -18,7 +23,7 @@ updated: YYYY-MM-DD
 ## Who
 
 Demographics, role, context, goals. What defines this person
-and why they matter to the product.
+and why they matter to the product or engagement.
 
 ## Behaviors
 
@@ -30,9 +35,6 @@ Observable patterns, habits, workflows. What do they actually do
 - PP-001: Description of pain point
 - PP-002: Description of pain point
 
-Each pain point gets a sequential ID namespaced to this persona.
-Link to DDRs when a decision addresses the pain point.
-
 ## Evidence
 
 - [Source description](../raw/research/source-file.md)
@@ -41,4 +43,7 @@ Link to DDRs when a decision addresses the pain point.
 ## Open Questions
 
 - What we don't yet know about this persona
-- Questions that would increase confidence if answered
+
+<!-- HERO: add Professional Trajectory, Communication Profile, Influence Map, Frameworks & Methodology -->
+<!-- STAKEHOLDER: add Decision Authority, Engagement Leverage Points, Risk Posture -->
+<!-- ARCHETYPE: add Exemplars (list of PER-NNN this generalizes), Pattern (shared abstraction) -->

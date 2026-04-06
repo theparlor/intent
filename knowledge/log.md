@@ -38,3 +38,5 @@ maintained_by: agent
 [LINT] 2026-04-06 findings: 15
 [INGEST] 2026-04-06 raw/research/2026-04-02-karpathy-llm-knowledge-bases.md → requested (awaiting agent compilation)
 [QUERY] 2026-04-06 "What is the bottleneck shift?" → requested (awaiting agent synthesis)
+[DOSSIER] 2026-04-06 person: Andrej Karpathy → DSR-PER-001 requested (awaiting agent research)
+[DOSSIER] 2026-04-06 company: Subaru of America → DSR-COM-001 requested (awaiting agent research)

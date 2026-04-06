@@ -50,12 +50,19 @@ knowledge/              # LLM-COMPILED. Agent writes, human reviews.
   _index.md             # Master catalog — LLM reads first on every operation
   log.md                # Append-only chronological activity log
   traceability.md       # Cross-artifact link matrix
-  personas/             # PER-NNN files
-  journeys/             # JRN-NNN files
-  decisions/            # DDR-NNN files
-  themes/               # THM-NNN files
-  domain-models/        # DOM-NNN files
-  design-rationale/     # RAT-NNN files
+  personas/             # PER-NNN files (compiled synthesis)
+  journeys/             # JRN-NNN files (compiled synthesis)
+  decisions/            # DDR-NNN files (compiled synthesis)
+  themes/               # THM-NNN files (compiled synthesis)
+  domain-models/        # DOM-NNN files (compiled synthesis)
+  design-rationale/     # RAT-NNN files (compiled synthesis)
+  dossiers/             # Entity dossiers (structured profiles)
+    people/             # DSR-PER-NNN — person dossiers (from individual-research)
+    companies/          # DSR-COM-NNN — company dossiers (from company-dossier)
+    products/           # DSR-PRD-NNN — product dossiers (from product-analysis)
+    services/           # DSR-SVC-NNN — service dossiers
+    industries/         # DSR-IND-NNN — industry dossiers (from industry-scan)
+    contexts/           # DSR-CTX-NNN — context dossiers (engagement/domain scoping)
 
 observations/           # Runtime feedback from executed specs
   metrics/              # Performance, usage, behavioral data
@@ -76,30 +83,125 @@ Every knowledge artifact is a markdown file with YAML frontmatter. All IDs use t
 
 ### 2.1 Persona — `knowledge/personas/PER-NNN-slug.md`
 
+Personas have six subtypes. The same schema handles all, with `subtype` determining which sections are primary.
+
+| Subtype | What it represents | Generated from | Example |
+|---------|-------------------|----------------|---------|
+| `product` | Who uses the thing being built | User research, analytics, interviews | PER-001-practitioner-architect |
+| `role` | What hat someone wears in the system | System design, team topology | △◇○◉ loop personas |
+| `hero` | Named individual who exemplifies a pattern | individual-research output, public sources | Karpathy, Ari, Torres |
+| `stakeholder` | Who has power/interest in the outcome | Engagement context, org analysis | Client VP, Turnberry PM |
+| `engagement` | Client-specific user type | Engagement research, client interviews | SOA field engineer, ASA physician |
+| `archetype` | Generalized pattern from multiple hero/engagement personas | Synthesis across multiple personas | "The skeptical VP" across 3 clients |
+
 ```yaml
 ---
 id: PER-NNN
 type: persona
+subtype: product | role | hero | stakeholder | engagement | archetype
 name: "Display Name"
 slug: slug-name
 confidence: 0.0-1.0        # How well-evidenced is this persona?
 origin: human | agent | synthetic
-sources: []                 # Paths to raw/ files or signal IDs
+sources: []                 # Paths to raw/ files, signal IDs, or individual-research outputs
+derived_from: []            # PER-NNN IDs (for archetypes synthesized from multiple personas)
+exemplifies: []             # PER-NNN archetype IDs this persona is an instance of
+engagement: null            # Engagement name (for engagement subtypes, confidentiality scoping)
 related_journeys: []        # JRN-NNN IDs
 related_decisions: []       # DDR-NNN IDs
 related_themes: []          # THM-NNN IDs
 pain_points: []             # Free-text list, each linked to DDRs when addressed
+voice_persona: null         # Skills Engine persona reference (e.g., "personalities/teresa-torres")
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
 ```
 
-**Body structure:**
+**Body structure (all subtypes):**
 - `## Who` — Demographics, role, context, goals
 - `## Behaviors` — Observable patterns, habits, workflows
 - `## Needs & Pain Points` — What they need, what frustrates them (each as `- PP-NNN: description`)
 - `## Evidence` — Source references with [[wikilinks]] to raw/ files
 - `## Open Questions` — What we don't yet know about this persona
+
+**Additional sections by subtype:**
+
+| Subtype | Additional sections |
+|---------|-------------------|
+| `hero` | `## Professional Trajectory`, `## Communication Profile`, `## Influence Map`, `## Frameworks & Methodology` |
+| `stakeholder` | `## Decision Authority`, `## Engagement Leverage Points`, `## Risk Posture` |
+| `archetype` | `## Exemplars` (list of hero/engagement personas this generalizes), `## Pattern` (what they share) |
+| `engagement` | `## Client Context`, `## Relationship to Engagement Scope` |
+
+**Generation paths:**
+
+```
+Name of a person ──→ individual-research skill ──→ raw/ profile ──→ ingest ──→ hero persona
+Role description ──→ direct generation ──→ role persona
+User research ──→ ingest (standard) ──→ product persona
+Multiple heroes ──→ synthesis ──→ archetype persona
+Engagement context ──→ engagement-scoped generation ──→ engagement persona
+```
+
+### 2.1b Entity Dossiers — `knowledge/dossiers/{type}/DSR-{TYPE}-NNN-slug.md`
+
+Entity dossiers are structured profiles of real-world entities. They sit between raw sources and compiled synthesis — richer than raw research, not yet abstracted into personas/journeys/decisions. Dossiers are the intermediate compilation step.
+
+**Six dossier types:**
+
+| Type | Prefix | Generated by (Skills Engine) | Feeds (compiled synthesis) |
+|------|--------|------------------------------|---------------------------|
+| Person | DSR-PER | `individual-research` | Hero personas (PER), stakeholder personas |
+| Company | DSR-COM | `company-dossier` | Domain models (DOM), themes (THM), engagement context |
+| Product | DSR-PRD | `product-analysis` | Journeys (JRN), decisions (DDR), competitive themes |
+| Service | DSR-SVC | (manual or new skill) | Journeys (JRN), decisions (DDR), capabilities |
+| Industry | DSR-IND | `industry-scan` | Themes (THM), design rationale (RAT), market context |
+| Context | DSR-CTX | (composite) | Engagement scoping — pulls from other dossier types |
+
+**Shared frontmatter (all dossier types):**
+
+```yaml
+---
+id: DSR-{TYPE}-NNN
+type: dossier
+subtype: person | company | product | service | industry | context
+name: "Entity Name"
+slug: slug-name
+confidence: 0.0-1.0
+origin: human | agent | synthetic
+sources: []               # Raw sources, URLs, skill outputs
+related_personas: []       # PER-NNN IDs this feeds
+related_themes: []         # THM-NNN IDs this informs
+engagement: null           # Engagement scope (null = Core)
+confidentiality: public | internal | client-confidential | nda
+last_researched: YYYY-MM-DD
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+---
+```
+
+**Body structure by subtype:**
+
+**Person** (`DSR-PER`): `## Headline` (3-sentence compression), `## Professional Trajectory`, `## Communication Profile`, `## Influence Map`, `## Current Priorities`, `## Engagement Strategy`, `## Frameworks & Methodology`
+
+**Company** (`DSR-COM`): `## Overview` (what they do, scale, market position), `## Strategic Position` (competitive landscape, recent moves), `## Organizational Signals` (hiring patterns, tech stack, culture indicators), `## Industry Context`, `## Engagement Relevance`
+
+**Product** (`DSR-PRD`): `## What It Does`, `## Target Users`, `## Competitive Position`, `## Strengths & Weaknesses`, `## Technical Architecture` (if known), `## Market Signals`
+
+**Service** (`DSR-SVC`): `## What It Provides`, `## Delivery Model`, `## Target Clients`, `## Competitive Position`, `## Differentiation`, `## Integration Points`
+
+**Industry** (`DSR-IND`): `## Landscape` (market size, key players, growth trajectory), `## Trends` (technology, regulatory, behavioral), `## Forces` (Porter's or equivalent), `## Implications for Engagement`
+
+**Context** (`DSR-CTX`): `## Scope` (what this context covers), `## Key Entities` (links to other dossiers), `## Constraints`, `## Assumptions`, `## Strategic Questions`
+
+**The ingest/extract/expound cycle:**
+
+```
+INGEST:  Skills Engine research skill runs → output lands in raw/
+EXTRACT: Knowledge Engine ingests raw output → creates DSR-* dossier
+EXPOUND: Dossier feeds persona/journey/theme generation → compiled knowledge grows
+         Compiled knowledge reveals gaps → triggers new research → cycle repeats
+```
 
 ### 2.2 Journey Map — `knowledge/journeys/JRN-NNN-slug.md`
 
