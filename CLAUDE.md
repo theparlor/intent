@@ -336,9 +336,13 @@ The site has been moved to its own repo: **`theparlor/intent-site`**
 ### Adding a new CLI tool
 1. Create the script in `bin/` — follow the existing pattern:
    - `find_intent_root()` to locate `.intent/`
-   - Sequential ID generation (`PREFIX-XXX`)
+   - **ULID-based ID generation** via `source bin/lib/id_gen.sh` and
+     `generate_id PREFIX` (SIG/INT/SPEC/CON/DEC). Never write new
+     sequential counters — see SPEC-003 and SIG-022.
    - Markdown with YAML frontmatter output
-   - Event emission to `events.jsonl`
+   - Event emission to `events.jsonl` via the fsync+flock wrapper in
+     `bin/intent-signal`'s `emit_event()` (pending full SQLite+WAL
+     migration per SPEC-004)
    - Optional `--commit` flag
 2. Add corresponding MCP tool in `tools/intent-mcp/server.py` with Pydantic input model
 3. Update this file's CLI section
@@ -393,6 +397,7 @@ File placement within Workspaces governed by [/Workspaces/AGENTS.md](../../../AG
 17. **Retroactive enrichment = suggested** — Lint detects recompilation opportunities, surfaces as signals. On-demand execution. Not automatic cascades. (2026-04-06)
 18. **Redaction at tool level** — MCP server applies confidentiality projection automatically based on engagement context. Not a flag Brien has to remember. (2026-04-06)
 19. **Spec-shaping is self-prompting through personas** — Intents become specs through four-persona interrogation (△ Shape, ◇ Outcome, ○ Contract, ◉ Readiness). The system self-prompts with each persona querying the knowledge base. Brien reviews specs, not execution. See `spec/spec-shaping-protocol.md`. (2026-04-06)
+20. **ULID-based ID generation** — All entity IDs (SIG, INT, SPEC, CON, DEC) are Crockford base32 ULIDs: `{PREFIX}-{26-char-ulid}`. Globally unique without coordination, timestamp-sortable, grep-friendly. Replaces the sequential counter that broke under concurrent writers and server restarts. Legacy `SIG-NNN` IDs remain valid via backward-compat regex. See `.intent/specs/SPEC-003-sig-022-ulid-migration.md` and `.intent/signals/2026-03-30-id-collision-distributed.md`. (2026-04-09)
 
 ## Intellectual Foundations
 
