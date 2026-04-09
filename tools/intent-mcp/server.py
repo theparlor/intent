@@ -12,6 +12,7 @@ Run: python server.py (stdio transport for local use)
 
 import os
 import re
+import sys
 import json
 import glob
 from datetime import datetime, timezone
@@ -20,6 +21,13 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 from mcp.server.fastmcp import FastMCP
+
+# --- ULID ID generation (SIG-022 / INT-009 P0 #1) ---
+# Import from servers/id_gen.py which sits at the repo's servers/ directory.
+# This MCP server lives at tools/intent-mcp/server.py so we walk up two dirs.
+_repo_root = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_repo_root / "servers"))
+from id_gen import generate_id as _generate_ulid_id  # noqa: E402
 
 # Initialize MCP server
 mcp = FastMCP("intent_mcp")
@@ -62,15 +70,16 @@ def slugify(text: str) -> str:
 
 
 def next_id(directory: Path, prefix: str) -> str:
-    """Generate the next PREFIX-XXX ID based on existing files."""
-    existing = list(directory.glob("*.md"))
-    max_id = 0
-    for f in existing:
-        content = f.read_text()
-        match = re.search(rf'id:\s*{prefix}-(\d+)', content)
-        if match:
-            max_id = max(max_id, int(match.group(1)))
-    return f"{prefix}-{max_id + 1:03d}"
+    """Generate the next ID for a given entity prefix.
+
+    Uses ULID per SIG-022 — globally unique, no coordination required.
+    The `directory` parameter is kept in the signature for backward
+    compatibility with existing callers, but is no longer used.
+
+    Legacy SIG-NNN / INT-NNN / SPEC-NNN IDs remain valid and parseable
+    via servers/id_gen.py's MATCH_ID_PATTERN.
+    """
+    return _generate_ulid_id(prefix)
 
 
 def get_dir(repo_root: Path, subdir: str) -> Path:

@@ -20,6 +20,7 @@ from models import (
     compute_effective_trust, signal_frontmatter, make_event,
     REFERENCE_WEIGHTS, TraceContext,
 )
+from id_gen import generate_id
 import json
 from datetime import datetime
 
@@ -47,15 +48,14 @@ mcp = FastMCP(
 # In-memory store — replace with .intent/signals/ file I/O for production
 _signals: dict[str, dict] = {}
 _events: list[str] = []  # JSONL event log
-_next_id = 1
 _trace_ctx = TraceContext()
 
 
 def _gen_id():
-    global _next_id
-    sig_id = f"SIG-{_next_id:03d}"
-    _next_id += 1
-    return sig_id
+    # ULID-based per SIG-022 — globally unique, no coordination required.
+    # Replaces the legacy sequential counter that broke across MCP server
+    # restarts and concurrent writers.
+    return generate_id("SIG")
 
 
 @mcp.tool()

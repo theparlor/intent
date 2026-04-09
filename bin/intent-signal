@@ -19,6 +19,11 @@
 
 set -euo pipefail
 
+# --- Load ID generation helpers (ULID-based per SIG-022 / INT-009 P0 #1) ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/id_gen.sh
+source "$SCRIPT_DIR/lib/id_gen.sh"
+
 # --- Find .intent/ directory ---
 find_intent_root() {
   local dir="$PWD"
@@ -47,12 +52,30 @@ EVENTS_FILE="$EVENTS_DIR/events.jsonl"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # --- Helpers ---
+# emit_event: append a JSON line to events.jsonl with fsync + flock for
+# multi-writer safety. This is the interim safety wrapper pending full
+# SQLite+WAL migration per SPEC-events-persistence (INT-009 P0 #2).
 emit_event() {
   local event_type="$1"
   local signal_id="$2"
   local data="$3"
   local event="{\"version\":\"0.1.0\",\"event\":\"${event_type}\",\"timestamp\":\"${TIMESTAMP}\",\"trace_id\":null,\"span_id\":\"${signal_id}\",\"parent_id\":null,\"source\":\"cli\",\"data\":${data}}"
-  echo "$event" >> "$EVENTS_FILE"
+
+  # Use flock if available (Linux) to serialize concurrent writers.
+  # On macOS, flock isn't standard — fall back to best-effort append + sync.
+  if command -v flock >/dev/null 2>&1; then
+    (
+      flock -x 200
+      echo "$event" >> "$EVENTS_FILE"
+      sync "$EVENTS_FILE" 2>/dev/null || sync
+    ) 200>"${EVENTS_FILE}.lock"
+  else
+    # macOS fallback: best-effort. Shell-level append is atomic for single
+    # lines on POSIX systems up to PIPE_BUF (4096 bytes), which is well
+    # above our JSONL event size. Still call sync for durability.
+    echo "$event" >> "$EVENTS_FILE"
+    sync
+  fi
 }
 
 get_field() {
@@ -68,6 +91,11 @@ get_title() {
 
 find_signal_file() {
   local sig_id="$1"
+  # Validate the ID format first — accepts both legacy (SIG-NNN) and ULID
+  if ! is_valid_id "$sig_id" SIG; then
+    echo "Error: '$sig_id' is not a valid signal ID (expected SIG-NNN or SIG-<ulid>)" >&2
+    return 1
+  fi
   for f in "$SIGNALS_DIR"/*.md; do
     [[ -f "$f" ]] || continue
     if grep -q "^id: ${sig_id}$" "$f" 2>/dev/null; then
@@ -80,16 +108,9 @@ find_signal_file() {
 }
 
 next_signal_id() {
-  local next=1
-  for f in "$SIGNALS_DIR"/*.md 2>/dev/null; do
-    [[ -f "$f" ]] || continue
-    local id_num
-    id_num=$(grep -oP 'id:\s*SIG-\K\d+' "$f" 2>/dev/null || true)
-    if [[ -n "$id_num" ]] && (( id_num >= next )); then
-      next=$((id_num + 1))
-    fi
-  done
-  printf "SIG-%03d" "$next"
+  # ULID-based per SIG-022 — globally unique, no coordination required.
+  # Legacy SIG-NNN IDs remain valid and readable via MATCH_ID_PATTERN.
+  generate_id SIG
 }
 
 set_field() {
@@ -490,18 +511,9 @@ cmd_promote() {
   # Update signal status
   set_field "$file" "status" "promoted"
 
-  # Generate next intent ID
-  local next_int=1
-  for f in "$INTENTS_DIR"/*.md 2>/dev/null; do
-    [[ -f "$f" ]] || continue
-    local id_num
-    id_num=$(grep -oP 'id:\s*INT-\K\d+' "$f" 2>/dev/null || true)
-    if [[ -n "$id_num" ]] && (( id_num >= next_int )); then
-      next_int=$((id_num + 1))
-    fi
-  done
+  # Generate next intent ID (ULID-based per SIG-022)
   local INTENT_ID
-  INTENT_ID=$(printf "INT-%03d" "$next_int")
+  INTENT_ID=$(generate_id INT)
 
   local DATE
   DATE=$(date -u +"%Y-%m-%d")

@@ -1,0 +1,63 @@
+name: Cross-Engagement Leak Test (SPEC-005)
+
+# Runs the engagement isolation test suite on every push and PR.
+# v1.0 scaffold: tests are xfail-marked until fixtures and query-layer
+# wiring land in the full SPEC-005 ship. CI stays green, but the shape
+# of the work is tracked.
+#
+# Reference: .intent/specs/SPEC-005-cross-engagement-leak-test.md
+# Signal: SIG-051 via INT-009 P0 #3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'servers/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'knowledge-engine/**'
+      - 'bin/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'servers/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'knowledge-engine/**'
+      - 'bin/**'
+
+jobs:
+  leak-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pytest
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Run cross-engagement leak tests
+        run: |
+          pytest tests/test_engagement_isolation.py -v \
+            --tb=short \
+            --no-header
+
+      - name: Surface xfail status
+        if: always()
+        run: |
+          echo ""
+          echo "NOTE: This workflow runs the SPEC-005 leak test scaffold."
+          echo "Tests marked xfail are expected-to-fail placeholders —"
+          echo "they will become enforced assertions when SPEC-005 ships"
+          echo "its fixtures and query-layer wiring."
+          echo ""
+          echo "To track progress: see .intent/specs/SPEC-005-cross-engagement-leak-test.md"

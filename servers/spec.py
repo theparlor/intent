@@ -47,12 +47,15 @@ mcp = FastMCP(
     """,
 )
 
+from id_gen import generate_id
+
 _specs: dict[str, dict] = {}
 _contracts: dict[str, dict] = {}
 _events: list[str] = []
-_next_spec = 1
-_next_contract = 1
 _trace_ctx = TraceContext()
+
+# Legacy sequential counters retained for reference but no longer used.
+# IDs now come from generate_id("SPEC") / generate_id("CON") per SIG-022.
 
 
 @mcp.tool()
@@ -91,9 +94,9 @@ def create_spec(
     Returns:
         JSON with spec data, frontmatter, completeness assessment, and event.
     """
-    global _next_spec
-    spec_id = f"SPEC-{_next_spec:03d}"
-    _next_spec += 1
+    # ULID-based per SIG-022 — globally unique, survives server restarts,
+    # no coordination required between concurrent writers.
+    spec_id = generate_id("SPEC")
 
     # Assess completeness
     completeness = _assess_completeness(
@@ -175,12 +178,11 @@ def create_contract(
     Returns:
         JSON with contract data, frontmatter, and event.
     """
-    global _next_contract
     if spec_id not in _specs:
         return json.dumps({"error": f"Spec {spec_id} not found"})
 
-    con_id = f"CON-{_next_contract:03d}"
-    _next_contract += 1
+    # ULID-based per SIG-022
+    con_id = generate_id("CON")
 
     contract = {
         "id": con_id,

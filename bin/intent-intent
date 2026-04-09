@@ -13,6 +13,11 @@
 
 set -euo pipefail
 
+# --- Load ID generation helpers (ULID-based per SIG-022 / INT-009 P0 #1) ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/id_gen.sh
+source "$SCRIPT_DIR/lib/id_gen.sh"
+
 # --- Find .intent/ directory ---
 find_intent_root() {
   local dir="$PWD"
@@ -115,16 +120,9 @@ cmd_create() {
   local TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   local SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs '[:alnum:]' '-' | head -c 60 | sed 's/-$//')
 
-  # Generate next intent ID
-  local NEXT_ID=1
-  for f in "$INTENTS_DIR"/*.md 2>/dev/null; do
-    [[ -f "$f" ]] || continue
-    local ID_NUM=$(grep -oP 'id:\s*INT-\K\d+' "$f" 2>/dev/null || true)
-    if [[ -n "$ID_NUM" ]] && (( ID_NUM >= NEXT_ID )); then
-      NEXT_ID=$((ID_NUM + 1))
-    fi
-  done
-  local INTENT_ID=$(printf "INT-%03d" "$NEXT_ID")
+  # Generate intent ID (ULID-based per SIG-022 — no coordination required)
+  local INTENT_ID
+  INTENT_ID=$(generate_id INT)
 
   local FILENAME="${DATE}-${SLUG}.md"
   local FILEPATH="$INTENTS_DIR/$FILENAME"
