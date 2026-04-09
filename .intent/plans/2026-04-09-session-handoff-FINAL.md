@@ -183,3 +183,54 @@ When the next session starts:
 All work is in git. All pushes are complete. The three repos are clean. The session UI showing weirdness is cosmetic — the actual state of the work is solid. No rush to recover, no data at risk.
 
 Welcome back.
+
+---
+
+## POST-SESSION UPDATE — 2026-04-09 (later session, same day)
+
+A follow-on session resolved two of the open threads and corrected one handoff inaccuracy. This section appends to the historical record above.
+
+### Correction to "Three repos, all pushed, all clean"
+
+**Actually four repos now, and skills-engine had one unpushed commit at the time of the original handoff.** The `165037f` panel-review skill scaffold commit was committed but NOT pushed to `origin/main` at the time the handoff was written. It was pushed in the follow-on session along with the drift-capture commit. Not a data-loss risk — it was local and recoverable — but the handoff's "all pushed" line was slightly wrong.
+
+### Resolved: Personas repo governance (was open thread #4)
+
+**WS-DDR-019** — `Core/personas/` is now a standalone git repo, not joined to skills-engine. Rationale: personas is the **upstream identity layer** that skills-engine (renderings) and the Intent knowledge-engine (voices) both consume. Folding it into one of its downstream consumers would invert the layering. Standalone repo is the correct peer topology.
+
+Commit: `22db4c3 baseline: initial commit — Core/personas/ under version control (WS-DDR-019)` — 604 files, ~52k lines captured as baseline.
+
+Governance: agent-proposed-with-panel-review per DEC-20260409-02 answer 3 and INT-011. Versioning now lives in git instead of bespoke versions/ subdirectories.
+
+**Remote deferred** — L0 external-action gate. Brien needs to create `theparlor/personas` on GitHub and push at first opportunity. Until then, local-only.
+
+**Downstream updates:**
+- WS-DDR-019 recorded in `Workspaces/.context/DECISIONS.md`
+- SESSION_QUEUE.md updated with personas repo row + new collision-matrix rows for registry/renderings coupling and PS-NNN decision ID collisions
+- The four-repo Core/ topology is now: intent, intent-site, skills-engine, personas
+
+### Resolved: Pre-S0 drift capture across all three existing repos
+
+The three active repos (intent, intent-site, skills-engine) had accumulated drift from before the 2026-04-09 S0 session that was never committed. Per Brien's "accept it and accelerate forward" directive, each was captured as a single "pre-S0 drift capture" commit:
+
+| Repo | Commit | Scope |
+|------|--------|-------|
+| intent | `fe5aa47` | 64 files, +1332/-189 — spec updates, knowledge-engine templates, karpathy-synthesis handoff, 4 new 2026-04-08 signals, handoff/ directory |
+| intent-site | `309eff2` | 56 files, +2736/-78 — 19 legacy-page meta.yml additions, task note drift, persona-browser task docs |
+| skills-engine | `a175f75` | 289 files, +16899/-333 — 170+ new personality renderings (Skills Engine inventory update), consistency-audit reports, skill template updates, 4 new meta/organization skills |
+
+All three pushed to their respective origins. All four repos now clean and pushed (except personas which has no remote).
+
+### Still open (deferred)
+
+1. **Safety Contract Promise 11** — the "Edmondson more" interpersonal-safety thread. Still deferred per Brien's explicit choice in the follow-on session.
+2. **Discovery participant backfill** — still waiting on Devin/Zak last names + 6 more Tier 1 names + ~5 Tier 3 cold contacts.
+3. **Trust score `used_for` enforcement mechanism** — still needs design thinking.
+4. **Wider content max-width question** — still cosmetic, still non-blocking.
+5. **`theparlor/personas` remote creation** — new open thread added by WS-DDR-019. L0 gate.
+
+### Meta-observation
+
+The "build-more reflex" failure mode in `brien-operator.yaml` triggered on drift-capture framing: the first instinct was to subdivide the 289-file skills-engine drift into multiple conceptual commits. The corrective prompt worked — Brien's directive "accept it and accelerate forward" + the operator persona's "subtract-don't-subdivide" corrective converged on one commit per repo. Worth noting for SIG-054-class "panel-review needs first-click-simulation" work: the corrective prompts need to fire BEFORE the subdividing work starts, not after.
+
+*Post-session update written: 2026-04-09 (later session)*
