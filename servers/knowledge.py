@@ -530,7 +530,7 @@ def knowledge_dossier(entity_type: str, name: str) -> str:
         result.extend([
             f"## Skills Engine Integration",
             "",
-            f"Run the `{dtype['skill']}` skill from Core/skills-engine/ first:",
+            f"Run the `{dtype['skill']}` skill from Core/products/skills-engine/ first:",
             f"  This produces a research output that feeds the dossier template.",
             "",
         ])

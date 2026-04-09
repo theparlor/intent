@@ -18,11 +18,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.62
 related_entities:
-  - {pair: teresa-torres ↔ marty-cagan, count: 45, strength: 0.247}
-  - {pair: teresa-torres ↔ jeff-patton, count: 36, strength: 0.396}
-  - {pair: teresa-torres ↔ consulting-operations, count: 36, strength: 0.019}
-  - {pair: jeff-patton ↔ marty-cagan, count: 35, strength: 0.205}
-  - {pair: jeff-patton ↔ consulting-operations, count: 35, strength: 0.019}
+  - {pair: teresa-torres ↔ marty-cagan, count: 82, strength: 0.3}
+  - {pair: jeff-patton ↔ marty-cagan, count: 63, strength: 0.24}
+  - {pair: teresa-torres ↔ consulting-operations, count: 62, strength: 0.031}
+  - {pair: teresa-torres ↔ jeff-patton, count: 60, strength: 0.368}
+  - {pair: jeff-patton ↔ consulting-operations, count: 47, strength: 0.024}
 ---
 # Intent Methodology
 

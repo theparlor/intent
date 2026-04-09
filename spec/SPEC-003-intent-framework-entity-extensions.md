@@ -1,11 +1,25 @@
 ---
-id: SPEC-003
 title: "Intent Framework Extensions: Entity Lifecycle, INGEST Type, Contribution Contracts, Trust Modifiers"
+id: SPEC-003
+created: 2026-04-06 18:00:00+00:00
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.6
+  content_chars: 7392
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.14
 status: approved
 intent: INT-006
-created: 2026-04-06T18:00:00Z
-contracts: [CON-008, CON-009, CON-010, CON-011]
-completeness: 0.8
+contracts:
+  - CON-008
+  - CON-009
+  - CON-010
+  - CON-011
+completeness: 0.80
 agent_readiness: L2
 ---
 # SPEC-003: Intent Framework Entity Extensions

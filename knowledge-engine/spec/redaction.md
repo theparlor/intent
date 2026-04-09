@@ -6,7 +6,7 @@ created: 2026-04-06
 summary: "How Brien's Knowledge Farm maintains full-fidelity named context for solo work while generating redacted projections for sharing, proposals, and cross-engagement reasoning."
 depth_score: 4
 depth_signals:
-  file_size_kb: 6.2
+  file_size_kb: 6.3
   content_chars: 6378
   entity_count: 0
   slide_count: 0

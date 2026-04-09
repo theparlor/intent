@@ -3,14 +3,14 @@ title: Traceability Matrix
 type: traceability
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.3
-  content_chars: 2039
+  file_size_kb: 2.4
+  content_chars: 2177
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.49
+vocab_density: 0.46
 maintained_by: agent
 last_compiled: 2026-04-05
 ---

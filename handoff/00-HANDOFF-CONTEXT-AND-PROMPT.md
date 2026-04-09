@@ -6,7 +6,7 @@ confidentiality: shareable
 reusability: universal
 domains:
   - consulting-operations
-created: 2026-04-06
+created: 2026-04-08
 technologies:
   - jira
 thought_leaders:

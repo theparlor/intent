@@ -6,7 +6,7 @@ created: 2026-04-06
 summary: "Defines the boundary between Intent (methodology), the Knowledge Engine (product), and engagement-specific Knowledge Farms (instances). Clarifies what is structural vs coincidental in how they relate."
 depth_score: 4
 depth_signals:
-  file_size_kb: 8.3
+  file_size_kb: 8.5
   content_chars: 8394
   entity_count: 0
   slide_count: 0

@@ -1,16 +1,16 @@
 ---
 title: Domain Knowledge Base Index
 type: index
-depth_score: 4
+depth_score: 2
 depth_signals:
-  file_size_kb: 5.3
-  content_chars: 5066
+  file_size_kb: 4.2
+  content_chars: 4004
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 1.18
+vocab_density: 1.00
 maintained_by: agent
 last_compiled: 2026-04-06
 artifact_count: 16

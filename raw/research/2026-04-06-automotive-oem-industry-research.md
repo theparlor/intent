@@ -11,20 +11,20 @@ companies:
   - subaru
 depth_score: 5
 depth_signals:
-  file_size_kb: 23.0
-  content_chars: 19823
+  file_size_kb: 23.6
+  content_chars: 19230
   entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.30
+vocab_density: 0.31
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 795, strength: 0.427}
-  - {pair: subaru ↔ automotive-manufacturing, count: 770, strength: 0.959}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 770, strength: 0.416}
-  - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
-  - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
+  - {pair: subaru ↔ consulting-operations, count: 836, strength: 0.43}
+  - {pair: subaru ↔ automotive-manufacturing, count: 791, strength: 0.933}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 791, strength: 0.409}
+  - {pair: consulting-operations ↔ engagement-management, count: 507, strength: 0.262}
+  - {pair: consulting-operations ↔ turnberry, count: 472, strength: 0.226}
 ---
 # US Automotive OEM Industry Dossier
 

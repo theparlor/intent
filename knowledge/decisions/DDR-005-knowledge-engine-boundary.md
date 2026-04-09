@@ -6,7 +6,7 @@ created: 2026-04-06
 updated: 2026-04-06
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.3
+  file_size_kb: 2.4
   content_chars: 2116
   entity_count: 0
   slide_count: 0

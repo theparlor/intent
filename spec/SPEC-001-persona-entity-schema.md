@@ -1,11 +1,25 @@
 ---
+title: Unified Persona Entity Schema
 id: SPEC-001
-title: "Unified Persona Entity Schema"
+created: 2026-04-06 18:00:00+00:00
+depth_score: 4
+depth_signals:
+  file_size_kb: 11.7
+  content_chars: 9981
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.30
 status: approved
 intent: INT-005
-created: 2026-04-06T18:00:00Z
-contracts: [CON-001, CON-002, CON-003, CON-004]
-completeness: 0.9
+contracts:
+  - CON-001
+  - CON-002
+  - CON-003
+  - CON-004
+completeness: 0.90
 agent_readiness: L3
 ---
 # SPEC-001: Unified Persona Entity Schema

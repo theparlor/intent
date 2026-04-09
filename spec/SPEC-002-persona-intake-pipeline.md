@@ -1,10 +1,23 @@
 ---
+title: Persona Intake Pipeline (INGEST skill)
 id: SPEC-002
-title: "Persona Intake Pipeline (INGEST skill)"
+created: 2026-04-06 18:00:00+00:00
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.3
+  content_chars: 6123
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.65
 status: approved
 intent: INT-005
-created: 2026-04-06T18:00:00Z
-contracts: [CON-005, CON-006, CON-007]
+contracts:
+  - CON-005
+  - CON-006
+  - CON-007
 completeness: 0.85
 agent_readiness: L3
 ---
@@ -72,7 +85,7 @@ A six-stage pipeline that triggers on any phrasing of "ingest this human" and pr
 **Output**: Skills Engine persona file, Knowledge Engine voice reference update
 **Trust level**: L3
 
-1. Generate Skills Engine persona file at `Core/skills-engine/personas/personalities/[slug].md`
+1. Generate Skills Engine persona file at `Core/products/skills-engine/personas/personalities/[slug].md`
    - Follow exact format of existing personas (frontmatter + epigraph + voice + mental models + shaping + rendering notes)
    - Source all content from registry entity substance block
    - Include rendering notes for platform and role persona combinations
@@ -86,7 +99,7 @@ A six-stage pipeline that triggers on any phrasing of "ingest this human" and pr
 **Trust level**: L4
 
 1. Update `Core/personas/CONTEXT.md` with new entity entry
-2. Update `Core/skills-engine/personas/CONTEXT.md` with new personality entry
+2. Update `Core/products/skills-engine/personas/CONTEXT.md` with new personality entry
 3. Map contributes_to declarations based on index dimensions
 4. If archetypes don't exist yet, note them as planned in CONTEXT.md
 5. Cross-reference with existing entities (update related_entities on both sides)

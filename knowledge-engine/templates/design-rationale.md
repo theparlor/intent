@@ -7,7 +7,7 @@ thought_leaders:
   - jeff-patton
 depth_score: 3
 depth_signals:
-  file_size_kb: 0.8
+  file_size_kb: 1.0
   content_chars: 682
   entity_count: 1
   slide_count: 0

@@ -1,12 +1,12 @@
 ---
-title: 2026 04 05 Three Layer Architecture Formalized
+title: 03 Three Layer Architecture Formalized
 type: framework
 maturity: final
 confidentiality: shareable
 reusability: universal
 domains:
   - consulting-operations
-created: 2026-04-06
+created: 2026-04-08
 thought_leaders:
   - marty-cagan
   - jeff-patton
@@ -22,7 +22,7 @@ frameworks:
 depth_score: 6
 depth_signals:
   file_size_kb: 12.6
-  content_chars: 11603
+  content_chars: 11595
   entity_count: 10
   slide_count: 0
   sheet_count: 0

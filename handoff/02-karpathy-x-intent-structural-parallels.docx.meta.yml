@@ -6,7 +6,7 @@ confidentiality: shareable
 reusability: universal
 domains:
   - consulting-operations
-created: 2026-04-06
+created: 2026-04-08
 technologies:
   - jira
 summary: "STRUCTURAL PARALLELS Karpathy’s LLM Knowledge Bases & Intent How two systems converge on the same architecture—and what Intent can learn from the collision April 2026 theparlor.github.io/intent 1. The..."

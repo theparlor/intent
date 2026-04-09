@@ -30,11 +30,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.60
 related_entities:
-  - {pair: matthew-skelton ↔ mik-kersten, count: 17840, strength: 0.994}
-  - {pair: mik-kersten ↔ john-kotter, count: 17840, strength: 0.993}
-  - {pair: matthew-skelton ↔ john-kotter, count: 17839, strength: 0.992}
-  - {pair: richard-rumelt ↔ matthew-skelton, count: 17838, strength: 0.997}
-  - {pair: richard-rumelt ↔ mik-kersten, count: 17838, strength: 0.997}
+  - {pair: mik-kersten ↔ matthew-skelton, count: 17865, strength: 0.993}
+  - {pair: mik-kersten ↔ john-kotter, count: 17862, strength: 0.991}
+  - {pair: richard-rumelt ↔ mik-kersten, count: 17857, strength: 0.995}
+  - {pair: john-kotter ↔ matthew-skelton, count: 17857, strength: 0.99}
+  - {pair: richard-rumelt ↔ matthew-skelton, count: 17856, strength: 0.995}
 ---
 # Formalized Architecture for the Three-Layer Compiled Knowledge System
 

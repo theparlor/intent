@@ -20,9 +20,9 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.37
 related_entities:
-  - {pair: christopher-alexander ↔ andrej-karpathy, count: 2, strength: 1.0}
-  - {pair: christopher-alexander ↔ stafford-beer, count: 2, strength: 1.0}
-  - {pair: andrej-karpathy ↔ stafford-beer, count: 2, strength: 1.0}
+  - {pair: stafford-beer ↔ andrej-karpathy, count: 2, strength: 1.0}
+  - {pair: stafford-beer ↔ christopher-alexander, count: 2, strength: 1.0}
+  - {pair: andrej-karpathy ↔ christopher-alexander, count: 2, strength: 1.0}
 ---
 # Domain Knowledge Base Operations
 

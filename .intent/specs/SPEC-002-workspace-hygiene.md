@@ -60,7 +60,7 @@ The skill operates in three phases:
 ### File Layout
 
 ```
-Core/skills-engine/platforms/claude-code/operations/workspace-hygiene/SKILL.md
+Core/products/skills-engine/platforms/claude-code/operations/workspace-hygiene/SKILL.md
 ```
 No additional code files — this is an agent skill (instructions for Claude), not a CLI tool.
 

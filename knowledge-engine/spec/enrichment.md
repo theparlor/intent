@@ -6,7 +6,7 @@ created: 2026-04-06
 summary: "When the Knowledge Engine gains new capabilities or domain growth occurs, prior knowledge is recompiled to surface new insights. Like upgrading the compiler and rebuilding all binaries."
 depth_score: 4
 depth_signals:
-  file_size_kb: 5.9
+  file_size_kb: 6.1
   content_chars: 6092
   entity_count: 0
   slide_count: 0

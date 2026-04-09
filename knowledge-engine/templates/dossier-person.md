@@ -6,7 +6,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 depth_score: 2
 depth_signals:
-  file_size_kb: 1.5
+  file_size_kb: 1.6
   content_chars: 1227
   entity_count: 0
   slide_count: 0

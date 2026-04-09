@@ -5,7 +5,7 @@ created: 2026-04-06
 summary: "Verifiable assertions for the Knowledge Engine product. Each contract is testable — it either passes or fails."
 depth_score: 4
 depth_signals:
-  file_size_kb: 6.4
+  file_size_kb: 6.5
   content_chars: 6557
   entity_count: 0
   slide_count: 0

@@ -20,11 +20,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.14
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 795, strength: 0.427}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 770, strength: 0.416}
-  - {pair: consulting-operations ↔ engagement-management, count: 498, strength: 0.269}
-  - {pair: consulting-operations ↔ turnberry, count: 448, strength: 0.224}
-  - {pair: consulting-operations ↔ foot-locker, count: 251, strength: 0.136}
+  - {pair: consulting-operations ↔ subaru, count: 836, strength: 0.43}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 791, strength: 0.409}
+  - {pair: consulting-operations ↔ engagement-management, count: 507, strength: 0.262}
+  - {pair: consulting-operations ↔ turnberry, count: 472, strength: 0.226}
+  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.133}
 ---
 # Intent Product — Execution Roadmap
 

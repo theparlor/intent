@@ -1,16 +1,16 @@
 ---
 title: Domain Knowledge Base Activity Log
 type: log
-depth_score: 2
+depth_score: 4
 depth_signals:
-  file_size_kb: 4.3
-  content_chars: 4127
+  file_size_kb: 5.8
+  content_chars: 5657
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.73
+vocab_density: 0.53
 maintained_by: agent
 ---
 # Knowledge Base — Activity Log

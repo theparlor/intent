@@ -1,10 +1,20 @@
 ---
 title: Workspace Hygiene — Contracts
 type: contracts
-domain: workspace-operations
-spec: SPEC-002
 created: 2026-04-06
 summary: "Verifiable assertions for the workspace-hygiene skill. Each contract is testable — it either passes or fails."
+depth_score: 3
+depth_signals:
+  file_size_kb: 3.5
+  content_chars: 3333
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 1
+vocab_density: 0.31
+domain: workspace-operations
+spec: SPEC-002
 ---
 # Workspace Hygiene — Contracts
 
