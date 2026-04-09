@@ -65,12 +65,38 @@ Derived from:
 - First instance (brien-operator) is core-scoped (not tied to any engagement)
 - Must be versionable — operator personas evolve as the operator learns
 
+## Governance model (COMMITTED per DEC-20260409-02 answer 3)
+
+**Brien's decision:** "agent proposed with review, and here we can again introduce and use the panel."
+
+### How operator persona updates work
+
+1. **Agent proposes.** Any agent, observing the operator in a session, can propose an update to the operator persona. The proposal is a signal file in `.intent/signals/` with type `operator-persona-update`.
+
+2. **Panel reviews.** Before acceptance, the update goes through a panel-review call (INT-007). Required voices:
+   - **The operator in question** (self-persona voice — checks the update against its own known patterns)
+   - **Org Design panel member** (Edmondson, always-on per INT-007 rules) — checks against psychological safety dimensions
+   - **Relevant foundational voices** depending on what's being updated (e.g., if the update is about communication style, pull in Carmine Gallo + Nancy Duarte; if it's about decision patterns, pull in Kahneman + Rumelt)
+
+3. **Operator ratifies.** After panel review, Brien (for brien-operator) either accepts, revises, or rejects the update. Rejections are logged as signals about what doesn't fit — these become learning data for the system.
+
+4. **Versioned history.** Operator personas are versioned with a changelog. Old versions are preserved, never deleted. This documents the operator's evolution and creates a learning corpus.
+
+### Why this is the first recursive use of panel-review
+
+The panel-review primitive reviews Intent's own artifacts. Now it also reviews updates to the personas the panel uses. This is double-loop learning at the registry level: the system that scores trust is itself trust-scored by the system that scores trust.
+
+### Operator persona lives at Core/personas/operators/
+
+New subdirectory: `Core/personas/operators/` — distinct from `Core/personas/registry/` which holds named-humans, archetypes, and classes. The operator type has different governance (agent-proposed with panel review), different update cadence (after-session reflection), and different use cases (self-prompting during self-directed cycles). It deserves structural separation.
+
+Brien-operator lives at `Core/personas/operators/brien.yaml` with versioned history at `Core/personas/operators/brien/versions/` if needed.
+
 ## Open Questions
 
-- Where does brien-operator live in the registry? `Core/personas/operators/brien/` vs `Core/personas/registry/brien-operator.yaml`?
-- How are updates triggered? After-session reflection? Manual curation? Agent-proposed changes?
-- Is there a class-level operator persona that generalizes (e.g., "practitioner-architect-operator") vs individual (`brien-operator`)?
-- How does this relate to the existing Practitioner-Architect archetype in Skills Engine?
+- Is there a class-level operator persona that generalizes across operators (e.g., "practitioner-architect-operator") vs. individual files (`brien.yaml`)?
+- How does the existing Practitioner-Architect archetype in Skills Engine relate? (Answer: the archetype describes an IDEAL practitioner pattern derived from thought leaders; the operator persona describes an ACTUAL operator's observable behavior. Complementary, not duplicative.)
+- Post-v1: what does operator persona evolution look like over a year? Monthly updates? Quarterly? Only when triggered by specific patterns?
 
 ## Out of Scope
 

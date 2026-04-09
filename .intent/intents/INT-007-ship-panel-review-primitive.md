@@ -4,13 +4,67 @@ title: "Ship panel-review as a first-class skill (the async feedback primitive)"
 status: proposed
 proposed_by: "brien"
 proposed_date: 2026-04-09T04:55:00Z
+updated: 2026-04-09T06:45:00Z
 accepted_date:
-signals: [SIG-041, SIG-048, SIG-050]
+signals: [SIG-041, SIG-048, SIG-050, SIG-053]
+related_decisions: [DEC-20260409-01, DEC-20260409-02]
 specs: []
 owner: "brien"
 priority: now
 product: notice
 ---
+
+# v2 UPDATE (2026-04-09 session, after Brien's answers)
+
+Per DEC-20260409-02 and the persona updates (Dunford/Gilad promoted to foundational, Aakash Gupta added as primary), the panel-review primitive now has a concrete default panel rotation:
+
+## The foundational panel (always available, default to subset)
+
+These 26 foundational voices form the standard pool for panel-review calls. The skill accepts a `panels` parameter that specifies which subset of foundational voices to dispatch, with named clusters as presets:
+
+**Preset: `full-foundational`** — all 26 foundational voices in 8 panel clusters (the 2026-04-09 review pattern).
+
+**Preset: `content-review`** — Dunford + Raskin + Miller + Godin (positioning); Cagan + Perri + Wille + Gilad + Aakash Gupta (product strategy); Torres + Patton + Blank + Fitzpatrick (discovery). Used for any content or site review.
+
+**Preset: `architecture-review`** — Fowler + Majors + Kim + Forsgren + Skelton + Ford + Hohpe + Wardley. Used for architectural decisions and ADRs.
+
+**Preset: `safety-review`** — Edmondson + Argyris + Schein + Kotter + Bridges + Smart. Used for any work touching psychological safety, change management, or adoption. Edmondson is ALWAYS the dominant voice.
+
+**Preset: `decision-review`** — Kahneman + Tversky + Duke + Ariely + Thaler + Gilad + Rumelt + Martin. Used for any decision that involves trust scoring, evidence weighting, or cognitive bias.
+
+**Preset: `operator-review`** — brien-operator + the operator's chosen complement panel. Used when the review is specifically about self-directed development cycles.
+
+**Custom:** Any ad-hoc list of entity IDs from the persona registry.
+
+## Always-on voices (cannot be excluded)
+
+Three voices are ALWAYS in every panel call regardless of preset:
+1. **Edmondson** — safety check on every recommendation
+2. **Dunford** — category clarity check on every positioning or content move
+3. **Kahneman** — cognitive bias check on every decision
+
+These three are the minimum bar. If a panel-review call filters them out, the skill adds them back with a warning.
+
+## New primary voices to integrate
+
+From DEC-20260409-02:
+- **Aakash Gupta** — included in content-review preset for contemporary practitioner-educator voice on AI-era PM craft
+- **Itamar Gilad (promoted to foundational)** — included in content-review AND decision-review presets for evidence-based decision framework
+
+## Safety-contract integration
+
+Per INT-013, the panel-review skill MUST run a safety-contract-check pass on any output that evaluates human work:
+- Does the output attribute failures to artifacts rather than humans?
+- Does it protect disagreement as a valid input?
+- Does it respect visibility scoping?
+- Does it distinguish basic/complex/intelligent failures?
+
+A panel review that fails the safety-contract-check cannot be published without explicit operator override, and the override itself is a signal.
+
+---
+
+# Original intent (v1)
+
 # Ship panel-review as a first-class skill — the async feedback primitive
 
 ## Problem

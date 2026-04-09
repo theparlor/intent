@@ -1,6 +1,75 @@
-# Post-Panel Plan — 2026-04-09
+# Post-Panel Plan — 2026-04-09 (v2: compressed)
 
-> Redeveloped plan of pursuit after the 8-panel site review. See DEC-20260409-01 for the decision record and SIG-041 through SIG-052 for the signal chain.
+> Redeveloped plan of pursuit after the 8-panel site review, compressed per Brien's "reach farther faster" instruction (2026-04-09 afternoon). See DEC-20260409-01 and DEC-20260409-02 for decision records and SIG-041 through SIG-053 for the signal chain.
+
+## Compressed timeline — S0/S1/S2 sprints instead of 3 weeks
+
+Brien's availability: off Claude Code from tonight at 5pm through Sunday. Budget for this session is higher than usual. The original 3-week plan is compressed into front-loaded sprints:
+
+### S0 — TODAY (through ~5pm, 2026-04-09)
+
+Brien is still present this afternoon. Maximize S0 so Brien returns Sunday to reviewable drafts, not a task list.
+
+- Site archive (DONE — committed 64760f0)
+- 12 signals extracted (DONE — committed 873a24b)
+- 6 intents (INT-007 through INT-012) (DONE)
+- DEC-20260409-01 (DONE)
+- DEC-20260409-02 (new — captures Brien's 5 answers)
+- 13th signal SIG-053 (measurability prerequisite)
+- INT-013 (safety + change workstream)
+- Psychological Safety Contract v1 with 10 promises + Edmondson thread open
+- Edmondson 4-dimensions analysis
+- Change management analysis (Bridges + Kotter applied)
+- Discovery interview protocol + participant profile with seed names + outreach templates + synthesis + OST templates
+- Persona updates: Dunford to foundational, Gilad to foundational, Aakash Gupta added at foundational
+- Updated plan (THIS DOCUMENT)
+- **New pitch.html draft** with committed target user + hypothesis framing + lineage
+- **New Ending, Neutral Zone, Who Loses, When-NOT-to-Adopt page drafts**
+- **Operator persona v1** (brien-operator)
+- **Panel-review skill scaffold** in skills-engine
+- All updates committed in batches by end of session
+
+**Brien returns Sunday to:** a complete reviewable rebuild, not a plan. Drafts of every new page, operator persona, skill scaffold, safety contract, and all Intent-native artifacts tracking the work.
+
+### S1 — Monday 4/13 → Friday 4/17 (5 days)
+
+- **Brien reviews S0 drafts** Sunday evening / Monday morning
+- **Discovery interviews** — all 10 this week, not spread over 2. Follow the protocol. Target: complete by Friday.
+- **P0 architecture:** SIG-022 ULID migration, events.jsonl persistence, cross-engagement leak test
+- **P1 architecture:** runbooks + SLOs, 4-server topology spike (decision only)
+- **Site publish v2** — Friday target, after panel re-review passes
+- **Panel re-review #1** — the rebuilt site goes through the 8-panel dispatch again; measure if findings F1-F10 dropped
+- **Operator persona v1 finalized** with panel-review governance loop demonstrated
+
+### S2 — Monday 4/20 → Friday 4/24 (5 days)
+
+- **Discovery synthesis** — write THM-external-discovery-wave-1 and DOM-spec-pain-OST
+- **Safety Contract v2** — resolve the "Edmondson more" thread with Brien; Promise 11 drafted or explicitly deferred
+- **Change management rollout playbook** — Kotter 8-step with week-by-week adoption milestones, guiding coalition template, new-hire onboarding guide
+- **Trust score + signal + event schema updates** for safety fields (used_for, visibility, failure_type)
+- **Panel re-review #2** — Safety Contract and Change docs go through the safety panel
+- **Next wave planning** — what does discovery wave 2 target?
+
+### Quarter ambition (compressed from 12 weeks to 6 weeks)
+
+Sprints S0 through S5 cover 6 weeks. After S2 (safety + change), S3-S5 cover:
+- **S3 (4/27 → 5/1):** First pilot engagement — apply Intent + Safety Contract to a real adopter who passes the prerequisite checklist
+- **S4 (5/4 → 5/8):** Measurement — DORA metrics, signal quality metrics, safety contract compliance metrics
+- **S5 (5/11 → 5/15):** Discovery wave 2 + next iteration based on pilot findings
+
+## One-line summary (unchanged)
+
+**Subtract first, discover second, rebuild third, harden in parallel — with panel-review becoming a first-class primitive that gets called after every cycle.**
+
+Plus (v2): **reach farther faster by front-loading S0 while Brien is still present today.**
+
+## The three big decisions (plus two new ones)
+
+1. **One site, not two.** Ratified unconditionally in DEC-20260409-02. Two-site split is dead.
+2. **Subtract before build.** Front-loaded into S0. By end of today, the subtraction is done AND the rebuild drafts exist. This is not build-before-subtract; it's subtract-and-rebuild-same-session because the budget permits.
+3. **Panel-review becomes the primitive.** Shipping as a skill in S0 (scaffold) and S1 (operational).
+4. **NEW: Target user committed.** Staff+ engineers on teams of 2–7 using Claude Code daily. Sweet spot 2–5. Reaches 1–7. Over 7 is out of scope.
+5. **NEW: Infrastructure prerequisites are hard constraints.** Blue-green / feature flags / automated testing / visible measurement are required for safe adoption. Without them, Intent cannot generate valid signals.
 
 ## One-line summary
 
