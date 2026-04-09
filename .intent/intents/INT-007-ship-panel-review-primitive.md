@@ -1,18 +1,145 @@
 ---
 id: INT-007
 title: "Ship panel-review as a first-class skill (the async feedback primitive)"
-status: proposed
+status: v1.0-shipped
 proposed_by: "brien"
 proposed_date: 2026-04-09T04:55:00Z
-updated: 2026-04-09T06:45:00Z
-accepted_date:
+updated: 2026-04-09T22:00:00Z
+accepted_date: 2026-04-09T06:45:00Z
+v1_shipped_date: 2026-04-09T22:00:00Z
 signals: [SIG-041, SIG-048, SIG-050, SIG-053]
 related_decisions: [DEC-20260409-01, DEC-20260409-02]
 specs: []
+shipping_artifacts:
+  - Core/products/skills-engine/platforms/claude-code/meta/panel-review/SKILL.md
+  - Core/products/skills-engine/platforms/claude-code/meta/panel-review/panel-presets.yaml
+  - Core/products/skills-engine/platforms/claude-code/meta/panel-review/panel-voice-template.md
+  - Core/products/skills-engine/platforms/claude-code/meta/panel-review/SHIP-NOTES-v1.md
 owner: "brien"
 priority: now
 product: notice
 ---
+
+# v3 UPDATE (2026-04-09 later session — v1.0 SHIPPED)
+
+Panel-review skill v1.0 operational and committed to theparlor/skills-engine.
+The v0.1 scaffold (same-day morning) has been fully rewritten and joined by
+two new sibling files (panel-presets.yaml, panel-voice-template.md) plus a
+SHIP-NOTES doc capturing the v1.1 deferred backlog.
+
+## What shipped (v1.0)
+
+1. **6 operational presets** in `panel-presets.yaml` with verified voices —
+   full-foundational (8 panels), content-review (3), architecture-review (2),
+   safety-review, decision-review, operator-review. Every entity_id verified
+   against `Core/personas/registry/` before commit. Four voices referenced
+   in the v0.1 scaffold (Raskin, Miller, Farley) were not in the registry
+   and were substituted with adjacent voices (Duarte, Humble) rather than
+   stubbing new registry entries on the fly.
+
+2. **Concrete Agent dispatch pattern** — each panel launches as a Task
+   sub-agent in parallel. Voices are INLINED into the sub-agent prompt
+   (not loaded by file read inside the sub-agent) to avoid file-read
+   failures and focus context. Default model is Opus per voice fidelity
+   concerns (Sonnet over-accepts critique framing per
+   memory/feedback_model_selection.md).
+
+3. **Phase 0 preflight** with always-on voice injection (Edmondson,
+   Dunford, Kahneman), voice diversity heuristic warning, registry
+   validation, safety contract file loading with fallback.
+
+4. **Phase 2 synthesis** with semantic dedup (keyword clustering for v1.0;
+   embedding-based replacement deferred to v1.1), severity classification
+   (critical / structural / gap / single-panel / disagreement), agreement
+   ranking, consensus strength extraction.
+
+5. **Phase 3 safety contract check** as a HARD GATE. Four yes/no questions
+   against the synthesis: Promise 1 (attribution to artifacts, not humans),
+   Promise 6 (disagreement protected), Promise 8 (voice diversity),
+   generative mode (every weakness paired with strengthening). 1-2 fails
+   = block and require override; 3+ fails = unconditional block + re-run.
+
+6. **Candidate signal byproducts** — one signal per cross-cutting finding,
+   written to target's `.intent/signals/` at `trust: 0.2`.
+
+7. **Error handling table** — 10 failure modes mapped to responses
+   including partial-review flagging, missing voice graceful degrade,
+   malformed return detection, unreachable target hard fail.
+
+8. **Budget guidance table** — cost estimates per preset (tokens + wall
+   clock) with scheduling advice.
+
+9. **Caller contract locked at v1.0** — Brien-only via `/panel-review`.
+   Intent-orchestrator auto-invoke explicitly deferred to v1.1.
+
+## Persona critique applied before ship
+
+Spec passed through three voices inline before writing code:
+
+- **Torres:** "Who calls this in v1.0? You said 'Brien + orchestrator'.
+  Orchestrator integration is unspecified." → Correction: v1.0 caller
+  locked to Brien-only. Orchestrator deferred to v1.1.
+- **Dunford:** "'Async feedback primitive' is still vague — lead with
+  the concrete value prop." → Correction: frontmatter description
+  sharpened to name the concrete job (1-8 parallel panels, 2-5 min wall
+  clock, structured findings + synthesis + signals, substitute-when-
+  human-unavailable not replace-human).
+- **brien-operator (self):** "Safety check placed where it actually
+  protects?" → Correction: voice diversity heuristic moved to Phase 0
+  preflight (warn early), safety contract check stays in Phase 3
+  (block late). Gate-level check earlier than previously drafted.
+
+## Validation criteria for v1.0
+
+Per DEC-20260409-01, the ship is validated when:
+- [ ] `panel-review full-foundational thorough` runs end-to-end on
+  `intent-site/docs/v2-draft/pitch.html` without manual intervention
+- [ ] Re-run panel review produces agreement scores that can be compared
+  to the 2026-04-09 baseline (F1 no target user, F3 category confusion,
+  F4 reader-not-hero, F10 psych safety)
+- [ ] F1 drops from 6/8 → ≤1/8 panels
+- [ ] F3 drops from 5/8 → ≤1/8 panels
+- [ ] F10 drops from 1/8 → 0/8 panels (psych safety explicitly addressed
+  in v2-draft with safety-contract page)
+- [ ] Safety contract check passes on synthesis output (zero Promise 1
+  violations, Promise 6 disagreements visible, ≥3 role functions,
+  100% weakness-recommendation pairing)
+
+If validation criteria fail, reconvene and double-loop per DEC-20260409-01
+consequences section.
+
+## What's NOT shipped in v1.0 (deferred backlog)
+
+See `SHIP-NOTES-v1.md` in the skill directory for the full v1.1 backlog.
+Highest-priority deferred items:
+
+1. **Visual HTML output format** — requires design-system-exact renderer
+   matching `intent-site/docs/review-2026-04-09.html`
+2. **Intent-orchestrator auto-invoke** — requires orchestrator-side changes
+3. **Operator-persona-update recursive governance** — panel-review is
+   supposed to gate operator persona updates per DEC-20260409-02 answer 3,
+   but the recursive governance wiring is not in v1.0
+4. **Embedding-based semantic dedup** — replaces v1.0 keyword clustering
+   for cross-cutting finding identification
+5. **Challenge-the-Intent preset** — per SIG-050, questions the premise
+   not the execution
+
+## Lineage and attribution
+
+- Marty Cagan (product critique as discipline)
+- Teresa Torres (confirmation bias check, evidence-before-opinion)
+- April Dunford (category clarity as always-on review dimension)
+- Amy Edmondson (safety-first posture as always-on)
+- Daniel Kahneman (cognitive bias check as always-on)
+- Richard Rumelt (diagnosis before prescription)
+- Architecture Review Board pattern (enterprise IT field practice)
+- Multi-persona prompting (LLM agent community field practice)
+- Brien (the architecture, the operator integration, the "panel IS the
+  product" 2026-04-09 insight)
+
+---
+
+
 
 # v2 UPDATE (2026-04-09 session, after Brien's answers)
 
