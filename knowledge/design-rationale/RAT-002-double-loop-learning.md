@@ -2,7 +2,7 @@
 id: RAT-002
 type: rationale
 created: 2026-04-05
-updated: 2026-04-05
+updated: 2026-04-13
 thought_leaders:
   - josh-seiden
 frameworks:
@@ -11,25 +11,26 @@ frameworks:
   - Seiden
 depth_score: 4
 depth_signals:
-  file_size_kb: 3.8
-  content_chars: 2928
+  file_size_kb: 4.4
+  content_chars: 3523
   entity_count: 4
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.34
+vocab_density: 0.28
 related_entities:
-  - {pair: josh-seiden ↔ marty-cagan, count: 50, strength: 0.202}
-  - {pair: josh-seiden ↔ jeff-patton, count: 40, strength: 0.32}
-  - {pair: josh-seiden ↔ consulting-operations, count: 38, strength: 0.019}
-  - {pair: josh-seiden ↔ teresa-torres, count: 32, strength: 0.198}
-  - {pair: josh-seiden ↔ coaching-methodology, count: 23, strength: 0.054}
+  - {pair: josh-seiden ↔ marty-cagan, count: 68, strength: 0.211}
+  - {pair: josh-seiden ↔ jeff-patton, count: 61, strength: 0.335}
+  - {pair: josh-seiden ↔ teresa-torres, count: 49, strength: 0.197}
+  - {pair: josh-seiden ↔ consulting-operations, count: 48, strength: 0.024}
+  - {pair: josh-seiden ↔ coaching-methodology, count: 40, strength: 0.073}
 name: Double-Loop Learning as the Critical Feedback Path
 confidence: 0.85
 origin: agent
 sources:
   - raw/research/2026-04-05-three-layer-architecture-formalized.md
+  - raw/research/2026-04-12-chet-richards-boyds-ooda-loop.md
 related_decisions:
   - DDR-003
 related_themes:
@@ -61,6 +62,7 @@ In Intent terms:
 
 - [Three-Layer Architecture](../raw/research/2026-04-05-three-layer-architecture-formalized.md) — "Without double-loop learning, the system can refine how it builds but never question whether it's building the right thing."
 - Argyris documented that organizations systematically suppress double-loop learning through defensive routines. Intent's lint operation is designed to counteract this by making disconfirming evidence un-ignorable.
+- [Chet Richards — Boyd's OODA Loop](../raw/research/2026-04-12-chet-richards-boyds-ooda-loop.md) — Boyd's actual diagram (Figure 5) embeds a learning loop: Observation → Analyses & Synthesis → Hypothesis → Test → feedback to Orient. Richards: "It is worth pointing out that the bottom loop — the process of observation, analyses/synthesis, hypothesis, and test that creates novelty for strategy to employ — also updates our orientations." This is structurally identical to Flow 5. Boyd validates that the learning loop is not optional but the mechanism by which the system maintains viability.
 
 ## Risks
 

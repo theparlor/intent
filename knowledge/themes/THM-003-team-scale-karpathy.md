@@ -2,23 +2,24 @@
 id: THM-003
 type: theme
 created: 2026-04-05
-updated: 2026-04-05
+updated: 2026-04-13
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.5
-  content_chars: 2053
+  file_size_kb: 4.0
+  content_chars: 3515
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.97
+vocab_density: 0.57
 name: Intent as Team-Scale Karpathy
 confidence: 0.75
 origin: agent
 sources:
   - raw/research/2026-04-02-karpathy-llm-knowledge-bases.md
   - raw/research/2026-04-05-three-layer-architecture-formalized.md
+  - raw/research/2026-04-12-karpathy-power-to-the-people.md
 related_personas:
   - PER-001
   - PER-002
@@ -46,7 +47,24 @@ Karpathy's system has one human curator and one LLM agent. Intent extends this t
 - The contamination mitigation pattern (origin tracking) becomes more critical at team scale — one person's agent-generated content becomes another person's assumed-human input.
 - Trust scoring and autonomy levels (L0-L4) are the governance mechanism that makes team-scale compilation safe.
 
+## Positioning Refinement (April 2026 — from "Power to the People" essay extraction)
+
+Karpathy's "Power to the People" (April 2025) establishes the structural argument: LLMs inverted the historical technology diffusion pattern, benefiting individuals before institutions. His LLM Knowledge Base work (April 2026) is the personal operationalization of that power — one person compiling a personal operating intelligence.
+
+**The precise framing opportunity:**
+> Karpathy's Knowledge Base solves "what does one person know."
+> Intent solves "how does a group decide and move."
+> Different problems at different levels of abstraction. No one has built the second with the rigor Karpathy applied to the first.
+
+**What Intent adds beyond Karpathy:**
+- **Team coordination layer:** Knowledge bases are personal; operating models are collective
+- **Durability:** A compiled operating model persists across team changes; individual KBs die when the person leaves
+- **Organizational thesis:** The gap isn't individuals vs. corporations — it's adaptive teams vs. bureaucratic institutions
+
+**The deepest limit Karpathy doesn't name:** Individual democratization doesn't solve collective coordination. Individual LLM leverage × team ≠ team-level LLM leverage. That's the gap Intent closes.
+
 ## Open Questions
 
 - At what team size does the knowledge base need access control (some artifacts owned by specific teams/roles)?
 - Does the knowledge base need conflict resolution when two team members' ingested sources contradict each other?
+- Karpathy identifies a "window" where frontier capability is commodity-priced. How does Intent's positioning change if performance tiers emerge (training-time or test-time scaling)?

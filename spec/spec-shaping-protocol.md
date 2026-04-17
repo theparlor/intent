@@ -10,7 +10,7 @@ thought_leaders:
 summary: "How intents become agent-ready specs through self-prompting with specific personas. Each persona interrogates the intent from a different angle, querying the knowledge base, until the spec is rich enough for execution."
 depth_score: 6
 depth_signals:
-  file_size_kb: 9.8
+  file_size_kb: 9.9
   content_chars: 9415
   entity_count: 3
   slide_count: 0
@@ -19,11 +19,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.11
 related_entities:
-  - {pair: marty-cagan ↔ consulting-operations, count: 121, strength: 0.059}
-  - {pair: teresa-torres ↔ marty-cagan, count: 82, strength: 0.3}
-  - {pair: jeff-patton ↔ marty-cagan, count: 63, strength: 0.24}
-  - {pair: teresa-torres ↔ consulting-operations, count: 62, strength: 0.031}
-  - {pair: teresa-torres ↔ jeff-patton, count: 60, strength: 0.368}
+  - {pair: marty-cagan ↔ consulting-operations, count: 133, strength: 0.062}
+  - {pair: teresa-torres ↔ marty-cagan, count: 114, strength: 0.307}
+  - {pair: marty-cagan ↔ jeff-patton, count: 90, strength: 0.265}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 89, strength: 0.124}
+  - {pair: marty-cagan ↔ coaching-methodology, count: 88, strength: 0.128}
 ---
 # Spec-Shaping Protocol
 

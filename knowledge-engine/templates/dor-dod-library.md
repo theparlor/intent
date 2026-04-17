@@ -42,6 +42,8 @@ related_templates:
 | [Engagement Closure](#engagement-closure) | DOR-ECL-001 – 004 | DOD-ECL-001 – 005 |
 | [Persona Enrichment Pass](#persona-enrichment-pass) | DOR-PEP-001 – 004 | DOD-PEP-001 – 06 |
 | [Critique Panel](#critique-panel) | DOR-CPL-001 – 04 | DOD-CPL-001 – 05 |
+| [Signal Closure](#signal-closure) | DOR-SCL-001 – 03 | DOD-SCL-001 – 05 |
+| [YAML-Emitting Stage](#yaml-emitting-stage) | DOR-YML-001 – 02 | DOD-YML-001 – 03 |
 
 ---
 
@@ -197,6 +199,51 @@ related_templates:
 | DOD-CPL-003 | Summary written: synthesis of key tensions, actionable recommendations | Summary section present at end of output | Yes | agent |
 | DOD-CPL-004 | Output filed at declared destination if a path was specified | File exists at stated output path | No | agent |
 | DOD-CPL-005 | Sycophancy guard applied: no persona produced only-positive output without challenge | Review per `sycophancy-guard.md` criteria | Yes | agent |
+
+---
+
+## Signal Closure
+
+> Use whenever a signal is being transitioned to `resolved`, `deferred`, or `symptom-repaired, upstream-pending`. Introduced 2026-04-16 per SIG-F-001. Enforces that closure cannot happen without the upstream control being in place (or explicitly deferred with rationale).
+
+### Definition of Ready — Signal Closure
+
+| ID | Condition | Verification | Blocked If Unmet | Owner |
+|----|-----------|--------------|------------------|-------|
+| DOR-SCL-001 | The signal's Implication / Proposed Resolution section is read and its upstream recommendation is identified | Closer can state the upstream control in one sentence | Yes | agent |
+| DOR-SCL-002 | Closer has searched the target codebase / spec repo for evidence that the upstream control exists | Search commands recorded or cited | Yes | agent |
+| DOR-SCL-003 | Closer has classified the closure: `resolved` (control installed), `deferred` (with rationale + date), or `symptom-repaired, upstream-pending` | Classification stated explicitly | Yes | agent |
+
+### Definition of Done — Signal Closure
+
+| ID | Condition | Verification | Must Be True | Owner |
+|----|-----------|--------------|--------------|-------|
+| DOD-SCL-001 | If `resolved`: Resolution section cites the upstream control's file path and ID (gate, policy, DoD, emission helper, etc.) | File path / ID present in signal body | Yes | agent |
+| DOD-SCL-002 | If `resolved`: closer answers "how would the same defect class be caught if reintroduced?" with a concrete mechanism (test, lint, pre-commit, DoD gate) | Answer present in Resolution or Follow-up | Yes | agent |
+| DOD-SCL-003 | If `deferred`: `deferral_rationale:` and `reassess_by:` (ISO date) present in frontmatter | Both fields present | Yes | agent |
+| DOD-SCL-004 | If `symptom-repaired, upstream-pending`: follow-up work enumerated with owner and target date | Follow-up section present | Yes | agent |
+| DOD-SCL-005 | Related / superseding signals cross-referenced in frontmatter | `related:` / `supersedes_in:` fields populated where applicable | Yes | agent |
+
+---
+
+## YAML-Emitting Stage
+
+> Use for any pipeline stage that writes `.yaml` / `.yml` files (persona-intake IDENTIFY/HARVEST/RENDER, fieldbook ledger, skills-engine registry emission, engagement schema files). Introduced 2026-04-16 per SIG-046 / SIG-F-001. Prevents the recurring class of "LLM wrote YAML with unescaped colons / nested quotes / bad indentation, defect only caught at consumption."
+
+### Definition of Ready — YAML-Emitting Stage
+
+| ID | Condition | Verification | Blocked If Unmet | Owner |
+|----|-----------|--------------|------------------|-------|
+| DOR-YML-001 | Emission path declared: library-based (`yaml.safe_dump` via helper) OR template-with-validation. Hand-templated without validation is NOT a valid path | Path stated in spec / SKILL.md | Yes | agent |
+| DOR-YML-002 | Validation gate available: `yaml.safe_load` helper callable from the stage | Helper path + invocation stated | Yes | agent |
+
+### Definition of Done — YAML-Emitting Stage
+
+| ID | Condition | Verification | Must Be True | Owner |
+|----|-----------|--------------|--------------|-------|
+| DOD-YML-001 | Every YAML file emitted by this stage parses cleanly with `yaml.safe_load()` | Validation gate output recorded (pass for N files) | Yes | agent |
+| DOD-YML-002 | On validation failure, stage is BLOCKED from closing. Defects surfaced with file + line + error | Failure produces non-zero exit from validation helper | Yes | agent |
+| DOD-YML-003 | On validation failure, a signal is auto-captured describing the cohort shape (so premature-closure doesn't recur) | Signal file present under `.intent/signals/` or deferral documented | Yes | agent |
 
 ---
 

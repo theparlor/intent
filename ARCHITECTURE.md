@@ -9,14 +9,14 @@ domains:
 created: 2026-04-02
 depth_score: 4
 depth_signals:
-  file_size_kb: 6.5
-  content_chars: 5664
+  file_size_kb: 8.6
+  content_chars: 7809
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.35
+vocab_density: 0.26
 ---
 # Intent: Multi-Agent MCP Architecture
 
@@ -76,7 +76,7 @@ or more phases. Each subagent connects to the relevant server(s).
 **Phase:** Observe  
 **Domain:** Event ingestion, delta detection, loop closure  
 **Tools:**
-- `ingest_event` — Accept any of the 15 OTel-compatible event types
+- `ingest_event` — Accept any of the 26 OTel-compatible event types
 - `detect_spec_delta` — Compare specified vs actual for a spec
 - `detect_trust_drift` — Find signals with shifting effective trust
 - `system_health` — Pipeline health across all four phases
@@ -120,6 +120,29 @@ trust = clarity × 0.30 + (1/blast_radius) × 0.20 +
 | intent-observe| https://intent-observe.fastmcp.cloud/mcp  | Workers         |
 
 **Total cost: $0/month** on FastMCP Cloud free tier or Cloudflare Workers (100K req/day).
+
+## State Philosophy
+
+Intent is a **stateful system composed of stateless agent invocations.** This resolves the apparent tension between Intent's distributed state model and the stateless-reducer pattern common in agent architectures.
+
+### The Resolution
+
+| Layer | State Model | Why |
+|-------|-------------|-----|
+| **System** (knowledge base, signals, events) | Stateful — compiled knowledge, entity lifecycles, signal amplification persist across sessions | The system accumulates understanding over time. DDR-001's compilation model is permanently pre-computed context. |
+| **Agent invocation** (single skill/contract execution) | Stateless — the context resolver assembles everything the agent needs into a single context window | Each agent call is a pure function: context in → actions + events out. No hidden state between calls. |
+| **Bridge** (context resolver) | The context resolver is the bridge — it projects system state into agent-invocation state | Pre-fetches compiled knowledge, active signals, relevant specs, and checkpoint data into a unified context per invocation. |
+
+### Implications
+
+- **Replay:** Any agent invocation can be replayed by reconstructing its context window from the event log + knowledge base at that point in time.
+- **Fork:** Agent executions can be forked by copying the context window and diverging. The system-level state (knowledge base) remains shared.
+- **Recovery:** When an agent pauses (`execution.paused`), it serializes a checkpoint. Resumption reconstructs context from checkpoint + any new events since pause. The agent itself stores nothing.
+- **Observability:** Because agents are stateless, their entire decision-making context is captured in the input. Combined with the output events, every agent action is fully explainable.
+
+### What This Means for Builders
+
+When building a new MCP tool or skill: your tool receives a context window (the input) and produces events + artifacts (the output). It does NOT maintain state between calls. If it needs to "remember" something, it emits an event or writes to the knowledge base — the context resolver picks it up on the next invocation.
 
 ## Phased Rollout
 

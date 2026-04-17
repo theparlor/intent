@@ -20,11 +20,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.21
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 836, strength: 0.43}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 791, strength: 0.409}
-  - {pair: consulting-operations ↔ engagement-management, count: 507, strength: 0.262}
-  - {pair: consulting-operations ↔ turnberry, count: 472, strength: 0.226}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.133}
+  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
+  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
+  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
+  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
 ---
 # Signal Stream
 
@@ -84,6 +84,25 @@ Building a dashboard before defining what work units look like is premature. The
 ## Signal Lifecycle
 
 Signals don't disappear. They either get linked to an intent (someone decided to act on it), get merged with another signal (same observation from a different angle), or get archived with a note explaining why the team chose not to act. The archive is valuable too — it records what the team noticed but deliberately chose to defer.
+
+### Closure Criteria (added 2026-04-16 per SIG-046 / SIG-F-001)
+
+A signal may transition to `status: resolved` ONLY when **one** of the following is true:
+
+1. **Upstream control installed.** The recommendation in the signal's Implication / Proposed Resolution section has been implemented as a gate, policy, emission-helper, or DoD entry that will catch the next instance automatically. Evidence of the control (file path, DoD ID, spec ID) must be recorded in the signal's Resolution section.
+
+2. **Explicitly deferred with rationale.** Set `status: deferred`, add `deferral_rationale:` (why the upstream fix isn't being built now), and `reassess_by:` (a date, not a vague condition). Deferred signals remain active in the governance view; they do not disappear.
+
+**Intermediate state for symptom-only repairs:** If a defect has been repaired but the upstream control is NOT yet installed, use `status: symptom-repaired, upstream-pending`. This is a VISIBLE governance debt — it surfaces in overwatch and blocks "clean" closure reporting. It exists to prevent the premature-closure failure mode where running a one-time repair script looks like resolution.
+
+**Closure audit:** When a signal closes as `resolved`, the closer must answer:
+- What is the upstream control? (gate / policy / DoD / emission discipline)
+- Where does it live? (file path + ID)
+- How would the same class of defect be caught if reintroduced? (test / lint / pre-commit hook / DoD validation)
+
+If any answer is "N/A" or "we just fixed this instance," the correct status is `symptom-repaired, upstream-pending`, not `resolved`.
+
+**Precedent — why this rule exists:** SIG-006 (persona-corpus YAML parse failures, 2026-04-08) was closed `resolved` after a repair script ran, even though its own Implication recommended a validation gate. The gate was never installed. The same class of defect recurred 8 days later as SIG-046 in a different file type. Discovery in SIG-F-001 found ~21 similar premature-closures across products (27% of all resolved signals). This rule is the meta-fix.
 
 ## Where Signals Live
 

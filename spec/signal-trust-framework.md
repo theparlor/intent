@@ -9,14 +9,14 @@ domains:
 created: 2026-03-31
 depth_score: 4
 depth_signals:
-  file_size_kb: 7.3
-  content_chars: 6992
+  file_size_kb: 9.4
+  content_chars: 9221
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.14
+vocab_density: 0.11
 ---
 # Signal Trust & Autonomous Execution Framework
 
@@ -149,6 +149,52 @@ Each agent in the chain:
 | `signal.auto_specced` | Agent auto-generated spec from signal (L3/L4) |
 | `signal.auto_executed` | Agent completed execution without human (L4) |
 | `signal.circuit_break` | Auto-execution stopped by circuit breaker |
+
+## Human Contact as Agent Capability
+
+The trust model above defines **governance gates** — when an agent MUST involve a human. This section defines the inverse: when an agent CHOOSES to involve a human.
+
+### The `request_human_input` Signal Type
+
+Any agent at any trust level can emit a `request_human_input` signal. This is not a governance constraint — it's a strategic tool. The agent recognizes that human judgment would improve the outcome and proactively asks.
+
+```yaml
+# Signal frontmatter for request_human_input
+id: SIG-NNN
+type: request_human_input
+timestamp: 2026-04-13T10:00:00Z
+source: agent
+trust: 0.0                    # Trust is irrelevant — this is a request, not an execution
+status: awaiting_response
+requester_spec: SPEC-NNN      # What spec the agent is executing
+urgency: blocking | informational | deferred
+question: "Plain language question"
+context: "What the agent knows and why it's asking"
+options: ["Option A", "Option B"]
+timeout_seconds: 3600
+fallback_action: "What agent does if no response"
+```
+
+### How It Differs from Governance Gates
+
+| Dimension | Governance Gate (L0-L2) | Strategic Request |
+|-----------|------------------------|-------------------|
+| **Trigger** | Trust score below threshold | Agent judgment |
+| **Mandatory?** | Yes — agent cannot proceed | No — agent could proceed but chooses not to |
+| **Trust level** | Only fires at L0-L2 | Fires at ANY level, including L4 |
+| **Purpose** | Risk mitigation | Quality improvement |
+| **Response required?** | Yes — blocks execution | Configurable — can timeout to fallback |
+
+### Routing
+
+`request_human_input` signals route through the same channels as other signals (Slack, CLI, MCP) but with urgency-aware priority:
+- **blocking:** Immediate notification, agent pauses (emits `execution.paused`)
+- **informational:** Normal notification, agent continues with best-guess approach
+- **deferred:** Batched with other signals for next human review cycle
+
+### Integration with Disambiguation
+
+The existing disambiguation loop (`disambiguation_signal`) is a special case of `request_human_input` where the question is specifically "did you mean X or Y?" The new signal type generalizes this — any question, not just disambiguation.
 
 ## Open Questions
 

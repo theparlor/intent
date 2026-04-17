@@ -17,6 +17,9 @@ depth_signals:
   topic_count: 0
   has_summary: 0
 vocab_density: 0.00
+related_entities:
+  - {pair: Boyd ↔ Beer, count: 2, strength: 0.667}
+  - {pair: Beer ↔ Argyris, count: 2, strength: 0.667}
 name: The Knowledge Base as a Generating System, Not Documentation
 confidence: 0.80
 origin: agent

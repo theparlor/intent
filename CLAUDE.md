@@ -16,7 +16,7 @@ thought_leaders:
   - josh-seiden
 depth_score: 6
 depth_signals:
-  file_size_kb: 28.1
+  file_size_kb: 29.3
   content_chars: 19143
   entity_count: 5
   slide_count: 0
@@ -25,11 +25,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.37
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 836, strength: 0.43}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 791, strength: 0.409}
-  - {pair: consulting-operations ↔ engagement-management, count: 507, strength: 0.262}
-  - {pair: consulting-operations ↔ turnberry, count: 472, strength: 0.226}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.133}
+  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
+  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
+  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
+  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
 ---
 # Intent — Development Continuity Guide
 
@@ -168,6 +168,15 @@ Trust = clarity × 0.30 + (1/blast_radius) × 0.20 + reversibility × 0.20 + tes
 - L2 (0.4–0.6): Agent decides, human approves — drafts intent+spec
 - L3 (0.6–0.85): Agent executes, human monitors — full loop, observe after
 - L4 (≥ 0.85): Full autonomy — circuit breakers only
+
+**L0 Approval Gate (SPEC-APPROVAL-GATE):** External communication (Slack, email, PR, calendar) is governed by a typed approval protocol, not just prompt adherence. The gate intercepts L0 actions, constructs IntentApproval entities, and blocks until Brien decides. Configuration source of truth: `.intent/config/approval-rules.yml`. Methodology: `methodology/meta/approval-gate.md`. Gate skill: `platforms/claude-code/governance/intent-approval-gate/SKILL.md`.
+
+**Three Human-Contact Patterns:**
+- Phase gates (Notice→Spec): mandatory, prevents building the wrong thing
+- Action gates (L0 approval): mandatory, prevents saying the wrong thing
+- Strategic requests (`request_human_input`): voluntary, agent-initiated at any trust level
+
+All three use the shared `execution.paused` / `execution.resumed` checkpoint protocol.
 
 **Enrichment Pipeline:** Source Adapter → Dedup Agent → Context Agent → Trust Scorer → Classifier → Router
 
@@ -398,6 +407,7 @@ File placement within Workspaces governed by [/Workspaces/AGENTS.md](../../../AG
 18. **Redaction at tool level** — MCP server applies confidentiality projection automatically based on engagement context. Not a flag Brien has to remember. (2026-04-06)
 19. **Spec-shaping is self-prompting through personas** — Intents become specs through four-persona interrogation (△ Shape, ◇ Outcome, ○ Contract, ◉ Readiness). The system self-prompts with each persona querying the knowledge base. Brien reviews specs, not execution. See `spec/spec-shaping-protocol.md`. (2026-04-06)
 20. **ULID-based ID generation** — All entity IDs (SIG, INT, SPEC, CON, DEC) are Crockford base32 ULIDs: `{PREFIX}-{26-char-ulid}`. Globally unique without coordination, timestamp-sortable, grep-friendly. Replaces the sequential counter that broke under concurrent writers and server restarts. Legacy `SIG-NNN` IDs remain valid via backward-compat regex. See `.intent/specs/SPEC-003-sig-022-ulid-migration.md` and `.intent/signals/2026-03-30-id-collision-distributed.md`. (2026-04-09)
+21. **12-factor agent pattern integration** — Concept extraction from HumanLayer's 12-factor-agents manifesto. 5 gaps identified and resolved: pause/resume protocol (execution checkpoints), human-contact-as-capability (distinct from governance gates), LLM-as-judge (semantic evaluation in Observe), error-retry-escalate (platform-level standard), state philosophy (stateful system / stateless invocations). Event catalog 15→22 events. DDR-006. (2026-04-13)
 
 ## Intellectual Foundations
 

@@ -1,0 +1,217 @@
+# ─────────────────────────────────────────────────────────────
+# Intent Approval Rules
+# Location: .intent/config/approval-rules.yml
+#
+# Governs which actions require human approval, how long
+# approval windows stay open, and how time-boxed elevations
+# work. Read by: intent-approval-gate skill.
+#
+# Design principle: L0 actions (external communication) always
+# require Brien's explicit approval. Elevations are the only
+# escape hatch — time-boxed, audited, never permanent.
+# ─────────────────────────────────────────────────────────────
+
+# ── Action Type Registry ──
+# Every action type the system can produce, classified by
+# governance level and default TTL for approval windows.
+action_types:
+
+  slack_message:
+    level: L0
+    label: "Slack message (send or schedule)"
+    ttl_minutes: 15
+    mcp_tools:
+      - slack_send_message
+      - slack_schedule_message
+      - slack_send_message_draft
+    description: "Any message sent to a Slack channel or thread"
+
+  email:
+    level: L0
+    label: "Email (send or draft)"
+    ttl_minutes: 60
+    mcp_tools:
+      - gmail_send_message
+      - gmail_draft_message       # Drafts are L0 because they pre-stage outbound content
+    description: "Any email composed and sent or staged as draft"
+
+  pr_create:
+    level: L0
+    label: "Pull request creation"
+    ttl_minutes: 120
+    mcp_tools:
+      - github_create_pull_request
+    cli_patterns:
+      - "gh pr create"
+    description: "Creating a new pull request on any repository"
+
+  pr_comment:
+    level: L0
+    label: "Pull request review or comment"
+    ttl_minutes: 120
+    mcp_tools:
+      - github_create_pull_request_review
+      - github_get_pull_request_comments  # read-only, but review creation is L0
+    cli_patterns:
+      - "gh pr review"
+      - "gh pr comment"
+    description: "Commenting on or reviewing a pull request"
+
+  issue_comment:
+    level: L0
+    label: "Issue comment"
+    ttl_minutes: 120
+    mcp_tools:
+      - github_add_issue_comment
+    cli_patterns:
+      - "gh issue comment"
+    description: "Adding a comment to a GitHub issue"
+
+  calendar_change:
+    level: L0
+    label: "Calendar event create or modify"
+    ttl_minutes: 30
+    mcp_tools:
+      - gcal_create_event
+      - gcal_update_event
+      - gcal_delete_event
+      - gcal_respond_to_event
+    description: "Creating, modifying, deleting, or responding to calendar events"
+
+# ── Auto-Accept Rules ──
+# Maps autonomy levels to approval behavior. These are the
+# system defaults — individual action_types above inherit
+# from their level unless overridden.
+auto_accept:
+
+  L4:
+    behavior: auto
+    description: "Full autonomy. No approval needed."
+    examples:
+      - "Write files to Workspaces"
+      - "Create journal entries"
+      - "Update artifact registry"
+
+  L3:
+    behavior: auto
+    description: "Agent executes, human monitors. No gate."
+    examples:
+      - "Run research skills"
+      - "Execute lint passes"
+      - "Read external APIs (Harvest, Gmail, Slack)"
+
+  L2:
+    behavior: conditional
+    description: "Agent decides, human approves if blast radius is high."
+    conditions:
+      - "Budget decisions consuming >10% of remaining weekly allocation"
+      - "Structural changes to Workspaces governance (DDRs)"
+    fallback: present_to_brien
+
+  L1:
+    behavior: present_to_brien
+    description: "Agent enriches and recommends; Brien decides."
+
+  L0:
+    behavior: require_human
+    description: "Hard gate. Brien must explicitly approve before execution."
+    no_exceptions: true
+
+# ── TTL Defaults ──
+# Default time-to-live for approval windows, by action type.
+# If Brien doesn't respond within TTL, the action is NOT denied.
+# It triggers revalidation — the originating skill re-evaluates
+# whether the action is still needed with fresh context.
+ttl_defaults:
+  slack_message: 15      # minutes — Slack is time-sensitive
+  email: 60              # minutes — email is less urgent
+  pr_create: 120         # minutes — PRs can wait
+  pr_comment: 120        # minutes — same as PR creation
+  issue_comment: 120     # minutes — same cadence as PR work
+  calendar_change: 30    # minutes — calendar changes are time-sensitive
+
+# ── Expiry Behavior ──
+# What happens when a TTL expires without Brien's decision.
+expiry:
+  behavior: revalidate
+  description: >
+    Expiry does NOT mean denial. The originating skill must
+    re-evaluate whether the action is still needed. Context
+    may have changed during the TTL window — a meeting may
+    have passed, a thread may have been resolved, a PR may
+    have been merged by someone else. If still needed, the
+    skill re-submits with fresh context and a new TTL begins.
+  max_revalidation_cycles: 3
+  after_max_cycles: >
+    Surface to Brien as a persistent notification:
+    "Action {action_type} to {target} has been revalidated
+    {N} times without decision. Requires explicit approve
+    or deny."
+
+# ── Elevation Schema ──
+# Time-boxed grants that let Brien temporarily auto-approve
+# specific action types. Used during high-tempo sessions
+# (e.g., "I'm reviewing PRs for the next hour, auto-approve
+# PR comments").
+elevations:
+
+  schema:
+    id: "ELEV-{ISO8601-compact}"     # e.g., ELEV-20260413T1430
+    granted_by: brien                  # Only Brien can grant
+    granted_at: null                   # ISO 8601 timestamp
+    expires_at: null                   # ISO 8601 timestamp
+    duration_minutes: null             # Convenience field
+    action_types: []                   # Which L0 types are elevated
+    scope: null                        # Optional: restrict to target (channel, repo, recipient)
+    reason: null                       # Why Brien granted this
+    status: active                     # active | expired | revoked
+
+  defaults:
+    max_duration_minutes: 120          # No elevation lasts longer than 2 hours
+    min_duration_minutes: 5            # Minimum meaningful elevation
+    default_duration_minutes: 30       # If Brien doesn't specify a duration
+
+  rules:
+    # Elevations are additive — they grant, never restrict
+    - "Elevations cannot override an explicit denial on the same target"
+    - "Elevations are audited — every auto-approved action logs the elevation ID"
+    - "Elevations are never permanent — max 120 minutes, then must be re-granted"
+    - "Elevations can be scoped to a specific target (e.g., only #engineering channel)"
+    - "Brien can revoke an active elevation at any time"
+    - "Multiple elevations can be active simultaneously for different action types"
+
+  # Example elevations Brien might grant:
+  examples:
+    - description: "Auto-approve Slack messages to #engineering for 30 minutes"
+      action_types: [slack_message]
+      scope: "#engineering"
+      duration_minutes: 30
+
+    - description: "Auto-approve all PR comments on skills-engine repo for 1 hour"
+      action_types: [pr_comment]
+      scope: "theparlor/skills-engine"
+      duration_minutes: 60
+
+    - description: "Auto-approve calendar responses for 15 minutes"
+      action_types: [calendar_change]
+      scope: null
+      duration_minutes: 15
+
+# ── Events ──
+# OTel-compatible events emitted by the approval gate.
+events:
+  intent.approval.requested:
+    description: "Approval entity constructed and presented to Brien"
+    data: [approval_id, action_type, target, originating_skill, ttl_minutes]
+
+  intent.approval.decided:
+    description: "Brien approved or denied the action"
+    data: [approval_id, decision, decided_by, modifications, elapsed_minutes]
+
+  intent.approval.expired:
+    description: "TTL expired without decision — triggering revalidation"
+    data: [approval_id, action_type, revalidation_cycle, max_cycles]
+
+  intent.approval.elevated:
+    description: "Action auto-approved via active elevation"
+    data: [approval_id, elevation_id, action_type, target]

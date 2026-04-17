@@ -13,20 +13,20 @@ technologies:
   - slack
 depth_score: 5
 depth_signals:
-  file_size_kb: 11.4
-  content_chars: 10735
+  file_size_kb: 13.2
+  content_chars: 12548
   entity_count: 3
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.37
+vocab_density: 0.32
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 836, strength: 0.43}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 791, strength: 0.409}
-  - {pair: consulting-operations ↔ engagement-management, count: 507, strength: 0.262}
-  - {pair: consulting-operations ↔ turnberry, count: 472, strength: 0.226}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.133}
+  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
+  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
+  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
+  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
+  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
 ---
 # Changelog
 
@@ -38,6 +38,38 @@ Intent uses timestamp-based versioning: `YYYY.MM.DD-MAJOR.MINOR.PATCH`
 - **Patch** — Bug fixes, documentation improvements, clarifications. No behavioral change.
 
 The timestamp prefix records when the release happened. The semver suffix records what kind of change it is.
+
+---
+
+## 2026.04.13 — v0.10.0
+
+### Added — 12-Factor Agent Pattern Integration (DDR-006)
+- **Pause/Resume protocol:** `execution.paused` + `execution.resumed` events with checkpoint serialization schema, TTL enforcement, and trust-aware fallback actions
+- **Human contact as capability:** `request_human_input` signal type — agents can proactively request human input at ANY trust level, distinct from governance gates. `human_input.requested` + `human_input.received` events with urgency routing (blocking/informational/deferred)
+- **LLM-as-Judge:** `observation.evaluated` event with multi-dimensional scoring schema. Closes the gap between contract verification (mechanical) and spec satisfaction (semantic). Fail verdicts auto-emit signals back to Notice
+- **Error-Retry-Escalate:** `execution.error_retry` + `execution.escalated` events. Standard retry-cap + trust-aware escalation pattern codified at platform level
+- **State Philosophy:** New ARCHITECTURE.md section documenting stateful-system / stateless-invocation resolution with context resolver as bridge
+- **Extension 5 (SPEC-003):** Execution checkpoint primitive with schema, TTL, resume triggers, and trust model integration
+- **CON-012:** Checkpoint validity contract (TTL enforcement, span_id linkage)
+- **CON-013:** Human input request independence contract (emittable at any trust level)
+- **CON-014:** LLM-as-judge semantic gap detection contract
+- **12-factor mapping analysis:** `knowledge-engine/analysis/12-factor-mapping.md`
+
+### Added — SPEC-APPROVAL-GATE Execution (Phase 1)
+- **IntentApproval entity:** `.intent/approvals/` directory + `_TEMPLATE.md` with full lifecycle schema (pending → approved/denied/expired)
+- **Elevation entity:** `.intent/elevations/` directory + `_TEMPLATE.md` for time-boxed auto-approve grants
+- **Approval gate methodology module:** `methodology/meta/approval-gate.md` — cross-cutting governance module documenting the three human-contact patterns, pause/resume integration, TTL/revalidation, elevation mechanics, and per-action-type payload schemas
+- **Per-action-type payload schemas:** slack_message, email, pr_create, pr_comment, issue_comment, calendar_change — all structured in methodology module
+- **4 approval events:** `intent.approval.requested`, `intent.approval.decided`, `intent.approval.expired`, `intent.approval.elevated`
+- **Ambiguity flag resolution:** All 4 flags in SPEC-APPROVAL-GATE resolved via 12-factor pause/resume and human-contact-as-capability patterns
+- **CLAUDE.md governance wiring:** L0 approval gate, three human-contact patterns, and approval-rules.yml documented as source of truth
+
+### Changed
+- Event catalog: 15 → 26 events (7 from 12-factor + 4 from approval gate across Execute and Observe phases)
+- models.py: EVENT_TYPES updated with 11 new event types, organized by phase
+- Signal trust framework: added Human Contact as Agent Capability section
+- SPEC-003: added Extension 5 + 3 new contracts (CON-012 through CON-014)
+- SPEC-APPROVAL-GATE: status shaped → executing, ambiguity flags resolved
 
 ---
 

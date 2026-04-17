@@ -147,11 +147,23 @@ def compute_effective_trust(base_trust: float, amplification: float) -> float:
 # ─── OTel-Compatible Event Types (15) ────────────────────────
 
 EVENT_TYPES = {
+    # Notice phase
     "signal.created", "signal.updated", "signal.dismissed",
     "signal.clustered", "signal.promoted",
+    # Spec phase
     "intent.proposed", "intent.accepted", "intent.specced", "intent.completed",
     "spec.created", "spec.approved", "spec.executing", "spec.completed",
     "contract.verified", "contract.failed",
+    # Execute phase
+    "execution.paused", "execution.resumed",
+    "execution.error_retry", "execution.escalated",
+    "human_input.requested", "human_input.received",
+    # Approval gate (L0 external actions)
+    "intent.approval.requested", "intent.approval.decided",
+    "intent.approval.expired", "intent.approval.elevated",
+    # Observe phase
+    "observation.evaluated",
+    # System
     "system.status",
 }
 

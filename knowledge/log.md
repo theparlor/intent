@@ -3,14 +3,14 @@ title: Domain Knowledge Base Activity Log
 type: log
 depth_score: 4
 depth_signals:
-  file_size_kb: 5.8
-  content_chars: 5657
+  file_size_kb: 7.6
+  content_chars: 7484
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.53
+vocab_density: 0.40
 maintained_by: agent
 ---
 # Knowledge Base — Activity Log
@@ -62,3 +62,18 @@ maintained_by: agent
 [CREATE] 2026-04-06 SPEC-002-workspace-hygiene.md — 4-pass spec (trust 0.78, L3). 5 contracts (CON-WS-001–005)
 [CREATE] 2026-04-06 contracts-workspace.md — 5 workspace hygiene contracts (CON-WS-001–005)
 [CREATE] 2026-04-06 skills-engine/operations/workspace-hygiene/SKILL.md — Advisory triage skill for engagement working/ directories
+[INGEST] 2026-04-13 raw/research/2026-04-12-rvk7895-llm-knowledge-bases.md → analysis: auto-evolve pattern, hash-based incremental compile, _sources.md bidirectional mapping. No new artifacts — patterns absorbed into existing architecture understanding.
+[INGEST] 2026-04-13 raw/research/2026-04-12-karpathy-gist-llm-wiki.md → finding: gist is schema-free "idea file," no YAML templates to extract. Log format convention noted. KE is a substantial superset.
+[INGEST] 2026-04-13 raw/research/2026-04-12-fowler-sdd-tools-survey.md → created: THM-004 | Böckeler's three-level SDD taxonomy. Intent = "spec-governed execution" (fourth position). MDD warning documented.
+[INGEST] 2026-04-13 raw/research/2026-04-12-chet-richards-boyds-ooda-loop.md → created: RAT-003 | updated: RAT-002 | Boyd's dual-circuit model validates two-speed architecture. IG&C bypass = trust-gated fast path. Incestuous amplification = governance failure mode.
+[INGEST] 2026-04-13 raw/research/2026-04-12-rotifer-compile-dont-search-agent-memory.md → finding: query-as-contribution must be architectural write-back, not optional. "Archival vs. evolutionary" distinction. Validates DDR-001.
+[INGEST] 2026-04-13 raw/research/2026-04-12-karpathy-power-to-the-people.md → updated: THM-003 | Positioning refined: "what one person knows" vs. "how a group decides and moves." Individual democratization ≠ collective coordination.
+[INGEST] 2026-04-13 raw/research/2026-04-12-chi2024-llm-generated-personas.md → finding: LLM personas "challenging to distinguish" from human in narrow B2B domain (n=11). Translation confound. Confidence default for agent-generated should remain below human-curated.
+[UPDATE] 2026-04-13 knowledge/_index.md — Added RAT-003, THM-004. Updated THM-003, RAT-002. Artifact count 16→19. 7 raw research files from SIG-032 extraction backlog.
+[CREATE] 2026-04-13 .intent/signals/2026-04-13-ke-mcp-write-back.md — SIG-033: intent-knowledge MCP must have architectural write-back from queries. Query-as-contribution pattern.
+[CREATE] 2026-04-13 .intent/signals/2026-04-13-trust-as-orientation-proxy.md — SIG-034: Trust scoring is Boyd's orientation quality proxy. Decay mechanics needed.
+[CREATE] 2026-04-13 .intent/signals/2026-04-13-overwatch-incestuous-amplification.md — SIG-035: Overwatch must detect incestuous amplification (Boyd's organizational survival mechanism).
+[CREATE] 2026-04-13 knowledge/decisions/DDR-007-ke-mcp-query-write-back.md — Query write-back is first-class in intent-knowledge MCP. Conditional auto-enrichment, confidence gating, 5-tool surface. Confidence: 0.85
+[CREATE] 2026-04-13 knowledge/decisions/DDR-008-trust-as-orientation-proxy.md — Trust scoring incorporates orientation quality modifier + decay mechanics. IG&C threshold formalized. Confidence: 0.8
+[UPDATE] 2026-04-13 knowledge/_index.md — Added DDR-006/007/008. Artifact count 19→22.
+[UPDATE] 2026-04-13 .claude/commands/overwatch.md — Added §11 Incestuous Amplification Detection (disconfirmation check, signal diversity audit, source vs. conclusion freshness). Boyd/Richards 2020, RAT-003. SIG-035 resolved.

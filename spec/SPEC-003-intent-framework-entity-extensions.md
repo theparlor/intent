@@ -4,14 +4,14 @@ id: SPEC-003
 created: 2026-04-06 18:00:00+00:00
 depth_score: 4
 depth_signals:
-  file_size_kb: 7.6
-  content_chars: 7392
+  file_size_kb: 11.3
+  content_chars: 11105
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.14
+vocab_density: 0.09
 status: approved
 intent: INT-006
 contracts:
@@ -19,6 +19,9 @@ contracts:
   - CON-009
   - CON-010
   - CON-011
+  - CON-012
+  - CON-013
+  - CON-014
 completeness: 0.80
 agent_readiness: L2
 ---
@@ -26,7 +29,7 @@ agent_readiness: L2
 
 ## Overview
 
-Four extensions to the Intent framework, motivated by the persona system dogfood. Each is independently implementable and backward-compatible with existing signals, intents, and specs.
+Five extensions to the Intent framework, motivated by the persona system dogfood. Each is independently implementable and backward-compatible with existing signals, intents, and specs.
 
 ## Extension 1: Entity Lifecycle Primitive
 
@@ -163,6 +166,54 @@ The deployment context must be **verifiable**, not claimed:
 - `worktree`: working directory is inside a git worktree (`git rev-parse --show-toplevel` differs from main repo)
 - `blue_green`: defined by project config (`.intent/config.yml`) — must reference a parallel environment with its own test suite
 
+## Extension 5: Execution Checkpoint Primitive
+
+### Schema Addition
+
+Checkpoints are serialized execution state, enabling pause/resume across agent invocations. They attach to the entity lifecycle as a transient artifact — checkpoints are consumed on resume, not stored permanently.
+
+```yaml
+# Checkpoint schema (embedded in execution.paused event data)
+checkpoint:
+  spec_id: SPEC-NNN
+  contract_id: CON-NNN
+  step_index: integer          # Which step in the execution plan
+  context_snapshot: string     # Reference to serialized context (file path or base64)
+  tools_completed: [string]    # Tool calls already executed
+  tools_remaining: [string]    # Tool calls still pending
+  next_action: string          # Human-readable description of resume action
+  created: datetime
+  ttl_seconds: integer         # How long the checkpoint remains valid (default: 86400)
+
+resume_trigger:
+  type: enum                   # webhook | human_response | timer | signal | dependency
+  endpoint: string             # URL for webhook triggers
+  signal_id: SIG-NNN           # For signal-based triggers (e.g., human_input.received)
+  timeout_seconds: integer     # Max wait before fallback
+  fallback: enum               # escalate_to_human | retry | abandon | degrade_trust
+```
+
+### Lifecycle Integration
+
+Checkpoints interact with the entity lifecycle from Extension 1:
+
+```
+Entity: active → (agent executing) → PAUSED (checkpoint written) → RESUMED (checkpoint consumed) → enriched
+```
+
+When an entity's processing is paused:
+- The entity remains in its current lifecycle state (does not transition)
+- The checkpoint records where processing stopped
+- On resume, processing continues from checkpoint — the entity transitions only when processing completes
+
+### Trust Model Integration
+
+The `fallback` field respects the trust model:
+- `escalate_to_human`: Always valid. Creates a `request_human_input` signal.
+- `retry`: Valid at L3+. Re-enters the execution loop from checkpoint.
+- `abandon`: Valid at L4 only. Marks execution as incomplete, emits signal.
+- `degrade_trust`: Lowers the effective trust level for this spec by one tier and re-routes.
+
 ## Contracts
 
 ### CON-008: Entity Lifecycle Consistency
@@ -189,3 +240,18 @@ After executing a contribution contract, no existing content in the target compo
 A deployment context modifier may only be applied when the context is machine-verifiable. If `git rev-parse` cannot confirm worktree isolation, the modifier must not be applied (falls back to `in_place` baseline).
 
 **Verification**: Apply worktree modifier from non-worktree context. Must fail gracefully and use baseline scores.
+
+### CON-012: Checkpoint Validity
+A checkpoint must be consumed within its TTL. Expired checkpoints must not be resumed — they trigger the fallback action instead. A resumed checkpoint must produce an `execution.resumed` event that references the original `execution.paused` event's span_id.
+
+**Verification**: Create a checkpoint with TTL=1 second. Wait 2 seconds. Attempt resume. Must trigger fallback, not resume. Create a checkpoint with TTL=3600. Resume immediately. Must emit `execution.resumed` with matching span_id.
+
+### CON-013: Human Input Request Independence
+A `request_human_input` signal must be emittable at any trust level (L0-L4). The signal must not be blocked by governance gates. When urgency is `blocking`, it must produce an `execution.paused` event. When urgency is `informational`, execution must continue without pausing.
+
+**Verification**: Emit `request_human_input` from an L4 context. Must succeed. Emit with urgency=blocking. Must produce `execution.paused`. Emit with urgency=informational. Must NOT produce `execution.paused`.
+
+### CON-014: LLM-as-Judge Semantic Gap Detection
+When `observation.evaluated` produces a verdict of `fail` or `conditional_pass`, the system must emit a new signal describing the semantic gap. This signal must reference the original spec_id and include the evaluator's evidence.
+
+**Verification**: Trigger evaluation where contracts pass but LLM scores below threshold. Must emit new signal with `type: semantic_gap` referencing the spec. Trigger evaluation where LLM scores above threshold. Must NOT emit signal.
