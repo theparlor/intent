@@ -52,7 +52,7 @@ The playbook's organizing claim — *"a real agent is a job description + a trig
 | Topology: slash command vs. hook vs. hosted 24/7 script; 5 local / 8 must-be-always-on | 5-tier signal-capture adapters; deployment topology (local vs. hosted mode) | **Technique to absorb.** The local-vs-always-on split is a concrete heuristic for partitioning Intent's pipeline stages. |
 | "You need to see what they are doing in real time / output becomes garbage around day 9, nobody notices" | Observe product; events.jsonl; overwatch + incestuous-amplification detection (RAT-003); staleness/decay (DDR-008) | **Gap pressure → SIG-036.** Observe is schema-ready but unvisualized; silent-degradation detection is unowned. |
 | "Hosting on your laptop is not a strategy" / cron dies at 4am / nobody notices until Monday | Hosted deployment mode — always-on processing (open item in CLAUDE.md) | **Gap pressure → SIG-037.** Intent explicitly names Brien's laptop going offline during travel; this is the same failure, externally corroborated. |
-| 90-day staged rollout: "ship everything in a weekend → drown in review tasks → lose the efficiency" | Autonomy rollout vs. human approval-gate throughput | **New consideration → SIG-038.** Human review capacity is a finite resource not currently modeled; staging L2/L3 agent activation against it is a governance constraint. |
+| 90-day staged rollout: "ship everything in a weekend → drown in review tasks → lose the efficiency" | THM-002 (bottleneck-shift) at the approval gate; L0 gate; ceremony-tax framing | **Founding thesis rediscovered → SIG-038 → INT-014.** *Not* a new consideration: the bottleneck relocated to the human gate, it did not vanish. Jira/peer-review are its legacy instrumentation. Narrow architectural gap: trust rations per-signal, nothing rations aggregate human attention. |
 
 ## Evidence
 
@@ -62,11 +62,11 @@ The playbook's organizing claim — *"a real agent is a job description + a trig
 
 1. **Positioning.** A non-research practitioner audience now frames the problem ("agents that survive contact with Monday morning") in terms structurally identical to Intent's. Intent's differentiator is precisely the rigor the playbook lacks: trust scoring, contracts, overwatch, double-loop. The market is articulating the wound; Intent has the surgical version. Useful for site/positioning copy — but cite as *market signal*, not evidence.
 2. **Absorb two techniques.** (a) Decompose each enrichment/shaping agent definition into explicit **system / workflow / output** prompt layers with hard output caps. (b) Use the **local-vs-always-on partition** as the organizing axis for the hosted-mode deployment spec.
-3. **Three gap signals raised** (below) — observability, always-on hosting, and review-capacity-as-constraint.
+3. **Three gap signals raised** (below) — observability (SIG-036) and always-on hosting (SIG-037) are gap pressure; review-capacity (SIG-038) is **not** a gap discovery but the founding thesis (THM-002) rediscovered at the approval gate, promoted to **INT-014**. The correction matters: framing it as "new" would have hidden that Intent risks rebuilding the Jira/peer-review ceremony tax inside its own autonomy pipeline.
 
 ## Open Questions
 
 - Does the three-prompt-layer decomposition belong in AGENT_DEFINITIONS.md, in per-skill SKILL.md files, or in a shared agent-contract template? (Touches the spec-shaping protocol — do not refactor without a DDR.)
 - The playbook's economic claim (13 agents ≈ $1,300/mo) is unverified vendor-adjacent math. Do not propagate into any Intent costing artifact without independent sourcing.
-- What is the actual human-review throughput ceiling for a solo practitioner (Brien), and how should it gate the number of simultaneously-active L2/L3 signals? (SIG-038.)
+- What is the actual human-review throughput ceiling for a solo practitioner (Brien), and how should it parameterize the concurrent-review budget? (SIG-038 → INT-014.)
 </content>

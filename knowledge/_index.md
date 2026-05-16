@@ -43,7 +43,7 @@ artifact_count: 23
 ## Themes (5)
 
 - [[THM-001-compilation-over-retrieval]] — The knowledge base compiles understanding once and keeps it current, rather than re-deriving per query. Confidence: 0.85.
-- [[THM-002-bottleneck-shift]] — When AI collapses implementation, the constraint moves from delivery velocity to specification quality. Confidence: 0.9.
+- [[THM-002-bottleneck-shift]] — When AI collapses implementation, the constraint moves from delivery velocity to specification quality. Sharpened (2026-05-16): the bottleneck *relocates* to the human (spec + approval gate), it does not vanish; Jira/peer-review were its legacy instrumentation. → SIG-038/INT-014. Confidence: 0.9.
 - [[THM-003-team-scale-karpathy]] — Intent extends Karpathy's solo pattern to teams with multi-agent coordination and formal governance. Refined: "what one person knows" vs. "how a group decides and moves." Confidence: 0.8.
 - [[THM-004-spec-governed-execution]] — Intent occupies a fourth SDD position beyond Böckeler's taxonomy (spec-first/anchored/as-source): specs as contracts verified through trust gates and observe. Confidence: 0.8.
 - [[THM-005-agent-as-job-not-chat]] — Parallax read of a market-facing solo-founder playbook: independently re-derives Intent's agent-as-job/shared-substrate theses (positioning evidence, not data) and contributes two techniques (system/workflow/output prompt layers; local-vs-always-on topology). Raises 3 gap signals. Confidence: 0.7.
@@ -104,3 +104,5 @@ Engagement-scoped artifacts live in their engagement Knowledge Farms per the fed
 _Last compiled: 2026-04-13 — 7 raw research sources ingested (SIG-032). Created RAT-003, THM-004, DDR-007, DDR-008. Updated THM-003, RAT-002. 3 carry-forward signals (SIG-033/034/035). Artifact count 16→22._
 
 _Last compiled: 2026-05-16 — Ingested Rahul agent-team playbook (parallax read, low-rigor market source, confidence 0.55). Created THM-005. Raised 3 gap signals (SIG-036 agent observability, SIG-037 always-on hosting, SIG-038 review-capacity-as-resource). No new evidence, but positioning corroboration + 2 techniques to absorb. Artifact count 22→23._
+
+_Correction (2026-05-16, brien) — SIG-038 was mis-framed as a "new consideration." It is THM-002 (founding bottleneck-shift thesis) rediscovered at the human approval gate: humans are the bottleneck; Jira and peer code review are its legacy instrumentation. Re-expressed SIG-038, sharpened THM-002, promoted to INT-014 (human-gate capacity model). The risk named: Intent rebuilding the ceremony tax inside its own autonomy pipeline._
