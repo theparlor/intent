@@ -77,3 +77,9 @@ maintained_by: agent
 [CREATE] 2026-04-13 knowledge/decisions/DDR-008-trust-as-orientation-proxy.md — Trust scoring incorporates orientation quality modifier + decay mechanics. IG&C threshold formalized. Confidence: 0.8
 [UPDATE] 2026-04-13 knowledge/_index.md — Added DDR-006/007/008. Artifact count 19→22.
 [UPDATE] 2026-04-13 .claude/commands/overwatch.md — Added §11 Incestuous Amplification Detection (disconfirmation check, signal diversity audit, source vs. conclusion freshness). Boyd/Richards 2020, RAT-003. SIG-035 resolved.
+[INGEST] 2026-05-16 raw/research/2026-05-16-rahul-ai-agent-team-playbook.md → created: THM-005 | parallax read of low-rigor market playbook. No new evidence; positioning corroboration of agent-as-job + shared-substrate theses; 2 techniques absorbed (system/workflow/output prompt layers; local-vs-always-on topology). Confidence 0.55 source.
+[CREATE] 2026-05-16 knowledge/themes/THM-005-agent-as-job-not-chat.md — Agent-as-Job, Not Agent-as-Chat. Parallax framing. Confidence 0.7.
+[CREATE] 2026-05-16 .intent/signals/2026-05-16-agent-realtime-observability.md — SIG-036: running agents fail silently; Observe has no degradation detection. Forces Observe v1 scoping.
+[CREATE] 2026-05-16 .intent/signals/2026-05-16-always-on-hosting-forcing-function.md — SIG-037: "laptop is not a strategy"; hosted-mode is the unresolved load-bearing decision. Needs DDR.
+[CREATE] 2026-05-16 .intent/signals/2026-05-16-review-capacity-as-finite-resource.md — SIG-038: human review throughput is a finite resource that should gate aggregate L2/L3 rollout (new consideration, not corroboration).
+[UPDATE] 2026-05-16 knowledge/_index.md — Added THM-005, rahul playbook raw source. Themes 4→5, artifact count 22→23.

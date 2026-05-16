@@ -12,8 +12,8 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.71
 maintained_by: agent
-last_compiled: 2026-04-13
-artifact_count: 22
+last_compiled: 2026-05-16
+artifact_count: 23
 ---
 # Knowledge Base — Master Index
 
@@ -40,12 +40,13 @@ artifact_count: 22
 - [[DDR-007-ke-mcp-query-write-back]] — **Accepted.** Query write-back is first-class in intent-knowledge MCP. Conditional auto-enrichment with confidence gating. 5-tool surface (ingest/query/lint/enrich/status). Federation boundary enforcement. Confidence: 0.85.
 - [[DDR-008-trust-as-orientation-proxy]] — **Accepted.** Trust scoring incorporates orientation quality modifier (persona confidence, DDR coverage, source freshness, contradiction density). Trust decays with time since validation. IG&C threshold formalized. Confidence: 0.8.
 
-## Themes (4)
+## Themes (5)
 
 - [[THM-001-compilation-over-retrieval]] — The knowledge base compiles understanding once and keeps it current, rather than re-deriving per query. Confidence: 0.85.
 - [[THM-002-bottleneck-shift]] — When AI collapses implementation, the constraint moves from delivery velocity to specification quality. Confidence: 0.9.
 - [[THM-003-team-scale-karpathy]] — Intent extends Karpathy's solo pattern to teams with multi-agent coordination and formal governance. Refined: "what one person knows" vs. "how a group decides and moves." Confidence: 0.8.
 - [[THM-004-spec-governed-execution]] — Intent occupies a fourth SDD position beyond Böckeler's taxonomy (spec-first/anchored/as-source): specs as contracts verified through trust gates and observe. Confidence: 0.8.
+- [[THM-005-agent-as-job-not-chat]] — Parallax read of a market-facing solo-founder playbook: independently re-derives Intent's agent-as-job/shared-substrate theses (positioning evidence, not data) and contributes two techniques (system/workflow/output prompt layers; local-vs-always-on topology). Raises 3 gap signals. Confidence: 0.7.
 
 ## Domain Models (2)
 
@@ -75,13 +76,13 @@ Engagement-scoped artifacts live in their engagement Knowledge Farms per the fed
 | Personas | 2 | 0.63 |
 | Journeys | 2 | 0.63 |
 | Decisions | 8 | 0.85 |
-| Themes | 4 | 0.84 |
+| Themes | 5 | 0.81 |
 | Domain Models | 2 | 0.78 |
 | Design Rationale | 3 | 0.85 |
 | Entity Dossiers | 1 | 0.65 |
-| **Total** | **22** | **0.79** |
+| **Total** | **23** | **0.78** |
 
-## Raw Research Sources (11)
+## Raw Research Sources (12)
 
 | File | Date | Type | Confidence |
 |------|------|------|------------|
@@ -96,7 +97,10 @@ Engagement-scoped artifacts live in their engagement Knowledge Farms per the fed
 | rotifer-compile-dont-search-agent-memory | 2026-04-12 | industry-analysis | 0.85 |
 | karpathy-power-to-the-people | 2026-04-12 | primary-source | 0.9 |
 | chi2024-llm-generated-personas | 2026-04-12 | academic-paper | 0.75 |
+| rahul-ai-agent-team-playbook | 2026-05-16 | practitioner-playbook | 0.55 |
 
 ---
 
 _Last compiled: 2026-04-13 — 7 raw research sources ingested (SIG-032). Created RAT-003, THM-004, DDR-007, DDR-008. Updated THM-003, RAT-002. 3 carry-forward signals (SIG-033/034/035). Artifact count 16→22._
+
+_Last compiled: 2026-05-16 — Ingested Rahul agent-team playbook (parallax read, low-rigor market source, confidence 0.55). Created THM-005. Raised 3 gap signals (SIG-036 agent observability, SIG-037 always-on hosting, SIG-038 review-capacity-as-resource). No new evidence, but positioning corroboration + 2 techniques to absorb. Artifact count 22→23._
