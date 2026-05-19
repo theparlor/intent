@@ -5,7 +5,7 @@ source: agent-trace
 confidence: 0.95
 trust: 0.65
 autonomy_level: L3
-status: captured
+status: resolved
 cluster: null
 author: brien
 related_intents: []
@@ -48,6 +48,21 @@ conceptually). Porting the pattern is low-risk, high-precedent work.
 2. Env-var config mirroring upstream (`INTENT_<SERVER>_PORT`, fallback count).
 3. Update startup logging to report the actually-bound port (the operability
    lesson from SIG-034 #768 retro — don't repeat the blind spot here).
+
+## Resolution (2026-05-19, L3 — agent executed, human monitors)
+
+Implemented `servers/port_resolver.py` (clean-room reimplementation of the
+#768 pattern): preferred port + configurable fallback range, two-stage
+availability probe (loopback connect, then real bind), env-driven config,
+`PortConfigError` / `NoAvailablePortError`. Wired into the `__main__` blocks
+of `notice.py` (8001), `spec.py` (8002), `observe.py` (8003); each now logs
+the port it actually bound (the SIG-034 operability lesson applied — not
+repeated). `knowledge.py` has no in-process bind (deployed via `fastmcp run`)
+so it was correctly left untouched. Functional tests cover preferred bind,
+fallback on conflict, env override, malformed config, and range exhaustion.
+Operator docs updated in `servers/DEPLOYMENT.md`. No new lint errors
+introduced (pre-existing ruff findings on these files are unchanged and
+left out of scope).
 
 ## Trust Factors
 

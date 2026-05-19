@@ -74,6 +74,26 @@ fastmcp run servers/observe.py --transport streamable-http --port 8003
 
 Point Claude Code at `http://localhost:800X/mcp`.
 
+### Port resolution
+
+Running a server directly (`python servers/notice.py`) late-binds its
+port: it tries the preferred port, then a fallback range, so a second
+instance or an orphaned process does not cause an "address already in
+use" boot failure. The server logs the port it actually bound — read
+that line rather than assuming the default.
+
+| Variable                         | Default   | Effect                                  |
+|----------------------------------|-----------|-----------------------------------------|
+| `INTENT_NOTICE_PORT`             | `8001`    | Preferred port for notice               |
+| `INTENT_SPEC_PORT`               | `8002`    | Preferred port for spec                 |
+| `INTENT_OBSERVE_PORT`            | `8003`    | Preferred port for observe              |
+| `INTENT_MCP_HOST`                | `0.0.0.0` | Bind host (all servers)                 |
+| `INTENT_MCP_PORT_FALLBACK_COUNT` | `4`       | Extra sequential ports tried after pref |
+
+`fastmcp run ... --port` (above) binds explicitly and bypasses the
+resolver — use the direct `python servers/<name>.py` form to get
+fallback behavior.
+
 ## Alternative Platforms
 
 | Platform        | Free Tier          | Best For                |
