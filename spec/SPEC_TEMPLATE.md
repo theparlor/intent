@@ -34,7 +34,7 @@ related_entities:
 > The unit of work in the **Intent** methodology. This replaces the Jira ticket.
 > A ticket tracks *status*. A spec communicates *intent*.
 >
-> Part of: [Intent: Development Operating System](DEVELOPMENT_OPERATING_SYSTEM.md) | [Intent Product Concept](../../Work/Lab/Pipeline/ideas/INTENT_CONCEPT_BRIEF.md)
+> Part of: [Intent: Development Operating System](../../../reference/DEVELOPMENT_OPERATING_SYSTEM.md) | [Intent Product Concept](../../../../Work/Lab/Pipeline/ideas/INTENT_CONCEPT_BRIEF.md)
 
 ---
 

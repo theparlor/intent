@@ -140,4 +140,4 @@ Add `.intent/events/`, `.claude/`, and `.entire/`. Full event emission, agent re
 ## Where This Lives
 
 - **Interactive artifact:** [Work System (React)](../artifacts/intent-work-system.jsx)
-- **Site page:** [native-repos.html](../docs/native-repos.html)
+- **Site page:** rendered at theparlor/intent-site <!-- broken link removed: ../docs/native-repos.html (site moved to separate repo per CLAUDE.md; this repo has no docs/) -->

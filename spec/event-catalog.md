@@ -422,4 +422,4 @@ L0 actions (Slack messages, emails, PR creation, calendar changes) are intercept
 
 - **Storage:** `.intent/events/events.jsonl` in each Intent-native repo
 - **Interactive artifact:** [Event Catalog (React)](../artifacts/intent-event-catalog.jsx)
-- **Site page:** [event-catalog.html](../docs/event-catalog.html)
+- **Site page:** rendered at theparlor/intent-site <!-- broken link removed: ../docs/event-catalog.html (site moved to separate repo per CLAUDE.md; this repo has no docs/) -->

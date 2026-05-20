@@ -109,4 +109,4 @@ If any answer is "N/A" or "we just fixed this instance," the correct status is `
 - **Source files:** `.intent/signals/` in each Intent-native repo
 - **Naming:** `YYYY-MM-DD-slug.md`
 - **Event emitted:** `signal.created` (via GitHub Action on PR merge)
-- **Site page:** [signals.html](../docs/signals.html)
+- **Site page:** rendered at theparlor/intent-site <!-- broken link removed: ../docs/signals.html (site moved to separate repo per CLAUDE.md; this repo has no docs/) -->

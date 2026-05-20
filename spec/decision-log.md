@@ -146,4 +146,4 @@ Each decision follows a consistent structure:
 
 - **Source files:** `.intent/decisions.md` in each Intent-native repo
 - **Event emitted:** `decision.recorded` (manual emission)
-- **Site page:** [decisions.html](../docs/decisions.html)
+- **Site page:** rendered at theparlor/intent-site <!-- broken link removed: ../docs/decisions.html (site moved to separate repo per CLAUDE.md; this repo has no docs/) -->
