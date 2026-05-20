@@ -1,12 +1,13 @@
 ---
 id: SIG-ARTIFICIAL-GATE-DRIFT-PATTERN-2026-05-20
 type: process-drift-pattern-new
-status: captured
+status: resolved
+resolved: '2026-05-20'
 date: '2026-05-20'
-drift_family: 1 (autonomy-grant drifts) — new entry
-upstream_control_path: Core/frameworks/intent/learnings/process-drift-catalog.md (append to Family 1; new pattern entry)
-catch_mechanism: this signal flags the new pattern; future catalog updates add the entry inline; pre-build audit asks "is this gate structurally required or invented?" before designing any L0 checkpoint
-pipeline_survival: lesson generalizes across all future IDD builds; future spec authoring must audit each "designed human checkpoint" against the criterion "is human judgment the ONLY source of truth?" — if no, the gate is artificial
+drift_family: 1 (autonomy-grant drifts) — entry 1.7
+upstream_control_path: Core/frameworks/intent/learnings/process-drift-catalog.md §1.7 (entry confirmed present — Artificial-gate-architecture drift, lines 128-143, appended by overnight orchestrator commit)
+catch_mechanism: catalog entry 1.7 is the permanent prevention surface; every new spec/schema design is audited with "Is this gate algorithmic-ground-truth-eligible? If yes → L4 + catch-net, not L0 + sign-off." Memory entry `feedback_autonomy_grant_drift_pattern.md` backs this discipline. Hook candidate (spec-lint scanning for "L0" + "designed human checkpoint" without named ground-truth source) is documented in the signal body as future iteration.
+pipeline_survival: catalog entry persists in git-tracked learnings/; overwatch sweeps cite this catalog; `process-drift-catalog.md` is referenced from Core/frameworks/patterns/process-discipline-patterns.md (the patterns framework index); the entry won't be lost across sessions
 ---
 
 # Artificial-gate-architecture drift — inventing L0 gates where 4-gate would EXECUTE

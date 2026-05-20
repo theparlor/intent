@@ -1,12 +1,13 @@
 ---
 id: SIG-HOOK-OVERRIDE-META-INSTRUCTIONAL-2026-05-20
 type: hook-pattern-gap-observed
-status: captured
+status: resolved
+resolved: '2026-05-20'
 date: '2026-05-20'
 hook_affected: Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh
-upstream_control_path: Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh (the hook script's override-condition message text)
-catch_mechanism: this signal flags the hook description gap; future hook iterations widen override-conditions; downstream prompts using AUTONOMY-OVERRIDE-PROPOSAL-FRAMING-INTENTIONAL token already work at the mechanism level
-pipeline_survival: hook code-level override token works regardless of description text; correction is a documentation widening, not a behavior change
+upstream_control_path: Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh (line 156 — override-condition message confirmed widened to include "(b) the prompt is meta-instructional content that catalogs the anti-pattern as documented learning")
+catch_mechanism: hook error-message text (verified at line 156) now names TWO legitimate override cases: (a) genuinely L0 external work and (b) meta-instructional documentation. Future hook authors reading the error message will see the full override taxonomy. Override token `AUTONOMY-OVERRIDE-PROPOSAL-FRAMING-INTENTIONAL` mechanism was already correct; this closure confirms the description now matches.
+pipeline_survival: hook is git-tracked at Core/frameworks/intent/hooks/; symlinked from ~/.claude/hooks/; registered in ~/.claude/settings.json; message text persists across sessions. No behavior change — correction was documentation only.
 ---
 
 # Hook override description needs widening: meta-instructional case
