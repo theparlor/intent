@@ -110,6 +110,8 @@ The agent builds against the spec. Key principle: **the agent can make implement
 
 Check reality against the contract. But also notice *new* things: edge cases the spec missed, architectural questions surfaced, adjacent workflows affected. Those observations feed back into Notice.
 
+**Metric-type grounding:** What to instrument at the Observe stage is governed by the measurement framework at `Core/frameworks/measurement/`. The key distinction: output metrics (signal count, spec→execution lag) tell you the loop is active; outcome-proxy metrics (observation→learning cycle time, spec drift rate) tell you the loop is useful. Instrument both, prioritize the latter. See `Core/frameworks/measurement/ARCHITECTURE.md#6-intent-observe-consumer-model` and `Core/frameworks/measurement/docs/examples/02-observe-loop-metrics.md`.
+
 ---
 
 ## The Toolchain
