@@ -125,6 +125,23 @@ These are cases where the agent converts L4-eligible work (reversible, local, pr
 
 ---
 
+### 1.7 — Artificial-gate-architecture drift
+
+**Source:** SIG-ARTIFICIAL-GATE-DRIFT-PATTERN-2026-05-20
+
+**Symptom:** The agent designs a NEW L0 gate into a process where one is not warranted — typically by stipulating that a measurement, ratification, or status-promotion requires "Brien-L0 sign" when the work is reversible, local-blast, precedented, and has algorithmic ground truth. Sibling shape to 1.1 but at the architectural layer: the drift is in the schema/process design, not in the response framing.
+
+**Mechanism:** The agent treats "asking for sign-off" as a safer default than "execute against algorithmic ground truth + signal." This is the proposal-framing habit recurring at the design layer. The 4-gate check is not applied to gates themselves — it's applied only to individual decisions running through gates, missing the meta-question: "Does this gate need to exist?"
+
+**Correction:** Run the 4-gate check on the gate itself. If algorithmic ground truth (pre-verification scan, schema invariant, hook output) can ratify the work without human input, the gate fails the "no info gap" test and should not exist. Replace L0 ratification with L4 execution against algorithmic ground truth, with the ground-truth check as the catch-net.
+
+**Prevention:**
+- Signal: `Core/frameworks/intent/.intent/signals/SIG-ARTIFICIAL-GATE-DRIFT-PATTERN-2026-05-20.md`
+- Memory: `feedback_autonomy_grant_drift_pattern.md` (parent pattern)
+- Discipline: every new spec/schema is audited with "Is this gate algorithmic-ground-truth-eligible? If yes → L4 + catch-net, not L0 + sign-off."
+
+---
+
 ## Family 2 — Closure-Discipline Drifts
 
 These are cases where a fix, patch, or repair is framed as a resolution without the upstream control that prevents recurrence.
@@ -386,6 +403,24 @@ These are cases where the multi-agent / multi-session coordination pattern break
 **Prevention:**
 - Memory: `feedback_dont_trust_unverifiable.md` — "Closed tickets are historical record — do not re-edit"
 - Signal: 21 TSD open tickets closed as approach-abandoned (2026-05-19 after 4-cycle ticket-format drift on Subaru M.A.R.S.)
+
+---
+
+### 4.7 — Governance-skill-without-trigger (silent rot)
+
+**Source:** SIG-OVERWATCH-STALENESS-PATTERN-2026-05-20
+
+**Symptom:** A load-bearing governance operation (overwatch sweep, freshening pipeline, write-through validation, audit cadence) is implemented as a manual slash command or skill with no SessionStart hook, no scheduled task, and no staleness alarm. The operation depends entirely on operator memory to fire. Days or weeks pass between runs; downstream consumers (work-backlog, write-through catch-net, dark-zone detection) silently degrade. On 2026-05-20, `/overwatch` was 12 days stale; downstream HANDOFF-2026-04-15 carry-forward items had sat unshipped for 35 days because nothing was surfacing their continued absence.
+
+**Mechanism:** This is the inverse-shape of 1.7 (artificial-gate-architecture drift). Where 1.7 over-gates reversible work by inventing L0 sign-offs, 4.7 under-triggers a critical periodic operation by leaving zero scaffolding to fire it. Both produce silent drift; the prevention surface is the same: install the correct structural trigger, neither over-gating nor under-triggering. Governance skills are especially prone to this because they catch drift everywhere else and so they don't catch themselves — there's no meta-overwatch.
+
+**Correction:** Every governance skill MUST have at least one of (a) a SessionStart hook that detects staleness and emits a banner, (b) a scheduled task (cron / `mcp__scheduled-tasks__create_scheduled_task`) that runs it on cadence, or (c) both. Manual-only invocation is acceptable only for one-shot operations, never for periodic ones. When designing a new governance/audit skill, the trigger mechanism is co-designed; "we'll just run it manually" is the failure mode.
+
+**Prevention:**
+- Hook: `overwatch-staleness-check.sh` (Layer 1, SessionStart) — emits banner if latest JRN-*overwatch* journal is >7 days old (warn) or >14 days old (load-bearing posture)
+- Signal: `Core/frameworks/intent/.intent/signals/SIG-OVERWATCH-STALENESS-PATTERN-2026-05-20.md`
+- Spec: `Core/frameworks/intent/spec/closure-discipline-enforcement.md` (Family 4 catch-net pattern)
+- Discipline: for every new governance/audit skill, name the trigger mechanism in its INTENT.md before authoring the skill body. If no trigger exists, the skill ships incomplete.
 
 ---
 

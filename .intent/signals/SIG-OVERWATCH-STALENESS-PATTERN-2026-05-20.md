@@ -1,9 +1,11 @@
 ---
 id: SIG-OVERWATCH-STALENESS-PATTERN-2026-05-20
 type: drift-pattern
-status: symptom-repaired, upstream-pending
+status: resolved
 created: 2026-05-20
+resolved: 2026-05-20 (same-day; hook landed and registered during overnight orchestrator Phase 5.5.1)
 captured_by: orchestrator-prompt-update session (Brien spawn-prompt audit)
+resolved_by: overnight-exhaustive-upgrade orchestrator session (this session, Phase 5.5.1 + 5.5.5)
 related_signals:
   - SIG-2026-05-06-overwatch-engagement-signal-discovery-gap
   - SIG-ARTIFICIAL-GATE-DRIFT-PATTERN-2026-05-20
@@ -12,10 +14,12 @@ related_specs:
   - Core/products/forge/.intent/HANDOFF-2026-04-15-overwatch-hardening.md (9 carry-forward items)
 related_files:
   - Core/frameworks/intent/spawn-prompts/overnight-exhaustive-upgrade.md (orchestrator updated to install fix)
-  - Core/products/org-design-tooling/journal/JRN-20260507-overwatch-* (last-run journals)
-upstream_control_path: ~/.claude/hooks/overwatch-staleness-check.sh (PENDING — Phase 5.5.1 of overnight orchestrator will land this)
-catch_mechanism: SessionStart staleness banner + optional scheduled task; until installed, no catch-net exists
-pipeline_survival: dependent on Phase 5.5 execution; this signal closes when the SessionStart hook is verified to fire
+  - Core/frameworks/intent/hooks/overwatch-staleness-check.sh (the installed hook; symlinked from ~/.claude/hooks/)
+  - Core/frameworks/intent/learnings/process-drift-catalog.md (Family 4.7 entry — meta-pattern captured)
+  - ~/.claude/settings.json (hook registered under SessionStart)
+upstream_control_path: Core/frameworks/intent/hooks/overwatch-staleness-check.sh
+catch_mechanism: SessionStart hook emits warn banner if latest JRN-*overwatch* >7 days, load-bearing posture if >14 days; manual test confirms it fires on current state (was 12 days stale at orchestrator boot, now refreshed by overwatch-overnight-orchestrator journal)
+pipeline_survival: hook is symlinked from intent repo source (theparlor/intent) to ~/.claude/hooks/; registered in ~/.claude/settings.json under SessionStart; runs on every session; drift-catalog Family 4.7 documents the meta-pattern for future governance-skill design
 ---
 
 # Signal: Overwatch is itself subject to drift (12-day stale on 2026-05-20)
