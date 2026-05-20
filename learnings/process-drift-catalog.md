@@ -468,3 +468,9 @@ All entries cited in this catalog:
 - `Core/products/cast/.worktrees/element-substrate-recursive-arb/.intent/learnings/2026-05-19-element-substrate-build-F1-F13.md` — primary source (F1–F13)
 - `Core/products/cast/.worktrees/element-substrate-recursive-arb/.intent/signals/SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19.md` — Family 1 (subagent injection)
 - `Core/products/cast/.worktrees/element-substrate-recursive-arb/.intent/signals/SIG-CLOSURE-DISCIPLINE-AUDIT-2026-05-19.md` — Family 2 (closure audit)
+
+### Related: patterns/
+
+This catalog is also indexed from the Workspaces-wide Patterns Framework:
+- **Index bridge:** `~/Workspaces/Core/frameworks/patterns/process-discipline-patterns.md` — summary of all 4 families + 19 entries; entry point for anyone traversing `patterns/`
+- **Patterns Framework:** `~/Workspaces/Core/frameworks/patterns/` — sibling operational and consulting-method patterns
