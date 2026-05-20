@@ -3,13 +3,22 @@ title: Spawn Prompt — IDD Audit (Product/Project)
 id: SPAWN-IDD-AUDIT-PRODUCT
 type: spawn-prompt
 created: 2026-05-20
+depth_score: 3
+depth_signals:
+  file_size_kb: 5.2
+  content_chars: 4627
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.22
 status: canonical
 upstream_control_path: Core/frameworks/intent/spawn-prompts/idd-audit-product.md (this file)
-catch_mechanism: posture preamble in prompt body prevents subagent from producing proposal-framing output; Layer 5 dispatch hook (autonomy-grant-dispatch-prompt-check.sh) blocks drift if the preamble is removed before dispatch
-pipeline_survival: self-contained pasteable artifact; inherits no state from spawning session; posture preamble survives copy-paste
+catch_mechanism: "posture preamble in prompt body prevents subagent from producing proposal-framing output; Layer 5 dispatch hook (autonomy-grant-dispatch-prompt-check.sh) blocks drift if the preamble is removed before dispatch"
+pipeline_survival: "self-contained pasteable artifact; inherits no state from spawning session; posture preamble survives copy-paste"
 usage: cat this file | pbcopy → paste into new CC/Cowork session as the opening message
 ---
-
 # Spawn Prompt: IDD Audit (Product / Project)
 
 > Copy this entire file into a new Claude Code session. Fill in TARGET before pasting.

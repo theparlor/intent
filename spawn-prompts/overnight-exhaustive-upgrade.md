@@ -1,21 +1,27 @@
 ---
-title: Spawn Prompt — Overnight Exhaustive Upgrade (all Workspaces products/frameworks/skills) + Overwatch-Driven Backlog
+title: "Spawn Prompt — Overnight Exhaustive Upgrade (all Workspaces products/frameworks/skills) + Overwatch-Driven Backlog"
 id: SPAWN-OVERNIGHT-EXHAUSTIVE-UPGRADE
 type: orchestrator-spawn-prompt
-target: new Claude Code session (NOT Cowork — orchestrator dispatches Agent subagents in parallel)
 created: 2026-05-20
 updated: 2026-05-20 (overwatch integration; overwatch is the canonical work-backlog feeder)
+depth_score: 4
+depth_signals:
+  file_size_kb: 24.6
+  content_chars: 18590
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.22
+target: new Claude Code session (NOT Cowork — orchestrator dispatches Agent subagents in parallel)
 status: canonical
 model_pin: Opus (orchestrator); subagent model varies (Sonnet for mechanical, Opus for synthesis)
 upstream_control_path: Core/frameworks/intent/spawn-prompts/overnight-exhaustive-upgrade.md (this file)
-catch_mechanism: posture preamble + dispatch hook (Layer 5) blocks any subagent prompt that injects proposal-framing; closure-DoD triad required in every artifact; reply-format constraint forbids questions back to Brien except on genuine L0; full /overwatch sweep is mandatory Phase 1 before any dispatch
-pipeline_survival: self-contained pasteable artifact; orchestrator session burns the token budget over its wall-clock window; every artifact lands inline with commits; nothing waits on Brien; overwatch-rehabilitation track installs SessionStart staleness hook so this never silently rots again
-usage: |
-  cat ~/Workspaces/Core/frameworks/intent/spawn-prompts/overnight-exhaustive-upgrade.md | pbcopy
-  Open a NEW Claude Code session (NOT Cowork — orchestrator needs Agent tool to dispatch subagents).
-  Pin Opus. Paste as opening message. Set yourself a sleep timer; come back at reset.
+catch_mechanism: "posture preamble + dispatch hook (Layer 5) blocks any subagent prompt that injects proposal-framing; closure-DoD triad required in every artifact; reply-format constraint forbids questions back to Brien except on genuine L0; full /overwatch sweep is mandatory Phase 1 before any dispatch"
+pipeline_survival: "self-contained pasteable artifact; orchestrator session burns the token budget over its wall-clock window; every artifact lands inline with commits; nothing waits on Brien; overwatch-rehabilitation track installs SessionStart staleness hook so this never silently rots again"
+usage: "cat ~/Workspaces/Core/frameworks/intent/spawn-prompts/overnight-exhaustive-upgrade.md | pbcopy Open a NEW Claude Code session (NOT Cowork — orchestrator needs Agent tool to dispatch subagents). Pin Opus. Paste as opening message. Set yourself a sleep timer; come back at reset."
 ---
-
 # Overnight Exhaustive Upgrade — All Workspaces Products / Frameworks / Skills
 
 > You are the ORCHESTRATOR for an overnight exhaustive upgrade pass across the entire Workspaces ecosystem. You have ~10 hours of wall-clock + 55% of the weekly All Models budget remaining. Brien has set a hard autonomy grant — execute, do not propose, do not gate on him. He is sleeping; he expects to wake to landed work.

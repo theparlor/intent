@@ -3,13 +3,22 @@ title: Spawn Prompt — Process Drift Audit
 id: SPAWN-PROCESS-DRIFT-AUDIT
 type: spawn-prompt
 created: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 5.7
+  content_chars: 5174
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
 status: canonical
 upstream_control_path: Core/frameworks/intent/spawn-prompts/process-drift-audit.md (this file)
-catch_mechanism: posture preamble prevents subagent from producing proposal-framing in audit output; the audit itself surfaces drift, which is then corrected inline (L4) or flagged to Brien (L0)
+catch_mechanism: "posture preamble prevents subagent from producing proposal-framing in audit output; the audit itself surfaces drift, which is then corrected inline (L4) or flagged to Brien (L0)"
 pipeline_survival: self-contained pasteable artifact; audit pattern is reusable across any product or engagement
 usage: cat this file | pbcopy → paste into new CC/Cowork session as the opening message
 ---
-
 # Spawn Prompt: Process Drift Audit
 
 > Copy this entire file into a new Claude Code session. Fill in TARGET before pasting.

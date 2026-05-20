@@ -3,13 +3,22 @@ title: Spawn Prompt — Autonomy Grant Correction
 id: SPAWN-AUTONOMY-GRANT-CORRECTION
 type: spawn-prompt
 created: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.4
+  content_chars: 5834
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
 status: canonical
 upstream_control_path: Core/frameworks/intent/spawn-prompts/autonomy-grant-correction.md (this file)
-catch_mechanism: posture preamble prevents proposal-framing in correction output itself; Layer 4 Stop hook (autonomy-grant-stop-check.sh) and Layer 5 dispatch hook (autonomy-grant-dispatch-prompt-check.sh) prevent new drift; this prompt corrects pre-existing violations
-pipeline_survival: self-contained pasteable artifact; reusable across any product or engagement; corrections are committed to git and durable
+catch_mechanism: "posture preamble prevents proposal-framing in correction output itself; Layer 4 Stop hook (autonomy-grant-stop-check.sh) and Layer 5 dispatch hook (autonomy-grant-dispatch-prompt-check.sh) prevent new drift; this prompt corrects pre-existing violations"
+pipeline_survival: "self-contained pasteable artifact; reusable across any product or engagement; corrections are committed to git and durable"
 usage: cat this file | pbcopy → paste into new CC/Cowork session as the opening message
 ---
-
 # Spawn Prompt: Autonomy Grant Correction
 
 > Copy this entire file into a new Claude Code session. Fill in TARGET before pasting.

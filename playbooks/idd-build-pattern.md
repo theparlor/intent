@@ -1,16 +1,25 @@
 ---
-id: PLAYBOOK-IDD-BUILD-PATTERN-001
 title: IDD Build Pattern — Intent-Driven Development
+id: PLAYBOOK-IDD-BUILD-PATTERN-001
 type: playbook
+depth_score: 4
+depth_signals:
+  file_size_kb: 16.3
+  content_chars: 15493
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.13
 status: ratified
-date: '2026-05-20'
-upstream_control_path: Core/frameworks/intent/playbooks/idd-build-pattern.md (this file) + all 7 hooks in Core/frameworks/intent/hooks/ (the mechanism-level enforcement layer)
-catch_mechanism: autonomy-grant-stop-check.sh (Layer 4, Stop event) + autonomy-grant-dispatch-prompt-check.sh (Layer 5, PreToolUse Agent) + closure-discipline-stop-check.sh (Layer 4, Stop event) + closure-discipline-signal-check.sh (Layer 5, PreToolUse Write/Edit) + autonomy-grant-check.sh (Layer 1, SessionStart) + closure-discipline-check.sh (Layer 1, SessionStart)
-pipeline_survival: hooks run on every session and every agent dispatch; playbook is referenced from ARCHITECTURE.md; cross-product applicability map (cross-product-applicability.md sibling) propagates pattern to all Workspaces products; process-drift-catalog.md (sibling) provides per-family drift prevention
+date: 2026-05-20
+upstream_control_path: "Core/frameworks/intent/playbooks/idd-build-pattern.md (this file) + all 7 hooks in Core/frameworks/intent/hooks/ (the mechanism-level enforcement layer)"
+catch_mechanism: "autonomy-grant-stop-check.sh (Layer 4, Stop event) + autonomy-grant-dispatch-prompt-check.sh (Layer 5, PreToolUse Agent) + closure-discipline-stop-check.sh (Layer 4, Stop event) + closure-discipline-signal-check.sh (Layer 5, PreToolUse Write/Edit) + autonomy-grant-check.sh (Layer 1, SessionStart) + closure-discipline-check.sh (Layer 1, SessionStart)"
+pipeline_survival: "hooks run on every session and every agent dispatch; playbook is referenced from ARCHITECTURE.md; cross-product applicability map (cross-product-applicability.md sibling) propagates pattern to all Workspaces products; process-drift-catalog.md (sibling) provides per-family drift prevention"
 source_build: element-substrate-and-recursive-arb (Core/products/cast/.worktrees/element-substrate-recursive-arb/)
 source_learnings: .intent/learnings/2026-05-19-element-substrate-build-F1-F13.md
 ---
-
 # IDD Build Pattern
 
 > Intent-Driven Development (IDD) is the execution discipline used across all Workspaces products, frameworks, and engagement work. This playbook synthesizes the pattern from the element-substrate-and-recursive-arb build — 13 learnings, 3 drift signals, and a full Observe-stage close. It is reusable across any non-trivial build.

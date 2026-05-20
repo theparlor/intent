@@ -3,13 +3,22 @@ title: Spawn Prompt — Closure Discipline Audit
 id: SPAWN-CLOSURE-DISCIPLINE-AUDIT
 type: spawn-prompt
 created: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.3
+  content_chars: 5777
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
 status: canonical
 upstream_control_path: Core/frameworks/intent/spawn-prompts/closure-discipline-audit.md (this file)
-catch_mechanism: posture preamble enforces execute-not-propose posture on corrections; Layer 5 PreToolUse hook (closure-discipline-signal-check.sh) blocks status:resolved signal writes missing the triad; this audit finds violations the hook may have missed and corrects them inline
+catch_mechanism: "posture preamble enforces execute-not-propose posture on corrections; Layer 5 PreToolUse hook (closure-discipline-signal-check.sh) blocks status:resolved signal writes missing the triad; this audit finds violations the hook may have missed and corrects them inline"
 pipeline_survival: self-contained pasteable artifact; reusable across any product or engagement
 usage: cat this file | pbcopy → paste into new CC/Cowork session as the opening message
 ---
-
 # Spawn Prompt: Closure Discipline Audit
 
 > Copy this entire file into a new Claude Code session. Fill in TARGET before pasting.

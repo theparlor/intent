@@ -3,13 +3,22 @@ title: Spawn Prompt — IDD Build Execute
 id: SPAWN-IDD-BUILD-EXECUTE
 type: spawn-prompt
 created: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.0
+  content_chars: 5435
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.18
 status: canonical
 upstream_control_path: Core/frameworks/intent/spawn-prompts/idd-build-execute.md (this file)
-catch_mechanism: posture preamble prevents proposal-framing in subagent output; Layer 5 dispatch hook blocks drift if preamble is removed before dispatch; closure-DoD triad requirement enforces resolution discipline at artifact level
-pipeline_survival: self-contained pasteable artifact; no session state dependencies; posture preamble survives copy-paste
+catch_mechanism: "posture preamble prevents proposal-framing in subagent output; Layer 5 dispatch hook blocks drift if preamble is removed before dispatch; closure-DoD triad requirement enforces resolution discipline at artifact level"
+pipeline_survival: "self-contained pasteable artifact; no session state dependencies; posture preamble survives copy-paste"
 usage: cat this file | pbcopy → paste into new CC/Cowork session as the opening message
 ---
-
 # Spawn Prompt: IDD Build Execute (Notice → Spec → Execute → Observe)
 
 > Copy this entire file into a new Claude Code session. Fill in TARGET and TRIGGER before pasting.

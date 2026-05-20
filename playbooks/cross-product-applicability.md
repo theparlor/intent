@@ -1,15 +1,24 @@
 ---
-id: PLAYBOOK-CROSS-PRODUCT-APPLICABILITY-001
 title: IDD Build Pattern — Cross-Product Applicability Matrix
+id: PLAYBOOK-CROSS-PRODUCT-APPLICABILITY-001
 type: applicability-map
+depth_score: 4
+depth_signals:
+  file_size_kb: 20.3
+  content_chars: 19070
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.37
 status: ratified
-date: '2026-05-20'
-upstream_control_path: Core/frameworks/intent/playbooks/idd-build-pattern.md (pattern definitions) + Core/frameworks/intent/playbooks/cross-product-applicability.md (this file, applicability mapping)
-catch_mechanism: idd-build-pattern.md is the source of truth for pattern definitions; this matrix is a derived artifact — if patterns are updated in the source, this matrix must be updated to match. Session overwatch sweeps catch stale derived artifacts.
-pipeline_survival: matrix is product-agnostic and survives product changes; rows are stable (products don't disappear); columns are stable (5 patterns are generalized from cross-build evidence, not product-specific); new products add rows
+date: 2026-05-20
+upstream_control_path: "Core/frameworks/intent/playbooks/idd-build-pattern.md (pattern definitions) + Core/frameworks/intent/playbooks/cross-product-applicability.md (this file, applicability mapping)"
+catch_mechanism: "idd-build-pattern.md is the source of truth for pattern definitions; this matrix is a derived artifact — if patterns are updated in the source, this matrix must be updated to match. Session overwatch sweeps catch stale derived artifacts."
+pipeline_survival: "matrix is product-agnostic and survives product changes; rows are stable (products don't disappear); columns are stable (5 patterns are generalized from cross-build evidence, not product-specific); new products add rows"
 source_build: element-substrate-and-recursive-arb (Core/products/cast/.worktrees/element-substrate-recursive-arb/)
 ---
-
 # IDD Build Pattern — Cross-Product Applicability
 
 > This matrix maps the 5 load-bearing IDD patterns to every Workspaces product, framework, and engagement tier. Use it to identify where to apply IDD discipline when starting a new build loop.

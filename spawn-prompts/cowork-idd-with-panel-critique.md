@@ -2,18 +2,24 @@
 title: Spawn Prompt — Cowork session with IDD posture + panel-critique access
 id: SPAWN-COWORK-IDD-PANEL-CRITIQUE
 type: spawn-prompt
-target: cowork
 created: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 13.1
+  content_chars: 12372
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.16
+target: cowork
 status: canonical
 upstream_control_path: Core/frameworks/intent/spawn-prompts/cowork-idd-with-panel-critique.md (this file)
-catch_mechanism: posture preamble in prompt body prevents subagent from producing proposal-framing output; Layer 5 dispatch hook (autonomy-grant-dispatch-prompt-check.sh) blocks drift if the preamble is removed before dispatch; Cowork sessions pin model at creation — pin Opus for panel-critique-heavy work
-pipeline_survival: self-contained pasteable artifact; inherits no state from spawning session; posture preamble survives copy-paste; references to panel-critique skill + ARB engine are path-stable
-usage: |
-  cat ~/Workspaces/Core/frameworks/intent/spawn-prompts/cowork-idd-with-panel-critique.md | pbcopy
-  Then open Cowork → New Task → pin model Opus → paste as opening message.
-  Fill TARGET, MODE, WORK ITEM, and ARTIFACT TO CRITIQUE before sending.
+catch_mechanism: "posture preamble in prompt body prevents subagent from producing proposal-framing output; Layer 5 dispatch hook (autonomy-grant-dispatch-prompt-check.sh) blocks drift if the preamble is removed before dispatch; Cowork sessions pin model at creation — pin Opus for panel-critique-heavy work"
+pipeline_survival: "self-contained pasteable artifact; inherits no state from spawning session; posture preamble survives copy-paste; references to panel-critique skill + ARB engine are path-stable"
+usage: "cat ~/Workspaces/Core/frameworks/intent/spawn-prompts/cowork-idd-with-panel-critique.md | pbcopy Then open Cowork → New Task → pin model Opus → paste as opening message. Fill TARGET, MODE, WORK ITEM, and ARTIFACT TO CRITIQUE before sending."
 ---
-
 # Cowork Session — IDD posture + Panel-Critique Access
 
 > Copy this entire file into a new Cowork task session. Pin model to **Opus** (panel critique + judgment work is Opus-class). Fill in the four `<placeholder>` fields below. Then send. The session will execute autonomously with no further input until completion or genuine L0 surface.

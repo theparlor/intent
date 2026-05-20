@@ -11,14 +11,14 @@ related:
   - Core/products/org-design-tooling/.intent/signals/SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13.md
 depth_score: 4
 depth_signals:
-  file_size_kb: 12.0
-  content_chars: 10973
+  file_size_kb: 16.0
+  content_chars: 14840
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.09
+vocab_density: 0.07
 date: 2026-04-22
 status: accepted
 scope: universal
