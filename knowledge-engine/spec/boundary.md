@@ -1,7 +1,7 @@
 ---
 title: Knowledge Engine — Product Boundary & Relationship to Intent
 type: spec
-maturity: draft
+maturity: final
 created: 2026-04-06
 frameworks:
   - double-loop-learning
