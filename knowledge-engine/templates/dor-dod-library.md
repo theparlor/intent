@@ -305,8 +305,50 @@ Every new spec should reference the applicable DoR/DoD from this library plus an
 
 ---
 
+---
+
+## Hypothesis Test
+
+> Use when advancing a framework, product, or discipline that is explicitly declared as
+> "working hypothesis under pressure test." The canonical case is Coherence Engineering
+> (CE) — see `Core/frameworks/coherence-engineering/DEFINITION.md` §status block.
+> A hypothesis test differs from spec authoring in that the exit criterion is
+> adversarial-critique survival, not approval from a single reviewer. The work type
+> is complete when the hypothesis has been subjected to structured disconfirmation
+> attempts and the surviving claim set is recorded.
+
+### Definition of Ready — Hypothesis Test
+
+| ID | Condition | Verification | Blocked If Unmet | Owner |
+|----|-----------|--------------|------------------|-------|
+| DOR-HYP-001 | Declared hypothesis statement exists as a named artifact with scope boundary | Hypothesis statement document or frontmatter `status: hypothesis-under-test` present at hypothesis root | Yes | agent |
+| DOR-HYP-002 | Pressure-test design declared: named panel (personas or explicit critics), disconfirmation criteria (what would falsify the hypothesis), and scope boundary (what the hypothesis does NOT claim) | Pressure-test design documented in spec or hypothesis artifact | Yes | both |
+| DOR-HYP-003 | Named disconfirmation criteria: at least three concrete conditions that, if true, would weaken or falsify the hypothesis | Disconfirmation criteria listed, each independently checkable | Yes | agent |
+| DOR-HYP-004 | Dissent-preservation commitment confirmed: no aggregation to consensus; per-voice dissent preserved verbatim | Voices panel dissent-preservation law acknowledged in spec or session | Yes | agent |
+| DOR-HYP-005 | Existing dissent log reviewed: prior Voices-panel runs on this hypothesis are read before running a new pass | Dissent log consulted; agent can state current state of surviving objections | Yes | agent |
+
+### Definition of Done — Hypothesis Test
+
+| ID | Condition | Verification | Must Be True | Owner |
+|----|-----------|--------------|--------------|-------|
+| DOD-HYP-001 | Voices panel has been run to judged end-state: each selected persona produced a critique, disagreement log exists, no persona output is sycophancy-only | Panel output file exists; `DOD-CPL-001..005` satisfied for this run | Yes | agent |
+| DOD-HYP-002 | CON-COH machine-assertable contracts pass (or failure signals are filed with repair items) | Contract run log exists with pass/fail per contract; failures become signals not silent skips | Yes | agent |
+| DOD-HYP-003 | Named counter-example search complete or explicitly scoped out with rationale | Counter-example search log exists OR explicit `counter_example_search: scoped-out` in hypothesis artifact with reason | Yes | agent |
+| DOD-HYP-004 | Surviving claim set recorded: what the hypothesis still claims after critique; what was weakened or abandoned | Surviving-claims section or frontmatter update in hypothesis artifact | Yes | agent |
+| DOD-HYP-005 | Dissent preserved verbatim: per-persona objections recorded without aggregation or softening | Dissent log section present; no "the panel agreed" summary that loses individual voices | Yes | agent |
+| DOD-HYP-006 | Externalization gate status updated: if all DoD items pass, gate movement is assessed against `external/INDEX.md` three-gate sequence | Gate status logged in hypothesis artifact or `external/INDEX.md` | Yes | agent |
+| DOD-HYP-007 | Signal emitted capturing hypothesis pressure-test outcome (advance, weaken, or stall) | Signal file in `.intent/signals/` tagged `hypothesis-test-outcome` | Yes | agent |
+
+**Canonical case reference:** `Core/frameworks/coherence-engineering/DEFINITION.md` — this file
+is the living example of a hypothesis artifact. Its status block, externalization gate
+(`external/INDEX.md`), and dissent register (`inventory/coherence-debt-register-2026-04-18.md`)
+are the reference implementation of the DoR/DoD above. Closes SIG-COH-DEBT-009.
+
+---
+
 ## Version History
 
 | Date | Change | Author |
 |------|--------|--------|
+| 2026-05-20 | Added hypothesis-test work type (9th entry). Closes SIG-COH-DEBT-009. Canonical case: Coherence Engineering. | brien/agent |
 | 2026-04-14 | Initial: 6 work types — skill-build, spec-authoring, engagement-kickoff, engagement-closure, persona-enrichment, critique-panel | brien/agent |
