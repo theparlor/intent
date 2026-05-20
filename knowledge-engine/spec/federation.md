@@ -10,7 +10,7 @@ thought_leaders:
 summary: "How Intent's three-layer architecture federates across a Core framework and multiple bounded engagements — inherit down, promote up, never leak sideways."
 depth_score: 6
 depth_signals:
-  file_size_kb: 16.9
+  file_size_kb: 17.1
   content_chars: 16347
   entity_count: 3
   slide_count: 0
@@ -19,9 +19,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.12
 related_entities:
-  - {pair: andrej-karpathy ↔ christopher-alexander, count: 2, strength: 1.0}
-  - {pair: andrej-karpathy ↔ stafford-beer, count: 2, strength: 1.0}
-  - {pair: christopher-alexander ↔ stafford-beer, count: 2, strength: 1.0}
+  - {pair: andrej-karpathy ↔ stafford-beer, count: 3, strength: 0.6}
+  - {pair: christopher-alexander ↔ stafford-beer, count: 2, strength: 0.667}
+  - {pair: chris-argyris ↔ stafford-beer, count: 2, strength: 0.5}
+  - {pair: andrej-karpathy ↔ christopher-alexander, count: 2, strength: 0.4}
+  - {pair: andrej-karpathy ↔ chris-argyris, count: 2, strength: 0.333}
 ---
 # Federated Knowledge Base Architecture
 

@@ -4,6 +4,16 @@ id: DDR-008
 type: decision
 created: 2026-04-13
 updated: 2026-04-13
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.0
+  content_chars: 5469
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
 status: accepted
 confidence: 0.80
 origin: agent

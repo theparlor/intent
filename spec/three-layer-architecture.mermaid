@@ -1,0 +1,104 @@
+%% Intent Three-Layer Architecture
+%% Source: CLAUDE.md "Three-Layer Architecture (v1.0 — 2026-04-05)"
+%% Architectural decisions: 9 (three-layer), 10 (compilation over retrieval),
+%%                          11 (double-loop learning), 14 (two products not one),
+%%                          16 (intent-knowledge MCP server, port 8004)
+%% The three layers are independent but bidirectionally coupled via 6 data flows.
+%% Knowledge Engine supplies Layer 1. Intent methodology operates Layer 2.
+%% Layer 3 is the emitted software (spec + code + running system).
+
+flowchart TB
+    %% ══════════════════════════════════════════════════════════════
+    %% LAYER 1 — Compiled Knowledge Base
+    %% ══════════════════════════════════════════════════════════════
+    subgraph L1["📚 LAYER 1 — COMPILED KNOWLEDGE BASE · Knowledge Engine product"]
+        direction LR
+        RAW["raw/<br/>Immutable source material<br/>research · analytics · competitors · support"]
+        COMPILE["Compile<br/>(LLM, not RAG)<br/>Karpathy pattern"]
+        KNOWLEDGE["knowledge/<br/>Personas · Journeys · DDRs<br/>Themes · Domain Models · Rationale"]
+        LINT_L1["lint<br/>gaps · contradictions · staleness"]
+
+        RAW --> COMPILE --> KNOWLEDGE
+        KNOWLEDGE --> LINT_L1
+    end
+
+    %% ══════════════════════════════════════════════════════════════
+    %% LAYER 2 — Transformation OS (Intent loop)
+    %% ══════════════════════════════════════════════════════════════
+    subgraph L2["⚙️ LAYER 2 — TRANSFORMATION OS · Intent methodology (domain-agnostic)"]
+        direction LR
+        NOTICE["NOTICE<br/>signals · intents<br/>trust scoring · clustering"]
+        SPEC_L2["SPEC<br/>specs · contracts<br/>agent-readiness"]
+        EXECUTE["EXECUTE<br/>trust-gated agents<br/>L0–L4 autonomy"]
+        OBSERVE["OBSERVE<br/>events.jsonl · deltas<br/>spec drift · health"]
+
+        NOTICE --> SPEC_L2 --> EXECUTE --> OBSERVE
+        OBSERVE -.->|"loop closure"| NOTICE
+    end
+
+    %% ══════════════════════════════════════════════════════════════
+    %% LAYER 3 — Software Spec & Code
+    %% ══════════════════════════════════════════════════════════════
+    subgraph L3["💻 LAYER 3 — SOFTWARE SPEC & CODE · the emitted output"]
+        direction LR
+        SPEC_FILES["spec/<br/>SPEC-NNN · CON-NNN<br/>generated from intent"]
+        CODE["src/<br/>Running code<br/>services · CLIs · MCP servers"]
+        OBSERVATIONS["observations/<br/>metrics · incidents<br/>runtime feedback"]
+
+        SPEC_FILES --> CODE --> OBSERVATIONS
+    end
+
+    %% ══════════════════════════════════════════════════════════════
+    %% THE 6 BIDIRECTIONAL FLOWS
+    %% ══════════════════════════════════════════════════════════════
+
+    %% Flow 1: Knowledge → Notice (lint surfaces signals — gaps, contradictions, staleness)
+    LINT_L1 ==>|"FLOW 1 · Lint → Signals<br/>(gaps · contradictions · staleness)"| NOTICE
+
+    %% Flow 2: Notice → Spec via knowledge (spec authoring queries KB)
+    KNOWLEDGE ==>|"FLOW 2 · Query KB<br/>(personas · journeys · DDRs)"| SPEC_L2
+
+    %% Flow 3: Spec → Execute (trust-gated agents build against specs)
+    SPEC_L2 ==>|"FLOW 3 · Spec → Code<br/>(trust-gated agents)"| SPEC_FILES
+    SPEC_FILES ==> CODE
+
+    %% Flow 4: Execute → Observe (running code emits events)
+    CODE ==>|"FLOW 4 · Code → Events<br/>(OTel-compatible)"| OBSERVE
+    OBSERVE --> OBSERVATIONS
+
+    %% Flow 5: Observe → Knowledge (DOUBLE-LOOP: update domain model, not just code)
+    OBSERVATIONS ==>|"FLOW 5 · Double-loop<br/>(update domain understanding)<br/>Argyris"| RAW
+    OBSERVE -.->|"assumption questioning"| KNOWLEDGE
+
+    %% Flow 6: Observe → Spec corpus (SINGLE-LOOP: drift detection, living doc sync)
+    OBSERVATIONS ==>|"FLOW 6 · Single-loop<br/>(spec drift detection)"| SPEC_L2
+
+    %% ══════════════════════════════════════════════════════════════
+    %% MCP SERVER MAPPING
+    %% ══════════════════════════════════════════════════════════════
+    subgraph mcp["🔌 MCP SERVER TOPOLOGY"]
+        direction LR
+        KMCP["intent-knowledge :8004<br/>ingest · query · lint<br/>(Layer 1 access)"]
+        NMCP["intent-notice :8001<br/>signals · intents"]
+        SMCP["intent-spec :8002<br/>specs · contracts"]
+        OMCP["intent-observe :8003<br/>events · deltas"]
+    end
+
+    KMCP -.- L1
+    NMCP -.- NOTICE
+    SMCP -.- SPEC_L2
+    OMCP -.- OBSERVE
+
+    %% ══════════════════════════════════════════════════════════════
+    %% STYLES
+    %% ══════════════════════════════════════════════════════════════
+    classDef doubleLoop stroke:#a855f7,stroke-width:3px
+    classDef singleLoop stroke:#3b82f6,stroke-width:2px
+
+    style L1 fill:#0f172a,stroke:#22d3ee,stroke-width:3px,color:#f1f5f9
+    style L2 fill:#0f172a,stroke:#f59e0b,stroke-width:3px,color:#f1f5f9
+    style L3 fill:#0f172a,stroke:#10b981,stroke-width:3px,color:#f1f5f9
+    style mcp fill:#0f172a,stroke:#64748b,stroke-width:1px,color:#94a3b8
+
+    linkStyle 0 stroke:#22d3ee,stroke-width:2.5px
+    linkStyle 1 stroke:#22d3ee,stroke-width:2.5px

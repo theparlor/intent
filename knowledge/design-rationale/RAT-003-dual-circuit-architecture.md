@@ -9,7 +9,7 @@ frameworks:
   - Argyris
 depth_score: 4
 depth_signals:
-  file_size_kb: 5.0
+  file_size_kb: 5.6
   content_chars: 4673
   entity_count: 3
   slide_count: 0
@@ -18,8 +18,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.21
 related_entities:
-  - {pair: Boyd ↔ Beer, count: 2, strength: 0.667}
-  - {pair: Beer ↔ Argyris, count: 2, strength: 0.667}
+  - {pair: Beer ↔ Boyd, count: 2, strength: 0.667}
+  - {pair: Action Science (Epistemology) ↔ Argyris, count: 2, strength: 0.5}
+  - {pair: Argyris ↔ Defensive Routines, count: 2, strength: 0.5}
+  - {pair: Argyris ↔ Double-Loop Learning, count: 2, strength: 0.5}
+  - {pair: Argyris ↔ Espoused Theory vs. Theory-in-Use, count: 2, strength: 0.5}
 name: Boyd's Dual-Circuit Model as Theoretical Grounding for Two-Speed Architecture
 confidence: 0.90
 origin: agent

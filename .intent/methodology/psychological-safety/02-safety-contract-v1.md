@@ -140,7 +140,7 @@ It does NOT apply to purely agent-internal cycles where no human work is being e
 ### Promise 8 — Inclusion in voice and vocabulary
 
 **What we commit to:**
-- The panel-review voice library actively grows to include voices historically underrepresented in tech and product. Signal diversity is signal quality.
+- The panel-review persona registry actively grows to include voices historically underrepresented in tech and product. Signal diversity is signal quality.
 - Intent's vocabulary has a plain-language translation layer. Every term ("signal," "trust score," "contract," "autonomy level," "atom") has a one-line gloss for non-engineering practitioners.
 - Non-git onramps for Notice capture exist. PMs, designers, research leads, and customer-facing roles can contribute signals without touching a terminal.
 - The "practitioner-architect" target user framing is named explicitly in all content. Intent does not pretend to be universal.

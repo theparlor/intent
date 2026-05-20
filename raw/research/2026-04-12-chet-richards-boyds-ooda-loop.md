@@ -1,10 +1,12 @@
 ---
 type: academic-paper
+frameworks:
+  - double-loop-learning
 depth_score: 4
 depth_signals:
-  file_size_kb: 10.8
+  file_size_kb: 11.0
   content_chars: 10649
-  entity_count: 0
+  entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 0

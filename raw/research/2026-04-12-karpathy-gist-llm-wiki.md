@@ -2,7 +2,7 @@
 type: primary-source
 depth_score: 4
 depth_signals:
-  file_size_kb: 8.7
+  file_size_kb: 8.9
   content_chars: 8647
   entity_count: 0
   slide_count: 0

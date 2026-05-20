@@ -20,7 +20,7 @@ Direct quote from Org Design panel (Argyris voice): *"Label one persona pass 'Ch
 
 ## The latent mechanism already exists
 
-The 178-persona voice library is the perfect double-loop mechanism — different personas surface contradictory mental models that could expose governing variable errors. But the site frames them as execution helpers, not premise-challengers. This is the single biggest missed opportunity in the methodology.
+The 178-persona persona library is the perfect double-loop mechanism — different personas surface contradictory mental models that could expose governing variable errors. But the site frames them as execution helpers, not premise-challengers. This is the single biggest missed opportunity in the methodology.
 
 ## Required outcome
 

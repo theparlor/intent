@@ -12,7 +12,7 @@ technologies:
 depth_score: 5
 depth_signals:
   file_size_kb: 26.9
-  content_chars: 19226
+  content_chars: 19257
   entity_count: 1
   slide_count: 0
   sheet_count: 0
@@ -20,11 +20,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.10
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
-  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
-  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
+  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
+  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
+  - {pair: consulting-operations ↔ subaru, count: 41, strength: 0.125}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.092}
 ---
 # Observability Stack Specification
 

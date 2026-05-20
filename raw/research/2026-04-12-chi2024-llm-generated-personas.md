@@ -2,7 +2,7 @@
 type: academic-paper
 depth_score: 4
 depth_signals:
-  file_size_kb: 6.9
+  file_size_kb: 7.1
   content_chars: 6618
   entity_count: 0
   slide_count: 0

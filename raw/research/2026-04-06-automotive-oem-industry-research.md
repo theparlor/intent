@@ -9,22 +9,25 @@ domains:
 created: 2026-04-06
 companies:
   - subaru
-depth_score: 5
+frameworks:
+  - product-operating-model
+  - value-stream-mapping
+depth_score: 6
 depth_signals:
   file_size_kb: 23.6
-  content_chars: 19229
-  entity_count: 1
+  content_chars: 19194
+  entity_count: 3
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
 vocab_density: 0.31
 related_entities:
-  - {pair: subaru ↔ consulting-operations, count: 847, strength: 0.427}
-  - {pair: subaru ↔ automotive-manufacturing, count: 792, strength: 0.922}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
-  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
-  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
+  - {pair: marty-cagan ↔ product-operating-model, count: 75, strength: 0.176}
+  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
+  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
+  - {pair: subaru ↔ turnberry, count: 55, strength: 0.598}
+  - {pair: product-operating-model ↔ teresa-torres, count: 42, strength: 0.108}
 ---
 # US Automotive OEM Industry Dossier
 

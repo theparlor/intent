@@ -4,7 +4,17 @@ id: TEMPLATE-DOR-DOD-LIBRARY
 type: library
 created: 2026-04-14
 updated: 2026-04-14
-version: 1.0
+depth_score: 4
+depth_signals:
+  file_size_kb: 21.7
+  content_chars: 19585
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.15
+version: 1.00
 status: canonical
 origin: brien-original
 related_signals:
@@ -14,7 +24,6 @@ related_templates:
   - dor.md
   - dod.md
 ---
-
 # DoR / DoD Library
 
 > Canonical, reusable Definitions of Ready and Done for Brien's most common work types. Load the applicable entry at the start of any build, spec, engagement, or enrichment pass. Extend with custom conditions specific to the current work; do not override without a recorded decision.
@@ -38,6 +47,7 @@ related_templates:
 |-----------|-----|-----|
 | [Skill Build](#skill-build) | DOR-SKB-001 – 006 | DOD-SKB-001 – 006 |
 | [Spec Authoring](#spec-authoring) | DOR-SPC-001 – 004 | DOD-SPC-001 – 005 |
+| [Plan Authoring](#plan-authoring) | DOR-PLN-001 – 005 | DOD-PLN-001 – 006 |
 | [Engagement Kickoff](#engagement-kickoff) | DOR-EKO-001 – 005 | DOD-EKO-001 – 005 |
 | [Engagement Closure](#engagement-closure) | DOR-ECL-001 – 004 | DOD-ECL-001 – 005 |
 | [Persona Enrichment Pass](#persona-enrichment-pass) | DOR-PEP-001 – 004 | DOD-PEP-001 – 06 |
@@ -97,6 +107,33 @@ related_templates:
 | DOD-SPC-003 | Failure modes documented: at least the top 3 ways this spec can fail | Failure modes section present | Yes | agent |
 | DOD-SPC-004 | DoR and DoD blocks present in spec (not just referenced to library) | Both sections present in spec body | Yes | agent |
 | DOD-SPC-005 | Spec status set to `approved` by Brien or assigned status `agent-approved` for L3+ work | Frontmatter `status` field is `approved` | Yes | brien |
+
+---
+
+## Plan Authoring
+
+> Use when authoring a new PLAN-NNN or major revision to an existing plan. Activates per `Core/frameworks/intent/spec/plan-artifact-convention.md` (SPEC-PLAN-001) + Annex A. Plans are sibling to specs — a plan answers *how/when*, a spec answers *what/why*.
+
+### Definition of Ready — Plan Authoring
+
+| ID | Condition | Verification | Blocked If Unmet | Owner |
+|----|-----------|--------------|------------------|-------|
+| DOR-PLN-001 | Source spec exists with `status: accepted` (or explicit `TBD — spec pending` placeholder + `SIG-PLAN-NO-SPEC` emitted per SPEC-PLAN-001 §2.1.1) | `source_spec:` field in plan frontmatter resolves to extant spec file | Yes | agent |
+| DOR-PLN-002 | Phase structure decided: phased (per Annex A §3) or flat. Phased plans declare phase count + checkpoint criteria. | Plan body declares phase count or notes flat structure | Yes | agent |
+| DOR-PLN-003 | Budget declared: model allocation per phase (Sonnet vs. Opus), expected wall-time, expected token cost. Surface to Brien if estimate exceeds 10% of weekly bucket per autonomy-grant L2. | Budget block populated in plan body or session notes | Yes | both |
+| DOR-PLN-004 | Applicable DoR/DoD library entries loaded for work types the plan executes (e.g., if plan dispatches sub-agents for spec authoring, DOR-SPC-001 et al loaded) | This file consulted; relevant entries cited in plan dependencies | Yes | agent |
+| DOR-PLN-005 | Dependencies identified: other plans (PLAN-IDs), signals whose resolution is prerequisite, external systems or approvals needed | Dependencies section populated | Yes | agent |
+
+### Definition of Done — Plan Authoring
+
+| ID | Condition | Verification | Must Be True | Owner |
+|----|-----------|--------------|--------------|-------|
+| DOD-PLN-001 | All tasks completed OR formally deferred with documented rationale (no silent skips) | Every `- [ ]` checkbox is `- [x]` OR a `Deferred — see <signal-id>` annotation | Yes | agent |
+| DOD-PLN-002 | If plan is phased: every phase-checkpoint block satisfied per Annex A §3.2 (verification items checked, artifacts produced, handoff signal emitted) | Each `### CHECKPOINT — Phase N` block has all `- [ ]` verifiation items as `- [x]` and handoff signal file exists | Yes (if phased) | agent |
+| DOD-PLN-003 | Signals emitted at appropriate paths per task instructions; signal status fields are honest per closure-DoD (`resolved` only with installed upstream control + catch-net + pipeline survival) | Signal files exist at declared paths; status fields satisfy closure-DoD | Yes | agent |
+| DOD-PLN-004 | Handoff section populated (or marked `N/A — single-session plan` for non-multi-session plans) | Handoff section present and non-empty | Yes | agent |
+| DOD-PLN-005 | Rollback section populated (or marked `additive-only — no rollback needed`) per SPEC-PLAN-001 §2.1.2 | Rollback section present and non-empty | Yes | agent |
+| DOD-PLN-006 | Plan status updated to `completed`, `abandoned`, or `deferred` per SPEC-PLAN-001 §2.1.1 lifecycle. Retro signal filed if appropriate. | Frontmatter `status` field is terminal value; if `abandoned` or `deferred`, reason in plan body + signal filed | Yes | brien-or-agent |
 
 ---
 

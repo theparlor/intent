@@ -14,22 +14,32 @@ thought_leaders:
   - jeff-patton
   - teresa-torres
   - josh-seiden
+frameworks:
+  - product-operating-model
+  - outcomes-over-output
 depth_score: 4
 depth_signals:
-  file_size_kb: 3.9
-  content_chars: 3130
-  entity_count: 5
+  file_size_kb: 4.9
+  content_chars: 3701
+  entity_count: 7
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 1.92
+vocab_density: 1.89
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
-  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
-  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
+  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
+  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
+  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
+  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
+architecture: sibling-composable
+pipeline_position: team-operating-model
+known_siblings:
+  - Shape Up team model (Basecamp)
+  - Scrum (Ken Schwaber / Jeff Sutherland)
+  - bespoke team operating docs (per-company)
+port_contract: "consumes signals from practitioner surfaces; produces specs + contracts + events consumable by execute-layer tooling (Spec Kit, Kiro, Copilot, Claude Code)"
 ---
 # Intent
 
@@ -75,13 +85,15 @@ TASKS.md         ← The living backlog (replaces Jira)
 
 ## Where Intent Sits
 
-| Layer | What It Solves | Examples |
-|-------|---------------|----------|
-| **Team Operating Model** | How the team flows, decides, and learns | **Intent** ← this |
+Intent fills a distinct pipeline position — one not currently occupied by any existing product category. The table below renders a signal-propagation ordering (each position produces artifacts the adjacent position reads), not a containment hierarchy. See `Workspaces/.context/DECISIONS.md` (WS-DDR-025) for the sibling-over-parent-child default.
+
+| Position | What It Solves | Examples (siblings at this position) |
+|----------|---------------|--------------------------------------|
+| **Team Operating Model** | How the team flows, decides, and learns | **Intent** ← this (siblings: Shape Up team model, Scrum, bespoke team OS) |
 | **Spec-Driven Development** | How specs become code via AI agents | GitHub Spec Kit, Kiro, Tessl |
 | **AI Coding Assistants** | How individuals get AI help | Copilot, Claude Code, Cursor |
 
-Intent is the missing top layer.
+Intent is the currently-unfilled position in that pipeline. It is not "above" the other two — it composes with them at declared handoffs.
 
 ---
 

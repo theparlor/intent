@@ -4,6 +4,16 @@ id: DDR-007
 type: decision
 created: 2026-04-13
 updated: 2026-04-13
+depth_score: 4
+depth_signals:
+  file_size_kb: 5.8
+  content_chars: 5301
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.38
 status: accepted
 confidence: 0.85
 origin: agent

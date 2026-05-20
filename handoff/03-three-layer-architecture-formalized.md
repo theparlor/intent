@@ -19,22 +19,24 @@ thought_leaders:
   - richard-rumelt
 frameworks:
   - transformation-operating-system
+  - outcomes-over-output
+  - double-loop-learning
 depth_score: 6
 depth_signals:
-  file_size_kb: 12.6
+  file_size_kb: 12.7
   content_chars: 11595
-  entity_count: 10
+  entity_count: 12
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
 vocab_density: 0.60
 related_entities:
-  - {pair: matthew-skelton ↔ mik-kersten, count: 17878, strength: 0.99}
-  - {pair: mik-kersten ↔ john-kotter, count: 17866, strength: 0.99}
-  - {pair: matthew-skelton ↔ richard-rumelt, count: 17863, strength: 0.992}
-  - {pair: matthew-skelton ↔ john-kotter, count: 17863, strength: 0.987}
-  - {pair: mik-kersten ↔ richard-rumelt, count: 17861, strength: 0.994}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 240, strength: 0.661}
+  - {pair: matthew-skelton ↔ team-topologies, count: 207, strength: 0.572}
+  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 179, strength: 0.416}
+  - {pair: matthew-skelton ↔ richard-rumelt, count: 138, strength: 0.334}
 ---
 # Formalized Architecture for the Three-Layer Compiled Knowledge System
 

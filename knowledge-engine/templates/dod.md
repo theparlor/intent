@@ -4,7 +4,17 @@ id: TEMPLATE-DOD
 type: template
 created: 2026-04-14
 updated: 2026-04-14
-version: 1.0
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.8
+  content_chars: 6587
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+version: 1.00
 status: canonical
 origin: brien-original
 related_signals:
@@ -13,7 +23,6 @@ related_templates:
   - dor.md
   - dor-dod-library.md
 ---
-
 # Definition of Done (DoD) — Template
 
 ## What Is a DoD?

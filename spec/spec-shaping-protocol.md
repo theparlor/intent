@@ -19,11 +19,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.11
 related_entities:
-  - {pair: marty-cagan ↔ consulting-operations, count: 133, strength: 0.062}
-  - {pair: teresa-torres ↔ marty-cagan, count: 114, strength: 0.307}
-  - {pair: marty-cagan ↔ jeff-patton, count: 90, strength: 0.265}
-  - {pair: marty-cagan ↔ product-engineering-coaching, count: 89, strength: 0.124}
-  - {pair: marty-cagan ↔ coaching-methodology, count: 88, strength: 0.128}
+  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
+  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
+  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
+  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
 ---
 # Spec-Shaping Protocol
 

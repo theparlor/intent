@@ -8,16 +8,24 @@ domains:
   - consulting-operations
 created: 2026-03-29
 updated: 2026-03-30
-depth_score: 2
+frameworks:
+  - double-loop-learning
+depth_score: 4
 depth_signals:
-  file_size_kb: 4.8
+  file_size_kb: 5.3
   content_chars: 4564
-  entity_count: 0
+  entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
 vocab_density: 0.44
+related_entities:
+  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
+  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
+  - {pair: consulting-operations ↔ subaru, count: 41, strength: 0.125}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.092}
 ---
 # Tasks
 
