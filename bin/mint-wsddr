@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""
+mint-wsddr — Allocate the next WS-DDR canonical ID via reference-substrate.
+
+First consumer of reference-substrate Phase 5 consumability (RS-D-009 / Phase 6 wiring).
+Replaces hand-numbering of WS-DDR IDs in .context/DECISIONS.md workflow.
+
+Usage:
+    mint-wsddr [--peek]
+
+    --peek    Print the next ID that WOULD be allocated without incrementing the sequence.
+              Useful for staging a DDR draft before committing the allocation.
+
+Output (on stdout):
+    WS-DDR-NNN  — the freshly minted (or next-peek) canonical ID
+
+Side effects (without --peek):
+    - Increments farm/sequences/WS-DDR.seq in reference-substrate
+    - Writes an initial state file to farm/state/WS-DDR/WS-DDR-NNN.json
+
+Reference-substrate path:
+    Core/products/reference-substrate/
+
+Consumer wiring decision:
+    Core/products/reference-substrate/.intent/decisions.md  → RS-D-009 (Phase 6 first-consumer)
+    Core/frameworks/intent/.intent/decisions.md             → intent-RS wiring decision
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Locate reference-substrate library via Workspaces path
+# ---------------------------------------------------------------------------
+_HERE = Path(__file__).resolve()
+# Walk up from Core/frameworks/intent/bin/ to find Core/
+_WORKSPACES_CORE = _HERE.parent.parent.parent.parent  # Core/
+_RS_SRC = _WORKSPACES_CORE / "products" / "reference-substrate" / "src"
+_RS_ENGINE = _WORKSPACES_CORE / "products" / "reference-substrate" / "engine"
+_RS_FARM = _WORKSPACES_CORE / "products" / "reference-substrate" / "farm"
+
+if not _RS_SRC.exists():
+    print(
+        f"ERROR: reference-substrate src not found at {_RS_SRC}\n"
+        "Ensure Core/products/reference-substrate/ is present.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+sys.path.insert(0, str(_RS_SRC))
+
+from reference_substrate import mint  # noqa: E402 — path insertion required first
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        prog="mint-wsddr",
+        description="Allocate the next WS-DDR canonical ID via reference-substrate.",
+    )
+    parser.add_argument(
+        "--peek",
+        action="store_true",
+        help="Print the next ID without allocating it (read-only).",
+    )
+    args = parser.parse_args()
+
+    if args.peek:
+        nxt = mint.peek_next("WS-DDR", farm_root=_RS_FARM)
+        print(f"WS-DDR-{nxt:03d}")
+    else:
+        new_id = mint.allocate(
+            "WS-DDR",
+            actor="intent-bin/mint-wsddr",
+            farm_root=_RS_FARM,
+            engine_root=_RS_ENGINE,
+        )
+        print(new_id)
+
+
+if __name__ == "__main__":
+    main()
