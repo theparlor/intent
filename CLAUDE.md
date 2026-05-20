@@ -502,6 +502,8 @@ Lint enforces coverage: every persona must be referenced by at least one journey
 
 File placement within Workspaces governed by [/Workspaces/AGENTS.md](../../../AGENTS.md) — the authoritative placement resolver. Intent-specific knowledge artifacts follow the federation model in `knowledge-engine/spec/federation.md`.
 
+> **Chainable atoms:** These 21 decisions are also represented as decision atoms in `.intent/decisions/DEC-INTENT-001.md` through `DEC-INTENT-021.md` for full chainability. The prose below is the human-readable summary; the atoms are the machine-traversable form. Both forms are authoritative — do not delete the prose.
+
 1. **Named "Intent"** — not "Dev OS", Frame, Premise, or Lucid. The name IS the thing.
 2. **Methodology first, tool second** — validate with practitioners before building software.
 3. **Open development** — signals, decisions, architecture all public. Dogfood the observe layer.
