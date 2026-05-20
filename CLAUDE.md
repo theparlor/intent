@@ -250,9 +250,9 @@ intent-status events       # Last 15 events from events.jsonl
 intent-status roadmap      # ASCII four-product maturity view
 ```
 
-## MCP Server (7 tools)
+## MCP Server (6 tools)
 
-The MCP server at `tools/intent-mcp/server.py` provides 7 tools accessible from Claude Code, Cowork, and Cursor:
+The MCP server at `tools/intent-mcp/server.py` provides 6 tools accessible from Claude Code, Cowork, and Cursor:
 
 | Tool | Action | Read-only |
 |------|--------|-----------|
@@ -328,7 +328,7 @@ cd /Users/brien/Workspaces/Core/frameworks/intent/servers
 
 ### 3. `tools/intent-mcp/`
 
-**Purpose:** The primary MCP server (7 tools) consumed by Claude Code, Cowork, and Cursor. Uses the base `mcp` library (not FastMCP). This is the stable surface documented in the `## MCP Server` section above.
+**Purpose:** The primary MCP server (6 tools) consumed by Claude Code, Cowork, and Cursor. Uses the base `mcp` library (not FastMCP). This is the stable surface documented in the `## MCP Server` section above.
 
 **Dependencies:** `mcp>=1.0.0`, `pydantic>=2.0.0`
 

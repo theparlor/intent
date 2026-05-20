@@ -112,7 +112,11 @@ LOWER_FULL=$(printf '%s' "$LAST_TEXT" | tr '[:upper:]' '[:lower:]')
 # Apostrophe-bearing variants ("we're done", "everything's working") are
 # matched via the apostrophe-tolerant character class [\x27 ] using
 # ANSI-C $'...' quoting to keep the bash single-quote scope intact.
-COMPLETION_RE=$'(\\bcomplete[.!]|\\bcompleted[.!]|\\bdone[.!]|\\bresolved[.!]|\\bfixed[.!]|\\bshipped[.!]|\\bwave (closed|landed|done|complete)|\\bsession[ -]end|\\bsession (over|complete)|\\ball (done|set|resolved|clear)|\xe2\x9c\x85 ?(done|complete|resolved|fixed)|\\beverything[\x27 ]?s? (working|works|fine)|\\bfully working|\\bthat[\x27 ]?s done|\\bwe[\x27 ]?re done|\\bclosed out)'
+# TABLE-CELL variant (Layer 4 extension — Catalog Entry 2.3):
+#   Catches markdown table rows where a cell reads "Done", "Complete", or ✅
+#   without a neighboring catch-net / upstream-control cell. Pattern matches
+#   the cell value sandwiched between pipe delimiters, e.g.: | Done | or | ✅ |
+COMPLETION_RE=$'(\\bcomplete[.!]|\\bcompleted[.!]|\\bdone[.!]|\\bresolved[.!]|\\bfixed[.!]|\\bshipped[.!]|\\bwave (closed|landed|done|complete)|\\bsession[ -]end|\\bsession (over|complete)|\\ball (done|set|resolved|clear)|\xe2\x9c\x85 ?(done|complete|resolved|fixed)|\\beverything[\x27 ]?s? (working|works|fine)|\\bfully working|\\bthat[\x27 ]?s done|\\bwe[\x27 ]?re done|\\bclosed out|\\|[ \\t]*(done|complete|\xe2\x9c\x85)[ \\t]*\\|)'
 
 # UPSTREAM-CONTROL marker — phrases that indicate the fix is in-pipeline,
 # catches future regressions, or honestly downgrades to symptom-repaired.
