@@ -7,6 +7,8 @@ reusability: universal
 domains:
   - consulting-operations
 created: 2026-03-29
+updated: 2026-05-20
+version: 0.11.0
 technologies:
   - jira
 thought_leaders:
@@ -41,7 +43,7 @@ known_siblings:
   - bespoke team operating docs (per-company)
 port_contract: "consumes signals from practitioner surfaces; produces specs + contracts + events consumable by execute-layer tooling (Spec Kit, Kiro, Copilot, Claude Code)"
 ---
-# Intent
+# Intent — v0.11.0
 
 > A team operating model for AI-augmented product teams.
 
@@ -68,24 +70,39 @@ No sprint boundaries. No ceremony tax. A continuous loop where the team's energy
 
 ---
 
+## Three-Layer Architecture
+
+Intent prescribes three independently useful layers:
+
+| Layer | Purpose |
+|---|---|
+| **Compiled Knowledge Base** | Raw sources compiled into durable domain knowledge (personas, journeys, DDRs, models) |
+| **Transformation OS** | The Notice→Spec→Execute→Observe engine with trust scoring, autonomy levels, and event stream |
+| **Software Spec & Code** | Agent-ready specs, verifiable contracts, and running implementation |
+
+Six bidirectional flows couple the layers. The double-loop (Observe → Knowledge) questions assumptions, not just optimizes.
+
+Full architecture: `ARCHITECTURE.md`
+
+---
+
 ## This Repo Eats Its Own Dogfood
 
 The directory structure *is* the loop:
 
 ```
-notice/          ← Signals, observations, raw inputs that started this work
-spec/            ← Shaped specifications: the methodology, the ops layer, the product concept
-execute/         ← Implementation artifacts (where built things live)
-observe/         ← Verification findings, quality reviews, learnings
-artifacts/       ← Visual and interactive materials
-TASKS.md         ← The living backlog (replaces Jira)
+.intent/         ← Signals, intents, specs, contracts, events (130+ signals captured)
+spec/            ← Shaped specifications: methodology, trust framework, enforcement specs
+learnings/       ← IDD playbook, cross-product applicability, process drift catalog
+hooks/           ← 8 governance hooks (autonomy-grant, closure-discipline, overwatch)
+spawn-prompts/   ← 8 reusable handoff prompts for governance and build operations
 ```
 
 ---
 
 ## Where Intent Sits
 
-Intent fills a distinct pipeline position — one not currently occupied by any existing product category. The table below renders a signal-propagation ordering (each position produces artifacts the adjacent position reads), not a containment hierarchy. See `Workspaces/.context/DECISIONS.md` (WS-DDR-025) for the sibling-over-parent-child default.
+Intent fills a distinct pipeline position — one not currently occupied by any existing product category. The table below renders a signal-propagation ordering (each position produces artifacts the adjacent position reads), not a containment hierarchy.
 
 | Position | What It Solves | Examples (siblings at this position) |
 |----------|---------------|--------------------------------------|
@@ -93,7 +110,23 @@ Intent fills a distinct pipeline position — one not currently occupied by any 
 | **Spec-Driven Development** | How specs become code via AI agents | GitHub Spec Kit, Kiro, Tessl |
 | **AI Coding Assistants** | How individuals get AI help | Copilot, Claude Code, Cursor |
 
-Intent is the currently-unfilled position in that pipeline. It is not "above" the other two — it composes with them at declared handoffs.
+Intent is the currently-unfilled position in that pipeline. It is not "above" the other two — it composes with them at declared handoffs. See `Workspaces/.context/DECISIONS.md` (WS-DDR-025) for the sibling-over-parent-child default.
+
+---
+
+## Governance Infrastructure (v0.11.0)
+
+Intent's build-discipline layer is operational as of v0.11.0:
+
+**IDD Build Discipline** — 7-stage loop with DoR/DoD gates. Canonical playbook: `learnings/idd-playbook.md`. Cross-product map: `learnings/idd-cross-product-applicability.md`.
+
+**Process Drift Catalog** — 4 families, 17 entries covering every recurring AI-agent drift pattern observed across the Intent system. `learnings/process-drift-catalog.md`. New in v0.11.0: `1.7 — Artificial-gate-architecture drift` and `4.7 — Governance-skill-without-trigger`.
+
+**5-Layer Autonomy-Grant Enforcement** — Prevents L4-eligible work from being converted to L0 proposals. Spec: `spec/autonomy-grant-enforcement.md`. Hooks: `autonomy-grant-check.sh` (SessionStart), `autonomy-grant-stop-check.sh` (Stop), `autonomy-grant-dispatch-prompt-check.sh` (PreToolUse).
+
+**5-Layer Closure-Discipline Enforcement** — Requires upstream control before `status: resolved`. Spec: `spec/closure-discipline-enforcement.md`. Hooks: `closure-discipline-check.sh` (SessionStart), `closure-discipline-stop-check.sh` (Stop), `closure-discipline-signal-check.sh` (PreToolUse).
+
+**Overwatch Staleness Hook** — SessionStart banner when latest overwatch journal is >7 days (warn) or >14 days (load-bearing posture). `hooks/overwatch-staleness-check.sh`.
 
 ---
 
@@ -108,8 +141,10 @@ Intent is the currently-unfilled position in that pipeline. It is not "above" th
 
 ## Status
 
-**Stage:** Idea → ready for validation  
-**Approach:** Thought leadership first, methodology product second, tooling conditional on validation  
+**Version:** 0.11.0 (2026-05-20)
+**Stage:** Idea → ready for validation
+**Approach:** Thought leadership first, methodology product second, tooling conditional on validation
+**Governance infrastructure:** Operational — 8 hooks, 8 spawn prompts, IDD playbook, 4-family drift catalog
 **Next step:** 5 in-depth interviews with teams experiencing AI + Agile friction
 
 ---
