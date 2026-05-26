@@ -1,0 +1,464 @@
+{
+  "root": "/Users/brien/Workspaces",
+  "have_yaml_lib": true,
+  "total_signals": 1912,
+  "by_status": {
+    "open": 558,
+    "resolved": 467,
+    "accepted": 413,
+    "unknown": 70,
+    "captured": 60,
+    "symptom-repaired, upstream-pending": 54,
+    "ratified": 48,
+    "active": 38,
+    "partial-closure-invariant-landed-substantive-pendi": 32,
+    "symptom-repaired-upstream-pending": 23,
+    "in-progress": 16,
+    "open \u2014 design intent captured; implementation defe": 16,
+    "closed": 8,
+    "proposed": 8,
+    "complete": 5,
+    "superseded": 5,
+    "actioned": 4,
+    "survey-complete": 4,
+    "partially-resolved": 4,
+    "queue-spec-produced, dispatch-pending-authorizatio": 4
+  },
+  "by_type": {
+    "unknown": 770,
+    "tooling-correctness": 298,
+    "signal": 59,
+    "closure-signal": 49,
+    "tooling-noise": 32,
+    "decision-atom": 21,
+    "pattern": 20,
+    "panel-critique": 18,
+    "wave-closure": 16,
+    "architectural-awareness": 16,
+    "closure-summary": 16,
+    "tech-debt": 16,
+    "engagement-rollout": 16,
+    "discipline-consistency-review": 16,
+    "structural-drift-risk": 16,
+    "discipline-cadence": 16,
+    "structural-gap": 16,
+    "overwatch-coverage": 16,
+    "structural-drift": 16,
+    "downstream-verification": 16
+  },
+  "labeled_gold": 446,
+  "symptom_repaired": 82,
+  "open_signals": 692,
+  "have_flight_inputs": 78,
+  "need_backfill": 1834,
+  "stale_signals": 0,
+  "by_product": {
+    "Core/products/witness": {
+      "signals": 6,
+      "compliant": 3,
+      "stale": 0,
+      "open": 2,
+      "symptom_repaired": 0
+    },
+    "Core/products/throughline": {
+      "signals": 8,
+      "compliant": 3,
+      "stale": 0,
+      "open": 3,
+      "symptom_repaired": 0
+    },
+    "Core/products/cortege": {
+      "signals": 7,
+      "compliant": 4,
+      "stale": 0,
+      "open": 3,
+      "symptom_repaired": 0
+    },
+    "Core/products/conduit": {
+      "signals": 20,
+      "compliant": 8,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 2
+    },
+    "Core/products/cast": {
+      "signals": 446,
+      "compliant": 83,
+      "stale": 0,
+      "open": 112,
+      "symptom_repaired": 13
+    },
+    "Core/products/pulse": {
+      "signals": 13,
+      "compliant": 3,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 0
+    },
+    "Core/products/digital-declutter": {
+      "signals": 18,
+      "compliant": 4,
+      "stale": 0,
+      "open": 3,
+      "symptom_repaired": 1
+    },
+    "Core/products/org-design-tooling": {
+      "signals": 200,
+      "compliant": 9,
+      "stale": 0,
+      "open": 33,
+      "symptom_repaired": 12
+    },
+    "Core/products/parallax": {
+      "signals": 13,
+      "compliant": 4,
+      "stale": 0,
+      "open": 3,
+      "symptom_repaired": 0
+    },
+    "Core/products/studio-control": {
+      "signals": 31,
+      "compliant": 3,
+      "stale": 0,
+      "open": 4,
+      "symptom_repaired": 1
+    },
+    "Core/products/library-index-mcp": {
+      "signals": 15,
+      "compliant": 4,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 8
+    },
+    "Core/products/voices": {
+      "signals": 23,
+      "compliant": 6,
+      "stale": 0,
+      "open": 4,
+      "symptom_repaired": 0
+    },
+    "Core/products/fieldbook": {
+      "signals": 28,
+      "compliant": 6,
+      "stale": 0,
+      "open": 3,
+      "symptom_repaired": 2
+    },
+    "Core/products/forge": {
+      "signals": 51,
+      "compliant": 19,
+      "stale": 0,
+      "open": 8,
+      "symptom_repaired": 1
+    },
+    "Core/products/warp": {
+      "signals": 10,
+      "compliant": 5,
+      "stale": 0,
+      "open": 2,
+      "symptom_repaired": 0
+    },
+    "Core/products/reference-substrate": {
+      "signals": 5,
+      "compliant": 3,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 0
+    },
+    "Core/products/topography": {
+      "signals": 4,
+      "compliant": 4,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    "Core/products/loom": {
+      "signals": 11,
+      "compliant": 4,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 0
+    },
+    "Core/products/library-index": {
+      "signals": 53,
+      "compliant": 3,
+      "stale": 0,
+      "open": 10,
+      "symptom_repaired": 3
+    },
+    "Core/frameworks/methodology-library": {
+      "signals": 7,
+      "compliant": 0,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 2
+    },
+    "Core/frameworks/operating-model": {
+      "signals": 4,
+      "compliant": 0,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/capability-maturity": {
+      "signals": 1,
+      "compliant": 0,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/investment": {
+      "signals": 2,
+      "compliant": 1,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 1
+    },
+    "Core/frameworks/measurement": {
+      "signals": 2,
+      "compliant": 1,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/patterns": {
+      "signals": 1,
+      "compliant": 0,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/intent-site": {
+      "signals": 5,
+      "compliant": 0,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/coherence-engineering": {
+      "signals": 40,
+      "compliant": 8,
+      "stale": 0,
+      "open": 14,
+      "symptom_repaired": 7
+    },
+    "Core/frameworks/transformation": {
+      "signals": 3,
+      "compliant": 1,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/product-academy": {
+      "signals": 1,
+      "compliant": 0,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/assessment": {
+      "signals": 1,
+      "compliant": 1,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/intent": {
+      "signals": 60,
+      "compliant": 10,
+      "stale": 0,
+      "open": 4,
+      "symptom_repaired": 1
+    },
+    "Core/frameworks/governance": {
+      "signals": 2,
+      "compliant": 1,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/design-systems": {
+      "signals": 3,
+      "compliant": 1,
+      "stale": 0,
+      "open": 1,
+      "symptom_repaired": 0
+    },
+    "Core/frameworks/protocols": {
+      "signals": 2,
+      "compliant": 0,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 1
+    },
+    "Core/frameworks/knowledge-engine": {
+      "signals": 2,
+      "compliant": 2,
+      "stale": 0,
+      "open": 0,
+      "symptom_repaired": 0
+    },
+    ".claude": {
+      "signals": 636,
+      "compliant": 210,
+      "stale": 0,
+      "open": 396,
+      "symptom_repaired": 15
+    },
+    "Work/Advising": {
+      "signals": 3,
+      "compliant": 0,
+      "stale": 0,
+      "open": 3,
+      "symptom_repaired": 0
+    },
+    "Work/Consulting": {
+      "signals": 94,
+      "compliant": 6,
+      "stale": 0,
+      "open": 29,
+      "symptom_repaired": 10
+    },
+    "ROOT (Workspaces-wide)": {
+      "signals": 81,
+      "compliant": 26,
+      "stale": 0,
+      "open": 48,
+      "symptom_repaired": 2
+    }
+  },
+  "silent_recorders": [
+    "Home/TheParlor/Rooms/Studio/control-system",
+    "Core/products/_intake",
+    "Core/intent-scaffolds/library-index-system",
+    "Core/intent-scaffolds/intent-repo",
+    "Core/intent-scaffolds/mars-command-center",
+    "Core/intent-scaffolds/mars-command-center-internal",
+    ".claude/worktrees/youthful-zhukovsky-28c63c",
+    ".claude/worktrees/xenodochial-haslett-fe4ffd",
+    ".claude/worktrees/clever-archimedes-a1729a",
+    ".claude/worktrees/unruffled-cori-0d3d60",
+    ".claude/worktrees/nervous-ramanujan-a19c49",
+    ".claude/worktrees/happy-mendeleev-9c78d8",
+    ".claude/worktrees/funny-dirac-c24071",
+    ".claude/worktrees/beautiful-williamson-7158d1",
+    ".claude/worktrees/pedantic-benz-602aab",
+    ".claude/worktrees/beautiful-austin-e77536",
+    ".claude/worktrees/condescending-driscoll-c79617",
+    ".claude/worktrees/exciting-perlman-d3ba6d",
+    ".claude/worktrees/nostalgic-leavitt-468ef3",
+    ".claude/worktrees/gracious-chaplygin-be11c5",
+    ".claude/worktrees/eloquent-napier-5635d4"
+  ],
+  "sample_compliant": [
+    {
+      "id": "SIG-WITNESS-INTENT-AUDIT-2026-05-20.md",
+      "product": "Core/products/witness",
+      "type": "unknown",
+      "status": "resolved",
+      "path": "Core/products/witness/.intent/signals/SIG-WITNESS-INTENT-AUDIT-2026-05-20.md"
+    },
+    {
+      "id": "SIG-EXEC-2026-05-20.md",
+      "product": "Core/products/witness",
+      "type": "unknown",
+      "status": "resolved",
+      "path": "Core/products/witness/.intent/signals/SIG-EXEC-2026-05-20.md"
+    },
+    {
+      "id": "SIG-PCU-PHASE-5-BUILDOUT-2026-05-13.md",
+      "product": "Core/products/witness",
+      "type": "signal",
+      "status": "resolved",
+      "path": "Core/products/witness/.intent/signals/SIG-PCU-PHASE-5-BUILDOUT-2026-05-13.md"
+    },
+    {
+      "id": "SIG-EXEC-2026-05-20.md",
+      "product": "Core/products/throughline",
+      "type": "unknown",
+      "status": "resolved",
+      "path": "Core/products/throughline/.intent/signals/SIG-EXEC-2026-05-20.md"
+    },
+    {
+      "id": "SIG-PCU-PHASE-5-BUILDOUT-2026-05-13.md",
+      "product": "Core/products/throughline",
+      "type": "unknown",
+      "status": "resolved",
+      "path": "Core/products/throughline/.intent/signals/SIG-PCU-PHASE-5-BUILDOUT-2026-05-13.md"
+    }
+  ],
+  "sample_symptom_repaired": [
+    {
+      "id": "SIG-PCU-PHASE-5-BUILDOUT-2026-05-13.md",
+      "product": "Core/products/conduit",
+      "type": "unknown",
+      "status": "symptom-repaired, upstream-pending",
+      "path": "Core/products/conduit/.intent/signals/SIG-PCU-PHASE-5-BUILDOUT-2026-05-13.md"
+    },
+    {
+      "id": "SIG-008-symlink-interim-patch-superseded.md",
+      "product": "Core/products/conduit",
+      "type": "unknown",
+      "status": "symptom-repaired, upstream-pending",
+      "path": "Core/products/conduit/.intent/signals/SIG-008-symlink-interim-patch-superseded.md"
+    },
+    {
+      "id": "SIG-2026-05-08-archetype-bidirectional-resolved.md",
+      "product": "Core/products/cast",
+      "type": "unknown",
+      "status": "symptom-repaired, upstream-pending",
+      "path": "Core/products/cast/.intent/signals/SIG-2026-05-08-archetype-bidirectional-resolved.md"
+    },
+    {
+      "id": "SIG-004-tagline-field.md",
+      "product": "Core/products/cast",
+      "type": "unknown",
+      "status": "symptom-repaired, upstream-pending",
+      "path": "Core/products/cast/.intent/signals/SIG-004-tagline-field.md"
+    },
+    {
+      "id": "SIG-CAST-VOICE-POSITIONING-BACKFILL-COMPLETE-2026-05-08",
+      "product": "Core/products/cast",
+      "type": "closure-signal",
+      "status": "symptom-repaired, upstream-pending",
+      "path": "Core/products/cast/.intent/signals/SIG-CAST-VOICE-POSITIONING-BACKFILL-COMPLETE-2026-05-08.md"
+    }
+  ],
+  "sample_open": [
+    {
+      "id": "SIG-WITNESS-SPEC001-RATIFICATION-BLOCKED-2026-05-20.md",
+      "product": "Core/products/witness",
+      "type": "unknown",
+      "status": "open",
+      "path": "Core/products/witness/.intent/signals/SIG-WITNESS-SPEC001-RATIFICATION-BLOCKED-2026-05-20.md"
+    },
+    {
+      "id": "SIG-WITNESS-001",
+      "product": "Core/products/witness",
+      "type": "unknown",
+      "status": "open",
+      "path": "Core/products/witness/.intent/signals/SIG-WITNESS-001-forensics-event-tagging-write-through-roadmap.md"
+    },
+    {
+      "id": "decisions.md",
+      "product": "Core/products/throughline",
+      "type": "unknown",
+      "status": "unknown",
+      "path": "Core/products/throughline/.intent/decisions.md"
+    },
+    {
+      "id": "SIG-TC-004-VISION-THREAD-SCHEMA-UNLOCK-2026-05-09.md",
+      "product": "Core/products/throughline",
+      "type": "unknown",
+      "status": "open",
+      "path": "Core/products/throughline/.intent/signals/SIG-TC-004-VISION-THREAD-SCHEMA-UNLOCK-2026-05-09.md"
+    },
+    {
+      "id": "SIG-THROUGHLINE-VISION-SCAFFOLD-2026-05-20.md",
+      "product": "Core/products/throughline",
+      "type": "unknown",
+      "status": "open",
+      "path": "Core/products/throughline/.intent/signals/SIG-THROUGHLINE-VISION-SCAFFOLD-2026-05-20.md"
+    }
+  ]
+}
