@@ -6,8 +6,21 @@ owner: Brien
 spec-source: spec/
 observe-via: entire
 created: 2026-03-28
----
 
+# === lambda_settings (managed by apply_lambda_settings.py, do not edit by hand) ===
+# closure_rate=64% (n=14, gold=9, sym=1, open=4)
+# lift_action: NONE
+lambda_settings:
+  default: 1.179
+  fit_target: 1.179  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.357, containment_gap=0.111.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+# === end lambda_settings ===
+---
 # Intent
 
 > A team operating model for AI-augmented product teams.
