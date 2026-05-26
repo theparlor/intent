@@ -11,8 +11,8 @@ technologies:
   - jira
 depth_score: 4
 depth_signals:
-  file_size_kb: 7.3
-  content_chars: 6744
+  file_size_kb: 7.5
+  content_chars: 6860
   entity_count: 1
   slide_count: 0
   sheet_count: 0
@@ -20,11 +20,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.15
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
-  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
-  - {pair: consulting-operations ↔ subaru, count: 41, strength: 0.125}
-  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.092}
+  - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
+  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}
+  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.121}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.124}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.085}
 ---
 # Signal Stream
 
@@ -103,6 +103,50 @@ A signal may transition to `status: resolved` ONLY when **one** of the following
 If any answer is "N/A" or "we just fixed this instance," the correct status is `symptom-repaired, upstream-pending`, not `resolved`.
 
 **Precedent — why this rule exists:** SIG-006 (persona-corpus YAML parse failures, 2026-04-08) was closed `resolved` after a repair script ran, even though its own Implication recommended a validation gate. The gate was never installed. The same class of defect recurred 8 days later as SIG-046 in a different file type. Discovery in SIG-F-001 found ~21 similar premature-closures across products (27% of all resolved signals). This rule is the meta-fix.
+
+## Schema v2: Flight-Model Input Fields (added 2026-05-26)
+
+Per SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001 (`Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md`), forward signals SHOULD include flight-model input fields in their frontmatter to support λ calibration. These fields are **recommended, not required** — legacy signals are not retro-backfilled. The forthcoming `lambda_fit.py` tool will weight calibration-ready signals (those carrying these fields) higher than legacy signals (which use heuristic input derivation).
+
+### Recommended frontmatter fields
+
+```yaml
+# Existing closure-discipline fields (required for status: resolved)
+upstream_control_path: ...
+catch_mechanism: ...
+pipeline_survival: yes|no
+
+# NEW — flight-model input fields (recommended for forward signals)
+blast_radius: low|low-med|medium|high          # row-from-gate-matrix or qualitative
+exposure: solo|engagement|cross-human|public   # who/how-many would be affected
+irreversibility: 0.0-1.0                       # 0 = fully reversible, 1 = irreversible
+strategic_value: 0.0-1.0                       # upside if the action succeeds (the accelerator)
+containment_posture: |                         # the engineered lift
+  - sandbox: yes
+  - dry-run: yes
+  - rollback-window: 24h
+  - feature-flag: NAME or null
+detection_speed: instant|minutes|hours|days    # how fast we'd know if it broke
+autonomy_level: L0|L1|L2|L3|L4                 # the grant under which this action was taken
+lambda_used: 0.0-3.0                           # the bravery coefficient at decision time
+```
+
+### Why these fields
+
+The v1 trust formula's caution bias is structural: it measures only downside-of-failure and feasibility, never strategic value. The flight model adds value (Thrust), containment (Lift), and detection latency (Lift component) as first-class inputs. To calibrate the model from real history, signals must carry the inputs the model uses.
+
+Legacy signals (pre-2026-05-26) lack these fields. The `lambda_fit.py` tool derives heuristic substitutes from existing fields (`severity` → blast_radius proxy, `type: catch-net-gap` → low-lift indicator, etc.) for the warm-start fit. Forward signals carrying explicit values reduce calibration noise.
+
+### Backfill is optional and opportunistic
+
+Existing signals do not require backfill. If a signal is being re-opened or substantively edited, the author MAY add these fields. Bulk backfill is **not** a closure-discipline requirement — the warm-start λ fit is acceptable with heuristic derivation, and forward instrumentation is the higher-leverage move.
+
+### Schema enforcement
+
+Schema validation lint (when it lands) will:
+- WARN if a signal authored after 2026-06-01 lacks `blast_radius` or `strategic_value`
+- NEVER block authorship — the recorder-was-optional failure mode is the larger risk
+- EMIT a follow-up SIG- to track the gap, attaching it to the offending signal via `related:`
 
 ## Where Signals Live
 
