@@ -274,4 +274,50 @@ EOF
   exit 0
 fi
 
+# ---------------------------------------------------------------------------
+# CHECK 4: Conditional-queue framing on pre-authorized continuation (v3 — 2026-05-26)
+#
+# Slips past CHECK 1 (a recommendation marker precedes the queue) and past
+# CHECK 2 (the phrasing is forward-looking, not soft-queue). Pattern observed
+# 5+ times in a single session (flight-model ingestion, 2026-05-26):
+#   "Will write X next unless you redirect."
+#   "Going to write X unless you redirect."
+#   "Will draft X unless you redirect to A or B."
+#   "Recommend starting with #1 unless you redirect to one of the L2 items."
+#   "Will write apply_lambda_settings.py next unless you redirect to one of those three."
+#
+# Spec: SIG-2026-05-26-autonomy-grant-drift-recurrence-in-session.md
+# ---------------------------------------------------------------------------
+
+# v3 conditional-queue phrases (case-insensitive, anchored in last paragraph)
+COND_QUEUE_RE='(unless (you )?(redirect|tell me otherwise|stop me|say otherwise|prefer|want|need|push back)|unless (redirected|told otherwise|stopped)|i.?ll [a-z]+ [^.]*? unless|going to [a-z]+ [^.]*? unless|will [a-z]+ [^.]*? unless you)'
+
+COND_QUEUE_MATCH=0
+if echo "$LAST_PARA" | grep -qiE "$COND_QUEUE_RE"; then
+  COND_QUEUE_MATCH=1
+fi
+
+# Context gate: only fires when the response references next-action work
+# (similar to CHECK 2's gate). Reuses HAS_NEXT_STAGE OR new "next L4" phrasing.
+NEXT_L4_RE='(next l4|next move|will write|going to write|will draft|will run|will execute|will build|next step)'
+HAS_NEXT_L4=0
+if echo "$LOWER_FULL" | grep -qiE "$NEXT_L4_RE"; then
+  HAS_NEXT_L4=1
+fi
+
+# Fires when: conditional-queue phrase + next-action reference + no dispatch in turn
+COND_QUEUE_TRIGGER=0
+if [ "$COND_QUEUE_MATCH" = "1" ] && [ "$HAS_NEXT_L4" = "1" ] && [ "$HAS_DISPATCH" = "0" ]; then
+  COND_QUEUE_TRIGGER=1
+fi
+
+if [ "$COND_QUEUE_TRIGGER" = "1" ]; then
+  echo "[$TIMESTAMP] CHECK4-CAUGHT session=$SESSION_ID cond_queue=1 next_l4=1 dispatch=0 tail='$(printf '%s' "$LAST_PARA" | tail -c 300 | tr '\n' ' ' | tr "'" '_')'" >> "$AUDIT_LOG"
+
+  cat <<'EOF'
+{"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 4 — conditional-queue framing on pre-authorized continuation, v3): your response describes a next L4 action AND ends with conditional-queue phrasing ('unless you redirect', 'I'll X next unless', 'going to X unless'). A recommendation marker preceding this tail does NOT redeem it — this is architecturally equivalent to bare-choice on pre-authorized work, just dressed up as a recommendation-with-veto. Pattern documented in SIG-2026-05-26-autonomy-grant-drift-recurrence-in-session.md. 4-gate check: if the next action is reversible, Workspaces-local, has precedent, and has no info gap — EXECUTE it in this same turn. Do not queue. Do not ask. Do not offer a veto. Dispatch the next L4 work now, or surface the specific L0 gate that blocks execution (external comms, money, NDA boundary, force-push-to-main, or reviewers-waiting)."}
+EOF
+  exit 0
+fi
+
 exit 0
