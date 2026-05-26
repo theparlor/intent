@@ -77,3 +77,16 @@ maintained_by: agent
 [CREATE] 2026-04-13 knowledge/decisions/DDR-008-trust-as-orientation-proxy.md — Trust scoring incorporates orientation quality modifier + decay mechanics. IG&C threshold formalized. Confidence: 0.8
 [UPDATE] 2026-04-13 knowledge/_index.md — Added DDR-006/007/008. Artifact count 19→22.
 [UPDATE] 2026-04-13 .claude/commands/overwatch.md — Added §11 Incestuous Amplification Detection (disconfirmation check, signal diversity audit, source vs. conclusion freshness). Boyd/Richards 2020, RAT-003. SIG-035 resolved.
+[INGEST] 2026-05-16 raw/research/2026-05-16-rahul-ai-agent-team-playbook.md → created: THM-005 | parallax read of low-rigor market playbook. No new evidence; positioning corroboration of agent-as-job + shared-substrate theses; 2 techniques absorbed (system/workflow/output prompt layers; local-vs-always-on topology). Confidence 0.55 source.
+[CREATE] 2026-05-16 knowledge/themes/THM-005-agent-as-job-not-chat.md — Agent-as-Job, Not Agent-as-Chat. Parallax framing. Confidence 0.7.
+[CREATE] 2026-05-16 .intent/signals/2026-05-16-agent-realtime-observability.md — SIG-036: running agents fail silently; Observe has no degradation detection. Forces Observe v1 scoping.
+[CREATE] 2026-05-16 .intent/signals/2026-05-16-always-on-hosting-forcing-function.md — SIG-037: "laptop is not a strategy"; hosted-mode is the unresolved load-bearing decision. Needs DDR.
+[CREATE] 2026-05-16 .intent/signals/2026-05-16-review-capacity-as-finite-resource.md — SIG-038: human review throughput is a finite resource that should gate aggregate L2/L3 rollout (new consideration, not corroboration).
+[UPDATE] 2026-05-16 knowledge/_index.md — Added THM-005, rahul playbook raw source. Themes 4→5, artifact count 22→23.
+[UPDATE] 2026-05-16 .intent/signals/2026-05-16-review-capacity-as-finite-resource.md — Re-expressed SIG-038 (brien correction): not a new consideration, it is THM-002 rediscovered at the human approval gate. Jira/peer-review = legacy instrumentation. Status captured→promoted.
+[LINK] 2026-05-16 SIG-038 → THM-002 (founding thesis sharpened), THM-005 (framing corrected), INT-014 (promoted).
+[CREATE] 2026-05-16 .intent/intents/INT-014-human-gate-capacity-model.md — Promote SIG-038. Concurrent-review budget + Router back-pressure; trust rations per-signal, this rations aggregate human attention. Prevents Intent rebuilding the Jira/ceremony tax inside its own autonomy pipeline.
+[UPDATE] 2026-05-16 knowledge/themes/THM-002-bottleneck-shift.md — Added "Sharpening: the bottleneck relocates, it does not vanish" section + SIG-038/INT-014 links. updated 2026-04-05→2026-05-16.
+[UPDATE] 2026-05-16 knowledge/themes/THM-005-agent-as-job-not-chat.md — Corrected SIG-038 row from "new consideration" to "founding thesis rediscovered"; fixed implications + open question.
+[CREATE] 2026-05-16 .intent/decisions/RETRO-2026-05-16-parallax-extraction-1.md — Session-extract: low-rigor sources classified per-finding (evidence | positioning corroboration | rediscovery). Positioning never raises confidence.
+[CREATE] 2026-05-16 .intent/signals/RETRO-2026-05-16-parallax-extraction-SIG-1.md — Session-extract: agent novelty-inflation failure mode. Ingest must reconcile "new" claims against founding themes (THM-001/002) before asserting; proposed lint check.

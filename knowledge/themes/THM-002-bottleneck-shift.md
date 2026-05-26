@@ -2,7 +2,7 @@
 id: THM-002
 type: theme
 created: 2026-04-05
-updated: 2026-04-05
+updated: 2026-05-16
 depth_score: 2
 depth_signals:
   file_size_kb: 2.6
@@ -27,6 +27,9 @@ related_decisions:
   - DDR-002
 signals:
   - SIG-001
+  - SIG-038
+related_intents:
+  - INT-014
 ---
 # Theme: The Bottleneck Shifts from Execution to Specification
 
@@ -47,6 +50,10 @@ When AI collapses implementation from weeks to hours, the constraint moves from 
 - Domain knowledge compilation (Layer 1) directly improves spec quality — the more compiled the understanding, the better the specification, the better the agent output.
 - "Spec quality" is the new velocity metric. A good spec is "the shortest document that makes the agent dangerous."
 - Retrospectives should ask "what was missing from the spec?" not "how can we go faster?"
+
+### Sharpening: the bottleneck relocates, it does not vanish (2026-05-16)
+
+The shift is usually stated as execution → specification. The under-stated half: **the human is the bottleneck at both new locations.** Specification is one. The **review/approval gate** is the other. Jira (a WIP queue) and peer code review (a synchronous human gate) were Agile's instrumentation of exactly this constraint — they exist *because* human review capacity is finite. Intent's own L0 approval gate is the same constraint in new clothing. Trust scoring rations the wrong axis: it gates *per-signal* autonomy but models no *aggregate* draw on human attention. If Intent does not model human-gate capacity, it rebuilds the ceremony tax it was created to remove — the approval queue becomes the new backlog. See SIG-038, promoted to INT-014 (human-gate capacity model: concurrent-review budget + Router back-pressure).
 
 ## Open Questions
 
