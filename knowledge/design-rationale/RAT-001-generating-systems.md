@@ -9,7 +9,7 @@ frameworks:
   - Boyd
 depth_score: 4
 depth_signals:
-  file_size_kb: 3.2
+  file_size_kb: 3.3
   content_chars: 2699
   entity_count: 3
   slide_count: 0
@@ -18,8 +18,8 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.00
 related_entities:
-  - {pair: Boyd ↔ Beer, count: 2, strength: 0.667}
-  - {pair: Beer ↔ Argyris, count: 2, strength: 0.667}
+  - {pair: Beer ↔ Boyd, count: 2, strength: 0.667}
+  - {pair: Argyris ↔ Beer, count: 2, strength: 0.4}
 name: The Knowledge Base as a Generating System, Not Documentation
 confidence: 0.80
 origin: agent

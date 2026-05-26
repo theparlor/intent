@@ -2,7 +2,7 @@
 type: industry-analysis
 depth_score: 4
 depth_signals:
-  file_size_kb: 7.4
+  file_size_kb: 7.6
   content_chars: 7212
   entity_count: 0
   slide_count: 0

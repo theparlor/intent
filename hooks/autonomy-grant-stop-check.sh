@@ -230,4 +230,48 @@ EOF
   exit 0
 fi
 
+# ---------------------------------------------------------------------------
+# CHECK 3: L0-on-push framing on theparlor/* repos (v3 — 2026-05-20)
+#
+# Push to theparlor/* solo repos is L4 (reversible via revert/reset, solo user
+# population, public-domain material, git reversibility). Handing the push
+# back to Brien with phrases like "Not pushed. Run git push from <path> when
+# you want it on <remote>." is the same drift class as CHECK 1 but at the
+# git-push layer.
+#
+# Context gate: only fires when the response body contains evidence of a git
+# commit to a theparlor/* remote AND no git push followed. If the response
+# already pushed (contains "Pushed to" / "git push" executed), passes clean.
+#
+# Spec: SIG-2026-05-20-l0-on-push-framing-no-hook-catch.md
+# Source: feedback_commit_autonomy.md §5 literal forbidden phrases
+# ---------------------------------------------------------------------------
+
+# L0-on-push forbidden phrases (literal variants from feedback_commit_autonomy.md §5)
+PUSH_HANDOFF_RE='(not pushed[.;]|run.*git push.*from|commit (landed|complete)[;.].*push when|i.?ll commit only|push when you.?re ready|push it (yourself|manually)|push (to remote|to origin) when you want)'
+
+# Context gate: did the response mention a theparlor/* commit?
+THEPARLOR_COMMIT_RE='(theparlor/|git commit|committed to.*theparlor|pushed.*theparlor|git log|co-authored-by)'
+
+HAS_THEPARLOR_COMMIT=0
+if echo "$LOWER_FULL" | grep -qiE "$THEPARLOR_COMMIT_RE"; then
+  HAS_THEPARLOR_COMMIT=1
+fi
+
+PUSH_HANDOFF_MATCH=0
+if [ "$HAS_THEPARLOR_COMMIT" = "1" ]; then
+  if echo "$LOWER_FULL" | grep -qiE "$PUSH_HANDOFF_RE"; then
+    PUSH_HANDOFF_MATCH=1
+  fi
+fi
+
+if [ "$PUSH_HANDOFF_MATCH" = "1" ]; then
+  echo "[$TIMESTAMP] CHECK3-CAUGHT session=$SESSION_ID push_handoff=1 theparlor_commit=1 tail='$(printf '%s' "$LAST_PARA" | tail -c 300 | tr '\n' ' ' | tr "'" '_')'" >> "$AUDIT_LOG"
+
+  cat <<'EOF'
+{"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 3 — L0-on-push framing on theparlor/* repo): your response hands the git push back to Brien with language like 'Not pushed. Run git push from <path> when you want it on <remote>.' Per feedback_commit_autonomy.md and the commit-autonomy grant: push to theparlor/* solo repos is L4 (reversible via git revert, solo user population, public-domain material, git-tracked history). 4-gate: reversible=yes, local=yes, precedent=yes, no-info-gap=yes → EXECUTE the push. Forbidden patterns (from §5): 'Not pushed. Run git push from X when you want it on Y.', 'Commit landed; push when you're ready.', 'I'll commit only since you said commit, not push.', any sentence handing the push back to Brien on a theparlor/* repo. Execute: cd <repo path> && git push. Exception (genuine L0 that blocks): force-push to main, repo with active reviewers waiting, or Brien explicitly said commit-only."}
+EOF
+  exit 0
+fi
+
 exit 0

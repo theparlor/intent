@@ -2,7 +2,7 @@
 type: implementation-analysis
 depth_score: 4
 depth_signals:
-  file_size_kb: 8.9
+  file_size_kb: 9.1
   content_chars: 8836
   entity_count: 0
   slide_count: 0

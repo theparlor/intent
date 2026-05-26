@@ -261,5 +261,5 @@ A new skill `panel-review` lives at `Core/products/skills-engine/skills/claude-c
 ## Cross-references
 
 - `Core/products/skills-engine/` — where the new skill lives
-- `Core/personas/` — voice library the panels draw from
+- `Core/personas/` — persona registry the panels draw from
 - `docs/review-2026-04-09.html` — reference implementation and output format

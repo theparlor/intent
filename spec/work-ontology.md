@@ -141,4 +141,4 @@ What Agile gets right and Intent keeps: cross-functional teams, iterative delive
 ## Where This Lives
 
 - **Interactive artifact:** [Work System (React)](../artifacts/intent-work-system.jsx)
-- **Site page:** [work-system.html](../docs/work-system.html)
+- **Site page:** rendered at theparlor/intent-site <!-- broken link removed: ../docs/work-system.html (site moved to separate repo per CLAUDE.md; this repo has no docs/) -->

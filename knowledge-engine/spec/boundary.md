@@ -1,14 +1,16 @@
 ---
 title: Knowledge Engine — Product Boundary & Relationship to Intent
 type: spec
-maturity: draft
+maturity: final
 created: 2026-04-06
+frameworks:
+  - double-loop-learning
 summary: "Defines the boundary between Intent (methodology), the Knowledge Engine (product), and engagement-specific Knowledge Farms (instances). Clarifies what is structural vs coincidental in how they relate."
-depth_score: 4
+depth_score: 5
 depth_signals:
   file_size_kb: 8.5
   content_chars: 8394
-  entity_count: 0
+  entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 0

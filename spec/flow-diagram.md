@@ -138,4 +138,4 @@ Every event in the system has a trigger — the condition that causes it to fire
 ## Where Flow Diagrams Live
 
 - **Interactive artifact:** [Flow Diagram (React)](../artifacts/intent-flow-diagram.jsx)
-- **Site page:** [flow-diagram.html](../docs/flow-diagram.html)
+- **Site page:** rendered at theparlor/intent-site <!-- broken link removed: ../docs/flow-diagram.html (site moved to separate repo per CLAUDE.md; this repo has no docs/) -->

@@ -13,20 +13,20 @@ technologies:
   - slack
 depth_score: 5
 depth_signals:
-  file_size_kb: 13.2
-  content_chars: 12548
+  file_size_kb: 14.3
+  content_chars: 13783
   entity_count: 3
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.32
+vocab_density: 0.29
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
-  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
-  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
+  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
+  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
+  - {pair: consulting-operations ↔ subaru, count: 41, strength: 0.125}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.092}
 ---
 # Changelog
 
@@ -38,6 +38,35 @@ Intent uses timestamp-based versioning: `YYYY.MM.DD-MAJOR.MINOR.PATCH`
 - **Patch** — Bug fixes, documentation improvements, clarifications. No behavioral change.
 
 The timestamp prefix records when the release happened. The semver suffix records what kind of change it is.
+
+---
+
+## 2026.05.20 — v0.11.0
+
+### Added — IDD Build Discipline Playbooks
+- **IDD playbook (core):** `learnings/idd-playbook.md` — 7-stage IDD loop with DoR/DoD gates, build-intake enforcement, and phase-specific agent posture rules
+- **Cross-product applicability:** `learnings/idd-cross-product-applicability.md` — how IDD maps across Cast, Forge, Voices, Loom, Topography, Throughline, and Fieldbook
+- **Build-intake enforcement spec:** `spec/build-intake-enforcement.md` — 5-layer gate enforcement preventing premature Execute entry; hooks at SessionStart, Stop, PreToolUse
+
+### Added — Process Drift Catalog v1 (families 1–4, 16 entries + 2 new)
+- **Catalog:** `learnings/process-drift-catalog.md` — canonical catalog of recurring AI-agent drift patterns across 4 families (Autonomy, Closure, Signal, Coordination)
+- **Family 1.7 — Artificial-gate-architecture drift:** Over-gating reversible work with invented L0 sign-offs; prevention via 4-gate silent check + L4 posture enforcement
+- **Family 4.7 — Governance-skill-without-trigger:** Periodic governance operations left with no structural firing mechanism; prevention via SessionStart hook + scheduled task
+
+### Added — Hook Infrastructure (Layer 5 + overwatch)
+- **Autonomy-grant dispatch-prompt-check hook:** `hooks/autonomy-grant-dispatch-prompt-check.sh` — Layer 5 of autonomy-grant enforcement; PreToolUse gate for spawn_task/Agent dispatches lacking autonomy grant markers. Closes SIG-AUTONOMY-GRANT-DISPATCH-HOOK-INSTALLED-2026-05-19.
+- **Overwatch staleness-check hook:** `hooks/overwatch-staleness-check.sh` — SessionStart banner when latest overwatch JRN mtime >7 days (warn) or >14 days (load-bearing posture). Closes SIG-OVERWATCH-STALENESS-PATTERN-2026-05-20. Registered in `~/.claude/settings.json`.
+- **Closure-discipline stop-hook table-cell extension:** `hooks/closure-discipline-stop-check.sh` — COMPLETION_RE extended to catch markdown table rows with standalone "Done"/"Complete"/✅ cells (Catalog Entry 2.3 extension)
+
+### Added — Overnight Orchestrator
+- **Spawn prompt:** `spawn-prompts/overnight-exhaustive-upgrade.md` — multi-phase overnight orchestrator that runs exhaustive product + framework + skill self-audits. Triggers framework-self-audit, closure-discipline-audit, process-drift-audit across full Workspaces topology.
+
+### Added — Signal Stream
+- **Signal-stream spec:** `spec/signal-stream.md` — authoritative closure-DoD definitions, triad schema (upstream_control_path / catch_mechanism / pipeline_survival), and signal lifecycle policy
+- **130+ signals captured** across 2026-03-28 through 2026-05-20
+
+### Changed
+- Closure-discipline stop-hook (Layer 4) extended with table-cell scanner variant
 
 ---
 

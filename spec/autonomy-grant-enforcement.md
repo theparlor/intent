@@ -1,6 +1,7 @@
 ---
 title: Autonomy-Grant Enforcement — Mechanism-Level Intervention
 id: SPEC-INTENT-AUTONOMY-GRANT-ENFORCEMENT-001
+updated: 2026-05-19
 related:
   - Core/frameworks/methodology-library/meta/autonomous-investigation.md
   - Core/frameworks/methodology-library/meta/signal-scoring.md
@@ -10,25 +11,23 @@ related:
   - Core/products/org-design-tooling/.intent/signals/SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13.md
 depth_score: 4
 depth_signals:
-  file_size_kb: 10.5
-  content_chars: 9941
+  file_size_kb: 16.0
+  content_chars: 14840
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.10
+vocab_density: 0.07
 date: 2026-04-22
-updated: 2026-05-13
 status: accepted
 scope: universal
 author: "intent framework (mechanism-level response to SIG-COH-DEBT-018 + RETRO-2026-04-21-autonomy-grant-reinforcement-SIG-1)"
 layer_4_versions:
-  - version: "v1 (2026-04-28)"
-    change: "Initial Layer 4 Stop hook — bare-choice-without-recommendation pattern"
-  - version: "v2 (2026-05-13)"
-    change: "Layer 2 spec amendment — soft-queue framing on pre-authorized continuation (SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13)"
-    hook_landed: "2026-05-13"
+  - {version: v1 (2026-04-28), change: Initial Layer 4 Stop hook — bare-choice-without-recommendation pattern}
+  - {version: v2 (2026-05-13), change: Layer 2 spec amendment — soft-queue framing on pre-authorized continuation (SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13), hook_landed: 2026-05-13}
+layer_5_versions:
+  - {version: v1 (2026-05-19), change: Layer 5 PreToolUse dispatch-prompt check — blocks proposal-framing injected into subagent prompts before dispatch (SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19), hook_landed: 2026-05-19}
 ---
 # Autonomy-Grant Enforcement
 
@@ -83,7 +82,8 @@ iterations if drift rate doesn't drop.
 | 2. 4-gate pre-flight helper | Documented protocol walked mentally before any "ask" | Documented below; enforcement is behavioral |
 | 3. Soft-queue regex deepening (Stop hook v2) | Second detector in Stop hook — catches soft-queue tail phrases on pre-authorized continuation even when recommendation marker present | **Deployed** (`autonomy-grant-stop-check.sh`, 2026-05-13) |
 | 4. Linguistic detector (Stop hook) | Regex scan of last assistant message for bare-choice-without-recommendation pattern; blocks stop and forces revision | **Deployed** (`autonomy-grant-stop-check.sh`, 2026-04-28) |
-| 5. Drift telemetry | Log every gate-check + every catch for feedback loop | Partially deployed via Layer 4 audit log; no active feedback loop yet |
+| 5. Dispatch-prompt pre-flight check | PreToolUse hook fires BEFORE subagent dispatch; scans the dispatch prompt for proposal-framing patterns ("Brien is the decider — your answers are PROPOSALS", `status: proposed`, "for Brien's review", etc.); blocks if detected without override token | **Deployed** (`autonomy-grant-dispatch-prompt-check.sh`, 2026-05-19) |
+| 6. Drift telemetry | Log every gate-check + every catch for feedback loop | Partially deployed via Layer 4/5 audit logs; no active feedback loop yet |
 
 ### Layer 1: SessionStart hook
 
@@ -157,6 +157,40 @@ Architecturally equivalent to proposal-framing on L4-eligible work:
 
 **Registration:** `~/.claude/settings.json` hooks config — `Stop` event with `matcher: "*"`.
 
+### Layer 5: Dispatch-prompt pre-flight check (PreToolUse on Agent)
+
+**Motivation:** Layers 1–4 operate within the parent session's response lifecycle. They do not inspect the prompts sent to dispatched subagents. The drift documented in SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19 was injected at dispatch time — the parent session wrote proposal-framing instructions into the subagent prompt, and the subagent executed faithfully to spec. The spec was wrong; no existing hook caught it before the subagent ran.
+
+**Behavior:** on every `Agent` tool-use call (PreToolUse event), the hook reads `tool_input.prompt`, scans for proposal-framing pattern variants, and blocks dispatch if detected — before the subagent has consumed any tokens.
+
+**Detected patterns (case-insensitive, any match triggers):**
+- `Brien is the decider`
+- `your answers are PROPOSALS` / `responses are proposals` / `answers are proposals`
+- `status: proposed` / `status:proposed` (with or without backticks)
+- `not closures`
+- `propose answers` / `propose your answers`
+- `for Brien's review` / `for review by Brien` / `Brien to review` / `Brien to approve` / `Brien to decide`
+- `proposed, not ratified` / `proposals, not closures`
+- `submit for review`
+
+**Override token:** any line in the dispatch prompt matching `# AUTONOMY-OVERRIDE-PROPOSAL-FRAMING-INTENTIONAL: <justification>` suppresses the hook and logs the override. Use only when the work is genuinely L0 (external human review required — e.g., Chris consent gate, cross-org legal review).
+
+**Block behavior:** emits `{"decision": "block", "reason": "..."}` with full correction guidance including the 4-gate check protocol and the override token syntax.
+
+**Bypass:** `AUTONOMY_GRANT_DISPATCH_BYPASSED=1` env var skips the check (logged to audit).
+
+**Audit log:** `~/.claude/audit/autonomy-grant-dispatch-detections.log` — every catch, override, and bypass logged.
+
+**Tests:** `Core/frameworks/intent/tests/test_autonomy_grant_dispatch_hook.sh` — three scenarios: T1 drift detected → block; T2 clean prompt → silent; T3 override token → silent.
+
+**Hook script:** `Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh`
+
+**Deploy target:** `~/.claude/hooks/autonomy-grant-dispatch-prompt-check.sh` (symlink)
+
+**Registration:** `~/.claude/settings.json` → `hooks.PreToolUse` → `matcher: "Agent"` (alongside existing `skill-intake-gate-check.sh`).
+
+**Positioning vs Stop hook:** Layers 3/4 (Stop hook) catch drift in the parent session's response TEXT — "want me to dispatch?", bare-choice endings, soft-queue tails. Layer 5 catches drift in the CONTENT of what the parent dispatches — proposal-framing baked into the subagent's operating instructions. The two hooks are complementary. Stop hook = parent tone; dispatch hook = instruction content.
+
 ## Deployment
 
 ### One-time install (Brien / operator)
@@ -181,6 +215,33 @@ Then add to `~/.claude/settings.json` under `hooks` → `SessionStart`:
             "type": "command",
             "command": "~/.claude/hooks/autonomy-grant-check.sh"
           }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Layer 5 install (one-time)
+
+```bash
+# From Workspaces root
+ln -sf "$PWD/Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh" \
+      ~/.claude/hooks/autonomy-grant-dispatch-prompt-check.sh
+chmod +x Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh
+```
+
+Then ensure `~/.claude/settings.json` PreToolUse Agent matcher includes the hook:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {"type": "command", "command": "$HOME/.claude/hooks/skill-intake-gate-check.sh"},
+          {"type": "command", "command": "$HOME/.claude/hooks/autonomy-grant-dispatch-prompt-check.sh"}
         ]
       }
     ]

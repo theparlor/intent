@@ -15,22 +15,25 @@ thought_leaders:
   - teresa-torres
   - josh-seiden
   - tim-herbig
+frameworks:
+  - outcomes-over-output
+  - double-loop-learning
 depth_score: 6
 depth_signals:
   file_size_kb: 18.4
   content_chars: 17581
-  entity_count: 6
+  entity_count: 8
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
 vocab_density: 0.51
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
-  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
-  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
+  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
+  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
+  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
+  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
 ---
 # Intent Project — Handoff Context & Agent Prompt
 

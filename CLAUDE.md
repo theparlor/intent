@@ -16,20 +16,20 @@ thought_leaders:
   - josh-seiden
 depth_score: 6
 depth_signals:
-  file_size_kb: 29.3
-  content_chars: 19143
+  file_size_kb: 34.4
+  content_chars: 19181
   entity_count: 5
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.37
+vocab_density: 0.36
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
-  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
-  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
+  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
+  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
+  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
+  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
 ---
 # Intent — Development Continuity Guide
 
@@ -250,9 +250,9 @@ intent-status events       # Last 15 events from events.jsonl
 intent-status roadmap      # ASCII four-product maturity view
 ```
 
-## MCP Server (7 tools)
+## MCP Server (6 tools)
 
-The MCP server at `tools/intent-mcp/server.py` provides 7 tools accessible from Claude Code, Cowork, and Cursor:
+The MCP server at `tools/intent-mcp/server.py` provides 6 tools accessible from Claude Code, Cowork, and Cursor:
 
 | Tool | Action | Read-only |
 |------|--------|-----------|
@@ -264,6 +264,121 @@ The MCP server at `tools/intent-mcp/server.py` provides 7 tools accessible from 
 | `intent_status` | System status overview | Yes |
 
 Install: `pip install mcp pydantic` then configure in Claude Code or Cursor settings.
+
+## Invocation
+
+Intent has **four dep-distinct components**, each with its own `requirements.txt`. None currently have an isolated `.venv/` — see setup commands below. All four need to be set up before any server or adapter is started.
+
+### Component Map
+
+| Component | `requirements.txt` | `.venv/` target | Status |
+|-----------|-------------------|-----------------|--------|
+| Root (`./`) | `requirements.txt` | `.venv/` | No venv — needs setup |
+| `servers/` | `servers/requirements.txt` | `servers/.venv/` | No venv — needs setup |
+| `tools/intent-mcp/` | `tools/intent-mcp/requirements.txt` | `tools/intent-mcp/.venv/` | No venv — needs setup |
+| `observe/adapters/` | `observe/adapters/requirements.txt` | `observe/adapters/.venv/` | No venv — needs setup |
+
+---
+
+### 1. Root (`./`)
+
+**Purpose:** Root-level pointer to `servers/requirements.txt`. Contains `-r servers/requirements.txt` — no deps of its own. Exists so that tooling that installs from the repo root picks up the same deps as `servers/`. Duplication resolved 2026-04-22 via Option 2 (root delegates to servers); see signal RETRO-2026-04-21-invocation-gap-SIG-1.
+
+**Dependencies:** delegates to `servers/requirements.txt` (`fastmcp>=2.0`)
+
+**Scripts:** None directly invoked here.
+
+**Setup:**
+```bash
+cd /Users/brien/Workspaces/Core/frameworks/intent
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+```
+
+---
+
+### 2. `servers/`
+
+**Purpose:** FastMCP-based MCP servers for each Intent loop phase (Notice, Spec, Observe, Knowledge). These are the higher-level server implementations that use `fastmcp>=2.0` (distinct from the legacy `tools/intent-mcp/` MCP server which uses the base `mcp` library).
+
+**Dependencies:** `fastmcp>=2.0`
+
+**Scripts:**
+- `servers/notice.py` — Notice phase MCP server
+- `servers/spec.py` — Spec phase MCP server
+- `servers/observe.py` — Observe phase MCP server
+- `servers/knowledge.py` — Knowledge Engine MCP server
+- `servers/id_gen.py` — ULID-based ID generation utilities
+- `servers/models.py` — Shared Pydantic data models
+
+**Setup:**
+```bash
+cd /Users/brien/Workspaces/Core/frameworks/intent/servers
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+```
+
+**Invoke a server (example — notice):**
+```bash
+cd /Users/brien/Workspaces/Core/frameworks/intent/servers
+.venv/bin/python notice.py
+```
+
+**Architecture notes:** See `servers/ARCHITECTURE.md` and `servers/AGENT_DEFINITIONS.md` for deployment topology and agent role definitions. `servers/DEPLOYMENT.md` covers port assignments and runtime configuration.
+
+---
+
+### 3. `tools/intent-mcp/`
+
+**Purpose:** The primary MCP server (6 tools) consumed by Claude Code, Cowork, and Cursor. Uses the base `mcp` library (not FastMCP). This is the stable surface documented in the `## MCP Server` section above.
+
+**Dependencies:** `mcp>=1.0.0`, `pydantic>=2.0.0`
+
+**Scripts:**
+- `tools/intent-mcp/server.py` — MCP server entry point (7 tools: capture signal, list signals, get signal, propose intent, create spec, status)
+
+**Setup:**
+```bash
+cd /Users/brien/Workspaces/Core/frameworks/intent/tools/intent-mcp
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+```
+
+**MCP config registration (Claude Code `~/.claude/claude_desktop_config.json`):**
+```json
+{
+  "mcpServers": {
+    "intent": {
+      "command": "/Users/brien/Workspaces/Core/frameworks/intent/tools/intent-mcp/.venv/bin/python",
+      "args": ["/Users/brien/Workspaces/Core/frameworks/intent/tools/intent-mcp/server.py"]
+    }
+  }
+}
+```
+
+---
+
+### 4. `observe/adapters/`
+
+**Purpose:** OpenTelemetry-based adapters for the Observe phase. `file-tail.py` tails event files and forwards them as OTel spans/traces to a configured OTLP collector endpoint.
+
+**Dependencies:** `opentelemetry-api>=1.20.0`, `opentelemetry-sdk>=1.20.0`, `opentelemetry-exporter-otlp-proto-grpc>=1.20.0`
+
+**Scripts:**
+- `observe/adapters/file-tail.py` — Tail `.intent/events/events.jsonl` and emit OTel events
+
+**Setup:**
+```bash
+cd /Users/brien/Workspaces/Core/frameworks/intent/observe/adapters
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+```
+
+**Invoke:**
+```bash
+cd /Users/brien/Workspaces/Core/frameworks/intent/observe/adapters
+.venv/bin/python file-tail.py
+```
+
+**Note:** An OTLP-compatible collector (Jaeger, Tempo, OTEL Collector, etc.) must be reachable for spans to be exported. Without a collector, the adapter will start but exporter errors will appear in stderr.
+
+---
 
 ## Repo Structure
 
@@ -386,6 +501,8 @@ Lint enforces coverage: every persona must be referenced by at least one journey
 ## Key Decisions (for context)
 
 File placement within Workspaces governed by [/Workspaces/AGENTS.md](../../../AGENTS.md) — the authoritative placement resolver. Intent-specific knowledge artifacts follow the federation model in `knowledge-engine/spec/federation.md`.
+
+> **Chainable atoms:** These 21 decisions are also represented as decision atoms in `.intent/decisions/DEC-INTENT-001.md` through `DEC-INTENT-021.md` for full chainability. The prose below is the human-readable summary; the atoms are the machine-traversable form. Both forms are authoritative — do not delete the prose.
 
 1. **Named "Intent"** — not "Dev OS", Frame, Premise, or Lucid. The name IS the thing.
 2. **Methodology first, tool second** — validate with practitioners before building software.

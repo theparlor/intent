@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.91
 related_entities:
-  - {pair: consulting-operations ↔ subaru, count: 847, strength: 0.427}
-  - {pair: consulting-operations ↔ automotive-manufacturing, count: 792, strength: 0.402}
-  - {pair: consulting-operations ↔ engagement-management, count: 513, strength: 0.26}
-  - {pair: consulting-operations ↔ turnberry, count: 482, strength: 0.227}
-  - {pair: consulting-operations ↔ foot-locker, count: 256, strength: 0.13}
+  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
+  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
+  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
+  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
 ---
 # Concept Brief Quality Review
 

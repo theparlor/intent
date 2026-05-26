@@ -11,22 +11,23 @@ thought_leaders:
   - richard-rumelt
 frameworks:
   - transformation-operating-system
+  - double-loop-learning
 depth_score: 4
 depth_signals:
   file_size_kb: 3.8
   content_chars: 2780
-  entity_count: 5
+  entity_count: 6
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
 vocab_density: 0.36
 related_entities:
-  - {pair: matthew-skelton ↔ mik-kersten, count: 17878, strength: 0.99}
-  - {pair: mik-kersten ↔ john-kotter, count: 17866, strength: 0.99}
-  - {pair: matthew-skelton ↔ richard-rumelt, count: 17863, strength: 0.992}
-  - {pair: matthew-skelton ↔ john-kotter, count: 17863, strength: 0.987}
-  - {pair: mik-kersten ↔ richard-rumelt, count: 17861, strength: 0.994}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 240, strength: 0.661}
+  - {pair: matthew-skelton ↔ team-topologies, count: 207, strength: 0.572}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 179, strength: 0.416}
+  - {pair: matthew-skelton ↔ richard-rumelt, count: 138, strength: 0.334}
+  - {pair: mik-kersten ↔ richard-rumelt, count: 137, strength: 0.452}
 status: accepted
 confidence: 0.90
 origin: human

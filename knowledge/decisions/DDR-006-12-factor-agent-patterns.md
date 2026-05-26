@@ -2,11 +2,13 @@
 title: 12-Factor Agent Pattern Integration
 id: DDR-006
 created: 2026-04-13
-depth_score: 2
+frameworks:
+  - double-loop-learning
+depth_score: 4
 depth_signals:
-  file_size_kb: 3.7
+  file_size_kb: 3.9
   content_chars: 3706
-  entity_count: 0
+  entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 0

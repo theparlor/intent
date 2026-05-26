@@ -11,7 +11,7 @@ source: brainstorming session — persona browser + product dashboard design
 The Knowledge Engine is a production platform. Its outputs (personas, dossiers, industry scans, domain models) have value as portable artifacts scoped to an engagement or user.
 
 The **Knowledge Farm** is the carry-away product: a curated knowledge base instance containing:
-- Personas & voice renderings
+- Personas & persona renderings
 - Company dossiers
 - Industry scans
 - Domain models

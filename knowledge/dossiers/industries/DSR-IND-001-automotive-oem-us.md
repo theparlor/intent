@@ -4,11 +4,13 @@ type: dossier
 confidentiality: public
 created: 2026-04-06
 updated: 2026-04-06
+frameworks:
+  - product-operating-model
 depth_score: 4
 depth_signals:
   file_size_kb: 14.9
   content_chars: 14751
-  entity_count: 0
+  entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 0

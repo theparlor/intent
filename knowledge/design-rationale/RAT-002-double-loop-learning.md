@@ -9,22 +9,24 @@ frameworks:
   - Argyris
   - Beer
   - Seiden
+  - outcomes-over-output
+  - double-loop-learning
 depth_score: 4
 depth_signals:
-  file_size_kb: 4.4
+  file_size_kb: 4.5
   content_chars: 3523
-  entity_count: 4
+  entity_count: 6
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
 vocab_density: 0.28
 related_entities:
-  - {pair: josh-seiden ↔ marty-cagan, count: 68, strength: 0.211}
-  - {pair: josh-seiden ↔ jeff-patton, count: 61, strength: 0.335}
-  - {pair: josh-seiden ↔ teresa-torres, count: 49, strength: 0.197}
-  - {pair: josh-seiden ↔ consulting-operations, count: 48, strength: 0.024}
-  - {pair: josh-seiden ↔ coaching-methodology, count: 40, strength: 0.073}
+  - {pair: josh-seiden ↔ marty-cagan, count: 83, strength: 0.189}
+  - {pair: jeff-patton ↔ josh-seiden, count: 75, strength: 0.285}
+  - {pair: josh-seiden ↔ teresa-torres, count: 71, strength: 0.185}
+  - {pair: jeff-gothelf ↔ josh-seiden, count: 63, strength: 0.364}
+  - {pair: josh-seiden ↔ outcomes-over-output, count: 51, strength: 0.315}
 name: Double-Loop Learning as the Critical Feedback Path
 confidence: 0.85
 origin: agent

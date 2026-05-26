@@ -62,6 +62,98 @@ const SERVERS = [
     storage: ".intent/events/events.jsonl",
     events: ["system.status", "(consumes all 15 types)"],
   },
+  {
+    id: "knowledge",
+    name: "intent-knowledge",
+    phase: "knowledge",
+    port: 8004,
+    description: "Knowledge Engine: compile raw → knowledge, query, lint gaps/contradictions (DDR-005, 2026-04-06)",
+    tools: [
+      { name: "ingest", desc: "Compile raw/ sources → knowledge/ artifacts (personas, journeys, DDRs)" },
+      { name: "query", desc: "Query KB for personas, journeys, DDRs during spec authoring" },
+      { name: "lint", desc: "Detect gaps, contradictions, staleness — surfaces as signals to Notice" },
+      { name: "enrich", desc: "On-demand retroactive enrichment (suggested-first via lint)" },
+      { name: "redact", desc: "Apply confidentiality projection at tool level (DDR-016)" },
+    ],
+    schemas: ["Knowledge artifact (PER/JRN/DDR/THM/DOM/RAT)"],
+    storage: "raw/ (immutable), knowledge/ (compiled)",
+    events: ["knowledge.compiled", "knowledge.queried", "lint.gap_detected", "lint.contradiction_detected", "lint.staleness_detected"],
+  },
+];
+
+// DoR / DoD Gate Enforcement Layer (added 2026-04-14 per SIG-045/046)
+// Hard gates: work cannot start without DoR met, cannot close without DoD verified
+const GATES = [
+  {
+    id: "dor",
+    label: "Definition of Ready",
+    role: "Entry gate",
+    color: "#EC4899",
+    blocks: "dispatch to builder",
+    rule: "DoR failure → blocked from starting (blocked_if_unmet: true)",
+    template: "knowledge-engine/templates/dor.md",
+  },
+  {
+    id: "dod",
+    label: "Definition of Done",
+    role: "Exit gate",
+    color: "#EC4899",
+    blocks: "declaration of complete",
+    rule: "DoD failure → remediation list, not quiet deferral",
+    template: "knowledge-engine/templates/dod.md",
+  },
+];
+
+// Work types that use DoR/DoD (6 canonical types per dor-dod-library.md)
+const GATE_WORK_TYPES = [
+  "Skill Build",
+  "Spec Authoring",
+  "Engagement Kickoff",
+  "Engagement Closure",
+  "Persona Enrichment Pass",
+  "Critique Panel",
+];
+
+// Coherence Engineering stack — CE sits ABOVE Intent per DEFINITION.md §7
+// Each layer contains the ones below it
+const CE_STACK = [
+  {
+    tier: 4,
+    label: "Coherence Engineering",
+    scope: "team / system",
+    desc: "Multiple human + agent producers compose into coherent outputs. 5 axioms · 4 altitudes · 7 coexistence constraints.",
+    color: "#A855F7",
+    current: true,
+  },
+  {
+    tier: 3,
+    label: "Harness Engineering",
+    scope: "individual workflow",
+    desc: "Scaffolding that makes execution reliable",
+    color: "#64748B",
+  },
+  {
+    tier: 2,
+    label: "Context Engineering",
+    scope: "individual session",
+    desc: "What the model sees when it thinks",
+    color: "#64748B",
+  },
+  {
+    tier: 1,
+    label: "Prompt Engineering",
+    scope: "individual utterance",
+    desc: "What you say to the model",
+    color: "#64748B",
+  },
+];
+
+// The Intent → CE relationship per DEFINITION.md §7
+const CE_CHAIN = [
+  { label: "Coherence Engineering", desc: "Discipline — what is coherent, why, toward what vision", color: "#A855F7" },
+  { label: "Intent", desc: "Framework — Notice · Spec · Execute · Observe for individual work", color: "#A78BFA" },
+  { label: "Scope Resolvers", desc: "Per-artifact-type lookup tables — where does this belong", color: "#22D3EE" },
+  { label: "Write-through Hooks / Gates", desc: "Enforcement at creation time (DoR / DoD)", color: "#EC4899" },
 ];
 
 const AGENTS = [
@@ -86,7 +178,10 @@ export default function IntentArchitecture() {
   const [selectedServer, setSelectedServer] = useState(null);
 
   const server = SERVERS.find((s) => s.id === selectedServer);
-  const phaseColor = (id) => PHASES.find((p) => p.id === id)?.color || "#64748B";
+  const phaseColor = (id) => {
+    if (id === "knowledge") return "#F472B6";
+    return PHASES.find((p) => p.id === id)?.color || "#64748B";
+  };
 
   return (
     <div style={{
@@ -106,15 +201,17 @@ export default function IntentArchitecture() {
             <span style={{ fontSize: 13, color: "#475569" }}>Multi-Agent MCP Architecture</span>
           </div>
           <p style={{ color: "#475569", fontSize: 12, marginTop: 4 }}>
-            Three MCP servers · Six Claude Code subagents · Four-phase loop · $0/month
+            Four MCP servers · Six Claude Code subagents · Four-phase loop · DoR/DoD gates · Coherence Engineering above
           </p>
         </div>
 
         {/* View Toggle */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
           {[
+            { id: "ce", label: "CE Stack" },
             { id: "loop", label: "The Loop" },
             { id: "servers", label: "MCP Servers" },
+            { id: "gates", label: "DoR / DoD" },
             { id: "agents", label: "Subagents" },
             { id: "trust", label: "Trust & Autonomy" },
           ].map((v) => (
@@ -134,6 +231,173 @@ export default function IntentArchitecture() {
             >{v.label}</button>
           ))}
         </div>
+
+        {/* ─── CE Stack View (above Intent) ─── */}
+        {view === "ce" && (
+          <div>
+            {/* Discipline progression */}
+            <div style={{
+              background: "#0C1220", border: "1px solid #1E293B", borderRadius: 10,
+              padding: 20, marginBottom: 16,
+            }}>
+              <div style={{ color: "#A855F7", fontSize: 10, textTransform: "uppercase", marginBottom: 4, letterSpacing: "0.08em", fontWeight: 700 }}>
+                Discipline Progression (each contains the ones below)
+              </div>
+              <div style={{ color: "#475569", fontSize: 11, marginBottom: 16 }}>
+                From DEFINITION.md §1 — Coherence Engineering sits above Intent
+              </div>
+              <div style={{ display: "grid", gap: 6 }}>
+                {CE_STACK.map((tier) => (
+                  <div key={tier.tier} style={{
+                    display: "grid", gridTemplateColumns: "36px 220px 1fr", gap: 12,
+                    alignItems: "center",
+                    padding: "10px 14px",
+                    background: tier.current ? `${tier.color}10` : "#0F1729",
+                    border: `1px solid ${tier.color}${tier.current ? "60" : "20"}`,
+                    borderLeft: `3px solid ${tier.color}`,
+                    borderRadius: 6,
+                  }}>
+                    <span style={{ color: tier.color, fontWeight: 700, fontSize: 13 }}>T{tier.tier}</span>
+                    <div>
+                      <div style={{ color: tier.current ? tier.color : "#94A3B8", fontSize: 13, fontWeight: 600 }}>
+                        {tier.label}{tier.current && " ←"}
+                      </div>
+                      <div style={{ color: "#475569", fontSize: 10 }}>{tier.scope}</div>
+                    </div>
+                    <span style={{ color: "#64748B", fontSize: 11, lineHeight: 1.5 }}>{tier.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CE → Intent → Resolvers → Gates chain */}
+            <div style={{
+              background: "#0C1220", border: "1px solid #1E293B", borderRadius: 10,
+              padding: 20, marginBottom: 16,
+            }}>
+              <div style={{ color: "#A855F7", fontSize: 10, textTransform: "uppercase", marginBottom: 4, letterSpacing: "0.08em", fontWeight: 700 }}>
+                CE → Intent → Resolvers → Gates
+              </div>
+              <div style={{ color: "#475569", fontSize: 11, marginBottom: 16 }}>
+                Intent is not at the top of the stack. CE is. Intent is how CE is made operational.
+              </div>
+              <div style={{ display: "grid", gap: 4 }}>
+                {CE_CHAIN.map((row, i) => (
+                  <div key={row.label}>
+                    <div style={{
+                      padding: "10px 14px",
+                      background: "#0F1729",
+                      border: `1px solid ${row.color}30`,
+                      borderLeft: `3px solid ${row.color}`,
+                      borderRadius: 6,
+                      display: "grid", gridTemplateColumns: "240px 1fr", gap: 12, alignItems: "center",
+                    }}>
+                      <span style={{ color: row.color, fontSize: 13, fontWeight: 600 }}>{row.label}</span>
+                      <span style={{ color: "#94A3B8", fontSize: 11 }}>{row.desc}</span>
+                    </div>
+                    {i < CE_CHAIN.length - 1 && (
+                      <div style={{ textAlign: "center", color: "#334155", fontSize: 12, padding: "2px 0" }}>↓</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Five axioms summary */}
+            <div style={{
+              background: "#0C1220", border: "1px solid #1E293B", borderRadius: 10, padding: 16,
+            }}>
+              <div style={{ color: "#A855F7", fontSize: 10, textTransform: "uppercase", marginBottom: 8, letterSpacing: "0.08em", fontWeight: 700 }}>
+                Five Axioms (evaluation gate)
+              </div>
+              <div style={{ color: "#94A3B8", fontSize: 11, lineHeight: 1.7 }}>
+                <strong style={{ color: "#F8FAFC" }}>Non-duplicative</strong> (DRY) ·{" "}
+                <strong style={{ color: "#F8FAFC" }}>Non-competitive</strong> (bounded context) ·{" "}
+                <strong style={{ color: "#F8FAFC" }}>Chainable</strong> (Unix pipes) ·{" "}
+                <strong style={{ color: "#F8FAFC" }}>Composable</strong> (atomic + recomposable) ·{" "}
+                <strong style={{ color: "#F8FAFC" }}>Intentionally portable</strong> (12-factor).
+                Plus <em>vision alignment</em> as sixth anchor.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── DoR / DoD Gates View ─── */}
+        {view === "gates" && (
+          <div>
+            <div style={{
+              background: "#0C1220", border: "1px solid #1E293B", borderRadius: 10,
+              padding: 20, marginBottom: 16,
+            }}>
+              <div style={{ color: "#EC4899", fontSize: 10, textTransform: "uppercase", marginBottom: 4, letterSpacing: "0.08em", fontWeight: 700 }}>
+                Hard Gates — Added 2026-04-14 (SIG-045 / SIG-046)
+              </div>
+              <div style={{ color: "#475569", fontSize: 11, marginBottom: 16 }}>
+                Not checklists — hard gates. DoR failure = blocked from starting. DoD failure = blocked from closing.
+              </div>
+              <div style={{ display: "grid", gap: 10 }}>
+                {GATES.map((g) => (
+                  <div key={g.id} style={{
+                    padding: "14px 18px",
+                    background: "#0F1729",
+                    border: `1px solid ${g.color}40`,
+                    borderLeft: `3px solid ${g.color}`,
+                    borderRadius: 6,
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                      <span style={{ color: g.color, fontSize: 14, fontWeight: 700 }}>{g.label}</span>
+                      <span style={{ color: "#64748B", fontSize: 10, textTransform: "uppercase" }}>{g.role}</span>
+                    </div>
+                    <div style={{ color: "#94A3B8", fontSize: 12, marginTop: 6 }}>{g.rule}</div>
+                    <div style={{ color: "#475569", fontSize: 10, marginTop: 6 }}>
+                      Blocks: <code style={{ color: "#CBD5E1" }}>{g.blocks}</code>
+                      <span style={{ marginLeft: 12 }}>
+                        Template: <code style={{ color: "#CBD5E1" }}>{g.template}</code>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 6 work types */}
+            <div style={{
+              background: "#0C1220", border: "1px solid #1E293B", borderRadius: 10, padding: 16,
+            }}>
+              <div style={{ color: "#EC4899", fontSize: 10, textTransform: "uppercase", marginBottom: 8, letterSpacing: "0.08em", fontWeight: 700 }}>
+                6 Canonical Work Types (use DoR / DoD)
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
+                {GATE_WORK_TYPES.map((t) => (
+                  <div key={t} style={{
+                    padding: "8px 12px",
+                    background: "#0F1729",
+                    border: "1px solid #1E293B",
+                    borderRadius: 5,
+                    color: "#94A3B8",
+                    fontSize: 11,
+                  }}>{t}</div>
+                ))}
+              </div>
+            </div>
+
+            {/* Enforcement */}
+            <div style={{
+              background: "#0C1220", border: "1px solid #1E293B", borderRadius: 10,
+              padding: 16, marginTop: 16,
+            }}>
+              <div style={{ color: "#EC4899", fontSize: 10, textTransform: "uppercase", marginBottom: 8, letterSpacing: "0.08em", fontWeight: 700 }}>
+                Enforcement (5-Layer Build-Intake)
+              </div>
+              <div style={{ color: "#94A3B8", fontSize: 11, lineHeight: 1.6 }}>
+                Layer 1: PreToolUse hook (<code style={{ color: "#CBD5E1" }}>~/.claude/hooks/skill-intake-gate-check.sh</code>) ·{" "}
+                Layer 2: SessionStart reminder (<code style={{ color: "#CBD5E1" }}>build-intake-mandatory</code>) ·{" "}
+                Layer 3: Trigger breadth · Layer 4: Visible banner · Layer 5: Overwatch audit.
+                Bypass is logged to <code style={{ color: "#CBD5E1" }}>~/.claude/audit/build-intake-bypasses.log</code>.
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ─── The Loop View ─── */}
         {view === "loop" && (

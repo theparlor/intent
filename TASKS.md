@@ -8,16 +8,24 @@ domains:
   - consulting-operations
 created: 2026-03-29
 updated: 2026-03-30
-depth_score: 2
+frameworks:
+  - double-loop-learning
+depth_score: 4
 depth_signals:
-  file_size_kb: 4.8
+  file_size_kb: 5.3
   content_chars: 4564
-  entity_count: 0
+  entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
 vocab_density: 0.44
+related_entities:
+  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
+  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
+  - {pair: consulting-operations ↔ subaru, count: 41, strength: 0.125}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.092}
 ---
 # Tasks
 
@@ -101,6 +109,37 @@ vocab_density: 0.44
 - [ ] Enterprise adoption path design (blocked: practitioner validation)
 - [ ] Team size boundary research beyond 5 people (blocked: practitioner validation)
 
+## Upgrade Plan Items — 2026-05-20 Audit (L4 backlog)
+
+> Added 2026-05-20 from framework self-audit (14 items across 6 tracks).
+> Source: `.intent/specs/2026-05-20-upgrade-plan.md`
+
+### Track A — Catalog Completeness
+- [x] **A1** — Family 1.7 (Artificial-gate-architecture drift) appended to `learnings/process-drift-catalog.md` — DONE 2026-05-20 (commit 07d40cf)
+- [x] **A2** — Family 4.7 (Governance-skill-without-trigger) appended to `learnings/process-drift-catalog.md` — DONE 2026-05-20 (commit 07d40cf)
+
+### Track B — Hook Completeness
+- [x] **B1** — Layer 4 table-cell scanner: `COMPLETION_RE` in `hooks/closure-discipline-stop-check.sh` extended to catch `| Done |` / `| Complete |` / `| ✅ |` table cells — DONE 2026-05-20
+- [x] **B2** — Overwatch staleness SessionStart hook: `hooks/overwatch-staleness-check.sh` installed + registered — DONE 2026-05-20 (commit 07d40cf)
+- [ ] **B3** — Spec-age lint hook: PreToolUse/scheduled-task that identifies `.intent/specs/*.md` with `status: approved|ratified` + no corresponding `src/`/`bin/` code after 30 days. Emit signal per stale spec. (L4)
+
+### Track C — Documentation Refresh
+- [x] **C1** — CHANGELOG.md + VERSION bumped to `2026.05.20-0.11.0` — DONE 2026-05-20
+- [x] **C2** — TASKS.md updated with audit items (this section) — DONE 2026-05-20
+- [x] **C3** — Spawn prompt `spawn-prompts/framework-self-audit.md` authored — DONE 2026-05-20
+
+### Track D — Signal Stream Hygiene
+- [x] **D1** — ULID migration audit: 7 `SIG-NNN` + 79 date-slug legacy signals identified post-SPEC-003; migration tracking signal emitted — DONE 2026-05-20
+- [x] **D2** — `.intent/README.md` subdirectory index authored — DONE 2026-05-20
+
+### Track E — Implementation Gaps
+- [x] **E1** — MCP tool count: `tools/intent-mcp/server.py` has 6 tools (not 7); CLAUDE.md `## MCP Server (7 tools)` heading corrected to 6 — DONE 2026-05-20
+- [x] **E2** — FastMCP vs legacy migration: spec authored at `.intent/specs/SPEC-MCP-MIGRATION-2026-05-20.md` — DONE 2026-05-20
+- [x] **E3** — KE CLI trigger signal emitted: `SIG-KE-CLI-IDD-TRIGGER-2026-05-20.md` filed; `bin/intent-knowledge` implementation deferred to its own IDD Execute loop — DONE 2026-05-20
+
+### Track F — Observe Stage (L2 — deferred)
+- [ ] **F1** — Observe dashboard spec refresh: L2 gate (Brien's preferred visualization surface unknown). Options: Grafana (`tasks/grafana-dashboard.md`), custom artifact (`artifacts/` React), or hosted service. Awaiting directional signal from Brien before speccing. Once directed, implementation is L4.
+
 ---
 
-*Updated: 2026-04-05*
+*Updated: 2026-05-20*

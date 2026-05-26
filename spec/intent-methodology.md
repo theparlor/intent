@@ -18,11 +18,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.62
 related_entities:
-  - {pair: teresa-torres ↔ marty-cagan, count: 114, strength: 0.307}
-  - {pair: jeff-patton ↔ marty-cagan, count: 90, strength: 0.265}
-  - {pair: teresa-torres ↔ jeff-patton, count: 81, strength: 0.316}
-  - {pair: teresa-torres ↔ product-engineering-coaching, count: 75, strength: 0.117}
-  - {pair: teresa-torres ↔ consulting-operations, count: 74, strength: 0.035}
+  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
+  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
+  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
+  - {pair: product-engineering-coaching ↔ teresa-torres, count: 81, strength: 0.079}
+  - {pair: jeff-patton ↔ josh-seiden, count: 75, strength: 0.285}
 ---
 # Intent Methodology
 
@@ -109,6 +109,8 @@ The agent builds against the spec. Key principle: **the agent can make implement
 ### Observe
 
 Check reality against the contract. But also notice *new* things: edge cases the spec missed, architectural questions surfaced, adjacent workflows affected. Those observations feed back into Notice.
+
+**Metric-type grounding:** What to instrument at the Observe stage is governed by the measurement framework at `Core/frameworks/measurement/`. The key distinction: output metrics (signal count, spec→execution lag) tell you the loop is active; outcome-proxy metrics (observation→learning cycle time, spec drift rate) tell you the loop is useful. Instrument both, prioritize the latter. See `Core/frameworks/measurement/ARCHITECTURE.md#6-intent-observe-consumer-model` and `Core/frameworks/measurement/docs/examples/02-observe-loop-metrics.md`.
 
 ---
 

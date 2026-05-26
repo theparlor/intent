@@ -43,3 +43,20 @@
 **Decision:** Comprehensive rename: repo name, file names, file contents, memory files, cross-references
 **Challenges:** GitHub API doesn't support file deletion or rename (git mv). Required CLI cleanup script for stubs and renames. 68KB JSX file successfully pushed through API despite size concerns.
 **Source:** Cowork session 2026-03-28, commit history in theparlor/intent
+
+## 2026-05-20 — Reference-substrate wired as WS-DDR ID allocator (first consumer)
+
+**Context:** reference-substrate Phase 5 (2026-05-13) shipped a Python library + CLI capable of atomic ID allocation, but had zero live consumers. The highest-leverage first consumer is the WS-DDR workflow: WS-DDR IDs were hand-numbered in `.context/DECISIONS.md`, introducing collision risk as DDR count grows and parallel sessions mint IDs simultaneously.
+
+**Decision:** Wire reference-substrate as the WS-DDR allocation authority. `bin/mint-wsddr` is the Intent framework's entry point — it calls `reference_substrate.mint.allocate("WS-DDR")` against the reference-substrate farm at `Core/products/reference-substrate/farm/`. Sequence seeded to 99 (next = WS-DDR-099), preserving the hand-minted history of WS-DDR-001 through WS-DDR-098.
+
+**Usage:** `mint-wsddr` to allocate (side-effectful); `mint-wsddr --peek` to see next ID without committing the allocation.
+
+**Why:** Atomic file-locked sequence prevents parallel-session ID collisions (SIG-PERSONAS sub-agent concurrent numbering feedback). Single source of truth for WS-DDR numbering across sessions. Exercises all four reference-substrate ports (mint + resolve + lineage + promote) — activates WS-DDR-081 and WS-DDR-082 validation criteria.
+
+**Cross-repo artifacts:**
+- `Core/products/reference-substrate/.intent/decisions.md` — RS-D-009 (Phase 6 first-consumer wiring)
+- `Core/products/reference-substrate/farm/sequences/WS-DDR.seq` — seeded to 99
+- `Core/frameworks/intent/bin/mint-wsddr` — this wrapper
+
+**Source:** RS-UPGRADE-PLAN-2026-05-20 §Gap2, execution subagent 2026-05-20
