@@ -8,17 +8,17 @@ domains:
   - consulting-operations
 created: 2026-04-02
 updated: 2026-05-20
-version: 0.11.0
 depth_score: 4
 depth_signals:
-  file_size_kb: 8.6
-  content_chars: 7809
+  file_size_kb: 17.7
+  content_chars: 16972
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.26
+vocab_density: 0.18
+version: 0.11.0
 ---
 # Intent: Architecture — v0.11.0
 
@@ -106,9 +106,9 @@ The Intent loop — Notice → Spec → Execute → Observe — maps to three MC
 
 ### intent-knowledge (Port 8004)
 **Phase:** Cross-cutting (Layer 1)
-**Domain:** Knowledge base ingestion, query, and lint
-**Tools:** `ingest`, `query`, `lint` — per SPEC-001 and DDR-005
-**Note:** Specced; CLI implementation in `bin/intent-knowledge` pending. See Gap 7.1 / track E3 in `.intent/specs/2026-05-20-upgrade-plan.md`.
+**Domain:** Knowledge base ingestion, query, and lint — extended 2026-05-26 to include cross-surface substrate exposure (DEC-010)
+**Tools:** `ingest`, `query`, `lint` (existing per SPEC-001 / DDR-005) + `get`, `list`, `lineage`, `freshness` (substrate-exposure read verbs per DEC-010)
+**Note:** Specced; CLI implementation in `bin/intent-knowledge` pending. See Gap 7.1 / track E3 in `.intent/specs/2026-05-20-upgrade-plan.md`. Substrate exposure verbs land per `spec/substrate-exposure-architecture.md` (WS-DDR-099 + DEC-010, 2026-05-26).
 
 ---
 
