@@ -415,4 +415,17 @@ def _recalculate_agent_readiness(spec_id):
 
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=8002)
+    import logging
+
+    from port_resolver import resolve_port
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
+    host, port = resolve_port(
+        "intent-spec", 8002, port_env="INTENT_SPEC_PORT"
+    )
+    logging.getLogger("intent.spec").info(
+        "listening on http://%s:%d/mcp", host, port
+    )
+    mcp.run(transport="streamable-http", host=host, port=port)

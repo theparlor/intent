@@ -316,4 +316,17 @@ def suggest_signals_from_events(lookback_count: int = 50) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=8003)
+    import logging
+
+    from port_resolver import resolve_port
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
+    host, port = resolve_port(
+        "intent-observe", 8003, port_env="INTENT_OBSERVE_PORT"
+    )
+    logging.getLogger("intent.observe").info(
+        "listening on http://%s:%d/mcp", host, port
+    )
+    mcp.run(transport="streamable-http", host=host, port=port)
