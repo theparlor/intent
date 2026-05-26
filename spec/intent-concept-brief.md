@@ -83,7 +83,7 @@ The spec-driven development movement (Spec Kit, Kiro, Tessl) solves the engineer
 | **Spec-Driven Development** | How specs become code via AI agents | GitHub Spec Kit, Kiro, Tessl |
 | **AI Coding Assistants** | How individuals get AI help | Copilot, Claude Code, Cursor |
 
-Intent sits at the intersection of product thinking (Cagan, Torres, Patton), spec-driven development (Spec Kit, Kiro), and agent observability (Entire.io).
+Intent sits at the intersection of product thinking (Cagan, Torres, Patton), spec-driven development (Spec Kit, Kiro), and agent authoring provenance (Entire.io).
 
 ---
 

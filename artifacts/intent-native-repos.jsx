@@ -388,7 +388,7 @@ export default function IntentNativeRepos() {
             Intent-Native Repos
           </h1>
           <p style={{ color: COLORS.textMuted, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-            What every repo needs to follow the Intent pattern \u2014 and how Entire.io closes the loop from execution back into the spec layer.
+            What every repo needs to follow the Intent pattern \u2014 and how Entire.io seeds the loop by capturing authoring provenance; the loop closes at the Observe leg via runtime telemetry plus signal promotion.
           </p>
         </div>
 

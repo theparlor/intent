@@ -52,7 +52,7 @@ function OntologyTab() {
       icon: "◈",
       definition: "An observed change, insight, or opportunity that enters the system.",
       properties: ["Source (Entire trace, user research, market, metrics, agent observation)", "Timestamp", "Confidence score", "Related intents"],
-      examples: ["Entire.io trace shows 3 failed auth attempts in deploy pipeline", "User interview reveals confusion about onboarding flow", "Agent observe-cycle detects drift between spec and implementation"],
+      examples: ["Production metrics show 3 failed auth attempts in deploy pipeline", "User interview reveals confusion about onboarding flow", "Agent observe-cycle detects drift between spec and implementation"],
       key: "Signals are the raw material of discovery. They don't prescribe solutions — they surface reality. Every signal has a source you can trace back to.",
     },
     {
@@ -416,7 +416,7 @@ function AgentFlowTab() {
       name: "Signal Intake",
       color: COLORS.signal,
       agent: "Observe-Cycle Agent",
-      input: "Entire.io traces, metrics, user signals",
+      input: "OTel runtime metrics, contract assertion results, Entire.io authoring traces, user signals",
       output: ".intent/signals/ entries",
       description: "Agent reads Entire session metadata, extracts patterns (failures, drift, unexpected behaviors), writes structured signal files. Runs on schedule or trigger.",
       parallel: false,

@@ -12,8 +12,8 @@ technologies:
   - slack
 depth_score: 4
 depth_signals:
-  file_size_kb: 7.0
-  content_chars: 6420
+  file_size_kb: 7.1
+  content_chars: 6534
   entity_count: 2
   slide_count: 0
   sheet_count: 0
@@ -21,11 +21,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.31
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
-  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
-  - {pair: consulting-operations ↔ subaru, count: 41, strength: 0.125}
-  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.092}
+  - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
+  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}
+  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.121}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.124}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.085}
 ---
 # Decision Log
 
@@ -126,6 +126,8 @@ Each decision follows a consistent structure:
 
 **Decided:** 2026-03-28
 
+**Superseded by: DEC-009 (2026-05-26)** — Entire.io scoping corrected from "observability layer" to "authoring-provenance recorder."
+
 **Context:** Needed to clarify where Intent sits relative to existing tools (Kiro, GitHub Spec Kit, Claude Code, etc.)
 
 **Decision:** Intent sits ABOVE spec-driven dev tools, which sit above AI coding assistants. Entire.io is the observability layer that runs alongside all three.
@@ -141,6 +143,25 @@ Each decision follows a consistent structure:
 **Decision:** Stage it: thought leadership (manifesto + case studies) → methodology product (playbook + workshops) → tooling (conditional on validation).
 
 **Rationale:** Building tooling before validating the methodology is premature. The highest-leverage move is content + interviews, not code. Need 5 in-depth interviews with teams struggling with AI + Agile friction before committing to tooling investment.
+
+### DEC-009: Entire.io scoped as authoring provenance (supersedes DEC-007)
+
+**Decided:** 2026-05-26
+
+**Context:** DEC-007 (2026-03-28) framed Entire.io as "the observability layer." Subsequent framework development (observe/ OTel stack, observations/ runtime feedback, Witness federating substrate) revealed this framing is over-broad: Entire captures authoring-side provenance only.
+
+**Alternatives considered:**
+- (a) Leave DEC-007 as-is and note the limitation elsewhere — rejected, leaves the over-broad claim in canonical canon.
+- (b) Narrow Entire's role to "Execute-phase session-recovery only" — rejected, loses legitimate provenance-input value to events.jsonl.
+- (c) Supersede with explicit authoring-provenance scope — selected.
+
+**Decision:** Entire.io is the authoring-provenance recorder that runs alongside spec-driven dev tools and AI coding assistants. Runtime observability is owned by the OTel/Grafana stack (`observe/`) and the `observations/` runtime-feedback directory. Entire is one event source feeding `.intent/events/events.jsonl` via the Witness adapter (`Core/products/witness/engine/adapters/entire-io.py`).
+
+**Rationale:** Granularity = git commit + intra-session checkpoints. Capture window = during the agent session. Outcome verification (did the artifact work in production?) is not in Entire's capability surface — that lives in the OTel stack with contract assertions, metric thresholds, and incident catalog. Conflating the two created an over-trust pattern in framework dev-continuity surfaces while the rendered spec surface (observe.html) was already OTel-native. This DDR aligns the documentation with the architecture.
+
+**Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/.intent/signals/2026-05-26-entire-scope-audit-and-observability-delta.md`
+
+---
 
 ## Where Decisions Live
 

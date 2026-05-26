@@ -16,8 +16,8 @@ thought_leaders:
   - josh-seiden
 depth_score: 6
 depth_signals:
-  file_size_kb: 34.4
-  content_chars: 19181
+  file_size_kb: 34.7
+  content_chars: 19189
   entity_count: 5
   slide_count: 0
   sheet_count: 0
@@ -25,11 +25,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.36
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
-  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
-  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
-  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
-  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
+  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
+  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.273}
+  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.311}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 104, strength: 0.092}
+  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.204}
 ---
 # Intent — Development Continuity Guide
 
@@ -129,7 +129,8 @@ Each level has a clear owner, clear transitions, and clear events. This replaces
 - **△ Practitioner-Architect** (amber) — Senior ICs, system thinkers. Primary: Notice, Spec.
 - **◇ Product-Minded Leader** (blue) — PMs, business context. Primary: Notice, Observe.
 - **○ Design-Quality Advocate** (purple) — Designers/QA, contract quality. Primary: Spec, Observe.
-- **◉ AI Agent** (green) — Claude Code, GitHub Actions, Entire.io. Primary: Execute, Observe.
+- **◉ AI Agent** (green) — Claude Code, GitHub Actions. Primary: Execute, Observe.
+  - **Authoring Provenance Sources:** Entire.io session traces, Granola transcripts, session-ledger md (feed Notice and Observe as event sources, not as agents).
 
 ### Event System
 15 OTel-compatible events across 6 emission mechanisms. Events stored in `.intent/events/events.jsonl`. Schema: version, event, timestamp, trace_id (=Intent), span_id (=work unit), parent_id (=hierarchy), source, data.
@@ -140,7 +141,7 @@ Each level has a clear owner, clear transitions, and clear events. This replaces
 - `.intent/` — Work artifacts (signals, intents, specs, contracts, decisions, events, templates)
 - `observations/` — Runtime feedback (metrics, incidents) that feeds back into knowledge base and specs
 - `.claude/` — Agent reasoning (project context, session transcripts)
-- `.entire/` — Observability (execution traces from Entire.io)
+- `.entire/` — Authoring provenance (agent-session traces from Entire.io). One source feeding `.intent/events/events.jsonl`.
 
 ### Signal Capture System
 A 5-tier adapter architecture for capturing signals from every surface where practitioners work:

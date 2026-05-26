@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.11
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
-  - {pair: consulting-operations ↔ marty-cagan, count: 60, strength: 0.1}
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
-  - {pair: consulting-operations ↔ subaru, count: 41, strength: 0.125}
-  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.092}
+  - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
+  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}
+  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.121}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.124}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.085}
 ---
 # Intent Product Roadmap
 
@@ -171,10 +171,11 @@ Execute has the event types, trace propagation is task-specced with explicit cod
 - Contract verification tool — given a spec with contracts, check whether the implementation satisfies them (could be as simple as "run these tests")
 - Entire.io integration — Brien already has Entire capturing agent reasoning alongside commits. Bridge that into Intent's event stream.
 
+**Boundary resolved 2026-05-26 (SIG-ENTIRE-SCOPE-2026-05-26):** Entire.io records authoring-side provenance; runtime observability is owned by the OTel/Grafana stack via `observe/`. Entire is one event source feeding `events.jsonl` (Witness adapter); it does not duplicate or replace the runtime stack.
+
 **Learn (validate assumptions):**
 - How much execution observability do teams actually want? Full traces? Just start/stop? Only failures?
 - Do agents need to *read* Intent specs natively, or is a human always translating?
-- What's the right boundary between Intent's observability and tools like Entire.io that already instrument agent execution?
 
 ---
 
