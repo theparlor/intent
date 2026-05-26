@@ -9,20 +9,20 @@ thought_leaders:
 summary: "A spec-driven SDLC for the AI-augmented practitioner. Replaces Agile ceremony overhead with a continuous loop — notice, spec, execute, observe — where specification quality is the bottleneck, not delivery velocity."
 depth_score: 5
 depth_signals:
-  file_size_kb: 9.5
-  content_chars: 8223
+  file_size_kb: 10.0
+  content_chars: 8767
   entity_count: 2
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 1
-vocab_density: 0.62
+vocab_density: 0.58
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
-  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
-  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
-  - {pair: product-engineering-coaching ↔ teresa-torres, count: 81, strength: 0.079}
-  - {pair: jeff-patton ↔ josh-seiden, count: 75, strength: 0.285}
+  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
+  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.273}
+  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.311}
+  - {pair: josh-seiden ↔ teresa-torres, count: 88, strength: 0.203}
+  - {pair: product-engineering-coaching ↔ teresa-torres, count: 88, strength: 0.082}
 ---
 # Intent Methodology
 

@@ -2,18 +2,24 @@
 title: Spawn Prompt — Investigate Cowork sandbox git-write friction
 id: SPAWN-COWORK-GIT-FRICTION-INVESTIGATION
 type: spawn-prompt
-target: cowork-or-cc
 created: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 9.9
+  content_chars: 8943
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.22
+target: cowork-or-cc
 status: open-investigation
 upstream_control_path: Core/frameworks/intent/spawn-prompts/cowork-sandbox-git-friction-investigation.md (this file)
-catch_mechanism: this spawn prompt is the investigation surface; findings should land at Core/frameworks/intent/learnings/process-drift-catalog.md as a new anti-pattern entry if the hypothesis confirms
-pipeline_survival: self-contained pasteable artifact; the reproducer is concrete; the L0 boundary (Brien-only host commits) is the symptom this investigation is naming
-usage: |
-  cat ~/Workspaces/Core/frameworks/intent/spawn-prompts/cowork-sandbox-git-friction-investigation.md | pbcopy
-  Then open a fresh Cowork or Claude Code session (CC preferred for filesystem-level investigation).
-  Pin Sonnet for the investigation; Opus only if root-cause analysis needs judgment.
+catch_mechanism: "this spawn prompt is the investigation surface; findings should land at Core/frameworks/intent/learnings/process-drift-catalog.md as a new anti-pattern entry if the hypothesis confirms"
+pipeline_survival: "self-contained pasteable artifact; the reproducer is concrete; the L0 boundary (Brien-only host commits) is the symptom this investigation is naming"
+usage: "cat ~/Workspaces/Core/frameworks/intent/spawn-prompts/cowork-sandbox-git-friction-investigation.md | pbcopy Then open a fresh Cowork or Claude Code session (CC preferred for filesystem-level investigation). Pin Sonnet for the investigation; Opus only if root-cause analysis needs judgment."
 ---
-
 # Investigation — Cowork sandbox git-write friction in IDD flow
 
 ## The hypothesis Brien is naming

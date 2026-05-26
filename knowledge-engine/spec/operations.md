@@ -20,11 +20,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.37
 related_entities:
-  - {pair: andrej-karpathy ↔ stafford-beer, count: 3, strength: 0.6}
-  - {pair: christopher-alexander ↔ stafford-beer, count: 2, strength: 0.667}
-  - {pair: chris-argyris ↔ stafford-beer, count: 2, strength: 0.5}
-  - {pair: andrej-karpathy ↔ christopher-alexander, count: 2, strength: 0.4}
-  - {pair: andrej-karpathy ↔ chris-argyris, count: 2, strength: 0.333}
+  - {pair: andrej-karpathy ↔ stafford-beer, count: 3, strength: 0.429}
+  - {pair: andrej-karpathy ↔ chris-argyris, count: 3, strength: 0.375}
+  - {pair: chris-argyris ↔ double-loop-learning, count: 3, strength: 0.068}
+  - {pair: christopher-alexander ↔ stafford-beer, count: 2, strength: 0.5}
+  - {pair: andrej-karpathy ↔ christopher-alexander, count: 2, strength: 0.333}
 ---
 # Domain Knowledge Base Operations
 

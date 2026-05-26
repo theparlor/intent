@@ -4,11 +4,21 @@ id: TEMPLATE-DECISION-ATOM
 type: template
 created: 2026-05-20
 updated: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.7
+  content_chars: 6109
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.16
 status: canonical
 origin: brien-original
-upstream_control_path: Core/frameworks/intent/knowledge-engine/templates/decision-atom.md (this file) + Layer 5 hook (autonomy-grant-dispatch-prompt-check.sh) blocks dispatch prompts that instruct subagents to produce status:proposed atoms on 4-gate-passing work
-catch_mechanism: Layer 4 Stop hook catches proposal-framing in parent-session response text; Layer 5 dispatch hook catches proposal-framing injected into subagent prompts before dispatch; this template's default status:ratified + required gate_failure field for non-ratified atoms makes drift visible at the artifact level
-pipeline_survival: decision atoms produced from this template carry the 4-gate frontmatter; any future audit of .intent/decisions/ directories will find ratified atoms with verifiable gate records; non-ratified atoms are distinguishable by the presence of gate_failure
+upstream_control_path: "Core/frameworks/intent/knowledge-engine/templates/decision-atom.md (this file) + Layer 5 hook (autonomy-grant-dispatch-prompt-check.sh) blocks dispatch prompts that instruct subagents to produce status:proposed atoms on 4-gate-passing work"
+catch_mechanism: "Layer 4 Stop hook catches proposal-framing in parent-session response text; Layer 5 dispatch hook catches proposal-framing injected into subagent prompts before dispatch; this template's default status:ratified + required gate_failure field for non-ratified atoms makes drift visible at the artifact level"
+pipeline_survival: "decision atoms produced from this template carry the 4-gate frontmatter; any future audit of .intent/decisions/ directories will find ratified atoms with verifiable gate records; non-ratified atoms are distinguishable by the presence of gate_failure"
 related_specs:
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md
   - Core/frameworks/intent/spec/closure-discipline-enforcement.md
@@ -19,9 +29,7 @@ related_signals:
   - SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19 (the drift event that motivated this template)
 related_examples:
   - Core/products/cast/.worktrees/element-substrate-recursive-arb/.intent/decisions/2026-05-19-peer-authored-pipeline-section-11-answer-drafts.md
-depth_score: 4
 ---
-
 # Decision Atom — Template
 
 ## What This Template Is

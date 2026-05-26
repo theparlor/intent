@@ -6,8 +6,8 @@ created: 2026-05-20
 updated: 2026-05-20 (overwatch integration; overwatch is the canonical work-backlog feeder)
 depth_score: 4
 depth_signals:
-  file_size_kb: 24.6
-  content_chars: 18590
+  file_size_kb: 24.8
+  content_chars: 18411
   entity_count: 0
   slide_count: 0
   sheet_count: 0

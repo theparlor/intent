@@ -14,8 +14,8 @@ thought_leaders:
   - josh-seiden
 depth_score: 4
 depth_signals:
-  file_size_kb: 4.2
-  content_chars: 3563
+  file_size_kb: 4.3
+  content_chars: 3588
   entity_count: 3
   slide_count: 0
   sheet_count: 0
@@ -23,11 +23,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.56
 related_entities:
-  - {pair: josh-seiden ↔ marty-cagan, count: 83, strength: 0.189}
-  - {pair: jeff-patton ↔ josh-seiden, count: 75, strength: 0.285}
-  - {pair: josh-seiden ↔ teresa-torres, count: 71, strength: 0.185}
-  - {pair: jeff-gothelf ↔ josh-seiden, count: 63, strength: 0.364}
-  - {pair: consulting-operations ↔ teresa-torres, count: 62, strength: 0.117}
+  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.204}
+  - {pair: josh-seiden ↔ teresa-torres, count: 88, strength: 0.203}
+  - {pair: jeff-patton ↔ josh-seiden, count: 81, strength: 0.276}
+  - {pair: josh-seiden ↔ outcomes-over-output, count: 68, strength: 0.364}
+  - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
 ---
 # Spec Template: Intent → Shape → Contract
 

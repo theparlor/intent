@@ -4,11 +4,21 @@ id: TEMPLATE-SUBAGENT-DISPATCH-PROMPT
 type: template
 created: 2026-05-20
 updated: 2026-05-20
+depth_score: 4
+depth_signals:
+  file_size_kb: 8.6
+  content_chars: 7434
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
 status: canonical
 origin: brien-original
 upstream_control_path: Core/frameworks/intent/knowledge-engine/templates/subagent-dispatch-prompt.md (this file)
-catch_mechanism: Layer 5 hook (autonomy-grant-dispatch-prompt-check.sh) inspects every Agent dispatch prompt for proposal-framing drift before the subagent fires; templates produced from this file include the 4-gate preamble which structurally prevents the drift vector documented in SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19
-pipeline_survival: template is standalone; future dispatch prompts inherit the preamble by copy-paste; hook remains active regardless of template usage
+catch_mechanism: "Layer 5 hook (autonomy-grant-dispatch-prompt-check.sh) inspects every Agent dispatch prompt for proposal-framing drift before the subagent fires; templates produced from this file include the 4-gate preamble which structurally prevents the drift vector documented in SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19"
+pipeline_survival: "template is standalone; future dispatch prompts inherit the preamble by copy-paste; hook remains active regardless of template usage"
 related_specs:
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md (Layer 5 spec)
   - Core/frameworks/intent/spec/closure-discipline-enforcement.md
@@ -17,9 +27,7 @@ related_hooks:
   - Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh
 related_signals:
   - SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19 (drift vector this template prevents)
-depth_score: 4
 ---
-
 # Subagent Dispatch Prompt — Template
 
 ## What This Template Is

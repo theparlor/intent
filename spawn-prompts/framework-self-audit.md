@@ -1,13 +1,22 @@
 ---
-id: SPAWN-FRAMEWORK-SELF-AUDIT
 title: Intent Framework — Self-Audit Prompt
+id: SPAWN-FRAMEWORK-SELF-AUDIT
 type: spawn-prompt
+created: 2026-05-20
+depth_score: 2
+depth_signals:
+  file_size_kb: 4.8
+  content_chars: 4518
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.22
 scope: framework-only
 weight: light
-created: 2026-05-20
 parent: overnight-exhaustive-upgrade.md
 ---
-
 # Intent Framework Self-Audit
 
 > Lighter than `overnight-exhaustive-upgrade.md`. Targets the Intent framework repo only.

@@ -5,7 +5,7 @@ type: spawn-prompt
 created: 2026-05-20
 depth_score: 4
 depth_signals:
-  file_size_kb: 5.7
+  file_size_kb: 5.8
   content_chars: 5174
   entity_count: 0
   slide_count: 0

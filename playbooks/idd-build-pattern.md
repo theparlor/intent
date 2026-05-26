@@ -4,7 +4,7 @@ id: PLAYBOOK-IDD-BUILD-PATTERN-001
 type: playbook
 depth_score: 4
 depth_signals:
-  file_size_kb: 16.3
+  file_size_kb: 16.5
   content_chars: 15493
   entity_count: 0
   slide_count: 0

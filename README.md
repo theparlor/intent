@@ -8,7 +8,6 @@ domains:
   - consulting-operations
 created: 2026-03-29
 updated: 2026-05-20
-version: 0.11.0
 technologies:
   - jira
 thought_leaders:
@@ -19,22 +18,23 @@ thought_leaders:
 frameworks:
   - product-operating-model
   - outcomes-over-output
-depth_score: 4
+depth_score: 6
 depth_signals:
-  file_size_kb: 4.9
-  content_chars: 3701
+  file_size_kb: 7.0
+  content_chars: 5808
   entity_count: 7
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 1.89
+vocab_density: 1.55
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
-  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
-  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
-  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
-  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
+  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
+  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.273}
+  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.311}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 104, strength: 0.092}
+  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.204}
+version: 0.11.0
 architecture: sibling-composable
 pipeline_position: team-operating-model
 known_siblings:

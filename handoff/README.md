@@ -26,11 +26,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.76
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
-  - {pair: jeff-patton ↔ teresa-torres, count: 121, strength: 0.32}
-  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
-  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
-  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
+  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
+  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.273}
+  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.311}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 104, strength: 0.092}
+  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.204}
 ---
 # Intent Handoff Package — README
 

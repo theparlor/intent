@@ -14,7 +14,7 @@ technologies:
   - slack
 depth_score: 5
 depth_signals:
-  file_size_kb: 16.1
+  file_size_kb: 16.0
   content_chars: 15500
   entity_count: 1
   slide_count: 0
@@ -23,11 +23,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.06
 related_entities:
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.132}
-  - {pair: knowledge-primitives ↔ product-taxonomy-operating-models, count: 18, strength: 0.72}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.124}
   - {pair: knowledge-engine ↔ knowledge-primitives, count: 18, strength: 0.667}
-  - {pair: knowledge-engine ↔ product-taxonomy-operating-models, count: 18, strength: 0.529}
-  - {pair: knowledge-engine ↔ matthew-skelton, count: 13, strength: 0.035}
+  - {pair: knowledge-primitives ↔ product-taxonomy-operating-models, count: 18, strength: 0.667}
+  - {pair: knowledge-engine ↔ product-taxonomy-operating-models, count: 18, strength: 0.5}
+  - {pair: knowledge-engine ↔ matthew-skelton, count: 14, strength: 0.033}
 ---
 # HumanLayer Approval Patterns: Applicability to Intent Orchestrator
 

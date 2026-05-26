@@ -4,8 +4,8 @@ id: PLAYBOOK-CROSS-PRODUCT-APPLICABILITY-001
 type: applicability-map
 depth_score: 4
 depth_signals:
-  file_size_kb: 20.3
-  content_chars: 19070
+  file_size_kb: 20.5
+  content_chars: 18887
   entity_count: 0
   slide_count: 0
   sheet_count: 0

@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 1.21
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
-  - {pair: jeff-patton ↔ marty-cagan, count: 121, strength: 0.271}
-  - {pair: marty-cagan ↔ product-engineering-coaching, count: 96, strength: 0.089}
-  - {pair: coaching-methodology ↔ marty-cagan, count: 92, strength: 0.089}
-  - {pair: josh-seiden ↔ marty-cagan, count: 83, strength: 0.189}
+  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
+  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.273}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 104, strength: 0.092}
+  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.204}
+  - {pair: coaching-methodology ↔ marty-cagan, count: 95, strength: 0.087}
 ---
 # The Ari Conversation — Primary Signal
 

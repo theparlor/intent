@@ -32,11 +32,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.45
 related_entities:
-  - {pair: manuel-pais ↔ matthew-skelton, count: 240, strength: 0.661}
-  - {pair: matthew-skelton ↔ team-topologies, count: 207, strength: 0.572}
-  - {pair: marty-cagan ↔ teresa-torres, count: 185, strength: 0.371}
-  - {pair: matthew-skelton ↔ mik-kersten, count: 179, strength: 0.416}
-  - {pair: matthew-skelton ↔ richard-rumelt, count: 138, strength: 0.334}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 263, strength: 0.634}
+  - {pair: matthew-skelton ↔ team-topologies, count: 230, strength: 0.556}
+  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 197, strength: 0.409}
+  - {pair: matthew-skelton ↔ richard-rumelt, count: 161, strength: 0.339}
 ---
 # Intent Project: Handoff Context & Prompt
 
