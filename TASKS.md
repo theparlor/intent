@@ -41,8 +41,17 @@ related_entities:
 
 ### Ingest Pipeline
 - [ ] Implement `ingest` operation: drop source in raw/ → LLM compiles into knowledge artifacts → updates _index.md + log.md
-- [ ] Wire ingest into intent-notice MCP server (or new intent-knowledge server)
+- [ ] Wire ingest into intent-notice MCP server (or new intent-knowledge server) — see WS-DDR-099 + DEC-010 (2026-05-26): `intent-knowledge` MCP server is now the scoped host for ingest + substrate-exposure verbs
 - [ ] Test with Intent's own dogfood data as first raw/ corpus
+
+### Substrate Exposure Phase 1 — added 2026-05-26 (WS-DDR-099 + DEC-010 + DEC-011)
+- [x] **DEC-011 scaffold shipped:** `bin/intent-init` (intent@bd3f49f, 40/40 tests) + `hooks/session-end.sh` (intent@b6d837d) + `.intent/classification.yaml` schema docs (intent@63c84ba)
+- [x] **library-index composition path investigated:** report at `spec/library-index-composition-investigation-2026-05-26.md` (intent@53df962); recommended half-day Port A extension
+- [ ] **library-index-mcp Port A `library_search_ranked` tool** — in progress, dispatched 2026-05-26
+- [ ] **intent-knowledge MCP server 5 substrate verbs** — in progress, dispatched 2026-05-26 (query/get/list/lineage/freshness with classification enforcement)
+- [ ] **Deploy `intent-knowledge.fastmcp.cloud/mcp`** — pending Agent 2 + Agent 4 completion
+- [ ] **`entire-io.py` adapter** (WIT-004 #5) — separate Witness track; activates Tier 2 federation for Entire-trace path
+- [ ] **Hook `session-end.sh` into Claude Code Stop event** — wiring step for per-product activation
 
 ### Query Operation
 - [ ] Implement `query` operation: question → read _index.md → synthesize answer with [[citations]] → offer to file as new knowledge artifact

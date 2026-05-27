@@ -25,7 +25,7 @@ source_of_truth: Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/01-trac
 
 ## TL;DR
 
-**Decision shape (proposed):** MCP-front + repo-as-truth composition. Phase 1 is read-only. Phase 2 adds capture-from-anywhere write-back.
+**Decision shape (accepted 2026-05-26 — WS-DDR-099 + DEC-010):** MCP-front + repo-as-truth composition. Phase 1 is read-only. Phase 2 adds capture-from-anywhere write-back.
 
 - **Plane of truth:** the `theparlor/intent` repo (and per-product `.intent/` directories in their respective repos). Versioned, git-tracked, append-only-on-events. Single source of truth — already-existing, just under-exposed.
 - **Reachability mechanism:** the existing **intent-knowledge MCP server** (port 8004, today specced/CLI-pending) extended to expose substrate query verbs. Runs on FastMCP Cloud / Cloudflare Workers, same infra family as `intent-notice` / `intent-spec` / `intent-observe`.
@@ -158,7 +158,7 @@ The architecture is designed tier-aware on Day 1 so engagement substrate adds *c
 
 1. **Extend `intent-knowledge` MCP server (port 8004) with the five verbs above.** The server is already specced; the CLI implementation in `bin/intent-knowledge` is pending (Gap 7.1 / track E3 in `.intent/specs/2026-05-20-upgrade-plan.md`). This is the natural next milestone for that track, with the substrate-exposure use case as the forcing function. **Every verb takes a `scope_token` argument from the MCP client config and runs every response through a classification check before return.** This is load-bearing — it's the policy enforcement point that lets engagement-substrate query light up later by config drop, not by refactor.
 2. **Compose with `library-index` for relevance filtering.** library-index already runs BM25 + vector over the 39k+ file graph. The intent-knowledge server calls library-index's existing query interface for the `query` verb; `get` / `list` / `lineage` / `freshness` go directly against the repo file tree. **Library-index entries carry classification metadata** so the filter respects scope at retrieval time, not just at response time.
-3. **Declare the `.intent/classification.yaml` schema and require it at product creation.** Format: `tier: public | internal | confidential:<engagement>`. Default `internal` if absent for internal products; required-explicit for engagement-shaped paths. `bin/intent-init` (DEC-011) writes the file at scaffold time. The schema is the contract surface that the MCP server reads on every query.
+3. **Declare the `.intent/classification.yaml` schema and require it at product creation.** ✅ **Shipped 2026-05-26** (intent@63c84ba — schema doc at `spec/classification-schema.md`). Format: `tier: public | internal | confidential:<engagement>`. Default `internal` if absent for internal products; required-explicit for engagement-shaped paths. `bin/intent-init` ✅ **shipped 2026-05-26** (intent@bd3f49f, 40/40 tests) writes the file at scaffold time. The schema is the contract surface that the MCP server reads on every query.
 4. **Implement binary classification enforcement at the MCP server.** Day 1 enforcement is binary: scope token matches classification → return content; scope token does not match → return absent (verb-dependent: `query` returns no hits, `get` returns 404, `list` omits, `lineage` truncates with explicit "lineage continues outside your scope" marker). Deferred to Phase 2: the *shaped-view* path that returns a redacted version rather than absent.
 5. **Deploy to FastMCP Cloud** as `intent-knowledge.fastmcp.cloud/mcp`, completing the four-server family.
 6. **Register the endpoint in chat-surface configs** (Cowork, Claude.ai, mobile) with the Day-1 scope catalog: `internal` for trusted authenticated surfaces, no engagement scopes issued Day 1.
@@ -196,7 +196,23 @@ The architecture is designed tier-aware on Day 1 so engagement substrate adds *c
 
 1. **Latency from chat surface → MCP server → repo + library-index.** Cloudflare Workers cold-start (~100–300ms) + a library-index query (depends on the qmd implementation) + a repo file fetch. Probably acceptable for human-pace queries (~1s end-to-end), but worth measuring on first deploy. Mitigation: aggressive caching of library-index query results, since substrate updates happen at human cadence (not request cadence).
 2. **library-index API surface as currently exposed to MCP.** Need to confirm library-index has an existing API surface usable from intent-knowledge — if not, exposing one is a sub-milestone of Phase 1 (and is in scope for the existing E3 track). This is the one engineering unknown.
-3. **PII / client-engagement redaction.** Originally proposed as Phase 2; **moved into Phase 1 then refined per Brien's D5-refined close of 2026-05-26**. What's in Phase 1: the tier-aware *architecture* — classification schema, scope-token mechanism, binary enforcement at the MCP server. What's deferred to Phase 2 / on-demand: per-engagement redaction-map authoring, shaped-view substitution code, inbound redaction. The architectural shape never refactors; the redaction *content* lights up when needed.
+3. **PII / client-engagement redaction.** Originally proposed as Phase 2; **moved into Phase 1 then refined per Brien's D5-refined close of 2026-05-26**. What's in Phase 1 — and now shipped: the tier-aware *architecture* — classification schema ✅ (intent@63c84ba), classification.yaml writer ✅ (intent@bd3f49f via `bin/intent-init`), scope-token mechanism and binary enforcement at the MCP server (in progress — see intent-knowledge follow-on). What's deferred to Phase 2 / on-demand: per-engagement redaction-map authoring, shaped-view substitution code, inbound redaction. The architectural shape never refactors; the redaction *content* lights up when needed.
+
+## Phase 1 progress checkpoint (2026-05-26)
+
+| Component | Status | Commit |
+|---|---|---|
+| WS-DDR-099 filed | ✅ accepted 2026-05-26 | workspaces-governance@472c8b0 |
+| DEC-010 filed (intent-knowledge scope extension) | ✅ accepted 2026-05-26 | intent@6e938fb |
+| DEC-011 filed (bin/intent-init scaffold) | ✅ accepted 2026-05-26 | intent@6e938fb |
+| `bin/intent-init` Python CLI implemented | ✅ shipped 2026-05-26, 40/40 tests | intent@bd3f49f |
+| `.intent/classification.yaml` schema v1 | ✅ shipped 2026-05-26 | intent@63c84ba |
+| `hooks/session-end.sh` Tier 1 emitter | ✅ shipped 2026-05-26 | intent@b6d837d |
+| library-index composition investigation (DEC-010 follow-up) | ✅ report filed | intent@53df962 |
+| `library_search_ranked` Port A tool on library-index-mcp | ⚙ in progress (Agent 4) | TBD |
+| `intent-knowledge` MCP server 5 substrate verbs (DEC-010) | ⚙ in progress (Agent 2) | TBD |
+| Deploy to `intent-knowledge.fastmcp.cloud/mcp` | ⏳ pending |  |
+| Two-observabilities post (DEC-009 frame) | ✅ draft filed | intent-site@158a611 |
 4. **Identity / auth on the MCP endpoint.** Phase 1 is read-only against public-ish content (Brien's own substrate); auth can default to "any client with the MCP URL." Phase 2 (write-back) forces a real identity story — probably GitHub OAuth for PR-proposal, which aligns with the PR-as-arbiter design.
 
 ## Dependency notes (vs. other open tracks)

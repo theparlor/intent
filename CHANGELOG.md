@@ -41,6 +41,50 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.05.26 — v0.12.0
+
+### Added — Substrate Exposure Phase 1 (filing + foundational implementation)
+
+The 2026-05-26 Cowork Phase 1 session on substrate exposure + Witness/Entire composition produced load-bearing decisions and their first implementations. Files DEC-009 (filed earlier this date), DEC-010, DEC-011, and WS-DDR-099 (workspaces-governance). Implementations follow.
+
+**Decisions:**
+- **DEC-009** — Entire.io scoped as authoring-provenance (supersedes DEC-007). Distinguishes authoring observability (Entire) from running-system observability (OTel/Grafana stack); both are siblings, neither replaces the other.
+- **DEC-010** — Intent-knowledge MCP server scope extended to substrate exposure. Adds 5 read verbs (query/get/list/lineage/freshness) alongside existing ingest/query/lint. Composes with library-index for ranked retrieval on the query verb.
+- **DEC-011** — `bin/intent-init` scaffold CLI for products + client engagements. Tier-aware classification schema universal Day 1; Witness federation selective by tier per D5-refined (internal Day 1, engagement deferred to Phase 2).
+- **WS-DDR-099** (workspaces-governance) — Substrate exposure via MCP-front + repo-as-truth composition. Sibling-composed identity (repo), reachability (MCP), liveness (decoupled). Phase 1 read-only, Phase 2 write-back via PR-as-arbiter.
+
+**Architecture artifact:**
+- **`spec/substrate-exposure-architecture.md`** — full architecture brief for the Phase 1 ship target (~2.5-3 weeks). Cross-referenced from ARCHITECTURE.md.
+
+**Runbook:**
+- **`playbooks/spawn-a-product.md`** — Tier 0 → Tier 3 composition runbook. Includes engagement-classification operational section per D5-refined.
+
+### Added — Phase 1 Implementations Shipping Today
+
+- **`bin/intent-init`** — Python scaffold CLI implementing DEC-011 (516 lines). 40/40 tests passing in `bin/test-intent-init.sh` across 7 scenarios (internal-default, confidential-engagement, engagement-without-classification-rejection, idempotent re-run, tier-mismatch refusal, invalid-classification rejection, public-tier federation). Auto-creates `Core/engagements/` for confidential tiers; adds `--declared-by` and `--dry-run` quality-of-life flags.
+- **`hooks/session-end.sh`** — Tier 1 session.end event emitter (192 lines). OTel-shaped per DEC-004. Detects product context via walk-up from `.intent/`, captures files_touched + commit_sha + signals_captured + decisions_recorded (best-effort, last-60-min window), appends to `.intent/events/events.jsonl` with flock+fsync on Linux, atomic append on macOS.
+- **`spec/classification-schema.md`** — `.intent/classification.yaml` v1 schema docs. Three tiers: public, internal, confidential:<engagement-slug>. Read by intent-init at scaffold time; will be read by intent-knowledge MCP server on every substrate query.
+
+### Added — Phase 1 Investigation + Follow-on Spec
+
+- **`spec/library-index-composition-investigation-2026-05-26.md`** — investigation report on library-index ↔ intent-knowledge composition. Finds library-index has no BM25+vector retrieval today; recommended path is a half-day Port A extension (`library_search_ranked` tool added to library-index-mcp). qmd full-BM25+vector backend is correct architecture but full-day sub-milestone.
+
+### In progress (work begun, returning material to evaluate)
+
+- **library-index-mcp `library_search_ranked` Port A tool** — BM25-ranked retrieval over CATALOG.json + sidecar excerpts. Half-day implementation per Agent 3's investigation.
+- **`intent-knowledge` MCP server 5 substrate verbs** — query/get/list/lineage/freshness with `.intent/classification.yaml` binary enforcement. Composes with library-index for the query verb.
+
+### Added — Public Communications Draft
+
+- **`intent-site/posts/two-observabilities.md`** — ~750-word draft articulating the DEC-009 distinction (cockpit voice recorder vs. flight data recorder metaphor; authoring observability vs. running-system observability). Promotion-path documented for future HTML lift into Pillar 3 (The Build) of the intent-site IA.
+
+### Filed (governance + meta)
+
+- WS-DDR-098 index row recovery (workspaces-governance) — discovered ratified body had no index entry.
+- 8 hygiene-sweep commits across intent, intent-site, workspaces-governance: nightly library-index metadata refresh batches + cron-session-accumulation cleanup + scheduled-tasks archive + GH issue #62472 draft + timestamp-divergence + forge-persona-count signals + architecture-first signal + jira-canonical-fields spawn-prompt.
+
+---
+
 ## 2026.05.20 — v0.11.0
 
 ### Added — IDD Build Discipline Playbooks

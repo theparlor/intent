@@ -16,8 +16,8 @@ ratifies:
 owner: brien
 related_handoff: Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/02-track-b-spawn-a-product-runbook.md
 source_of_truth: Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/02-track-b-spawn-a-product-runbook.md
-upstream_control_path: "Core/frameworks/intent/playbooks/spawn-a-product.md (this file) + Core/frameworks/intent/bin/intent-init (DEC-011, pending implementation) + Core/products/witness/.intent/registered-products.yaml (per-product federation registry, written by intent-init)"
-catch_mechanism: "Validation criteria in DEC-011: (1) bin/intent-init succeeds end-to-end, (2) Tier 1 events.jsonl emits on first session, (3) Witness registered-products.yaml shape, (4) products.json entry shape, (5) Tier 2 federation activates when entire-io.py adapter (WIT-004 #5) lands. Until intent-init ships, the manual procedures in this runbook are the executable substrate."
+upstream_control_path: "Core/frameworks/intent/playbooks/spawn-a-product.md (this file) + Core/frameworks/intent/bin/intent-init (DEC-011, shipped 2026-05-26 at intent@bd3f49f) + Core/products/witness/.intent/registered-products.yaml (per-product federation registry, written by intent-init)"
+catch_mechanism: "Validation criteria in DEC-011, all verified by bin/test-intent-init.sh (40/40 passing): (1) bin/intent-init succeeds end-to-end, (2) Tier 1 events.jsonl emits on first session via hooks/session-end.sh, (3) Witness registered-products.yaml shape correct, (4) products.json/engagements.json entry shape correct, (5) Tier 2 federation activates when entire-io.py adapter (WIT-004 #5) lands."
 pipeline_survival: "YES — playbook codifies the four-tier composition pattern (Entire / events.jsonl / Witness federation / OTel runtime) that is structurally enforced by the per-product .intent/classification.yaml schema and Witness's conservation law. Survives render_all because the document is the procedure, not a derived artifact."
 ---
 
@@ -55,9 +55,11 @@ These are not per-product — set up once, then every new product inherits.
 | Grafana Cloud account (free tier) | ⚠ provision on first Tier 3 product | grafana.com |
 | Witness runtime running (or scheduled) | ⚠ Witness Phase 5 runtime built; SPEC-001 still `draft/blocked` on library-index AM-3 + Conduit OTLP-emit | `Core/products/witness/src/` |
 | `entire-io.py` adapter (WIT-004 #5) | ⚠ **stub** — Tier 2 federation goes live when this stub lands | `Core/products/witness/engine/adapters/entire-io.py` |
-| `bin/intent-init` scaffold | ⚠ proposed (DEC-011) — until shipped, the Tier 0–1 climb is manual per the per-tier sections below | `Core/frameworks/intent/bin/intent-init` (proposed) |
+| `bin/intent-init` scaffold | ✅ **shipped 2026-05-26** (intent@bd3f49f, 40/40 tests pass) — one-command Tier 0+1 scaffold per DEC-011 | `Core/frameworks/intent/bin/intent-init` |
+| `hooks/session-end.sh` Tier 1 emitter | ✅ **shipped 2026-05-26** (intent@b6d837d) — OTel-shaped session.end event emitter, installed per-product by `bin/intent-init` | `Core/frameworks/intent/hooks/session-end.sh` |
+| `.intent/classification.yaml` schema v1 | ✅ **shipped 2026-05-26** (intent@63c84ba) — universal per-product classification declaration | `Core/frameworks/intent/spec/classification-schema.md` |
 
-**Honest status today:** Tier 0 and Tier 1 are achievable end-to-end manually right now. Tier 2 awaits WIT-004 #5 implementation (the runbook tells you how to register and what to expect). Tier 3 awaits per-product OTel emission, which is product-by-product.
+**Honest status today:** Tier 0 and Tier 1 are achievable end-to-end via `bin/intent-init` (one command, ~30 sec). Tier 2 awaits WIT-004 #5 implementation for the Entire-trace federation path; the `intent-events-jsonl.py` adapter path is already live. Tier 3 awaits per-product OTel emission, which is product-by-product.
 
 ## Tier 0 — Authoring provenance (Entire)
 
@@ -187,13 +189,15 @@ For non-OTel CLI/cron products, the same data flows via Witness's stderr-JSONL i
 | Tier | Cost | Value | Status (2026-05-26) |
 |---|---|---|---|
 | 0 — Entire | 1 command, ~30 sec | Authoring provenance | ✅ ready |
-| 1 — events.jsonl | ~10 lines config, ~5 min | Local structured event log | ✅ ready (when `bin/intent-init` lands, 1 command) |
+| 1 — events.jsonl | 1 command via `bin/intent-init`, ~30 sec | Local structured event log | ✅ ready (shipped 2026-05-26) |
 | 2 — Witness federation | 1 config line, ~2 min | Cross-portfolio event substrate | ⚠ partially live — `intent-events-jsonl.py` adapter works; `entire-io.py` adapter is a stub |
 | 3 — Runtime telemetry | 15 min – 1 day | Closed Observe→Notice loop | ⚠ stack ready; per-product OTel emission is product-specific |
 
-## The proposed scaffold script (DEC-011) — tier-aware Day 1, engagement federation deferred
+## The scaffold script (DEC-011, shipped 2026-05-26) — tier-aware Day 1, engagement federation deferred
 
 `bin/intent-init <product-name>` collapses Tier 0 + Tier 1 into one command. Per Brien's D5-refined close (2026-05-26), the scaffold is **tier-aware from Day 1** — every product gets a classification declaration at creation — but Witness federation for engagement-tier substrate is **deferred** until Phase 1 scope enforcement is hardened. Internal-tier products federate Day 1.
+
+**Shipped:** intent@bd3f49f (CLI) + intent@63c84ba (schema doc) + intent@b6d837d (session-end hook). 40/40 tests passing in `bin/test-intent-init.sh`.
 
 ```bash
 # CLI shape (DEC-011, D5-refined)
@@ -278,7 +282,7 @@ Neither track blocks the other for shipping. Track A's Phase 1 can ship before T
 
 | Dependency | Status | Tier affected | Mitigation while pending |
 |---|---|---|---|
-| `bin/intent-init` scaffold (DEC-011) | proposed | Tier 0+1 setup | Manual setup per Tier 0 and Tier 1 sections — ~6 minutes per product |
+| `bin/intent-init` scaffold (DEC-011) | ✅ shipped 2026-05-26 (intent@bd3f49f, 40/40 tests) | Tier 0+1 setup | One command, ~30 sec |
 | `entire-io.py` Witness adapter (WIT-004 #5) | stub | Tier 2 (Entire path only) | Tier 2 still works for `.intent/events/events.jsonl` via the implemented `intent-events-jsonl.py` adapter; Entire-trace federation goes live when stub lands |
 | library-index AM-3 audit | pending | Witness SPEC-001 ratification | Witness runtime already operates; ratification is a governance milestone, not a blocker for using Witness |
 | Conduit OTLP-emit path | pending | Witness SPEC-001 ratification | Same as above |
