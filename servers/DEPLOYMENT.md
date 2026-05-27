@@ -20,6 +20,8 @@ vocab_density: 0.00
 ---
 # Deployment: Intent MCP Servers
 
+> **For the 4th server (`intent-knowledge`)**, see [`DEPLOYMENT-INTENT-KNOWLEDGE.md`](DEPLOYMENT-INTENT-KNOWLEDGE.md) — it has the same five-step shape plus the substrate-exposure-specific config (scope tokens, classification.yaml, Phase 1/Phase 2 library-index modes).
+
 ## Fastest Path: FastMCP Cloud (Free)
 
 ```bash
@@ -30,9 +32,10 @@ cd /path/to/intent && git add servers/ && git push
 # 2. Go to fastmcp.cloud, sign in with GitHub
 # 3. Create three projects:
 
-#   intent-notice  → entrypoint: servers/notice.py
-#   intent-spec    → entrypoint: servers/spec.py
-#   intent-observe → entrypoint: servers/observe.py
+#   intent-notice    → entrypoint: servers/notice.py
+#   intent-spec      → entrypoint: servers/spec.py
+#   intent-observe   → entrypoint: servers/observe.py
+#   intent-knowledge → entrypoint: servers/knowledge.py  (see DEPLOYMENT-INTENT-KNOWLEDGE.md)
 
 # Each gets a URL like: https://intent-notice.fastmcp.cloud/mcp
 # Auto-redeploys on every push to main.
@@ -56,6 +59,10 @@ Add to `.claude/settings.json` in your intent repo:
     "intent-observe": {
       "type": "url",
       "url": "https://intent-observe.fastmcp.cloud/mcp"
+    },
+    "intent-knowledge": {
+      "type": "url",
+      "url": "https://intent-knowledge.fastmcp.cloud/mcp"
     }
   }
 }
@@ -66,10 +73,11 @@ Add to `.claude/settings.json` in your intent repo:
 ```bash
 pip install fastmcp
 
-# Three terminals:
-fastmcp run servers/notice.py --transport streamable-http --port 8001
-fastmcp run servers/spec.py --transport streamable-http --port 8002
-fastmcp run servers/observe.py --transport streamable-http --port 8003
+# Four terminals (one per server):
+fastmcp run servers/notice.py    --transport streamable-http --port 8001
+fastmcp run servers/spec.py      --transport streamable-http --port 8002
+fastmcp run servers/observe.py   --transport streamable-http --port 8003
+fastmcp run servers/knowledge.py --transport streamable-http --port 8004
 ```
 
 Point Claude Code at `http://localhost:800X/mcp`.
@@ -87,6 +95,7 @@ that line rather than assuming the default.
 | `INTENT_NOTICE_PORT`             | `8001`    | Preferred port for notice               |
 | `INTENT_SPEC_PORT`               | `8002`    | Preferred port for spec                 |
 | `INTENT_OBSERVE_PORT`            | `8003`    | Preferred port for observe              |
+| `INTENT_KNOWLEDGE_PORT`          | `8004`    | Preferred port for knowledge            |
 | `INTENT_MCP_HOST`                | `0.0.0.0` | Bind host (all servers)                 |
 | `INTENT_MCP_PORT_FALLBACK_COUNT` | `4`       | Extra sequential ports tried after pref |
 
