@@ -6,3 +6,9 @@ node_modules/
 .env
 build-visual-brief/
 __pycache__/
+
+# Test venvs + Python bytecode (not source)
+servers/.venv/
+tests/__pycache__/
+__pycache__/
+*.pyc
