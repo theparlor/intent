@@ -175,15 +175,22 @@ the principle's claim.
 
 **Progress toward external articulation: ~0.6 of 3 instances** (was ~0.5 after (a) structural). The +0.1 increment reflects (c) sketch-level engagement; observational pressure-test for both (a) and (c) still pending.
 
-## Refinement candidate for the principle
+## Refinement candidate for the principle — APPLIED
 
 The pressure-test surfaced a needed refinement that, if adopted,
 strengthens the principle's claim rather than weakening it. This is
 the kind of refinement that comes from real pressure-testing — the
-principle's strongest version requires the per-boundary qualification.
+principle's strongest version requires the per-pipeline-position
+qualification.
 
-Worth a follow-up signal capturing the refinement as a principle-doc
-edit candidate (deferred pending review).
+**Status: APPLIED 2026-05-27** in commit `12ff124` (coherence-engineering/main).
+New §"Per-pipeline-position scope (refinement 2026-05-27)" sub-section
+added under §Statement of `Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md`.
+The refinement makes the principle precise: claim is per-pipeline-position
+surface design, NOT absence-of-new-positions. New sibling-composed
+positions follow WS-DDR-025; the principle says the existing
+per-position surface doesn't refactor, not that the system never grows
+new positions.
 
 ## Trigger
 
