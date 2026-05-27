@@ -86,15 +86,45 @@ def parse_lambda_settings_yaml(corpus_dir: Path) -> dict:
     return result
 
 
+def _has_frontmatter(path: Path) -> bool:
+    """Quick check: does file start with YAML frontmatter `---\\n`?"""
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            first = f.readline()
+            return first.startswith("---")
+    except OSError:
+        return False
+
+
 def product_to_intent_path(product: str, workspaces_root: Path) -> Optional[Path]:
-    """Resolve product bucket name to .intent/INTENT.md path. None if exempt or N/A."""
+    """Resolve product bucket name to INTENT.md path. None if exempt or N/A.
+
+    Lookup order (preferring the file that has YAML frontmatter — required for
+    the managed-block insertion logic):
+      1. <product>/.intent/INTENT.md (tooling-consumed manifest) — if it has frontmatter
+      2. <product>/INTENT.md (product-root human-readable manifest) — if it has frontmatter
+      3. <product>/.intent/INTENT.md without frontmatter (returns it; will be
+         reported as skipped-no-frontmatter so the operator knows to add frontmatter)
+
+    The split convention: newer/more-developed products use .intent/INTENT.md;
+    older/smaller products use root INTENT.md. Some products have both — preferring
+    the file that has frontmatter (the only place a managed block can land).
+    Pulse is the canonical mixed-convention case: .intent/INTENT.md is a markdown-
+    code-block pointer (no frontmatter), root INTENT.md is the YAML-frontmatter main.
+    """
     for ex in EXCLUDE_PREFIXES:
         if product.startswith(ex):
             return None
-    # Pattern: Core/products/X or Core/frameworks/X
-    p = workspaces_root / product / ".intent" / "INTENT.md"
-    if p.exists():
-        return p
+    inner = workspaces_root / product / ".intent" / "INTENT.md"
+    root_intent = workspaces_root / product / "INTENT.md"
+    if inner.exists() and _has_frontmatter(inner):
+        return inner
+    if root_intent.exists() and _has_frontmatter(root_intent):
+        return root_intent
+    if inner.exists():
+        return inner  # will skip-no-frontmatter at update time, with the operator-visible diagnostic
+    if root_intent.exists():
+        return root_intent
     return None
 
 
