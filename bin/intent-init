@@ -1,0 +1,517 @@
+#!/usr/bin/env python3
+"""
+intent-init — Scaffold a new Intent-native product or engagement.
+
+Per DEC-011 (2026-05-26), this collapses the Tier 0 + Tier 1 climb
+described in `playbooks/spawn-a-product.md` into a single command:
+
+  1. mkdir -p <path>/.intent/{events,signals,intents,specs} and <path>/.entire/
+  2. cd <path> && entire enable
+  3. install session-end hook into <path>/.claude/hooks/session-end
+  4. write <path>/.intent/classification.yaml (schema-enforced)
+  5. append entry to Core/products/products.json (or engagements.json
+     for confidential:* tier)
+  6. Witness registration:
+       public | internal -> append to
+       Core/products/witness/.intent/registered-products.yaml
+       confidential:*    -> NOT appended (federation deferred)
+  7. echo classification + federation status
+
+Idempotent: re-running on an existing product is detected and explained.
+A pre-existing classification.yaml at a different tier causes refusal.
+
+Exit codes:
+  0  ok
+  1  user error (bad args, missing classification on engagement path,
+                 tier mismatch on re-run, etc.)
+  2  system error (file IO, missing fixtures, entire binary failure)
+
+Workspaces root is auto-detected by walking up from the script location;
+override for testing with INTENT_INIT_ROOT.
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+from typing import Optional
+
+try:
+    import yaml  # PyYAML
+except ImportError:  # pragma: no cover - exercised at runtime
+    sys.stderr.write(
+        "error: PyYAML is required. Install with: "
+        "/opt/homebrew/bin/python3 -m pip install --user pyyaml\n"
+    )
+    sys.exit(2)
+
+
+# --------------------------------------------------------------------------- #
+# Constants                                                                   #
+# --------------------------------------------------------------------------- #
+
+ENTIRE_BIN = "/opt/homebrew/bin/entire"
+
+VALID_BASE_TIERS = {"public", "internal"}
+CONFIDENTIAL_PREFIX = "confidential:"
+
+INTENT_SUBDIRS = ("events", "signals", "intents", "specs")
+
+PRODUCTS_JSON_REL = "Core/products/products.json"
+ENGAGEMENTS_JSON_REL = "Core/engagements/engagements.json"
+WITNESS_REGISTRY_REL = "Core/products/witness/.intent/registered-products.yaml"
+SESSION_END_HOOK_REL = "Core/frameworks/intent/hooks/session-end.sh"
+
+ENGAGEMENT_PATH_RE = re.compile(r"(^|/)Core/engagements(/|$)")
+PRODUCT_PATH_RE = re.compile(r"(^|/)Core/products(/|$)")
+
+
+# --------------------------------------------------------------------------- #
+# Helpers                                                                     #
+# --------------------------------------------------------------------------- #
+
+
+def today_iso() -> str:
+    """YYYY-MM-DD in UTC."""
+    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%d")
+
+
+def resolve_workspaces_root(script_path: Path) -> Path:
+    """Locate Workspaces root.
+
+    Priority:
+      1. $INTENT_INIT_ROOT (used by test harness)
+      2. Walk up from script until a sibling 'Core/products' is found
+      3. Fall back to $HOME/Workspaces
+    """
+    env = os.environ.get("INTENT_INIT_ROOT")
+    if env:
+        return Path(env).resolve()
+
+    cur = script_path.resolve()
+    for parent in [cur] + list(cur.parents):
+        if (parent / "Core" / "products").is_dir():
+            return parent
+    return Path.home() / "Workspaces"
+
+
+def normalize_classification(raw: Optional[str], path_rel: str) -> str:
+    """Validate and default classification based on path shape.
+
+    Returns the validated classification string, or raises SystemExit(1).
+    """
+    is_engagement = bool(ENGAGEMENT_PATH_RE.search(path_rel))
+    is_product = bool(PRODUCT_PATH_RE.search(path_rel))
+
+    if raw is None:
+        if is_engagement:
+            sys.stderr.write(
+                "error: engagement-shaped path "
+                f"({path_rel!r}) requires --classification confidential:<engagement>.\n"
+                "       Engagement substrate cannot federate without explicit "
+                "confidentiality declaration (DEC-011, Witness conservation law).\n"
+            )
+            sys.exit(1)
+        if is_product:
+            return "internal"
+        sys.stderr.write(
+            "error: --classification is required for paths outside "
+            "Core/products or Core/engagements.\n"
+        )
+        sys.exit(1)
+
+    if raw in VALID_BASE_TIERS:
+        if is_engagement and raw != "public":
+            sys.stderr.write(
+                f"error: engagement-shaped path {path_rel!r} declared {raw!r}; "
+                "engagements must use confidential:<engagement>.\n"
+            )
+            sys.exit(1)
+        return raw
+
+    if raw.startswith(CONFIDENTIAL_PREFIX):
+        slug = raw[len(CONFIDENTIAL_PREFIX):]
+        if not slug:
+            sys.stderr.write(
+                "error: 'confidential:' requires a non-empty engagement slug.\n"
+            )
+            sys.exit(1)
+        if not re.fullmatch(r"[a-z0-9][a-z0-9\-_]*", slug):
+            sys.stderr.write(
+                f"error: engagement slug {slug!r} must match [a-z0-9][a-z0-9\\-_]*.\n"
+            )
+            sys.exit(1)
+        return raw
+
+    sys.stderr.write(
+        f"error: classification {raw!r} not one of: public, internal, "
+        "confidential:<engagement>.\n"
+    )
+    sys.exit(1)
+
+
+def is_confidential(classification: str) -> bool:
+    return classification.startswith(CONFIDENTIAL_PREFIX)
+
+
+def write_yaml_file(path: Path, data) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as fh:
+        yaml.safe_dump(data, fh, sort_keys=False, default_flow_style=False)
+
+
+def read_yaml_file(path: Path):
+    if not path.exists():
+        return None
+    with path.open("r") as fh:
+        return yaml.safe_load(fh)
+
+
+# --------------------------------------------------------------------------- #
+# Scaffold steps                                                              #
+# --------------------------------------------------------------------------- #
+
+
+def step_create_dirs(product_root: Path) -> list[str]:
+    created = []
+    for sub in INTENT_SUBDIRS:
+        p = product_root / ".intent" / sub
+        if not p.exists():
+            p.mkdir(parents=True, exist_ok=True)
+            created.append(str(p))
+    entire_dir = product_root / ".entire"
+    if not entire_dir.exists():
+        entire_dir.mkdir(parents=True, exist_ok=True)
+        created.append(str(entire_dir))
+    return created
+
+
+def step_run_entire(product_root: Path, dry_run: bool) -> tuple[str, str]:
+    """Run `entire enable` in product_root. Returns (status, detail)."""
+    if dry_run:
+        return ("skipped", "dry-run: did not invoke entire binary")
+
+    binary = ENTIRE_BIN if Path(ENTIRE_BIN).exists() else shutil.which("entire")
+    if not binary:
+        return ("warning", "entire binary not found; .entire/ created but not enabled")
+
+    try:
+        result = subprocess.run(
+            [binary, "enable"],
+            cwd=str(product_root),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except subprocess.TimeoutExpired:
+        return ("error", "entire enable timed out after 30s")
+    except OSError as exc:
+        return ("error", f"entire enable failed: {exc}")
+
+    if result.returncode != 0:
+        # Already-enabled is fine; surface but don't fail the whole script.
+        msg = (result.stderr or result.stdout).strip()
+        if "already" in msg.lower() or "enabled" in msg.lower():
+            return ("ok", f"already enabled ({msg[:80]})")
+        return ("warning", f"entire enable returned {result.returncode}: {msg[:120]}")
+
+    return ("ok", "entire enable succeeded")
+
+
+def step_install_hook(product_root: Path, workspaces_root: Path) -> str:
+    """Install session-end hook if the framework source exists."""
+    src = workspaces_root / SESSION_END_HOOK_REL
+    if not src.exists():
+        return f"skipped: source hook missing at {src}"
+
+    hooks_dir = product_root / ".claude" / "hooks"
+    hooks_dir.mkdir(parents=True, exist_ok=True)
+    dest = hooks_dir / "session-end"
+
+    if dest.exists():
+        return f"already present: {dest}"
+
+    shutil.copy2(str(src), str(dest))
+    dest.chmod(0o755)
+    return f"installed: {dest}"
+
+
+def step_write_classification(
+    product_root: Path, classification: str, declared_by: str
+) -> tuple[str, Optional[Path]]:
+    """Write or verify .intent/classification.yaml. Returns (status, path)."""
+    cfile = product_root / ".intent" / "classification.yaml"
+    existing = read_yaml_file(cfile)
+    if existing is not None:
+        existing_tier = existing.get("tier")
+        if existing_tier != classification:
+            sys.stderr.write(
+                f"error: existing classification.yaml at {cfile} declares tier "
+                f"{existing_tier!r}; refusing to overwrite with {classification!r}. "
+                "Remove the file or pass the matching --classification.\n"
+            )
+            sys.exit(1)
+        return ("already present", cfile)
+
+    payload = {
+        "tier": classification,
+        "declared_at": today_iso(),
+        "declared_by": declared_by,
+        "notes": "",
+    }
+    write_yaml_file(cfile, payload)
+    return ("written", cfile)
+
+
+def step_append_registry(
+    workspaces_root: Path,
+    product_name: str,
+    product_rel_path: str,
+    classification: str,
+) -> tuple[str, Path]:
+    """Append the product/engagement to its JSON registry."""
+    if is_confidential(classification):
+        registry_rel = ENGAGEMENTS_JSON_REL
+        portfolio = "engagement"
+        category = "engagement"
+    else:
+        registry_rel = PRODUCTS_JSON_REL
+        portfolio = "unassigned"
+        category = "product"
+
+    registry_path = workspaces_root / registry_rel
+    registry_path.parent.mkdir(parents=True, exist_ok=True)
+
+    entries = []
+    if registry_path.exists() and registry_path.stat().st_size > 0:
+        try:
+            with registry_path.open("r") as fh:
+                entries = json.load(fh)
+        except json.JSONDecodeError as exc:
+            sys.stderr.write(
+                f"error: {registry_path} is not valid JSON: {exc}\n"
+            )
+            sys.exit(2)
+        if not isinstance(entries, list):
+            sys.stderr.write(
+                f"error: {registry_path} must be a JSON array of entries.\n"
+            )
+            sys.exit(2)
+
+    rel_with_slash = product_rel_path.rstrip("/") + "/"
+    for existing in entries:
+        if existing.get("name") == product_name or existing.get("path") == rel_with_slash:
+            return ("already present", registry_path)
+
+    new_entry = {
+        "name": product_name,
+        "tagline": "",
+        "status": "noticing",
+        "portfolio": portfolio,
+        "category": category,
+        "github": "",
+        "signals": 0,
+        "decisions": 0,
+        "created": today_iso(),
+        "updated": today_iso(),
+        "path": rel_with_slash,
+        "aliases": [],
+        "subpaths": {},
+        "classification": classification,
+    }
+    entries.append(new_entry)
+
+    with registry_path.open("w") as fh:
+        json.dump(entries, fh, indent=2)
+        fh.write("\n")
+
+    return ("appended", registry_path)
+
+
+def step_register_witness(
+    workspaces_root: Path,
+    product_name: str,
+    product_rel_path: str,
+    classification: str,
+    register_with_witness: bool,
+) -> tuple[str, Path, bool]:
+    """Append to Witness registered-products.yaml unless deferred.
+
+    Returns (status, path, federation_active).
+    Federation is deferred (not appended) for confidential:* tiers.
+    """
+    registry_path = workspaces_root / WITNESS_REGISTRY_REL
+
+    if is_confidential(classification):
+        return ("deferred (confidential tier)", registry_path, False)
+
+    if not register_with_witness:
+        return ("skipped (--register-with witness not set)", registry_path, False)
+
+    registry_path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing = []
+    if registry_path.exists() and registry_path.stat().st_size > 0:
+        existing = yaml.safe_load(registry_path.read_text()) or []
+        if not isinstance(existing, list):
+            sys.stderr.write(
+                f"error: {registry_path} must be a YAML list.\n"
+            )
+            sys.exit(2)
+
+    rel_with_slash = product_rel_path.rstrip("/") + "/"
+    for entry in existing:
+        if entry.get("product") == product_name or entry.get("path") == rel_with_slash:
+            return ("already present", registry_path, True)
+
+    new_entry = {
+        "product": product_name,
+        "path": rel_with_slash,
+        "classification": classification,
+        "sources": [
+            {"type": "entire-io", "path": ".entire/metadata/*/full.jsonl"},
+            {"type": "intent-events", "path": ".intent/events/events.jsonl"},
+        ],
+        "registered_at": today_iso(),
+    }
+    existing.append(new_entry)
+
+    write_yaml_file(registry_path, existing)
+    return ("appended", registry_path, True)
+
+
+# --------------------------------------------------------------------------- #
+# Main                                                                       #
+# --------------------------------------------------------------------------- #
+
+
+def parse_args(argv) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog="intent-init",
+        description="Scaffold a new Intent-native product or engagement (DEC-011).",
+    )
+    parser.add_argument("product_name", help="Slug for the new product or engagement.")
+    parser.add_argument(
+        "--path",
+        required=True,
+        help="Relative path inside Workspaces (e.g. Core/products/foo/).",
+    )
+    parser.add_argument(
+        "--enable",
+        default="entire,events",
+        help="Comma-separated tiers to enable (default: entire,events).",
+    )
+    parser.add_argument(
+        "--classification",
+        default=None,
+        help="public | internal | confidential:<engagement-slug>. "
+        "Required for engagement-shaped paths; defaults to 'internal' "
+        "for product-shaped paths.",
+    )
+    parser.add_argument(
+        "--register-with",
+        dest="register_with",
+        default=None,
+        choices=["witness"],
+        help="Federate registration target. Default ON for internal tier; "
+        "deferred for confidential:* tier.",
+    )
+    parser.add_argument(
+        "--declared-by",
+        default=os.environ.get("USER", "unknown"),
+        help="Operator identity recorded in classification.yaml.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Skip side-effects that hit external systems (entire enable).",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None) -> int:
+    args = parse_args(argv)
+    script_path = Path(__file__).resolve()
+    workspaces_root = resolve_workspaces_root(script_path)
+
+    rel_path = args.path.strip().lstrip("./")
+    rel_path = rel_path.rstrip("/")
+    if not rel_path:
+        sys.stderr.write("error: --path must be non-empty.\n")
+        return 1
+
+    classification = normalize_classification(args.classification, rel_path)
+
+    product_root = (workspaces_root / rel_path).resolve()
+    if not str(product_root).startswith(str(workspaces_root)):
+        sys.stderr.write(
+            f"error: --path {rel_path!r} resolves outside the Workspaces root "
+            f"({workspaces_root}). Refusing to scaffold.\n"
+        )
+        return 1
+
+    # Default --register-with witness to ON for non-confidential tiers.
+    if args.register_with is None and not is_confidential(classification):
+        register_with_witness = True
+    else:
+        register_with_witness = args.register_with == "witness"
+
+    product_root.mkdir(parents=True, exist_ok=True)
+
+    # 1. Dirs
+    created = step_create_dirs(product_root)
+
+    # 2. entire enable
+    entire_status, entire_detail = step_run_entire(product_root, args.dry_run)
+
+    # 3. session-end hook
+    hook_status = step_install_hook(product_root, workspaces_root)
+
+    # 4. classification.yaml
+    class_status, class_path = step_write_classification(
+        product_root, classification, args.declared_by
+    )
+
+    # 5. products.json / engagements.json
+    registry_status, registry_path = step_append_registry(
+        workspaces_root, args.product_name, rel_path, classification
+    )
+
+    # 6. Witness registration
+    witness_status, witness_path, federation_active = step_register_witness(
+        workspaces_root,
+        args.product_name,
+        rel_path,
+        classification,
+        register_with_witness,
+    )
+
+    # 7. Echo
+    federation_label = "ON" if federation_active else "DEFERRED"
+    is_engagement = is_confidential(classification)
+    noun = "Engagement" if is_engagement else "Product"
+
+    print(
+        f"{noun} '{args.product_name}' at Tier 1, "
+        f"classification '{classification}'. Federation: {federation_label}."
+    )
+    print(f"  path:                 {product_root}")
+    print(f"  dirs created:         {len(created)} new")
+    print(f"  entire enable:        {entire_status} — {entire_detail}")
+    print(f"  session-end hook:     {hook_status}")
+    print(f"  classification.yaml:  {class_status} — {class_path}")
+    print(f"  registry:             {registry_status} — {registry_path}")
+    print(f"  witness registry:     {witness_status} — {witness_path}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
