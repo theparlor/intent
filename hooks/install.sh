@@ -36,12 +36,31 @@ install_hook() {
 }
 
 install_hook autonomy-grant-check.sh
+install_hook native-connector-precedence-check.sh
+
+# Symlink the lookup map for the native-connector hook so it stays adjacent
+# to the script when invoked via ~/.claude/hooks/.
+MAP_NAME="native-connector-precedence-map.json"
+MAP_SRC="${SOURCE_DIR}/${MAP_NAME}"
+MAP_DST="${HOOK_DIR}/${MAP_NAME}"
+if [[ -f "${MAP_SRC}" ]]; then
+  if [[ -L "${MAP_DST}" && "$(readlink "${MAP_DST}")" == "${MAP_SRC}" ]]; then
+    echo "OK:   ${MAP_NAME} (already symlinked)"
+  elif [[ -e "${MAP_DST}" ]]; then
+    echo "WARN: ${MAP_DST} exists and is not our symlink; not overwriting"
+  else
+    ln -s "${MAP_SRC}" "${MAP_DST}"
+    echo "OK:   ${MAP_NAME} (symlinked -> ${MAP_SRC})"
+  fi
+else
+  echo "SKIP: ${MAP_NAME} (source not found at ${MAP_SRC})"
+fi
 
 cat << 'EOF'
 
-Next step (manual): register the hook in ~/.claude/settings.json
+Next step (manual): register the hooks in ~/.claude/settings.json
 
-Add to the hooks.SessionStart array:
+Add to hooks.SessionStart:
 
   {
     "matcher": "*",
@@ -53,7 +72,24 @@ Add to the hooks.SessionStart array:
     ]
   }
 
-Then start a new Claude Code session and confirm the autonomy-grant banner
-appears in session-start context. See
-Core/frameworks/intent/spec/autonomy-grant-enforcement.md §Verification.
+Add to hooks.PreToolUse:
+
+  {
+    "matcher": "mcp__google-workspace__.*",
+    "hooks": [
+      {
+        "type": "command",
+        "command": "$HOME/.claude/hooks/native-connector-precedence-check.sh"
+      }
+    ]
+  }
+
+Then start a new Claude Code session and confirm:
+  - The autonomy-grant banner appears in session-start context
+  - Calling `mcp__google-workspace__search_gmail_messages` is blocked with a
+    pointer to the native equivalent
+
+Specs:
+  Core/frameworks/intent/spec/autonomy-grant-enforcement.md §Verification
+  Core/frameworks/intent/spec/native-connector-precedence.md §Closure DoD
 EOF

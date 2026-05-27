@@ -1,0 +1,171 @@
+{
+  "_meta": {
+    "name": "native-connector-precedence-map",
+    "version": "1.0",
+    "created": "2026-05-27",
+    "purpose": "Maps workspace-mcp tool verbs to their native Anthropic-connector equivalents. Used by native-connector-precedence-check.sh PreToolUse hook to block workspace-mcp calls when a native equivalent exists.",
+    "native_prefixes": {
+      "gmail": "mcp__2af7d4b6-48e4-40e0-b692-83bb17863698__",
+      "calendar": "mcp__e84bacfb-2d7e-4832-93d8-cd99572ef756__",
+      "drive": "mcp__af517670-6924-4852-bfe0-ad3f0c19c03d__"
+    },
+    "fallback_prefix": "mcp__google-workspace__",
+    "spec": "Core/frameworks/intent/spec/native-connector-precedence.md (pending)",
+    "related_signal": "SIG-2026-05-27-native-connector-precedence-hook-gap.md"
+  },
+  "blocked_with_native_equivalent": {
+    "mcp__google-workspace__search_gmail_messages": {
+      "native_prefix": "gmail",
+      "native_verb": "search_threads",
+      "note": "Use native search_threads. Returns same thread metadata. Native is pre-authenticated via Anthropic OAuth."
+    },
+    "mcp__google-workspace__get_gmail_message_content": {
+      "native_prefix": "gmail",
+      "native_verb": "get_thread",
+      "note": "Use native get_thread. Returns full message content."
+    },
+    "mcp__google-workspace__get_gmail_thread_content": {
+      "native_prefix": "gmail",
+      "native_verb": "get_thread",
+      "note": "Same verb on native side."
+    },
+    "mcp__google-workspace__draft_gmail_message": {
+      "native_prefix": "gmail",
+      "native_verb": "create_draft",
+      "note": "Native create_draft handles single-draft creation. For batched drafts, fallback is allowed."
+    },
+    "mcp__google-workspace__list_gmail_labels": {
+      "native_prefix": "gmail",
+      "native_verb": "list_labels",
+      "note": "Same verb on native side."
+    },
+    "mcp__google-workspace__manage_gmail_label": {
+      "native_prefix": "gmail",
+      "native_verb": "create_label / update_label / delete_label",
+      "note": "Native has separate verbs per action. Pick the right one based on intent."
+    },
+    "mcp__google-workspace__modify_gmail_message_labels": {
+      "native_prefix": "gmail",
+      "native_verb": "label_message / unlabel_message / label_thread / unlabel_thread",
+      "note": "Native has thread-level and message-level label ops."
+    },
+    "mcp__google-workspace__list_calendars": {
+      "native_prefix": "calendar",
+      "native_verb": "list_calendars",
+      "note": "Same verb on native side."
+    },
+    "mcp__google-workspace__get_events": {
+      "native_prefix": "calendar",
+      "native_verb": "list_events",
+      "note": "Native uses list_events with calendar_id filter."
+    },
+    "mcp__google-workspace__manage_event": {
+      "native_prefix": "calendar",
+      "native_verb": "create_event / update_event / delete_event",
+      "note": "Native has separate verbs per action."
+    },
+    "mcp__google-workspace__search_drive_files": {
+      "native_prefix": "drive",
+      "native_verb": "search_files",
+      "note": "Native search_files supports Drive query syntax."
+    },
+    "mcp__google-workspace__list_drive_items": {
+      "native_prefix": "drive",
+      "native_verb": "list_recent_files",
+      "note": "Native list_recent_files is recency-ordered. For folder-listing use search_files with folder filter."
+    },
+    "mcp__google-workspace__get_drive_file_content": {
+      "native_prefix": "drive",
+      "native_verb": "read_file_content",
+      "note": "Same semantics."
+    },
+    "mcp__google-workspace__get_drive_file_download_url": {
+      "native_prefix": "drive",
+      "native_verb": "download_file_content",
+      "note": "Native returns content directly rather than URL. Adjust caller accordingly."
+    },
+    "mcp__google-workspace__create_drive_file": {
+      "native_prefix": "drive",
+      "native_verb": "create_file",
+      "note": "Same semantics."
+    },
+    "mcp__google-workspace__copy_drive_file": {
+      "native_prefix": "drive",
+      "native_verb": "copy_file",
+      "note": "Same semantics."
+    },
+    "mcp__google-workspace__get_drive_file_permissions": {
+      "native_prefix": "drive",
+      "native_verb": "get_file_permissions",
+      "note": "Same semantics."
+    },
+    "mcp__google-workspace__check_drive_file_public_access": {
+      "native_prefix": "drive",
+      "native_verb": "get_file_permissions",
+      "note": "Native returns full permission list including public-access state."
+    },
+    "mcp__google-workspace__search_docs": {
+      "native_prefix": "drive",
+      "native_verb": "search_files",
+      "note": "Native search_files with file_type='document' achieves same result."
+    }
+  },
+  "fallback_allowed": {
+    "_note": "These workspace-mcp verbs have NO native equivalent. They are legitimate fallback uses. Hook allows them without warning.",
+    "verbs": [
+      "mcp__google-workspace__send_gmail_message",
+      "mcp__google-workspace__batch_modify_gmail_message_labels",
+      "mcp__google-workspace__get_gmail_messages_content_batch",
+      "mcp__google-workspace__get_gmail_threads_content_batch",
+      "mcp__google-workspace__list_gmail_filters",
+      "mcp__google-workspace__manage_gmail_filter",
+      "mcp__google-workspace__get_gmail_attachment_content",
+      "mcp__google-workspace__create_calendar",
+      "mcp__google-workspace__query_freebusy",
+      "mcp__google-workspace__manage_focus_time",
+      "mcp__google-workspace__manage_out_of_office",
+      "mcp__google-workspace__manage_drive_access",
+      "mcp__google-workspace__update_drive_file",
+      "mcp__google-workspace__get_drive_shareable_link",
+      "mcp__google-workspace__set_drive_file_permissions",
+      "mcp__google-workspace__create_doc",
+      "mcp__google-workspace__get_doc_content",
+      "mcp__google-workspace__get_doc_as_markdown",
+      "mcp__google-workspace__update_doc_tab",
+      "mcp__google-workspace__insert_doc_tab",
+      "mcp__google-workspace__delete_doc_tab",
+      "mcp__google-workspace__batch_update_doc",
+      "mcp__google-workspace__insert_doc_elements",
+      "mcp__google-workspace__insert_doc_image",
+      "mcp__google-workspace__update_doc_headers_footers",
+      "mcp__google-workspace__update_paragraph_style",
+      "mcp__google-workspace__find_and_replace_doc",
+      "mcp__google-workspace__modify_doc_text",
+      "mcp__google-workspace__inspect_doc_structure",
+      "mcp__google-workspace__debug_docs_runtime_info",
+      "mcp__google-workspace__export_doc_to_pdf",
+      "mcp__google-workspace__import_to_google_doc",
+      "mcp__google-workspace__list_docs_in_folder",
+      "mcp__google-workspace__list_document_comments",
+      "mcp__google-workspace__manage_document_comment",
+      "mcp__google-workspace__create_drive_folder",
+      "mcp__google-workspace__create_spreadsheet",
+      "mcp__google-workspace__create_sheet",
+      "mcp__google-workspace__get_spreadsheet_info",
+      "mcp__google-workspace__list_spreadsheets",
+      "mcp__google-workspace__read_sheet_values",
+      "mcp__google-workspace__modify_sheet_values",
+      "mcp__google-workspace__resize_sheet_dimensions",
+      "mcp__google-workspace__format_sheet_range",
+      "mcp__google-workspace__manage_conditional_formatting",
+      "mcp__google-workspace__create_table_with_data",
+      "mcp__google-workspace__list_sheet_tables",
+      "mcp__google-workspace__append_table_rows",
+      "mcp__google-workspace__debug_table_structure",
+      "mcp__google-workspace__list_spreadsheet_comments",
+      "mcp__google-workspace__manage_spreadsheet_comment",
+      "mcp__google-workspace__batch_modify_gmail_message_labels",
+      "mcp__google-workspace__start_google_auth"
+    ]
+  }
+}
