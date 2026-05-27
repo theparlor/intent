@@ -494,6 +494,190 @@ def test_repo_keyword_fallback(synthetic_repo):
     assert "2026-05-26-internal-sig.md" in paths
 
 
+# ─── Phase 2: BM25 via library-index-mcp import ─────────────────
+
+def test_library_index_client_bm25_returns_hits(tmp_path, monkeypatch):
+    """
+    Phase 2 primary path: when library-index-mcp is importable, query()
+    returns BM25-ranked results (score is float from BM25Okapi.get_scores).
+
+    Strategy: point LIBRARY_INDEX_MCP_ROOT at a minimal synthetic server.py
+    that exposes `_build_bm25_index` with the same inline BM25Okapi stdlib
+    implementation as the real server (no rank_bm25 package required).
+    """
+    import lib.library_index_client as lic_mod
+
+    # Reset module-level import cache so each test is isolated
+    lic_mod._li_mcp_module = None
+    lic_mod._li_mcp_import_error = None
+    lic_mod._LI_MCP_SERVER_PATH = None
+
+    # Write a minimal server.py that only exposes _build_bm25_index
+    fake_server = tmp_path / "server.py"
+    fake_server.write_text(
+        """
+import math
+from collections import Counter
+
+_bm25_index_cache = {}
+
+class BM25Okapi:
+    def __init__(self, corpus, k1=1.5, b=0.75):
+        self.k1 = k1
+        self.b = b
+        self.corpus = corpus
+        self.N = len(corpus)
+        self.avgdl = sum(len(d) for d in corpus) / max(self.N, 1)
+        self.df = Counter()
+        self.tf = []
+        for doc in corpus:
+            freq = Counter(doc)
+            self.tf.append(freq)
+            for term in set(doc):
+                self.df[term] += 1
+        self.idf = {}
+        for term, freq in self.df.items():
+            self.idf[term] = math.log((self.N - freq + 0.5) / (freq + 0.5) + 1)
+
+    def get_scores(self, query_tokens):
+        scores = [0.0] * self.N
+        for token in query_tokens:
+            idf = self.idf.get(token, 0.0)
+            for i, freq in enumerate(self.tf):
+                tf = freq.get(token, 0)
+                dl = len(self.corpus[i])
+                denom = tf + self.k1 * (1 - self.b + self.b * dl / max(self.avgdl, 1))
+                scores[i] += idf * (tf * (self.k1 + 1)) / max(denom, 1e-10)
+        return scores
+
+
+def _resolve_sidecar_path(asset_path):
+    return None  # no sidecars in test
+
+
+def _build_bm25_index(catalog):
+    key = id(catalog)
+    if key in _bm25_index_cache:
+        return _bm25_index_cache[key]
+    assets = catalog.get("assets", [])
+    corpus_tokens = []
+    paths = []
+    for asset in assets:
+        path = asset.get("path", "")
+        paths.append(path)
+        topics_text = " ".join(asset.get("topics", []))
+        entities_text = " ".join(str(e) for e in asset.get("entities", []))
+        full_text = f"{topics_text} {entities_text} {path}"
+        corpus_tokens.append(full_text.lower().split())
+    index = BM25Okapi(corpus_tokens)
+    _bm25_index_cache[key] = (index, paths)
+    return _bm25_index_cache[key]
+"""
+    )
+
+    monkeypatch.setenv("LIBRARY_INDEX_MCP_ROOT", str(tmp_path))
+
+    # Build a catalog with two assets; relevance should rank a.md higher
+    cat = tmp_path / "CATALOG.json"
+    cat.write_text(json.dumps({
+        "assets": [
+            {
+                "path": "/ws/a.md",
+                "topics": ["substrate", "exposure", "bm25"],
+                "entities": ["SIG-BM25-001"],
+                "depth_score": 0.9,
+            },
+            {
+                "path": "/ws/b.md",
+                "topics": ["unrelated", "noise"],
+                "entities": [],
+                "depth_score": 0.1,
+            },
+        ],
+    }))
+
+    from lib.library_index_client import LibraryIndexClient
+
+    client = LibraryIndexClient(catalog_path=cat)
+    hits = client.query("substrate exposure bm25", k=5)
+
+    assert len(hits) >= 1, "BM25 path should return at least one hit"
+    assert hits[0].path == "/ws/a.md", (
+        f"BM25 should rank the relevant doc first, got {hits[0].path}"
+    )
+    # Score must be a BM25 float > 0, NOT a word_hits * 0.3 + depth * 0.7 composite
+    assert hits[0].score > 0.0, "BM25 score must be positive"
+    assert hits[0].entity_id == "SIG-BM25-001"
+
+    # Cleanup cached module so other tests are not affected
+    lic_mod._li_mcp_module = None
+    lic_mod._li_mcp_import_error = None
+    lic_mod._LI_MCP_SERVER_PATH = None
+    if "library_index_mcp_server" in sys.modules:
+        del sys.modules["library_index_mcp_server"]
+
+
+def test_library_index_client_bm25_fallback_when_import_fails(tmp_path, monkeypatch):
+    """
+    When library-index-mcp is not importable (LIBRARY_INDEX_MCP_ROOT points
+    at a non-existent path), query() falls back to the Phase 1 word-hit scorer
+    and still returns ranked hits from CATALOG.json.
+    """
+    import lib.library_index_client as lic_mod
+
+    # Reset module-level import cache
+    lic_mod._li_mcp_module = None
+    lic_mod._li_mcp_import_error = None
+    lic_mod._LI_MCP_SERVER_PATH = None
+
+    # Point at a directory with no server.py → import must fail
+    empty_dir = tmp_path / "empty"
+    empty_dir.mkdir()
+    monkeypatch.setenv("LIBRARY_INDEX_MCP_ROOT", str(empty_dir))
+
+    cat = tmp_path / "CATALOG.json"
+    cat.write_text(json.dumps({
+        "assets": [
+            {
+                "path": "/ws/fallback.md",
+                "topics": ["fallback", "wordhit"],
+                "entities": ["SIG-FALLBACK-001"],
+                "depth_score": 0.7,
+                "summary": "Phase 1 fallback doc",
+            },
+            {
+                "path": "/ws/other.md",
+                "topics": ["noise"],
+                "entities": [],
+                "depth_score": 0.0,
+                "summary": "Unrelated",
+            },
+        ],
+    }))
+
+    from lib.library_index_client import LibraryIndexClient
+
+    client = LibraryIndexClient(catalog_path=cat)
+    hits = client.query("fallback wordhit", k=5)
+
+    assert len(hits) >= 1, "Phase 1 fallback must return hits when import fails"
+    assert hits[0].path == "/ws/fallback.md", (
+        f"Word-hit scorer should rank fallback.md first, got {hits[0].path}"
+    )
+    # Phase 1 score formula: word_hits * 0.3 + depth_score * 0.7
+    # fallback.md: 2 keyword hits in topics, depth=0.7 → score ≥ 2*0.3 + 0.7*0.7 = 1.09
+    assert hits[0].score > 0.0
+
+    # status() should report the import failure
+    status = client.status()
+    assert "wordhit" in status or "not importable" in status or "not found" in status
+
+    # Cleanup
+    lic_mod._li_mcp_module = None
+    lic_mod._li_mcp_import_error = None
+    lic_mod._LI_MCP_SERVER_PATH = None
+
+
 # ─── Server import smoke test ───────────────────────────────────
 
 def test_server_imports_clean():

@@ -749,7 +749,7 @@ def query(text: str, scope_token: str = "internal", k: int = 10) -> str:
     catalog_path = Path(catalog_override) if catalog_override else None
     client = LibraryIndexClient(repo_root=Path(ROOT), catalog_path=catalog_path)
     fallback = False
-    li_status = "wired (CATALOG.json depth-sorted; see investigation-2026-05-26)"
+    li_status = client.status()
     try:
         raw_hits = client.query(text, k=k)
     except NotImplementedError:
