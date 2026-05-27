@@ -69,10 +69,14 @@ The 2026-05-26 Cowork Phase 1 session on substrate exposure + Witness/Entire com
 
 - **`spec/library-index-composition-investigation-2026-05-26.md`** — investigation report on library-index ↔ intent-knowledge composition. Finds library-index has no BM25+vector retrieval today; recommended path is a half-day Port A extension (`library_search_ranked` tool added to library-index-mcp). qmd full-BM25+vector backend is correct architecture but full-day sub-milestone.
 
-### In progress (work begun, returning material to evaluate)
+### Shipped post-CHANGELOG-entry (verified 2026-05-27)
 
-- **library-index-mcp `library_search_ranked` Port A tool** — BM25-ranked retrieval over CATALOG.json + sidecar excerpts. Half-day implementation per Agent 3's investigation.
-- **`intent-knowledge` MCP server 5 substrate verbs** — query/get/list/lineage/freshness with `.intent/classification.yaml` binary enforcement. Composes with library-index for the query verb.
+The two "in progress" items at the time of the 2026-05-26 v0.12.0 entry
+landed in the same commit wave and have test coverage. Verified
+2026-05-27 by code + test inventory check:
+
+- **library-index-mcp `library_search_ranked` Port A tool** — registered as `@mcp.tool(name="library_search_ranked")` at `Core/products/library-index-mcp/server.py`. Dedicated test file `Core/products/library-index-mcp/tests/test_library_search_ranked.py`. BM25-ranked retrieval over CATALOG.json + sidecar excerpts.
+- **`intent-knowledge` MCP server 5 substrate verbs** — registered in `Core/frameworks/intent/servers/knowledge.py`: `query` (line 720), `get` (line 799), `list_entities` (line 880, renamed from reserved `list`), `lineage` (line 954), `freshness` (line 1027). All accept `scope_token: str = "internal"` for D5-refined tier enforcement. Test coverage: 34 test functions in `Core/frameworks/intent/servers/test_knowledge.py`.
 
 ### Added — Public Communications Draft
 
