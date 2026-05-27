@@ -41,6 +41,25 @@ The timestamp prefix records when the release happened. The semver suffix record
 
 ---
 
+## 2026.05.27 — v0.12.1
+
+### Added — Substrate Exposure Phase 1 close-out (pre-Brien-deploy)
+
+Two follow-on engineering pieces + the deploy guide Brien needs after his dentist appointment:
+
+- **`servers/DEPLOYMENT-INTENT-KNOWLEDGE.md`** — ~370-line click-by-click deploy guide for the 4th MCP server on FastMCP Cloud. Covers pre-deploy checklist (verify tests + commit + catalog freshness), 5-step deploy procedure, MCP client config, smoke test against DEC-009, Phase 1 vs Phase 2 backend modes, classification/scope-token configuration, troubleshooting (404s, 0-hits, build failures, port collisions), and validation criteria mapped to substrate-exposure-architecture.md.
+- **`bin/intent-init` Step 3b** — Stop-hook registration in `<product>/.claude/settings.local.json`. The hook-file install (step 3) already worked; this completes the Tier 1 wiring so the hook actually fires on Claude Code Stop events. Idempotent (re-run is a no-op). Test suite 40/40 → **45/45** with 5 new assertions covering registration shape + idempotency.
+- **`servers/lib/library_index_client.py` Phase 2 swap** — direct Python import of library-index-mcp's BM25 ranking (Option A). 3-stage fallback chain: BM25 (Phase 2 primary) → word-hit (Phase 1) → repo-keyword (last resort). Server never goes dark. Test suite 34/34 → **36/36** with 2 new tests covering BM25 path + import-failure fallback.
+
+### Changed
+- `servers/DEPLOYMENT.md` — cross-ref to `DEPLOYMENT-INTENT-KNOWLEDGE.md` at top; intent-knowledge added to project list, MCP config, local-dev terminals (3 → 4), env-var table.
+- `spec/substrate-exposure-architecture.md` Phase 1 progress checkpoint — Phase 2 swap + Stop-hook flipped from "in progress / documented" to "shipped" with commit SHAs; Closure-DoD assertions for each component updated to **resolved** (was symptom-repaired-upstream-pending for intent-knowledge substrate verbs).
+
+### Closure status
+All Phase 1 implementation work is **resolved** per Closure-DoD assertions. Only the Brien-driven FastMCP Cloud deploy itself remains.
+
+---
+
 ## 2026.05.26 — v0.12.0
 
 ### Added — Substrate Exposure Phase 1 (filing + foundational implementation)

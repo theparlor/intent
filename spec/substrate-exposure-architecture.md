@@ -220,16 +220,19 @@ The architecture is designed tier-aware on Day 1 so engagement substrate adds *c
 | library-index composition investigation (DEC-010 follow-up) | ✅ report filed | intent@53df962 |
 | `library_search_ranked` Port A tool on library-index-mcp | ✅ shipped 2026-05-26, 68/68 tests, BM25-ranked retrieval | library-index-mcp@89d857d + @c82546b |
 | `intent-knowledge` MCP server 5 substrate verbs (DEC-010) | ✅ shipped 2026-05-26, 34/34 tests, classification-enforced | intent@1239121 + @17f6fd0 + @605cf6c |
-| `library-index-mcp` ↔ `intent-knowledge` integration wired | ✅ Phase 1 client wired (LibraryIndexClient reads CATALOG.json + falls back to repo grep); Phase 2 swap to `library_search_ranked` is single-class swap, documented | intent@17f6fd0 |
-| Deploy to `intent-knowledge.fastmcp.cloud/mcp` | ⏳ pending — Brien deploy step |  |
+| `library-index-mcp` ↔ `intent-knowledge` integration wired | ✅ **Phase 2 swap shipped 2026-05-27**: direct Python import of library-index-mcp's BM25 ranking (Option A); BM25 → word-hit → repo-keyword 3-stage fallback chain; 36/36 tests | intent@f3cf63e |
+| Deploy to `intent-knowledge.fastmcp.cloud/mcp` | ⏳ pending — Brien deploy step; guide at `servers/DEPLOYMENT-INTENT-KNOWLEDGE.md` (intent@13515d9) |  |
+| `bin/intent-init` Stop-hook registration (Step 3b) | ✅ shipped 2026-05-27, 45/45 tests (5 new assertions) | intent@1549a79 |
 | Two-observabilities post (DEC-009 frame) | ✅ draft filed | intent-site@158a611 |
 
-**Closure-DoD status (2026-05-26 end-of-day):**
+**Closure-DoD status (2026-05-27 end-of-session):**
 
-- `bin/intent-init` — **resolved.** Upstream: `bin/intent-init` (the script itself). Catch-net: `bin/test-intent-init.sh` (40/40 passing). Pipeline survival: YES (code is the procedure).
-- `intent-knowledge` substrate verbs — **symptom-repaired, upstream-pending.** Upstream: `servers/knowledge.py` + `servers/lib/`. Catch-net: `servers/test_knowledge.py` (34/34 passing). Pending: BM25+vector backend integration is wired in Phase 1 mode (catalog read + fallback); Phase 2 swap to `library_search_ranked` MCP tool documented in closure signal.
+- `bin/intent-init` (CLI + Step 3b Stop-hook registration) — **resolved.** Upstream: `bin/intent-init` (the script itself). Catch-net: `bin/test-intent-init.sh` (45/45 passing, up from 40 with 5 new assertions covering Stop-hook registration + idempotency). Pipeline survival: YES.
+- `intent-knowledge` substrate verbs (Phase 2 backend swap) — **resolved.** Upstream: `servers/knowledge.py` + `servers/lib/library_index_client.py` (Phase 2: direct Python import of library-index-mcp's BM25 ranking via Option A). Catch-net: `servers/test_knowledge.py` (36/36 passing, 2 new for Phase 2 swap). 3-stage fallback chain (BM25 → word-hit → repo-keyword) means server never goes dark. Pipeline survival: YES.
 - `library_search_ranked` Port A — **resolved.** Upstream: `Core/products/library-index-mcp/server.py`. Catch-net: `tests/test_library_search_ranked.py` (22 new tests, 68 total passing). Pipeline survival: YES.
-- WS-DDR-099 + DEC-010 + DEC-011 — **resolved.** Decisions are the upstream. Catch-net: Phase 1 implementation now ships everything Day-1-required (classification schema, scope-token mechanism, binary policy enforcement, scaffold, hook). Pipeline survival: YES (decisions are the architectural commitment).
+- `servers/DEPLOYMENT-INTENT-KNOWLEDGE.md` — **resolved (guide).** Upstream: the guide file itself + `servers/knowledge.py` (the code) + the eventual FastMCP Cloud project. Catch-net: §Validation criteria in the guide map back to substrate-exposure-architecture.md §Validation criteria. Pipeline survival: YES (markdown survives render_all).
+- Deploy to `intent-knowledge.fastmcp.cloud/mcp` — **pending Brien-driven step.** No closure assertion until deploy executes.
+- WS-DDR-099 + DEC-010 + DEC-011 — **resolved.** Decisions are the upstream. Catch-net: Phase 1 implementation + Phase 2 swap + deploy guide collectively ship every artifact Day-1-required (classification schema, scope-token mechanism, binary policy enforcement, scaffold, hook, BM25 backend, deploy procedure). Pipeline survival: YES.
 4. **Identity / auth on the MCP endpoint.** Phase 1 is read-only against public-ish content (Brien's own substrate); auth can default to "any client with the MCP URL." Phase 2 (write-back) forces a real identity story — probably GitHub OAuth for PR-proposal, which aligns with the PR-as-arbiter design.
 
 ## Dependency notes (vs. other open tracks)

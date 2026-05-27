@@ -156,10 +156,10 @@ If both work, the substrate-exposure-architecture's validation criterion #1 is m
 
 The deployed server runs in **Phase 1 mode** by default:
 
-- **Phase 1** — `query()` calls into `LibraryIndexClient.query()` which reads `CATALOG.json` if present, else falls back to `repo_keyword_fallback()` (substring search across intent's own files). Because FastMCP Cloud doesn't have local access to `~/Workspaces/CATALOG.json`, the cloud deploy will use the repo-keyword fallback. Locally-run servers can mount the catalog via `INTENT_KNOWLEDGE_CATALOG=/Users/brien/Workspaces/CATALOG.json`.
-- **Phase 2** — `query()` calls into library-index-mcp's `library_search_ranked` tool for true BM25-ranked retrieval over the 39k+ file knowledge graph. Phase 2 wiring is the work the Phase 2 swap agent is closing today; the closure signal `.intent/signals/SIG-2026-05-26-library-index-phase2-swap.md` will document the integration.
+- **Phase 1** — `query()` reads `CATALOG.json` if present, else falls back to repo-grep. Useful when running locally; on FastMCP Cloud the catalog isn't mounted so it would fall through to repo-grep.
+- **Phase 2 (✅ shipped 2026-05-27 — intent@f3cf63e)** — `query()` calls into library-index-mcp's BM25 ranking via direct Python import (Option A). The implementation lives at `servers/lib/library_index_client.py` and has a 3-stage fallback chain: **BM25 (Phase 2 primary) → word-hit (Phase 1 fallback) → repo-keyword (last resort)**. The server never goes dark. Closure signal: `.intent/signals/SIG-2026-05-26-library-index-phase2-swap.md` (status: resolved).
 
-For the initial cloud deploy, Phase 1 is fine — the substrate query verb returns useful results over the intent repo itself even without the full library-index backend. Once Phase 2 ships, the cloud server will need a redeploy to pick up the new `LibraryIndexClient`.
+For the initial cloud deploy: the BM25 path requires `Core/products/library-index-mcp/server.py` to be reachable on the Python import path. On FastMCP Cloud, it isn't (different repo entirely). The cloud deploy will fall through to Phase 1 word-hit OR repo-keyword. To get true BM25 in the cloud, either (a) deploy library-index-mcp to its own FastMCP project and refactor the client to dial it via HTTP (future track), or (b) run intent-knowledge locally where both repos sit side-by-side. For Brien's first cloud deploy, Phase 1 fallback suffices for the smoke test — the architecture decision in WS-DDR-099 is honored either way.
 
 ## Classification (scope-token) configuration
 
