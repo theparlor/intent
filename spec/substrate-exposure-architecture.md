@@ -198,7 +198,7 @@ The architecture is designed tier-aware on Day 1 so engagement substrate adds *c
 2. **library-index API surface as currently exposed to MCP.** Need to confirm library-index has an existing API surface usable from intent-knowledge — if not, exposing one is a sub-milestone of Phase 1 (and is in scope for the existing E3 track). This is the one engineering unknown.
 3. **PII / client-engagement redaction.** Originally proposed as Phase 2; **moved into Phase 1 then refined per Brien's D5-refined close of 2026-05-26**. What's in Phase 1 — and now shipped: the tier-aware *architecture* — classification schema ✅ (intent@63c84ba), classification.yaml writer ✅ (intent@bd3f49f via `bin/intent-init`), scope-token mechanism and binary enforcement at the MCP server (in progress — see intent-knowledge follow-on). What's deferred to Phase 2 / on-demand: per-engagement redaction-map authoring, shaped-view substitution code, inbound redaction. The architectural shape never refactors; the redaction *content* lights up when needed.
 
-## Phase 1 progress checkpoint (2026-05-26)
+## Phase 1 progress checkpoint (2026-05-26, end-of-day)
 
 | Component | Status | Commit |
 |---|---|---|
@@ -209,10 +209,18 @@ The architecture is designed tier-aware on Day 1 so engagement substrate adds *c
 | `.intent/classification.yaml` schema v1 | ✅ shipped 2026-05-26 | intent@63c84ba |
 | `hooks/session-end.sh` Tier 1 emitter | ✅ shipped 2026-05-26 | intent@b6d837d |
 | library-index composition investigation (DEC-010 follow-up) | ✅ report filed | intent@53df962 |
-| `library_search_ranked` Port A tool on library-index-mcp | ⚙ in progress (Agent 4) | TBD |
-| `intent-knowledge` MCP server 5 substrate verbs (DEC-010) | ⚙ in progress (Agent 2) | TBD |
-| Deploy to `intent-knowledge.fastmcp.cloud/mcp` | ⏳ pending |  |
+| `library_search_ranked` Port A tool on library-index-mcp | ✅ shipped 2026-05-26, 68/68 tests, BM25-ranked retrieval | library-index-mcp@89d857d + @c82546b |
+| `intent-knowledge` MCP server 5 substrate verbs (DEC-010) | ✅ shipped 2026-05-26, 34/34 tests, classification-enforced | intent@1239121 + @17f6fd0 + @605cf6c |
+| `library-index-mcp` ↔ `intent-knowledge` integration wired | ✅ Phase 1 client wired (LibraryIndexClient reads CATALOG.json + falls back to repo grep); Phase 2 swap to `library_search_ranked` is single-class swap, documented | intent@17f6fd0 |
+| Deploy to `intent-knowledge.fastmcp.cloud/mcp` | ⏳ pending — Brien deploy step |  |
 | Two-observabilities post (DEC-009 frame) | ✅ draft filed | intent-site@158a611 |
+
+**Closure-DoD status (2026-05-26 end-of-day):**
+
+- `bin/intent-init` — **resolved.** Upstream: `bin/intent-init` (the script itself). Catch-net: `bin/test-intent-init.sh` (40/40 passing). Pipeline survival: YES (code is the procedure).
+- `intent-knowledge` substrate verbs — **symptom-repaired, upstream-pending.** Upstream: `servers/knowledge.py` + `servers/lib/`. Catch-net: `servers/test_knowledge.py` (34/34 passing). Pending: BM25+vector backend integration is wired in Phase 1 mode (catalog read + fallback); Phase 2 swap to `library_search_ranked` MCP tool documented in closure signal.
+- `library_search_ranked` Port A — **resolved.** Upstream: `Core/products/library-index-mcp/server.py`. Catch-net: `tests/test_library_search_ranked.py` (22 new tests, 68 total passing). Pipeline survival: YES.
+- WS-DDR-099 + DEC-010 + DEC-011 — **resolved.** Decisions are the upstream. Catch-net: Phase 1 implementation now ships everything Day-1-required (classification schema, scope-token mechanism, binary policy enforcement, scaffold, hook). Pipeline survival: YES (decisions are the architectural commitment).
 4. **Identity / auth on the MCP endpoint.** Phase 1 is read-only against public-ish content (Brien's own substrate); auth can default to "any client with the MCP URL." Phase 2 (write-back) forces a real identity story — probably GitHub OAuth for PR-proposal, which aligns with the PR-as-arbiter design.
 
 ## Dependency notes (vs. other open tracks)
