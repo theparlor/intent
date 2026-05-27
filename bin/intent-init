@@ -8,6 +8,8 @@ described in `playbooks/spawn-a-product.md` into a single command:
   1. mkdir -p <path>/.intent/{events,signals,intents,specs} and <path>/.entire/
   2. cd <path> && entire enable
   3. install session-end hook into <path>/.claude/hooks/session-end
+  3b. register the Stop-event hook in <path>/.claude/settings.local.json
+      so the hook actually fires on session close (idempotent)
   4. write <path>/.intent/classification.yaml (schema-enforced)
   5. append entry to Core/products/products.json (or engagements.json
      for confidential:* tier)
@@ -243,6 +245,61 @@ def step_install_hook(product_root: Path, workspaces_root: Path) -> str:
     return f"installed: {dest}"
 
 
+def step_register_stop_hook(product_root: Path) -> str:
+    """
+    Register the session-end hook with Claude Code's Stop event in the
+    product's .claude/settings.local.json, so the hook actually fires
+    on session close. Idempotent: re-running on a product that already
+    has the registration is a no-op.
+    """
+    settings_path = product_root / ".claude" / "settings.local.json"
+    settings_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # The Stop-hook entry we want to ensure exists.
+    HOOK_COMMAND = "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end"
+    desired_entry = {
+        "type": "command",
+        "command": HOOK_COMMAND,
+    }
+
+    # Read existing settings (or initialize fresh).
+    settings: dict
+    if settings_path.exists() and settings_path.stat().st_size > 0:
+        try:
+            settings = json.loads(settings_path.read_text())
+        except json.JSONDecodeError as e:
+            return f"warning: {settings_path} is not valid JSON ({e}); skipped"
+    else:
+        settings = {}
+
+    # Navigate to hooks.Stop (a list of {matcher, hooks} blocks).
+    hooks_section = settings.setdefault("hooks", {})
+    if not isinstance(hooks_section, dict):
+        return f"warning: hooks section in {settings_path} is not an object; skipped"
+
+    stop_blocks = hooks_section.setdefault("Stop", [])
+    if not isinstance(stop_blocks, list):
+        return f"warning: hooks.Stop in {settings_path} is not an array; skipped"
+
+    # Check if our hook command is already registered (idempotency).
+    for block in stop_blocks:
+        if not isinstance(block, dict):
+            continue
+        for entry in block.get("hooks", []) or []:
+            if (
+                isinstance(entry, dict)
+                and entry.get("type") == "command"
+                and entry.get("command") == HOOK_COMMAND
+            ):
+                return f"already registered in {settings_path}"
+
+    # Append a fresh Stop-hook block (matcher: * means all Stop events).
+    stop_blocks.append({"matcher": "*", "hooks": [desired_entry]})
+
+    settings_path.write_text(json.dumps(settings, indent=2) + "\n")
+    return f"registered in {settings_path}"
+
+
 def step_write_classification(
     product_root: Path, classification: str, declared_by: str
 ) -> tuple[str, Optional[Path]]:
@@ -474,6 +531,9 @@ def main(argv=None) -> int:
     # 3. session-end hook
     hook_status = step_install_hook(product_root, workspaces_root)
 
+    # 3b. register the hook with Claude Code's Stop event
+    stop_hook_status = step_register_stop_hook(product_root)
+
     # 4. classification.yaml
     class_status, class_path = step_write_classification(
         product_root, classification, args.declared_by
@@ -506,6 +566,7 @@ def main(argv=None) -> int:
     print(f"  dirs created:         {len(created)} new")
     print(f"  entire enable:        {entire_status} — {entire_detail}")
     print(f"  session-end hook:     {hook_status}")
+    print(f"  Stop-hook registered: {stop_hook_status}")
     print(f"  classification.yaml:  {class_status} — {class_path}")
     print(f"  registry:             {registry_status} — {registry_path}")
     print(f"  witness registry:     {witness_status} — {witness_path}")

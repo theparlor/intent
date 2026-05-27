@@ -85,6 +85,19 @@ assert_file  "installs session-end hook" "$PRODUCT_ROOT/.claude/hooks/session-en
 [[ -x "$PRODUCT_ROOT/.claude/hooks/session-end" ]] && ok "session-end hook is executable" \
   || nope "session-end hook is not executable"
 
+# Stop-hook registration in .claude/settings.local.json
+assert_file  "writes .claude/settings.local.json" "$PRODUCT_ROOT/.claude/settings.local.json"
+assert_contains "registers Stop hook" '"Stop"' "$PRODUCT_ROOT/.claude/settings.local.json"
+assert_contains "registers session-end command" 'CLAUDE_PROJECT_DIR/.claude/hooks/session-end' "$PRODUCT_ROOT/.claude/settings.local.json"
+
+# Idempotency: re-running should not duplicate the Stop-hook entry
+RERUN_OUT="$("$INTENT_INIT" my-product --path Core/products/my-product --classification internal --dry-run 2>&1)"
+STOP_COUNT=$(grep -c '"Stop"' "$PRODUCT_ROOT/.claude/settings.local.json")
+[[ "$STOP_COUNT" -eq 1 ]] && ok "Stop-hook registration is idempotent (single entry after re-run)" \
+  || nope "Stop-hook duplicated on re-run (count=$STOP_COUNT)"
+echo "$RERUN_OUT" | grep -q "already registered" && ok "re-run reports 'already registered'" \
+  || nope "re-run did not detect existing Stop-hook registration"
+
 assert_file  "appends Core/products/products.json" "$ROOT/Core/products/products.json"
 assert_contains "products.json mentions name" '"name": "my-product"' "$ROOT/Core/products/products.json"
 assert_contains "products.json carries classification" '"classification": "internal"' "$ROOT/Core/products/products.json"
