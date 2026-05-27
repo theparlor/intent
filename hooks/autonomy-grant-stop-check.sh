@@ -297,17 +297,18 @@ if echo "$LAST_PARA" | grep -qiE "$COND_QUEUE_RE"; then
   COND_QUEUE_MATCH=1
 fi
 
-# Context gate: only fires when the response references next-action work
-# (similar to CHECK 2's gate). Reuses HAS_NEXT_STAGE OR new "next L4" phrasing.
-NEXT_L4_RE='(next l4|next move|will write|going to write|will draft|will run|will execute|will build|next step)'
-HAS_NEXT_L4=0
-if echo "$LOWER_FULL" | grep -qiE "$NEXT_L4_RE"; then
-  HAS_NEXT_L4=1
-fi
-
-# Fires when: conditional-queue phrase + next-action reference + no dispatch in turn
+# Context gate (relaxed 2026-05-26 after T1.4 smoke-test miss):
+# The conditional-queue phrase itself is the reliable signal. The earlier
+# context-gate using NEXT_L4_RE required specific "will write / next L4"
+# keywords that the "Recommend starting with L4 #N ... unless you redirect"
+# variant didn't contain, so T1.4 slipped past CHECK 4.
+#
+# Relaxed approach: fire on COND_QUEUE_MATCH alone, gated only by absence
+# of a dispatch in the same turn (the dispatch gate is the genuine
+# false-positive filter — if you actually executed/dispatched, the
+# conditional-queue framing is a description of what you did, not a queue).
 COND_QUEUE_TRIGGER=0
-if [ "$COND_QUEUE_MATCH" = "1" ] && [ "$HAS_NEXT_L4" = "1" ] && [ "$HAS_DISPATCH" = "0" ]; then
+if [ "$COND_QUEUE_MATCH" = "1" ] && [ "$HAS_DISPATCH" = "0" ]; then
   COND_QUEUE_TRIGGER=1
 fi
 
