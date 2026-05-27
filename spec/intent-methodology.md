@@ -18,10 +18,10 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.58
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
-  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.273}
-  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.311}
-  - {pair: josh-seiden ↔ teresa-torres, count: 88, strength: 0.203}
+  - {pair: marty-cagan ↔ teresa-torres, count: 224, strength: 0.399}
+  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.272}
+  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.309}
+  - {pair: josh-seiden ↔ teresa-torres, count: 88, strength: 0.201}
   - {pair: product-engineering-coaching ↔ teresa-torres, count: 88, strength: 0.082}
 ---
 # Intent Methodology

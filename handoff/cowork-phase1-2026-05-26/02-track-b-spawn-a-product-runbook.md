@@ -3,6 +3,16 @@ title: Spawn-a-Product — Witness + Entire Composition Runbook
 type: playbook
 maturity: draft-for-review
 created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 19.4
+  content_chars: 19315
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.10
 session_origin: Cowork Phase 1
 proposed_destination: Core/frameworks/intent/playbooks/spawn-a-product.md
 ratifies: DEC-009 (two observabilities), WIT-001..006, WS-DDR-079 (Conduit↔Witness seam)
@@ -10,7 +20,6 @@ proposes: DEC-011 (bin/intent-init scaffold)
 owner: brien
 related_handoff: ../2026-05-26-substrate-exposure-and-witness-entire-composition.md (Track B)
 ---
-
 # Spawn a Product — Witness + Entire Composition Runbook
 
 > When you start a new product, project, or client engagement, you do not write per-product observability code. You climb four pre-built tiers. This runbook says exactly how, with the exact commands, the exact cost at each tier, and the prerequisites you can't skip.

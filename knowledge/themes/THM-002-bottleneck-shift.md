@@ -5,14 +5,14 @@ created: 2026-04-05
 updated: 2026-05-16
 depth_score: 2
 depth_signals:
-  file_size_kb: 2.6
-  content_chars: 2042
+  file_size_kb: 3.5
+  content_chars: 2945
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 1.47
+vocab_density: 1.02
 name: The Bottleneck Shifts from Execution to Specification
 confidence: 0.90
 origin: agent

@@ -7,13 +7,22 @@ reusability: universal
 domains:
   - consulting-operations
 created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.0
+  content_chars: 6339
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 1
+  has_summary: 0
+vocab_density: 0.16
 ratifies:
   - DEC-011 (2026-05-26)
 upstream_control_path: "Core/frameworks/intent/bin/intent-init (writes this file) + Core/frameworks/intent/spec/classification-schema.md (this spec) + Core/products/witness/.intent/registered-products.yaml (per-tier federation registry)"
 catch_mechanism: "bin/test-intent-init.sh asserts schema fields on every CI run; substrate-exposure MCP (Track A) reads tier on every query and returns 'absent' on scope mismatch Day 1."
 pipeline_survival: "YES — schema enforced at creation by bin/intent-init and read at runtime by substrate-exposure MCP. Federation gated on tier value, not on file presence."
 ---
-
 # `.intent/classification.yaml` — Schema & Tier Semantics
 
 > Every product and engagement spawned by `bin/intent-init` (DEC-011) gets a per-instance classification declaration at creation. The file is the load-bearing per-product confidentiality contract — read on every substrate query, gates Witness federation, gates chat-surface visibility.

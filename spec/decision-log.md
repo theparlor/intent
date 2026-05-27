@@ -10,16 +10,16 @@ created: 2026-03-31
 technologies:
   - jira
   - slack
-depth_score: 4
+depth_score: 5
 depth_signals:
-  file_size_kb: 7.1
-  content_chars: 6534
+  file_size_kb: 20.2
+  content_chars: 19248
   entity_count: 2
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.31
+vocab_density: 0.16
 related_entities:
   - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
   - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}

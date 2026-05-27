@@ -1,22 +1,21 @@
 ---
 type: practitioner-playbook
-depth_score: 3
+depth_score: 4
 depth_signals:
-  file_size_kb: 11.0
-  content_chars: 10800
-  entity_count: 13
+  file_size_kb: 6.2
+  content_chars: 5583
+  entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
-  has_summary: 1
-vocab_density: 0.41
-source: "X/Twitter thread — @sairahul1 (Rahul), 2026-05-15"
+  has_summary: 0
+vocab_density: 0.18
+source: X/Twitter thread — @sairahul1 (Rahul), 2026-05-15
 captured: 2026-05-16
 origin: external
 confidence: 0.55
-related_signals: []
 extraction_depth: high
-author: "Rahul (@sairahul1)"
+author: Rahul (@sairahul1)
 license: unknown (public social post, captured for internal analysis)
 caveat: "Marketing playbook, vendor-adjacent (closes by selling managed agent hosting). Low rigor, no empirical method. Value is corroboration + concrete technique, not primary evidence."
 ---

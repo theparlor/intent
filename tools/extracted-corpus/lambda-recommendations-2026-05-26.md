@@ -1,3 +1,21 @@
+---
+title: Lambda Recommendations 2026 05 26
+type: framework
+maturity: final
+confidentiality: internal
+reusability: adaptable
+created: 2026-05-27
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.1
+  content_chars: 6000
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+---
 # Initial λ Recommendations (v0 heuristic)
 
 Generated 2026-05-26 from 229 closure-compliant + 61 symptom-repaired signals.

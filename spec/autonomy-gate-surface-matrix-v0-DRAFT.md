@@ -1,25 +1,38 @@
 ---
 title: Autonomy Gate Surface Matrix — execution surfaces × modes × deterministic preconditions
 id: SPEC-INTENT-AUTONOMY-SURFACE-MATRIX-001
-status: draft
-scope: framework
-plane: bridge
-date: 2026-05-26
 updated: 2026-05-26
-author: "intent framework (elevated from prior-Claude v0.1 via ingestion 2026-05-26)"
-source_artifact: Core/frameworks/intent/raw/competitors/2026-05-25-prior-claude-source-artifacts.md (Artifact 3)
-sibling: SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001
 related:
   - Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md
   - Core/frameworks/methodology-library/meta/signal-scoring.md
   - .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
-relates_to: [trust-formula, contract, L0-L4, hooks]
+depth_score: 4
+depth_signals:
+  file_size_kb: 10.9
+  content_chars: 10128
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+status: draft
+scope: framework
+plane: bridge
+date: 2026-05-26
+author: intent framework (elevated from prior-Claude v0.1 via ingestion 2026-05-26)
+source_artifact: Core/frameworks/intent/raw/competitors/2026-05-25-prior-claude-source-artifacts.md (Artifact 3)
+sibling: SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001
+relates_to:
+  - trust-formula
+  - contract
+  - L0-L4
+  - hooks
 ratification_dependencies:
   - flight-model v1 ratification (this matrix' floor values assume forward-fit λ from flight model)
   - surface-coverage audit (Claude-in-Chrome, MCP fabric, plugin-list inventory all need to be mapped to a row)
 ---
-
 # Autonomy Gate Surface Matrix (v0 DRAFT)
 
 > Status: DRAFT. Companion to SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001.

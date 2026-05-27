@@ -24,10 +24,10 @@ depth_signals:
 vocab_density: 0.31
 related_entities:
   - {pair: marty-cagan ↔ product-operating-model, count: 92, strength: 0.189}
+  - {pair: subaru ↔ turnberry, count: 66, strength: 0.569}
   - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
-  - {pair: subaru ↔ turnberry, count: 65, strength: 0.565}
   - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}
-  - {pair: product-operating-model ↔ teresa-torres, count: 57, strength: 0.128}
+  - {pair: product-operating-model ↔ teresa-torres, count: 57, strength: 0.126}
 ---
 # US Automotive OEM Industry Dossier
 

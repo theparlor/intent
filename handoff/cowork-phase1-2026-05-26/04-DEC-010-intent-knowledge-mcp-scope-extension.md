@@ -1,3 +1,21 @@
+---
+title: 04 Dec 010 Intent Knowledge Mcp Scope Extension
+type: framework
+maturity: final
+confidentiality: internal
+reusability: adaptable
+created: 2026-05-27
+depth_score: 4
+depth_signals:
+  file_size_kb: 5.9
+  content_chars: 5923
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.34
+---
 # DEC-010 — intent-knowledge MCP scope extended to substrate exposure
 
 > **Routing note for Phase 2 (Code):** When filing, append this decision to `Core/frameworks/intent/spec/decision-log.md` immediately after DEC-009.

@@ -1,3 +1,21 @@
+---
+title: Lambda Fit V1 Report
+type: framework
+maturity: final
+confidentiality: internal
+reusability: adaptable
+created: 2026-05-27
+depth_score: 4
+depth_signals:
+  file_size_kb: 9.1
+  content_chars: 9009
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.11
+---
 # λ Fit v1 — Per-Product Computed Values
 
 Generated 2026-05-26 by `lambda_fit.py` from extracted calibration corpus.

@@ -10,14 +10,14 @@ created: 2026-04-02
 updated: 2026-05-20
 depth_score: 4
 depth_signals:
-  file_size_kb: 17.7
-  content_chars: 16972
+  file_size_kb: 18.0
+  content_chars: 17251
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.18
+vocab_density: 0.17
 version: 0.11.0
 ---
 # Intent: Architecture — v0.11.0

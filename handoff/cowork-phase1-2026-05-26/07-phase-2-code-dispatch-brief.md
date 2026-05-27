@@ -1,13 +1,22 @@
 ---
 title: Phase 2 Dispatch Brief — Code Filing Instructions
 created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.8
+  content_chars: 7668
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.26
 session_origin: Cowork Phase 1
 session_target: Claude Code
 owner: brien
 status: ready-to-dispatch
 parent_deliverables: /Users/brien/Workspaces/Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/
 ---
-
 # Phase 2 Dispatch Brief — Filing Instructions for Code
 
 Brien: paste this whole document into Claude Code when you're ready to file. It is self-contained — Code does not need to ask you anything before executing.

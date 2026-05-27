@@ -3,6 +3,16 @@ title: Substrate Exposure — Architecture Brief
 type: architecture-brief
 maturity: filed
 created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 22.9
+  content_chars: 19257
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.10
 filed: 2026-05-26
 session_origin: Cowork Phase 1
 phase_2_filing: handoff/cowork-phase1-2026-05-26/07-phase-2-code-dispatch-brief.md
@@ -16,9 +26,8 @@ related_signals:
   - 2026-05-26-entire-scope-audit-and-observability-delta.md
 related_handoffs:
   - 2026-05-26-substrate-exposure-and-witness-entire-composition.md (Track A)
-source_of_truth: Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/01-track-a-substrate-exposure-architecture.md
+source_of_truth: "Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/01-track-a-substrate-exposure-architecture.md"
 ---
-
 # Substrate Exposure — Architecture Brief
 
 > **Premise (load-bearing).** The substrate is `.intent/` + `wiki/` + the connected knowledge graph it points at. Today it is bound to one desktop filesystem. When Brien travels, the chat surface becomes a stranger — it has memory-fragments of the work, never the work itself. The fix is to make the substrate a **sibling** of the surfaces that consume it, not a **child** of the machine that holds it. (WS-DDR-025, §2b of handoff.)

@@ -2,9 +2,19 @@
 title: Spawn-a-Product — Witness + Entire Composition Runbook
 id: PLAYBOOK-SPAWN-A-PRODUCT-001
 type: playbook
+created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 21.3
+  content_chars: 18319
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.11
 status: filed
 date: 2026-05-26
-created: 2026-05-26
 filed: 2026-05-26
 session_origin: Cowork Phase 1
 phase_2_filing: handoff/cowork-phase1-2026-05-26/07-phase-2-code-dispatch-brief.md
@@ -20,7 +30,6 @@ upstream_control_path: "Core/frameworks/intent/playbooks/spawn-a-product.md (thi
 catch_mechanism: "Validation criteria in DEC-011, all verified by bin/test-intent-init.sh (40/40 passing): (1) bin/intent-init succeeds end-to-end, (2) Tier 1 events.jsonl emits on first session via hooks/session-end.sh, (3) Witness registered-products.yaml shape correct, (4) products.json/engagements.json entry shape correct, (5) Tier 2 federation activates when entire-io.py adapter (WIT-004 #5) lands."
 pipeline_survival: "YES — playbook codifies the four-tier composition pattern (Entire / events.jsonl / Witness federation / OTel runtime) that is structurally enforced by the per-product .intent/classification.yaml schema and Witness's conservation law. Survives render_all because the document is the procedure, not a derived artifact."
 ---
-
 # Spawn a Product — Witness + Entire Composition Runbook
 
 > When you start a new product, project, or client engagement, you do not write per-product observability code. You climb four pre-built tiers. This runbook says exactly how, with the exact commands, the exact cost at each tier, and the prerequisites you can't skip.

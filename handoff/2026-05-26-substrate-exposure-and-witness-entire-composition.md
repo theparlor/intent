@@ -1,3 +1,23 @@
+---
+title: 2026 05 26 Substrate Exposure And Witness Entire Composition
+type: framework
+maturity: final
+confidentiality: internal
+reusability: adaptable
+created: 2026-05-27
+companies:
+  - subaru
+depth_score: 5
+depth_signals:
+  file_size_kb: 21.3
+  content_chars: 19859
+  entity_count: 1
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.15
+---
 # Handoff — Substrate Exposure + Witness/Entire Composition Architecture
 
 **Session date:** 2026-05-26

@@ -1,16 +1,22 @@
 ---
 title: Open Decisions — Brien Closes (2026-05-26)
 created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 13.6
+  content_chars: 13424
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.15
 closed: 2026-05-26
 session_origin: Cowork Phase 1
 status: closed-by-brien
 owner: brien
-purpose: |
-  Phase 1 surfaces deltas before Phase 2 (Code) files anything into framework canon.
-  These five decisions are L0/L1 (Brien sets). For each: recommendation, dependency-impact
-  if closed otherwise, and the deliverable edit that flows from the close.
+purpose: "Phase 1 surfaces deltas before Phase 2 (Code) files anything into framework canon. These five decisions are L0/L1 (Brien sets). For each: recommendation, dependency-impact if closed otherwise, and the deliverable edit that flows from the close."
 ---
-
 # Open Decisions — Closed by Brien 2026-05-26
 
 ## Closes recorded (this session)

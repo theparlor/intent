@@ -1,12 +1,7 @@
 ---
 title: Autonomy Flight Model — Coupled-Forces Replacement for Weighted-Sum Gate
 id: SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001
-status: draft
-scope: framework
-date: 2026-05-26
 updated: 2026-05-26
-author: "intent framework (external-input critique 2026-05-24/25 + this-session blend 2026-05-26)"
-supersedes_partially: Core/frameworks/methodology-library/meta/signal-scoring.md
 related:
   - Core/frameworks/intent/spec/autonomy-gate-surface-matrix-v0-DRAFT.md (sibling spec — surface × mode preconditions)
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md (companion — enforcement mechanism via hooks)
@@ -21,6 +16,21 @@ related:
   - Core/products/topography/ (Cockpit local-control mapping)
   - Core/products/loom/ (Tower cross-session mapping)
   - .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
+depth_score: 4
+depth_signals:
+  file_size_kb: 17.2
+  content_chars: 15760
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.19
+status: draft
+scope: framework
+date: 2026-05-26
+author: intent framework (external-input critique 2026-05-24/25 + this-session blend 2026-05-26)
+supersedes_partially: Core/frameworks/methodology-library/meta/signal-scoring.md
 ratification_dependencies:
   - calibration corpus inventory (λ fit) — IMPLEMENTED at Core/frameworks/intent/tools/intent_signal_inventory.py
   - Witness mandatory-recorder WS-DDR
@@ -28,7 +38,6 @@ ratification_dependencies:
   - panel-critique-v2-balanced Forge operator
   - flight-model signal schema amendment (per inventory-reported backfill gap)
 ---
-
 # Autonomy Flight Model (v1 DRAFT)
 
 > Status: DRAFT. This spec replaces the weighted-sum trust formula with a coupled four-forces model derived from aeronautical engineering. It must not be promoted to `accepted` until the four ratification dependencies above are satisfied. The v1 weighted-sum formula remains operational until that happens.

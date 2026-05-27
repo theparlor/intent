@@ -11,14 +11,14 @@ technologies:
   - jira
 depth_score: 4
 depth_signals:
-  file_size_kb: 7.5
-  content_chars: 6860
+  file_size_kb: 10.3
+  content_chars: 9782
   entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.15
+vocab_density: 0.10
 related_entities:
   - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
   - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}

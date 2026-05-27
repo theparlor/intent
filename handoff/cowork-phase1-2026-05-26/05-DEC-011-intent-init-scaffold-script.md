@@ -1,3 +1,23 @@
+---
+title: 05 Dec 011 Intent Init Scaffold Script
+type: framework
+maturity: final
+confidentiality: internal
+reusability: adaptable
+created: 2026-05-27
+companies:
+  - subaru
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.9
+  content_chars: 7884
+  entity_count: 1
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.13
+---
 # DEC-011 — bin/intent-init scaffold script + Witness registered-products.yaml
 
 > **Routing note for Phase 2 (Code):** When filing, append this decision to `Core/frameworks/intent/spec/decision-log.md` immediately after DEC-010.

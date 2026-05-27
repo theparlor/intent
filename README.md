@@ -29,11 +29,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 1.55
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 223, strength: 0.4}
-  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.273}
-  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.311}
+  - {pair: marty-cagan ↔ teresa-torres, count: 224, strength: 0.399}
+  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.272}
+  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.309}
   - {pair: marty-cagan ↔ product-engineering-coaching, count: 104, strength: 0.092}
-  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.204}
+  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.203}
 version: 0.11.0
 architecture: sibling-composable
 pipeline_position: team-operating-model

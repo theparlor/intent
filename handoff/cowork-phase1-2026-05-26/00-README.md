@@ -2,18 +2,27 @@
 title: Cowork Phase 1 Deliverables — Substrate Exposure + Witness/Entire Composition
 created: 2026-05-26
 updated: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 6.1
+  content_chars: 5589
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.36
 session_origin: Cowork
 session_target: Claude Code (Phase 2 filing)
 owner: brien
 status: ready-for-phase-2-filing
 brien_closes_recorded: 2026-05-26 (4 explicit + D4 default-publish)
-brien_overrides: D5-refined (tier-aware Day 1, redaction-map authoring deferred — third option beyond the original D5 binary)
+brien_overrides: "D5-refined (tier-aware Day 1, redaction-map authoring deferred — third option beyond the original D5 binary)"
 parent_handoff: ../2026-05-26-substrate-exposure-and-witness-entire-composition.md
 parent_audit_signal: ../../.intent/signals/2026-05-26-entire-scope-audit-and-observability-delta.md
 ratifies: DEC-009
 phase_2_dispatch_brief: 07-phase-2-code-dispatch-brief.md
 ---
-
 # Cowork Phase 1 — Staged Deliverables
 
 This directory contains the Phase 1 (thinking) output of the 2026-05-26 substrate-exposure + Witness/Entire-composition handoff. Phase 2 (Code, Claude Code session) will file these into framework canon per the routing notes below.

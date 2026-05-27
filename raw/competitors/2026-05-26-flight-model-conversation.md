@@ -1,17 +1,28 @@
 ---
 title: External Claude conversation — autonomy gate critique and flight-model proposal
-type: external-input / competitor-adjacent (the conversation included SuperClaude + Reddit Claude Code analyses)
+type: "external-input / competitor-adjacent (the conversation included SuperClaude + Reddit Claude Code analyses)"
+related:
+  - Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md
+  - Core/frameworks/intent/spec/autonomy-grant-enforcement.md
+  - Core/frameworks/methodology-library/meta/signal-scoring.md
+frameworks:
+  - double-loop-learning
+depth_score: 5
+depth_signals:
+  file_size_kb: 36.0
+  content_chars: 19400
+  entity_count: 1
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.15
 source: prior Claude session (separate from this Workspaces session)
 date_range: 2026-05-24 → 2026-05-25
 ingested: 2026-05-26
 ingest_session_signal: .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
 status: archived-verbatim
-related:
-  - Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md
-  - Core/frameworks/intent/spec/autonomy-grant-enforcement.md
-  - Core/frameworks/methodology-library/meta/signal-scoring.md
 ---
-
 # External Claude conversation, 2026-05-24 → 2026-05-25
 
 > Verbatim ingest per Workspaces-first ingestion rule. The conversation runs across six exchanges:

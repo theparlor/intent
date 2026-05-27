@@ -3,18 +3,18 @@ id: THM-005
 type: theme
 created: 2026-05-16
 updated: 2026-05-16
-depth_score: 3
+depth_score: 4
 depth_signals:
-  file_size_kb: 6.5
-  content_chars: 6200
+  file_size_kb: 7.1
+  content_chars: 6673
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.52
+vocab_density: 0.30
 name: Agent-as-Job, Not Agent-as-Chat
-confidence: 0.7
+confidence: 0.70
 origin: agent
 sources:
   - raw/research/2026-05-16-rahul-ai-agent-team-playbook.md

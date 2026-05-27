@@ -2,10 +2,19 @@
 title: library-index ↔ intent-knowledge composition investigation
 type: investigation-report
 created: 2026-05-26
-author: claude-sonnet (substrate-exposure track research)
 related: DEC-010, WS-DDR-099, WS-DDR-080, WS-DDR-083, WS-DDR-084
+depth_score: 4
+depth_signals:
+  file_size_kb: 9.6
+  content_chars: 9586
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.10
+author: claude-sonnet (substrate-exposure track research)
 ---
-
 # library-index ↔ intent-knowledge composition investigation
 
 ## TL;DR

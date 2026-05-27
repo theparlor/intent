@@ -13,8 +13,8 @@ technologies:
   - slack
 depth_score: 5
 depth_signals:
-  file_size_kb: 19.2
-  content_chars: 18258
+  file_size_kb: 19.4
+  content_chars: 18437
   entity_count: 1
   slide_count: 0
   sheet_count: 0

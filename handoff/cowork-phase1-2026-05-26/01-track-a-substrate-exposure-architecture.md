@@ -3,6 +3,16 @@ title: Substrate Exposure — Architecture Brief
 type: architecture-brief
 maturity: draft-for-review
 created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 19.8
+  content_chars: 19514
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.10
 session_origin: Cowork Phase 1
 ratifies: DEC-009 (two observabilities), WS-DDR-025 (sibling-over-parent-child)
 proposes: WS-DDR-099 (substrate exposure mechanism), DEC-010 (intent-knowledge MCP scope extension)
@@ -12,7 +22,6 @@ related_signals:
 related_handoffs:
   - 2026-05-26-substrate-exposure-and-witness-entire-composition.md (Track A)
 ---
-
 # Substrate Exposure — Architecture Brief
 
 > **Premise (load-bearing).** The substrate is `.intent/` + `wiki/` + the connected knowledge graph it points at. Today it is bound to one desktop filesystem. When Brien travels, the chat surface becomes a stranger — it has memory-fragments of the work, never the work itself. The fix is to make the substrate a **sibling** of the surfaces that consume it, not a **child** of the machine that holds it. (WS-DDR-025, §2b of handoff.)

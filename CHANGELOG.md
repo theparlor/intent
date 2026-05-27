@@ -11,16 +11,16 @@ technologies:
   - jira
   - figma
   - slack
-depth_score: 5
+depth_score: 6
 depth_signals:
-  file_size_kb: 17.0
-  content_chars: 16476
+  file_size_kb: 21.5
+  content_chars: 19236
   entity_count: 3
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.30
+vocab_density: 0.26
 related_entities:
   - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
   - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}

@@ -1,3 +1,21 @@
+---
+title: 03 Ws Ddr 099 Substrate Exposure Mcp Front Repo As Truth
+type: framework
+maturity: final
+confidentiality: internal
+reusability: adaptable
+created: 2026-05-27
+depth_score: 4
+depth_signals:
+  file_size_kb: 10.0
+  content_chars: 10111
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.30
+---
 # WS-DDR-099 — Substrate exposure via MCP-front + repo-as-truth composition
 
 > **Routing note for Phase 2 (Code):** When filing, copy this DDR body into `/Users/brien/Workspaces/.context/DECISIONS.md` after WS-DDR-098, and add the index row:

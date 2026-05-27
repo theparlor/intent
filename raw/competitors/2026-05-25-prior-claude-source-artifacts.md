@@ -1,6 +1,21 @@
 ---
 title: Prior Claude Session — source artifacts (3)
 type: external-input / source-archive
+related:
+  - Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md (this-session synthesis)
+  - Core/frameworks/intent/spec/autonomy-gate-surface-matrix-v0-DRAFT.md (this-session elevation)
+  - Core/frameworks/intent/tools/intent_signal_inventory_v0.py (v0 script archived)
+  - Core/frameworks/intent/tools/intent_signal_inventory.py (re-grounded v1)
+depth_score: 4
+depth_signals:
+  file_size_kb: 17.1
+  content_chars: 16570
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.06
 source: prior Claude session (separate from this Workspaces session)
 date: 2026-05-25
 ingested: 2026-05-26
@@ -10,13 +25,7 @@ contents:
   - intent_signal_inventory.py (v0 discovery crawler)
   - autonomy-flight-model v0.1 DRAFT (coupled forces spec)
   - autonomy-gate-matrix v0.1 DRAFT (12-surface × mode table)
-related:
-  - Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md (this-session synthesis)
-  - Core/frameworks/intent/spec/autonomy-gate-surface-matrix-v0-DRAFT.md (this-session elevation)
-  - Core/frameworks/intent/tools/intent_signal_inventory_v0.py (v0 script archived)
-  - Core/frameworks/intent/tools/intent_signal_inventory.py (re-grounded v1)
 ---
-
 # Prior Claude Session — Source Artifacts
 
 > Verbatim archive of the three artifacts produced by the prior Claude session, 2026-05-25.

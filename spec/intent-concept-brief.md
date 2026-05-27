@@ -7,7 +7,7 @@ summary: "Full product concept brief for Intent as a venture — problem, audien
 depth_score: 4
 depth_signals:
   file_size_kb: 6.2
-  content_chars: 6161
+  content_chars: 6168
   entity_count: 0
   slide_count: 0
   sheet_count: 0
