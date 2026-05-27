@@ -1,9 +1,17 @@
 """
-Intent Knowledge Server — The Knowledge Engine
-================================================
+Intent Knowledge Server — The Knowledge Engine + Substrate Exposure
+====================================================================
 Compiles raw sources into structured knowledge artifacts (personas,
 journeys, DDRs, themes, domain models, design rationale). Provides
 ingest, query, and lint operations against a compiled knowledge base.
+
+Per DEC-010 (2026-05-26), the server's scope is extended to cover
+cross-surface substrate exposure with five additional read verbs:
+    query, get, list, lineage, freshness
+
+Every substrate-exposure verb takes a `scope_token` argument and runs
+each response through a binary classification check (per DEC-011 and
+substrate-exposure-architecture.md §Phase 1) before returning content.
 
 This is a SEPARABLE product from Intent's methodology loop.
 It can be used independently of intent-notice/spec/observe.
@@ -23,8 +31,27 @@ from models import (
 import json
 import os
 import re
+import sys
 import glob
 from datetime import datetime
+from pathlib import Path
+
+# Make the `lib/` sibling package importable when knowledge.py is run
+# directly via `python servers/knowledge.py` (the FastMCP convention).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
+from lib.classification import (  # noqa: E402
+    Classification, ClassificationResolver, ScopeTokenError,
+    in_scope, validate_scope_token,
+)
+from lib.lineage import (  # noqa: E402
+    EntityIndex, parse_frontmatter, extract_title, trace_lineage,
+)
+from lib.library_index_client import (  # noqa: E402
+    LibraryIndexClient, repo_keyword_fallback,
+)
 
 mcp = FastMCP(
     "intent-knowledge",
@@ -562,3 +589,557 @@ def knowledge_dossier(entity_type: str, name: str) -> str:
         "type": "dossier", "subtype": entity_type, "name": name, "status": "requested"
     })
     _append_log(f"[DOSSIER] {datetime.utcnow().strftime('%Y-%m-%d')} {entity_type}: {name} → {dossier_id} requested")
+
+    return "\n".join(result)
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# SUBSTRATE EXPOSURE VERBS (DEC-010, 2026-05-26)
+# ═══════════════════════════════════════════════════════════════════════
+#
+# Five new read verbs that expose the .intent/ substrate to chat surfaces
+# via the MCP transport. Every verb takes a `scope_token` argument and
+# enforces binary classification before returning content (DEC-011 +
+# substrate-exposure-architecture.md §Phase 1).
+#
+# scope_token semantics:
+#   "public"               → matches tier=public only
+#   "internal"             → matches tier in {public, internal}
+#   "engagement:<slug>"    → matches tier in {public, internal,
+#                            confidential:<slug-exact>}
+#
+# Out-of-scope behavior per verb:
+#   query     → omit hit from results
+#   get       → return error response with reason
+#   list      → omit from list
+#   lineage   → truncate with explicit boundary marker
+#   freshness → return error response with reason
+
+# Recognized canonical-ID prefix patterns.
+_CANONICAL_ID_PATTERN = re.compile(
+    r"^(SIG|INT|SPEC|CON|DEC|WS-DDR)-[A-Z0-9-]+$",
+    re.IGNORECASE,
+)
+
+# Type → subdirectory-name(s) under any .intent/ directory the substrate
+# exposes. The verbs walk all .intent/ trees under ROOT (multi-product
+# substrate), not just the top-level one. `spec/decision-log.md` and
+# `knowledge/decisions/` are scanned as extra roots for decision types.
+_TYPE_INTENT_SUBDIRS = {
+    "signal":   ["signals"],
+    "intent":   ["intents"],
+    "spec":     ["specs"],
+    "decision": ["decisions"],
+    "ddr":      ["decisions"],
+    "contract": ["contracts"],
+}
+_TYPE_EXTRA_ROOTS = {
+    "spec":     ["spec"],
+    "decision": ["knowledge/decisions"],
+    "ddr":      ["knowledge/decisions"],
+}
+
+
+def _discover_intent_dirs(root: Path) -> list[Path]:
+    """Find every `.intent/` directory under `root`. Multi-product substrate."""
+    out: list[Path] = []
+    for path in root.rglob(".intent"):
+        if path.is_dir():
+            out.append(path)
+    return out
+
+
+def _paths_for_type(type_key: str) -> list[str]:
+    """Collect every entity-file path for the given type across the substrate."""
+    repo_root = Path(ROOT)
+    paths: list[str] = []
+    intent_subdirs = _TYPE_INTENT_SUBDIRS.get(type_key, [])
+    extra_roots = _TYPE_EXTRA_ROOTS.get(type_key, [])
+
+    seen: set[str] = set()
+    for intent_dir in _discover_intent_dirs(repo_root):
+        for sub in intent_subdirs:
+            target = intent_dir / sub
+            if not target.is_dir():
+                continue
+            for f in target.rglob("*.md"):
+                if f.name in ("README.md", "INDEX.md", "_index.md"):
+                    continue
+                if str(f) not in seen:
+                    seen.add(str(f))
+                    paths.append(str(f))
+    for sub in extra_roots:
+        target = repo_root / sub
+        if not target.is_dir():
+            continue
+        for f in target.rglob("*.md"):
+            if f.name in ("README.md", "INDEX.md", "_index.md"):
+                continue
+            if str(f) not in seen:
+                seen.add(str(f))
+                paths.append(str(f))
+    return paths
+
+
+def _make_resolver() -> ClassificationResolver:
+    """Per-request classification resolver. Bounded by repo ROOT."""
+    return ClassificationResolver(repo_root=Path(ROOT))
+
+
+def _make_index() -> EntityIndex:
+    """Build a fresh entity index keyed by canonical ID."""
+    idx = EntityIndex(Path(ROOT))
+    idx.build()
+    return idx
+
+
+def _get_entity_path(entity_id: str, index: EntityIndex) -> str | None:
+    """Look up the on-disk path for a canonical entity ID."""
+    return index.path_for(entity_id)
+
+
+def _entity_summary(path: str) -> dict:
+    """Build a shaped summary (title + id + timestamp + status) from a file."""
+    try:
+        with open(path) as f:
+            content = f.read()
+    except OSError:
+        return {"path": path, "error": "unreadable"}
+    fm = parse_frontmatter(content)
+    title = extract_title(content) or fm.get("title", "")
+    return {
+        "id": (fm.get("id") or "").upper() if fm.get("id") else "",
+        "title": title,
+        "timestamp": fm.get("timestamp") or fm.get("created") or fm.get("declared_at") or "",
+        "status": fm.get("status") or fm.get("maturity") or "",
+        "path": os.path.relpath(path, ROOT),
+    }
+
+
+@mcp.tool()
+def query(text: str, scope_token: str = "internal", k: int = 10) -> str:
+    """
+    Top-K relevance-ranked substrate chunks for a text query (substrate exposure).
+
+    Composes with library-index (BM25 + vector) when available; falls back to
+    repo-only keyword scoring when not. Every returned hit is run through the
+    classification check — out-of-scope hits are omitted from results.
+
+    Args:
+        text:         The query string.
+        scope_token:  "public" | "internal" | "engagement:<slug>". Default "internal".
+        k:            Top-K results. Default 10, max 25.
+
+    Returns:
+        JSON: {hits: [...], total_in_scope: N, fallback: bool, library_index_status: str}
+    """
+    try:
+        scope_token = validate_scope_token(scope_token)
+    except ScopeTokenError as exc:
+        return json.dumps({"error": str(exc), "verb": "query"})
+
+    k = max(1, min(int(k), 25))
+    resolver = _make_resolver()
+
+    # Try library-index; fall back to repo keyword walker if it raises.
+    # INTENT_KNOWLEDGE_CATALOG override exists so tests can point at a
+    # synthetic catalog (or force the fallback path by pointing at a
+    # missing file).
+    catalog_override = os.environ.get("INTENT_KNOWLEDGE_CATALOG")
+    catalog_path = Path(catalog_override) if catalog_override else None
+    client = LibraryIndexClient(repo_root=Path(ROOT), catalog_path=catalog_path)
+    fallback = False
+    li_status = "wired (CATALOG.json depth-sorted; see investigation-2026-05-26)"
+    try:
+        raw_hits = client.query(text, k=k)
+    except NotImplementedError:
+        fallback = True
+        li_status = "fallback — CATALOG.json unavailable, using repo keyword walker"
+        raw_hits = repo_keyword_fallback(Path(ROOT), text, k=k)
+    except Exception as exc:  # defensive: never fail the verb
+        fallback = True
+        li_status = f"fallback — client error: {exc}"
+        raw_hits = repo_keyword_fallback(Path(ROOT), text, k=k)
+
+    hits = []
+    omitted = 0
+    for hit in raw_hits:
+        cls = resolver.resolve(hit.path)
+        if not in_scope(scope_token, cls):
+            omitted += 1
+            continue
+        hits.append({
+            "path": os.path.relpath(hit.path, ROOT) if os.path.isabs(hit.path) else hit.path,
+            "chunk": hit.chunk[:800],   # bound chunk length defensively
+            "score": hit.score,
+            "entity_id": hit.entity_id,
+            "tier": cls.tier,
+        })
+        if len(hits) >= k:
+            break
+
+    _emit_event("knowledge.queried", "query", {
+        "text": text[:200], "k": k, "hits": len(hits),
+        "omitted_oos": omitted, "scope": scope_token, "fallback": fallback,
+    })
+
+    return json.dumps({
+        "verb": "query",
+        "scope_token": scope_token,
+        "k": k,
+        "hits": hits,
+        "total_in_scope": len(hits),
+        "omitted_out_of_scope": omitted,
+        "fallback_used": fallback,
+        "library_index_status": li_status,
+    }, indent=2)
+
+
+@mcp.tool()
+def get(entity_id: str, scope_token: str = "internal") -> str:
+    """
+    Return the full body of one canonical entity (substrate exposure).
+
+    Recognized IDs: SIG-NNN, INT-NNN, SPEC-NNN, CON-NNN, DEC-NNN, WS-DDR-NNN.
+    Out-of-scope entities return a 404-equivalent error with reason.
+
+    Args:
+        entity_id:    Canonical entity ID.
+        scope_token:  "public" | "internal" | "engagement:<slug>". Default "internal".
+
+    Returns:
+        JSON: {entity: {id, title, frontmatter, body, path}} or {error, reason}.
+    """
+    try:
+        scope_token = validate_scope_token(scope_token)
+    except ScopeTokenError as exc:
+        return json.dumps({"error": str(exc), "verb": "get"})
+
+    entity_id = (entity_id or "").upper().strip()
+    if not _CANONICAL_ID_PATTERN.match(entity_id):
+        return json.dumps({
+            "error": "invalid_id",
+            "reason": f"{entity_id!r} is not a canonical ID (SIG/INT/SPEC/CON/DEC/WS-DDR-NNN)",
+            "verb": "get",
+        })
+
+    index = _make_index()
+    path = _get_entity_path(entity_id, index)
+    if not path:
+        return json.dumps({
+            "error": "not_found",
+            "reason": f"no entity file for {entity_id}",
+            "verb": "get",
+        })
+
+    resolver = _make_resolver()
+    cls = resolver.resolve(path)
+    if not in_scope(scope_token, cls):
+        return json.dumps({
+            "error": "out_of_scope",
+            "reason": "entity classification does not match scope_token",
+            "scope_token": scope_token,
+            "tier": cls.tier,
+            "verb": "get",
+        })
+
+    try:
+        with open(path) as f:
+            content = f.read()
+    except OSError as exc:
+        return json.dumps({
+            "error": "read_failed", "reason": str(exc), "verb": "get",
+        })
+
+    fm = parse_frontmatter(content)
+    title = extract_title(content) or fm.get("title", "")
+    body_start = 0
+    if content.startswith("---"):
+        end = content.find("\n---", 3)
+        if end >= 0:
+            body_start = end + 4
+
+    _emit_event("knowledge.queried", entity_id, {
+        "verb": "get", "scope": scope_token, "tier": cls.tier,
+    })
+
+    return json.dumps({
+        "verb": "get",
+        "entity": {
+            "id": entity_id,
+            "title": title,
+            "tier": cls.tier,
+            "frontmatter": fm,
+            "body": content[body_start:].lstrip(),
+            "path": os.path.relpath(path, ROOT),
+        },
+    }, indent=2, default=str)
+
+
+@mcp.tool()
+def list_entities(
+    type: str = "signal",
+    filter: str = "",
+    scope_token: str = "internal",
+    limit: int = 20,
+) -> str:
+    """
+    List entities of a given type as shaped summaries (substrate exposure).
+
+    Returns title + id + timestamp + status only — never full bodies.
+    Out-of-scope entries are omitted from the list. Optional substring filter
+    applied to title/id.
+
+    Args:
+        type:         signal | intent | spec | decision | contract.
+        filter:       Substring filter (case-insensitive) on title or id. Optional.
+        scope_token:  "public" | "internal" | "engagement:<slug>". Default "internal".
+        limit:        Default 20, max 50.
+
+    Returns:
+        JSON: {entities: [...], total_in_scope: N, omitted_out_of_scope: N}.
+    """
+    try:
+        scope_token = validate_scope_token(scope_token)
+    except ScopeTokenError as exc:
+        return json.dumps({"error": str(exc), "verb": "list"})
+
+    limit = max(1, min(int(limit), 50))
+    type_key = (type or "").lower().strip()
+    if type_key not in _TYPE_INTENT_SUBDIRS:
+        return json.dumps({
+            "error": "invalid_type",
+            "reason": f"type must be one of: {sorted(_TYPE_INTENT_SUBDIRS.keys())}",
+            "verb": "list",
+        })
+
+    filt = (filter or "").lower().strip()
+    resolver = _make_resolver()
+    paths = _paths_for_type(type_key)
+
+    entities = []
+    omitted = 0
+    for path in sorted(paths):
+        cls = resolver.resolve(path)
+        if not in_scope(scope_token, cls):
+            omitted += 1
+            continue
+        summary = _entity_summary(path)
+        if filt:
+            hay = (summary.get("title", "") + " " + summary.get("id", "")).lower()
+            if filt not in hay:
+                continue
+        summary["tier"] = cls.tier
+        entities.append(summary)
+        if len(entities) >= limit:
+            break
+
+    _emit_event("knowledge.queried", "list", {
+        "verb": "list", "type": type_key, "scope": scope_token,
+        "returned": len(entities), "omitted_oos": omitted,
+    })
+
+    return json.dumps({
+        "verb": "list",
+        "type": type_key,
+        "scope_token": scope_token,
+        "limit": limit,
+        "entities": entities,
+        "total_in_scope": len(entities),
+        "omitted_out_of_scope": omitted,
+    }, indent=2, default=str)
+
+
+@mcp.tool()
+def lineage(signal_id: str, scope_token: str = "internal", depth: int = 3) -> str:
+    """
+    Backward + forward lineage chain for an entity (substrate exposure).
+
+    Walks BACKWARD via caused_by / parent_signal / supersedes, and FORWARD
+    via causes / related_intents / promotes_to. Truncates at scope boundaries
+    with an explicit "lineage continues outside your scope" marker.
+
+    Args:
+        signal_id:    Canonical entity ID (typically SIG-NNN but any works).
+        scope_token:  "public" | "internal" | "engagement:<slug>". Default "internal".
+        depth:        Traversal depth per direction. Default 3, max 5.
+
+    Returns:
+        JSON: {root, backward: [...], forward: [...], truncated_*: bool, scope_marker?}.
+    """
+    try:
+        scope_token = validate_scope_token(scope_token)
+    except ScopeTokenError as exc:
+        return json.dumps({"error": str(exc), "verb": "lineage"})
+
+    entity_id = (signal_id or "").upper().strip()
+    if not _CANONICAL_ID_PATTERN.match(entity_id):
+        return json.dumps({
+            "error": "invalid_id",
+            "reason": f"{entity_id!r} is not a canonical ID",
+            "verb": "lineage",
+        })
+
+    depth = max(1, min(int(depth), 5))
+    index = _make_index()
+    root_path = index.path_for(entity_id)
+    if not root_path:
+        return json.dumps({
+            "error": "not_found",
+            "reason": f"no entity file for {entity_id}",
+            "verb": "lineage",
+        })
+
+    resolver = _make_resolver()
+    root_cls = resolver.resolve(root_path)
+    if not in_scope(scope_token, root_cls):
+        return json.dumps({
+            "error": "out_of_scope",
+            "reason": "root entity is out of scope",
+            "scope_token": scope_token,
+            "tier": root_cls.tier,
+            "verb": "lineage",
+        })
+
+    chain = trace_lineage(
+        root_id=entity_id,
+        index=index,
+        resolver=resolver,
+        scope_token=scope_token,
+        depth=depth,
+    )
+
+    _emit_event("knowledge.queried", entity_id, {
+        "verb": "lineage", "scope": scope_token, "depth": depth,
+        "backward_count": len(chain.backward),
+        "forward_count": len(chain.forward),
+        "truncated": chain.truncated_backward or chain.truncated_forward,
+    })
+
+    return json.dumps({
+        "verb": "lineage",
+        "scope_token": scope_token,
+        **chain.to_dict(),
+    }, indent=2, default=str)
+
+
+@mcp.tool()
+def freshness(path: str, scope_token: str = "internal") -> str:
+    """
+    Last-modified state for a substrate path (substrate exposure).
+
+    Returns mtime + size + classification + (when available) the most recent
+    `knowledge.ingested` or `signal.created` event for the path. Out-of-scope
+    paths return a 404-equivalent error.
+
+    Args:
+        path:         Filesystem path (absolute, or relative to repo root).
+        scope_token:  "public" | "internal" | "engagement:<slug>". Default "internal".
+
+    Returns:
+        JSON: {path, mtime, size, tier, last_event?} or {error, reason}.
+    """
+    try:
+        scope_token = validate_scope_token(scope_token)
+    except ScopeTokenError as exc:
+        return json.dumps({"error": str(exc), "verb": "freshness"})
+
+    if not path:
+        return json.dumps({
+            "error": "invalid_path", "reason": "path is required", "verb": "freshness",
+        })
+
+    raw = path
+    if not os.path.isabs(raw):
+        full = os.path.join(ROOT, raw)
+    else:
+        full = raw
+    full = os.path.abspath(full)
+
+    # Refuse paths that escape ROOT — guards against path traversal.
+    if not full.startswith(os.path.abspath(ROOT) + os.sep) and full != os.path.abspath(ROOT):
+        return json.dumps({
+            "error": "outside_repo",
+            "reason": "path resolves outside the substrate repo",
+            "verb": "freshness",
+        })
+
+    if not os.path.exists(full):
+        return json.dumps({
+            "error": "not_found", "reason": f"no file at {raw}", "verb": "freshness",
+        })
+
+    resolver = _make_resolver()
+    cls = resolver.resolve(full)
+    if not in_scope(scope_token, cls):
+        return json.dumps({
+            "error": "out_of_scope",
+            "reason": "path classification does not match scope_token",
+            "scope_token": scope_token,
+            "tier": cls.tier,
+            "verb": "freshness",
+        })
+
+    stat = os.stat(full)
+    mtime_iso = datetime.utcfromtimestamp(stat.st_mtime).isoformat() + "Z"
+
+    # Best-effort: scan events.jsonl for the last event referencing this path
+    last_event = None
+    if os.path.exists(EVENTS_FILE):
+        rel = os.path.relpath(full, ROOT)
+        try:
+            with open(EVENTS_FILE) as f:
+                # Walk backward for most recent first
+                lines = f.readlines()
+            for line in reversed(lines):
+                line = line.strip()
+                if not line:
+                    continue
+                if rel in line:
+                    try:
+                        ev = json.loads(line)
+                        last_event = {
+                            "event": ev.get("event"),
+                            "timestamp": ev.get("timestamp"),
+                            "ref": ev.get("ref"),
+                        }
+                        break
+                    except json.JSONDecodeError:
+                        continue
+        except OSError:
+            pass
+
+    _emit_event("knowledge.queried", "freshness", {
+        "verb": "freshness", "scope": scope_token,
+        "path": os.path.relpath(full, ROOT),
+    })
+
+    return json.dumps({
+        "verb": "freshness",
+        "scope_token": scope_token,
+        "path": os.path.relpath(full, ROOT),
+        "mtime": mtime_iso,
+        "size_bytes": stat.st_size,
+        "tier": cls.tier,
+        "classification_source": cls.source_path,
+        "last_event": last_event,
+    }, indent=2)
+
+
+# ─── Entry point ─────────────────────────────────────────────
+
+if __name__ == "__main__":
+    import logging
+
+    from port_resolver import resolve_port
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
+    host, port = resolve_port(
+        "intent-knowledge", 8004, port_env="INTENT_KNOWLEDGE_PORT"
+    )
+    logging.getLogger("intent.knowledge").info(
+        "listening on http://%s:%d/mcp", host, port
+    )
+    mcp.run(transport="streamable-http", host=host, port=port)
