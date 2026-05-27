@@ -236,7 +236,7 @@ bin/intent-init <product-name> \
 
 **Validation criteria:** Validated when (1) `bin/intent-init my-new-product --path Core/products/my-new-product/ --enable entire,events --register-with witness` succeeds end-to-end; (2) the product gets a working Tier 1 setup (verifiable via `tail -1 .intent/events/events.jsonl` after a test session); (3) the Witness registered-products.yaml gets a correctly-shaped entry; (4) `Core/products/products.json` gets a correctly-shaped entry; (5) Tier 2 federation activates once `engine/adapters/entire-io.py` lands (independent track, WIT-004 #5).
 
-**Related:** WS-DDR-099 (substrate exposure — Track A sibling), DEC-010 (intent-knowledge MCP scope extension — Track A sibling), DEC-009 (Entire scoped as authoring provenance — upstream), WIT-004 #5 (`engine/adapters/entire-io.py` stub completion — Tier 2 dependency).
+**Related:** WS-DDR-099 (substrate exposure — Track A sibling), DEC-010 (intent-knowledge MCP scope extension — Track A sibling), DEC-009 (Entire scoped as authoring provenance — upstream), WIT-004 #5 (`engine/adapters/entire-io.py` stub completion — Tier 2 dependency), `Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md` (this DEC is one of the six analog instances of the principle — the scaffold CLI declares all four classification tiers + Witness-federation hook on Day 1; engagement-tier federation is content-only deferral, not architectural), `Core/frameworks/intent/.intent/signals/2026-05-26-architecture-first-content-sequenced-pattern.md` (establishing signal — names DEC-011 explicitly as instance evidence).
 
 **Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/02-track-b-spawn-a-product-runbook.md`
 
