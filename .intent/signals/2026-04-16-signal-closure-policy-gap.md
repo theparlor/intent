@@ -46,3 +46,9 @@ The build-intake enforcement (SIG-045) addresses the intake side — work can't 
 
 ## Meta
 This signal is itself a test of the new closure policy. It will NOT close as `resolved` until (1) the follow-up linter exists or is explicitly deferred with a date, and (2) the backfill audit is complete or explicitly deferred. Until then: `status: open`.
+
+---
+
+## Triage note — 2026-05-28 (still open)
+
+**Status:** still open. No `intent-signal lint` command has been added to the CLI suite (`Core/frameworks/intent/bin/`). The ~16-signal backfill audit (keyword-heuristic flagged but not individually verified) has not been run. The closure-discipline spec and DoR/DoD library additions from 2026-04-16 ARE in place — those resolution items landed. But the signal's own meta-criteria require the linter OR explicit deferral with a date, which have not been set. The follow-up items remain in their original `[ ]` state.

@@ -21,3 +21,9 @@ New research skills (industry-scan, domain-scan, product-analysis, concept-explo
 - An automotive industry scan for Subaru is also reusable for any future automotive engagement
 - The promotion pattern (engagement-specific → Core/reference) needs to be part of post-execution storage logic in the orchestrator
 - Self-healing gap — will resolve naturally once research skills execute
+
+---
+
+## Triage note — 2026-05-28 (still open)
+
+**Status:** still open. `Core/reference/` exists with other content (rate card, materials/brass, usage-tracker, etc.) but the four planned reusable scan directories (`industries/`, `domains/`, `concepts/`, `tools/`) do not exist. No industry-scan or domain-scan skill has been executed against the Core/reference target. The signal's own note says "self-healing gap — will resolve naturally once research skills execute" — that hasn't happened yet. Still valid; low urgency per original severity: medium / trust: 0.42.
