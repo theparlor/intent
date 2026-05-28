@@ -118,10 +118,34 @@ LOWER_FULL=$(printf '%s' "$LAST_TEXT" | tr '[:upper:]' '[:lower:]')
 #   the cell value sandwiched between pipe delimiters, e.g.: | Done | or | ✅ |
 COMPLETION_RE=$'(\\bcomplete[.!]|\\bcompleted[.!]|\\bdone[.!]|\\bresolved[.!]|\\bfixed[.!]|\\bshipped[.!]|\\bwave (closed|landed|done|complete)|\\bsession[ -]end|\\bsession (over|complete)|\\ball (done|set|resolved|clear)|\xe2\x9c\x85 ?(done|complete|resolved|fixed)|\\beverything[\x27 ]?s? (working|works|fine)|\\bfully working|\\bthat[\x27 ]?s done|\\bwe[\x27 ]?re done|\\bclosed out|\\|[ \\t]*(done|complete|\xe2\x9c\x85)[ \\t]*\\|)'
 
+# TRAILING-OBSERVATION pattern — Layer 4 extension 2026-05-28 (wave-20 follow-up).
+# Catches bare state-declarations at end of response that present as closure
+# without action commitment OR pillar citation. Common drift variants observed
+# during the 2026-05-27 Cast CONNECT 49-wave sweep:
+#   - terminal "X confirmed." / "X gap." / "X reinforced." (state as terminal)
+#   - terminal "X now N-source" / "N+ source" (reinforcement-strength as terminal)
+#   - terminal "P0 critical." / "P0 archival." (priority-label as terminal)
+#   - terminal "X hallucination flagged." / "misattribution flagged."
+#   - terminal "bilateral confirmed" / "antagonist confirmed"
+# Distinguished from COMPLETION-CLAIM: no explicit "done"/"complete"/"resolved"
+# but the rhetorical function is the same — declaring closure-of-thought
+# without committing to next action OR citing closure pillars.
+# Matched against the tail (last 300 chars) since trailing-observation drift
+# is by definition about how a response ENDS. Suppressed by UPSTREAM_RE OR
+# INFLIGHT_RE matches anywhere in response body.
+TRAILING_OBS_RE=$'(\\b(confirmed|gap|gaps|reinforced|hallucination flagged|misattribution flagged|bilateral confirmed|antagonist confirmed|now in registry|now out of registry|now [0-9]+\\+?[- ]source)[.!]?[[:space:]]*$|\\bP[0-9] (gap|critical|reinforced|archival|foundational|active)[.!]?[[:space:]]*$)'
+
 # UPSTREAM-CONTROL marker — phrases that indicate the fix is in-pipeline,
 # catches future regressions, or honestly downgrades to symptom-repaired.
 # Inclusive list to keep false-positive rate low.
 UPSTREAM_RE=$'(upstream control|upstream fix|upstream resolver|upstream-fix|wired into|in the pipeline|in render_all|in render pipeline|stage [0-9]+ of|stage in render|invariant added|catch-net|catches future|future regression|prevents (future |regression)|auto-extract|auto-flow|auto-populate|auto-fill|permanent fix|won[\x27 ]?t recur|no recurrence|regression prevention|extends the (hook|policy|spec)|added to chain_audit|added invariant|i-tagline|i-v2max|i-frameworks|i-depth|i-vocab|chain_audit invariant|hook (catches|enforces)|pre-tool|posttool|pretooluse|sessionstart hook|stop hook|symptom-repaired|symptom repaired|upstream[ -]pending|downstream[ -]only|one-shot|patched, not fixed|not (yet )?upstream|still downstream|not in (the )?pipeline|will recur|new personas will (still |need to ))'
+
+# IN-FLIGHT marker — Layer 4 extension 2026-05-28. Phrases indicating parallel
+# work continues or a next-action is committed. Suppresses trailing-observation
+# hook (legitimate mid-flight tracking is not drift). Distinct from
+# upstream-control: in-flight = IMMEDIATE forward motion, upstream = pipeline
+# integration.
+INFLIGHT_RE=$'(in flight|waiting on|dispatched|committing|executing|processing|still waiting|next:|continuing|about to|will (now |continue|next|run|dispatch|commit|write|kick)|kicking (off|it off)|spawned|fired off|launched|retrying|in[- ]progress|writing closure|drafting|preparing|moving on|on to|to do:|todo:|next step|next up)'
 
 # Detect
 COMPLETION_MATCH=0
@@ -129,19 +153,44 @@ if echo "$LOWER_TAIL" | grep -qiE "$COMPLETION_RE"; then
   COMPLETION_MATCH=1
 fi
 
+TRAILING_OBS_MATCH=0
+if echo "$LOWER_TAIL" | tail -c 300 | grep -qiE "$TRAILING_OBS_RE"; then
+  TRAILING_OBS_MATCH=1
+fi
+
 UPSTREAM_MATCH=0
 if echo "$LOWER_FULL" | grep -qiE "$UPSTREAM_RE"; then
   UPSTREAM_MATCH=1
 fi
 
-# Trigger only if completion-claim present AND no upstream-control marker anywhere
+INFLIGHT_MATCH=0
+if echo "$LOWER_FULL" | grep -qiE "$INFLIGHT_RE"; then
+  INFLIGHT_MATCH=1
+fi
+
+# Trigger 1: completion-claim present AND no upstream-control marker anywhere
 if [ "$COMPLETION_MATCH" = "1" ] && [ "$UPSTREAM_MATCH" = "0" ]; then
   TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
   TAIL_SAMPLE=$(printf '%s' "$LAST_TAIL" | tail -c 300 | tr '\n' ' ' | tr "'" '_')
-  echo "[$TIMESTAMP] CAUGHT session=$SESSION_ID tail='$TAIL_SAMPLE'" >> "$AUDIT_LOG"
+  echo "[$TIMESTAMP] CAUGHT-COMPLETION session=$SESSION_ID tail='$TAIL_SAMPLE'" >> "$AUDIT_LOG"
 
   cat <<'EOF'
 {"decision": "block", "reason": "CLOSURE-DISCIPLINE DRIFT (Layer 4 detector): your response ends with completion-claim language (e.g., 'complete.', 'resolved.', 'wave closed') but no mention of an upstream control anywhere in the response body. Per the closure-DoD at Core/frameworks/intent/spec/signal-stream.md, 'resolved' requires (a) upstream_control_path — the file path of the resolver in the pipeline (not 'I ran the script'), (b) catch_mechanism — chain_audit invariant ID, test, or explicit no-catch-net justification, (c) pipeline survival — will the fix survive the next render_all run. Revise the response: either install the upstream control and state where it lives, OR honestly downgrade the closure language to 'symptom-repaired, upstream-pending' and capture the upstream gap as a follow-up signal. The pattern this hook catches is the recurring drift where one-shot patches get declared 'resolved' without an installed mechanism preventing recurrence."}
+EOF
+  exit 0
+fi
+
+# Trigger 2: trailing-observation drift — response ends with bare state declaration,
+# no in-flight marker, no upstream marker. Reflects observation-as-conclusion
+# without action commitment. Wave-20 follow-up pattern, observed throughout the
+# 49-wave Cast CONNECT sweep (e.g., "X confirmed.", "Y now 3-source", "Z gap.").
+if [ "$TRAILING_OBS_MATCH" = "1" ] && [ "$UPSTREAM_MATCH" = "0" ] && [ "$INFLIGHT_MATCH" = "0" ]; then
+  TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  TAIL_SAMPLE=$(printf '%s' "$LAST_TAIL" | tail -c 300 | tr '\n' ' ' | tr "'" '_')
+  echo "[$TIMESTAMP] CAUGHT-TRAILING-OBS session=$SESSION_ID tail='$TAIL_SAMPLE'" >> "$AUDIT_LOG"
+
+  cat <<'EOF'
+{"decision": "block", "reason": "CLOSURE-DISCIPLINE DRIFT (Layer 4 detector — trailing-observation pattern): your response ends with a bare state-declaration (e.g., 'X confirmed.', 'Y now N-source', 'Z gap', 'P0 critical') without committing to a next action OR citing closure pillars. Trailing-observation drift presents as conclusion-via-observation rather than action-commitment. Revise the response: either (a) commit to a next action explicitly ('dispatching X', 'committing Y', 'waiting on Z'), OR (b) cite the closure pillars (upstream control, catch-net, pipeline survival) if work is genuinely complete, OR (c) honestly state that you are paused and signal-log the reason. Pattern identified during 2026-05-27 Cast CONNECT sweep wave-20 retrospective; this hook is the mechanism-level fix per spec at Core/frameworks/intent/spec/closure-discipline-enforcement.md Layer 4."}
 EOF
   exit 0
 fi
