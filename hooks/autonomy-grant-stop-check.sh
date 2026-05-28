@@ -3,7 +3,7 @@
 #
 # Stop hook — Layer 4 of autonomy-grant enforcement (linguistic detector).
 #
-# Detects five drift patterns and forces revision:
+# Detects six drift patterns and forces revision:
 #
 #   CHECK 1 — Bare-choice-instead-of-recommendation (v1, 2026-04-28)
 #     Pattern: response ends with "Want me to A, or B?" / "Should I X or Y?"
@@ -38,9 +38,36 @@
 #     questions" / "if there's anything else" style conversational close
 #     (those are acceptable L2 surface closers, not implicit queues).
 #
+#   CHECK 6 — Trailing-observation-after-proposal (v5, 2026-05-28)
+#     Pattern: response delivers diagnosis/recommendation/analysis/artifact
+#     and then STOPS at a trailing analytical sentence that comments on the
+#     structure, scope, quality, or delta of the work just described —
+#     without an execution verb or dispatch in the same turn. The closing
+#     sentence reads as a "complete deliverable" when it is structurally
+#     equivalent to a hand-off pause. No forbidden keyword from CHECK 5
+#     appears; the drift is purely positional.
+#     Source incident: "stopped at a closing comment about delta-from-original"
+#     (SIG-2026-05-27-pause-drift-cross-reference-sweep-after-prompt-rework).
+#     Trigger phrases (last ~400 chars only, conservative):
+#       "The biggest [delta/difference/change/shift/gap] [from/with/...]"
+#       "The most [interesting/notable/striking/important/significant] [aspect/part/thing]"
+#       "Worth noting [that/:]"  / "Notable:" / "Of note:"
+#       "One [observation/thing to watch/thing to note] ..."
+#       "The key insight here is ..."
+#       "It's worth (pointing out|noting|flagging) [that]"
+#     Context gate (four stacked):
+#       (a) Dispatch gate: HAS_DISPATCH=1 — skip (observation is narrative)
+#       (b) Closure-DoD gate: response contains upstream_control_path +
+#           catch_mechanism + pipeline_survival — skip (legitimate closure)
+#       (c) Recommendation-with-reveal gate: response contains recommendation
+#           marker AND "unless you prefer" / "alternatively" — skip (L2 surface)
+#       (d) L2-info-gap gate: response contains "info gap:" / "l2 decision" /
+#           "brien needs to decide" — skip (legitimate decision surface)
+#
 # Spec: Core/frameworks/intent/spec/autonomy-grant-enforcement.md (Layer 4)
 # Signal: Core/products/org-design-tooling/.intent/signals/SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13.md
 # Signal: .intent/signals/SIG-2026-05-28-stop-hook-regex-extension-implicit-queue.md
+# Signal: Core/frameworks/intent/.intent/signals/SIG-2026-05-28-stop-hook-check-6-trailing-observation.md
 #
 # Install: chmod +x and symlink to ~/.claude/hooks/
 # Register: add Stop entry to ~/.claude/settings.json
@@ -59,6 +86,8 @@
 #   SIG-2026-05-26-autonomy-grant-drift-recurrence-in-session.md.
 # Updated: 2026-05-28 — adds CHECK 5 implicit-queue/standby detector per
 #   SIG-2026-05-27-pause-drift-items-3-6-7-8-after-coverage-push.md et al.
+# Updated: 2026-05-28 — adds CHECK 6 trailing-observation-after-proposal detector per
+#   SIG-2026-05-27-pause-drift-cross-reference-sweep-after-prompt-rework.md.
 
 set -u
 
@@ -337,8 +366,25 @@ fi
 # of a dispatch in the same turn (the dispatch gate is the genuine
 # false-positive filter — if you actually executed/dispatched, the
 # conditional-queue framing is a description of what you did, not a queue).
+#
+# Additional gate (added 2026-05-28): recommendation-with-reveal exemption.
+# "Unless you prefer B because [reason]" is the REQUIRED recommendation-with-
+# reveal form per decisioning-discipline rule 6. It is not a conditional queue.
+# Distinguish by requiring a recommendation marker AND the "unless you prefer"
+# appearing as a reveal in a recommendation-with-reveal structure.
+# Pattern: REC_MATCH + "unless you.?d? prefer" — the "prefer" variant of
+# "unless" is the recommendation-reveal form; "redirect/tell me/stop me/say
+# otherwise" variants are the conditional-queue form.
+C4_REC_REVEAL_RE='unless you.?d? prefer'
+C4_HAS_REC_REVEAL=0
+if [ "$REC_MATCH" = "1" ]; then
+  if echo "$LOWER_FULL" | grep -qiE "$C4_REC_REVEAL_RE"; then
+    C4_HAS_REC_REVEAL=1
+  fi
+fi
+
 COND_QUEUE_TRIGGER=0
-if [ "$COND_QUEUE_MATCH" = "1" ] && [ "$HAS_DISPATCH" = "0" ]; then
+if [ "$COND_QUEUE_MATCH" = "1" ] && [ "$HAS_DISPATCH" = "0" ] && [ "$C4_HAS_REC_REVEAL" = "0" ]; then
   COND_QUEUE_TRIGGER=1
 fi
 
@@ -442,6 +488,113 @@ if [ "$IMPLICIT_QUEUE_TRIGGER" = "1" ]; then
 
   cat <<'EOF'
 {"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 5 — implicit-queue / standby framing, v4): your response contains a phrase that positions you as waiting for Brien's word before acting on already-authorized L4 work. Caught patterns include: 'ready to execute when you say go', 'let me know when', 'ready when you are', 'say the word', 'standing by', 'I'll wait for your call', 'let me know if you want me to [verb]', 'when you're ready', 'next steps depend on...'. These are structurally equivalent to bare-choice queuing even without a question mark. Documented in SIG-2026-05-27-pause-drift-* (4 incidents 2026-05-27) and SIG-2026-05-28-stop-hook-regex-extension-implicit-queue.md. 4-gate check: if the next action is reversible, Workspaces-local, has precedent, and has no info gap — EXECUTE it in this same turn. Do not standby. Do not wait. Do not frame yourself as ready-but-paused. Dispatch now, or name the specific L0 gate blocking execution (external comms to another human, money movement, NDA boundary, force-push-to-main)."}
+EOF
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# CHECK 6: Trailing-observation-after-proposal (v5 — 2026-05-28)
+#
+# Catches the "deliver a polished proposal/recommendation then stop at a
+# closing analytical sentence" drift class. The closing sentence makes the
+# response feel complete when execution is the actual next step.
+#
+# Incident source: SIG-2026-05-27-pause-drift-cross-reference-sweep-after-
+# prompt-rework — "stopped at a closing comment about delta-from-original"
+# ("The biggest delta from the original prompt is that it bypasses Cortège.")
+# No forbidden keyword from CHECK 5 appeared; drift was purely positional.
+#
+# Trigger phrases (anchored to LAST_TAIL — last 400 chars):
+#   "the biggest (delta|difference|change|shift|gap) (from|with|between|compared)"
+#   "the most (interesting|notable|striking|important|significant) (aspect|part|thing|point)"
+#   "worth noting (that|:)"  /  "notable:"  /  "of note:"
+#   "one (observation|thing to watch|thing to note|thing worth noting)"
+#   "the key insight (here |is )"
+#   "it.s worth (pointing out|noting|flagging)"
+#
+# CONSERVATIVE design: anchor is last 400 chars, not 1000. False-positive rate
+# is the primary risk. Four stacked gates reduce noise aggressively.
+#
+# Four false-positive gates (ANY gate pass = CHECK 6 suppressed):
+#   (a) Dispatch gate: HAS_DISPATCH=1 (concrete action dispatched this turn)
+#   (b) Closure-DoD gate: response contains the three-assertion closure framing
+#       (upstream_control_path + catch_mechanism + pipeline_survival)
+#   (c) Recommendation-with-reveal gate: RECOMMENDATION_RE matched AND tail
+#       contains "unless you prefer" / "unless you'd prefer" / "alternatively"
+#       — indicates an active L2 decision surface, not a trailing observation
+#   (d) L2-info-gap gate: response contains "info gap:" / "l2 decision" /
+#       "brien needs to decide" / "l2 item" — legitimate decision surfacing
+#
+# Spec: SIG-2026-05-28-stop-hook-check-6-trailing-observation.md
+# ---------------------------------------------------------------------------
+
+# Tight anchor: last 400 chars (more conservative than CHECK 5's 1000)
+LAST_TAIL=$(printf '%s' "$LAST_TEXT" | tail -c 400)
+LOWER_TAIL=$(printf '%s' "$LAST_TAIL" | tr '[:upper:]' '[:lower:]')
+
+# Trailing-observation trigger phrases
+# Note: "notable:" and "of note:" do NOT require ^ (start-of-line) — they can
+# appear mid-paragraph as sentence starters. "worth noting" followed immediately
+# by ":" (no space) is handled by "worth noting[: ]" pattern.
+TRAILING_OBS_RE='(the biggest (delta|difference|change|shift|gap) (from|with|between|compared to)|the most (interesting|notable|striking|important|significant) (aspect|part|thing|point|piece)|worth noting[: ]|worth noting that|notable:|of note:|one (observation|thing to watch|thing to note|thing worth noting)|the key insight (here |is )|it.s worth (pointing out|noting|flagging))'
+
+TRAILING_OBS_MATCH=0
+if echo "$LOWER_TAIL" | grep -qiE "$TRAILING_OBS_RE"; then
+  TRAILING_OBS_MATCH=1
+fi
+
+# Gate (b): Closure-DoD gate — all three closure assertions present in full text
+CLOSURE_DOD_RE='upstream_control_path:'
+CLOSURE_CATCH_RE='catch_mechanism:'
+CLOSURE_SURVIVAL_RE='pipeline_survival:'
+
+HAS_CLOSURE_DOD=0
+if echo "$LOWER_FULL" | grep -qiE "$CLOSURE_DOD_RE" && \
+   echo "$LOWER_FULL" | grep -qiE "$CLOSURE_CATCH_RE" && \
+   echo "$LOWER_FULL" | grep -qiE "$CLOSURE_SURVIVAL_RE"; then
+  HAS_CLOSURE_DOD=1
+fi
+
+# Gate (c): Recommendation-with-reveal gate
+# Recommendation marker already computed as REC_MATCH.
+# Check for the "reveal" half: "unless you prefer" / "alternatively" in the full text.
+REC_REVEAL_RE='(unless you.?d? prefer|unless you would prefer|alternatively[,.])'
+
+HAS_REC_REVEAL=0
+if [ "$REC_MATCH" = "1" ]; then
+  if echo "$LOWER_FULL" | grep -qiE "$REC_REVEAL_RE"; then
+    HAS_REC_REVEAL=1
+  fi
+fi
+
+# Gate (d): L2-info-gap gate
+L2_INFOGAP_RE='(info gap:|l2 decision|brien needs to decide|l2 item[^s])'
+
+HAS_L2_INFOGAP=0
+if echo "$LOWER_FULL" | grep -qiE "$L2_INFOGAP_RE"; then
+  HAS_L2_INFOGAP=1
+fi
+
+# CHECK 6 fires only when: trailing-obs match AND none of the four gates pass
+TRAILING_OBS_TRIGGER=0
+if [ "$TRAILING_OBS_MATCH" = "1" ] && \
+   [ "$HAS_DISPATCH" = "0" ] && \
+   [ "$HAS_CLOSURE_DOD" = "0" ] && \
+   [ "$HAS_REC_REVEAL" = "0" ] && \
+   [ "$HAS_L2_INFOGAP" = "0" ]; then
+  TRAILING_OBS_TRIGGER=1
+fi
+
+# CHECK 6 telemetry
+printf '{"ts":"%s","session":"%s","check":"6","trailing_obs_match":%d,"dispatch":%d,"closure_dod":%d,"rec_reveal":%d,"l2_infogap":%d,"trigger":%d,"tail":"%s"}\n' \
+  "$TIMESTAMP" "$SESSION_ID" "$TRAILING_OBS_MATCH" "$HAS_DISPATCH" "$HAS_CLOSURE_DOD" "$HAS_REC_REVEAL" "$HAS_L2_INFOGAP" "$TRAILING_OBS_TRIGGER" \
+  "$(printf '%s' "$LAST_TAIL" | tail -c 200 | tr '\n' ' ' | tr '"' "'" | tr '\' '/')" >> "$TELEMETRY_LOG" 2>/dev/null || true
+
+if [ "$TRAILING_OBS_TRIGGER" = "1" ]; then
+  echo "[$TIMESTAMP] CHECK6-CAUGHT session=$SESSION_ID trailing_obs=1 dispatch=0 closure_dod=0 rec_reveal=0 l2_infogap=0 tail='$(printf '%s' "$LAST_TAIL" | tail -c 300 | tr '\n' ' ' | tr "'" '_')'" >> "$AUDIT_LOG"
+
+  cat <<'EOF'
+{"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 6 — trailing-observation-after-proposal, v5): your response delivered a diagnosis/recommendation/analysis/artifact and stopped at a trailing analytical sentence (e.g., 'The biggest delta from the original...', 'Worth noting:', 'The most interesting aspect...', 'The key insight here is...'). This is the same drift class as bare-choice on pre-authorized work — just in dress-clothes. The closing observation makes the response feel complete when execution is the actual next step. Source incident: SIG-2026-05-27-pause-drift-cross-reference-sweep-after-prompt-rework. Fix: if the 4-gate check passes for the next action (reversible, local, precedented, no-info-gap), EXECUTE it in this same turn. Closing observations are only legitimate when (a) a concrete action was dispatched in this turn, (b) you have closure-DoD assertions (upstream_control_path / catch_mechanism / pipeline_survival), (c) you are actively surfacing an L2 decision with recommendation-and-reveal, or (d) you have named an explicit info gap. If none of those apply — dispatch."}
 EOF
   exit 0
 fi
