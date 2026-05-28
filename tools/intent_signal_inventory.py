@@ -38,6 +38,11 @@ try:
 except ImportError:
     HAVE_YAML = False
 
+# Shared skip rules — mirrors theparlor/library-index-system@8a79e07 pattern.
+# Importing from sibling module keeps Core/external skip in one place within
+# this product directory.
+from skip_rules import SKIP_DIRS as EXCLUDE_DIRS, should_skip_subdir
+
 # === Brien's actual signal schema (per signal-stream.md DoD + observed signals) ===
 
 CLOSURE_REQUIRED_FIELDS = ("upstream_control_path", "catch_mechanism")
@@ -50,14 +55,9 @@ FLIGHT_MODEL_FIELDS = {
     "autonomy_level", "lambda_used", "w_gravity", "t_thrust", "l_lift", "d_drag",
 }
 
-# Directories to skip during walk (performance + noise)
-# Note: `worktrees` excludes .claude/worktrees/ which contain Workspaces clones
-# (CCD session worktrees) — counting their signals would 10x-double-count the corpus.
-EXCLUDE_DIRS = {
-    ".git", "node_modules", ".venv", "__pycache__", ".cache", "venv",
-    "dist", "build", ".next", ".turbo", ".pytest_cache", ".mypy_cache",
-    "worktrees",
-}
+# Note: `worktrees` is in EXCLUDE_DIRS (imported from skip_rules) — this excludes
+# .claude/worktrees/ which contain Workspaces clones (CCD session worktrees) that
+# would 10x-double-count the corpus if walked.
 
 STALE_DAYS = 90
 
@@ -185,7 +185,10 @@ def find_signals(root: Path):
     """Walk root yielding signal-file Paths."""
     seen = set()
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
+        dirnames[:] = sorted([
+            d for d in dirnames
+            if not should_skip_subdir(d, dirpath, root)
+        ])
         d = Path(dirpath)
         name = d.name
         parent_name = d.parent.name
@@ -227,7 +230,10 @@ def find_intent_wired_products(root: Path):
     """Yield product-rooted dirs that contain a .intent/ subdir."""
     seen = set()
     for dirpath, dirnames, _ in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
+        dirnames[:] = sorted([
+            d for d in dirnames
+            if not should_skip_subdir(d, dirpath, root)
+        ])
         d = Path(dirpath)
         if ".intent" in dirnames:
             try:

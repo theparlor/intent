@@ -37,6 +37,11 @@ import json, sys, os
 from pathlib import Path
 from collections import Counter, defaultdict
 
+# Shared skip rules — mirrors theparlor/library-index-system@8a79e07 pattern.
+# V0 is archived; skip rules imported defensively in case it is invoked
+# directly against the Workspaces root.
+from skip_rules import should_skip_subdir
+
 # --- What we hunt for -------------------------------------------------------
 
 INTENT_MARKERS = [".intent", "spec", "specs"]            # dirs that mean "intent-wired"
@@ -127,8 +132,13 @@ def inventory_root(root: Path) -> dict:
 
     seen_shapes = set()
     for dirpath, dirnames, filenames in os.walk(root):
-        # don't descend into noise
-        dirnames[:] = [d for d in dirnames if d not in {".git", "node_modules", ".venv", "__pycache__"}]
+        # Don't descend into noise or vendored externals (Core/external/).
+        # should_skip_subdir checks both bare-name exclusions and
+        # SKIP_RELATIVE_PATHS (which includes 'Core/external').
+        dirnames[:] = sorted([
+            d for d in dirnames
+            if not should_skip_subdir(d, dirpath, root)
+        ])
         d = Path(dirpath)
         for fn in filenames:
             fp = d / fn

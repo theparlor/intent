@@ -37,11 +37,10 @@ try:
 except ImportError:
     HAVE_YAML = False
 
-EXCLUDE_DIRS = {
-    ".git", "node_modules", ".venv", "__pycache__", ".cache", "venv",
-    "dist", "build", ".next", ".turbo", ".pytest_cache", ".mypy_cache",
-    "worktrees",
-}
+# Shared skip rules — mirrors theparlor/library-index-system@8a79e07 pattern.
+# Importing from sibling module keeps Core/external skip in one place within
+# this product directory.
+from skip_rules import SKIP_DIRS as EXCLUDE_DIRS, should_skip_subdir
 
 CLOSURE_REQUIRED_FIELDS = ("upstream_control_path", "catch_mechanism")
 PENDING_MARKERS = {"pending", "n/a", "none", "tbd", "", "null", "open"}
@@ -165,7 +164,10 @@ def derive_outcome(fm: dict) -> str:
 def find_signals(root: Path):
     seen = set()
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
+        dirnames[:] = sorted([
+            d for d in dirnames
+            if not should_skip_subdir(d, dirpath, root)
+        ])
         d = Path(dirpath)
         if d.name == "signals" and d.parent.name == ".intent":
             for fn in filenames:
