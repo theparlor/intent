@@ -3,7 +3,7 @@
 #
 # Stop hook — Layer 4 of autonomy-grant enforcement (linguistic detector).
 #
-# Detects two drift patterns and forces revision:
+# Detects five drift patterns and forces revision:
 #
 #   CHECK 1 — Bare-choice-instead-of-recommendation (v1, 2026-04-28)
 #     Pattern: response ends with "Want me to A, or B?" / "Should I X or Y?"
@@ -16,8 +16,31 @@
 #     "shall I proceed?", etc.). Slips past CHECK 1 because a recommendation
 #     marker precedes the soft-queue tail.
 #
+#   CHECK 3 — L0-on-push framing on theparlor/* repos (v3, 2026-05-20)
+#     Pattern: response commits to theparlor/* and hands push back to Brien
+#     with phrases like "Not pushed. Run git push from <path>..." despite
+#     solo-repo L4 push grant.
+#
+#   CHECK 4 — Conditional-queue framing on pre-authorized continuation (v3, 2026-05-26)
+#     Pattern: response describes a next L4 action and ends with veto-offer
+#     framing ("unless you redirect", "I'll X next unless", "going to X unless").
+#     Recommendation marker preceding the tail does NOT redeem it.
+#
+#   CHECK 5 — Implicit-queue / standby framing (v4, 2026-05-28)
+#     Pattern: response contains implicit-gating phrases that position the
+#     model as waiting for Brien's instruction to act on already-authorized
+#     L4 work: "ready to execute when you say go", "let me know when",
+#     "ready when you are", "say the word", "standing by", "I'll wait for
+#     your call", "when you're ready", "next steps depend on...", etc.
+#     Caught because they are structurally equivalent to bare-choice even
+#     though no question mark appears.
+#     Context gate: the phrase must appear without an adjacent "if you have
+#     questions" / "if there's anything else" style conversational close
+#     (those are acceptable L2 surface closers, not implicit queues).
+#
 # Spec: Core/frameworks/intent/spec/autonomy-grant-enforcement.md (Layer 4)
 # Signal: Core/products/org-design-tooling/.intent/signals/SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13.md
+# Signal: .intent/signals/SIG-2026-05-28-stop-hook-regex-extension-implicit-queue.md
 #
 # Install: chmod +x and symlink to ~/.claude/hooks/
 # Register: add Stop entry to ~/.claude/settings.json
@@ -30,6 +53,12 @@
 #   in response to repeat bare-choice slips on autonomy-grant-enforced sessions.
 # Updated: 2026-05-13 — adds CHECK 2 soft-queue detector per
 #   SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13 §3 Layer 3 + JSONL telemetry.
+# Updated: 2026-05-20 — adds CHECK 3 L0-on-push detector per
+#   SIG-2026-05-20-l0-on-push-framing-no-hook-catch.md.
+# Updated: 2026-05-26 — adds CHECK 4 conditional-queue detector per
+#   SIG-2026-05-26-autonomy-grant-drift-recurrence-in-session.md.
+# Updated: 2026-05-28 — adds CHECK 5 implicit-queue/standby detector per
+#   SIG-2026-05-27-pause-drift-items-3-6-7-8-after-coverage-push.md et al.
 
 set -u
 
@@ -205,6 +234,7 @@ printf '{"ts":"%s","session":"%s","bare_match":%d,"rec_match":%d,"soft_queue_fou
   "$TIMESTAMP" "$SESSION_ID" "$BARE_MATCH" "$REC_MATCH" \
   "$FOUND_SOFT_QUEUE" "$HAS_NEXT_STAGE" "$HAS_DISPATCH" "$SOFT_QUEUE_TRIGGER" \
   "$TAIL_SAMPLE" >> "$TELEMETRY_LOG" 2>/dev/null || true
+# Note: implicit_queue fields are emitted via a separate telemetry append in CHECK 5
 
 # ---------------------------------------------------------------------------
 # Block decisions
@@ -317,6 +347,101 @@ if [ "$COND_QUEUE_TRIGGER" = "1" ]; then
 
   cat <<'EOF'
 {"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 4 — conditional-queue framing on pre-authorized continuation, v3): your response describes a next L4 action AND ends with conditional-queue phrasing ('unless you redirect', 'I'll X next unless', 'going to X unless'). A recommendation marker preceding this tail does NOT redeem it — this is architecturally equivalent to bare-choice on pre-authorized work, just dressed up as a recommendation-with-veto. Pattern documented in SIG-2026-05-26-autonomy-grant-drift-recurrence-in-session.md. 4-gate check: if the next action is reversible, Workspaces-local, has precedent, and has no info gap — EXECUTE it in this same turn. Do not queue. Do not ask. Do not offer a veto. Dispatch the next L4 work now, or surface the specific L0 gate that blocks execution (external comms, money, NDA boundary, force-push-to-main, or reviewers-waiting)."}
+EOF
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# CHECK 5: Implicit-queue / standby framing (v4 — 2026-05-28)
+#
+# Slips past CHECK 1-4 because it contains no explicit question mark, no
+# "want me to", no "unless you redirect" — it simply positions the model
+# as *waiting* for Brien's word before acting on already-authorized L4 work.
+#
+# Canonical forbidden phrases (from feedback_pause_drift_meta_signal_on_nudge
+# §Forbidden phrasings and SIG-2026-05-27-* signals):
+#   "ready to execute when you say go"
+#   "ready when you are" / "ready when ready"
+#   "let me know when"
+#   "say the word"
+#   "standing by"
+#   "I'll wait for your call"
+#   "let me know if you want me to"  (with action verb — see false-positive gate)
+#   "when you're ready"
+#   "next steps depend on"           (when framing L4-eligible continuation)
+#
+# False-positive gate: conversational closers that are acceptable at L2+
+# surfaces ("let me know if you have any questions", "if there's anything
+# else I can help with") are distinguished by the presence of "questions" /
+# "anything else" / "if I missed" / "help" WITHOUT an action verb after
+# "let me know". The gate strips those before testing the queue phrases.
+#
+# The dispatch gate from CHECKs 2/4 applies here too: if the response
+# already dispatched a concrete action, standby phrasing is contextual
+# narrative, not queuing.
+#
+# Spec: SIG-2026-05-28-stop-hook-regex-extension-implicit-queue.md
+# Sources: 4x SIG-2026-05-27-pause-drift-* signals
+# ---------------------------------------------------------------------------
+
+# Core implicit-queue phrases (gated by dispatch + false-positive filter below)
+IMPLICIT_QUEUE_RE='(ready to (execute|proceed|start|run|go|begin|dispatch) when (you say (go|the word)|you.?re ready|ready)|ready when you.?re ready|ready when you are|ready when ready|let me know when (you.?re ready|you are ready|you want|you need|to proceed|to start|you.?d like)|say the word|standing by (for|to|—|and |until|when)|i.?ll wait (for your|for you|for brien|until you)|waiting (for your|for you|for brien|until you) (go-ahead|say|word|signal|call|input|direction|okay|ok\b|approval)|next steps depend on (your|brien|the decision|what you|whether you|if you|you)|(let me know|tell me) if you want me to [a-z]|(let me know|tell me) when you.?re ready to proceed|(when you.?re ready|whenever you.?re ready|when you are ready)[,.]?\s*(i.?ll|we.?ll|just|go ahead|proceed|start|run|begin|execute|dispatch))'
+
+# False-positive exclusion: acceptable L2 conversational close forms.
+# "let me know if you have any questions", "if there's anything else",
+# "let me know if you'd like me to elaborate", etc. are NOT implicit queues.
+FP_ACCEPTABLE_CLOSE_RE='(let me know if (you have|there.?s|you.?d like (me to )?elaborate|you need (anything|more)|i (missed|can clarify|can help))|if there.?s anything (else|more)|any questions|anything else i can (help|do|clarify|address))'
+
+# Check: does the last paragraph contain an implicit-queue phrase?
+IMPLICIT_QUEUE_MATCH=0
+if echo "$LOWER_PARA" | grep -qiE "$IMPLICIT_QUEUE_RE"; then
+  IMPLICIT_QUEUE_MATCH=1
+fi
+
+# Apply false-positive gate: if the only match of IMPLICIT_QUEUE_RE is inside
+# a sentence that also contains an acceptable conversational close, suppress.
+# Strategy: check the LOWER_PARA for the acceptable-close pattern; if both
+# the queue phrase and the close phrase appear in close proximity (same
+# ~200-char window), treat as false positive.
+#
+# Note: "let me know if you have any questions" style closers contain
+# "let me know" which is also in IMPLICIT_QUEUE_RE — but they always pair
+# with "questions" / "anything else" / "if you need". The FP gate ensures
+# those legitimate L2 closers are not blocked.
+FP_SUPPRESSED=0
+if [ "$IMPLICIT_QUEUE_MATCH" = "1" ]; then
+  # Check: does the para ONLY match because of a benign close phrase?
+  # Remove benign close phrases, then re-check.
+  STRIPPED_PARA=$(printf '%s' "$LOWER_PARA" | sed -E \
+    -e 's/let me know if you have[^.!?]*/[STRIPPED]/g' \
+    -e 's/if there.s anything else[^.!?]*/[STRIPPED]/g' \
+    -e 's/anything else i can[^.!?]*/[STRIPPED]/g' \
+    -e 's/any questions[^.!?]*/[STRIPPED]/g' \
+    -e 's/if i (missed|can clarify|can help)[^.!?]*/[STRIPPED]/g' \
+    -e 's/let me know if you.d like[^.!?]*/[STRIPPED]/g' \
+    -e 's/let me know if you need (anything|more)[^.!?]*/[STRIPPED]/g' \
+  )
+  # If the queue pattern no longer matches after stripping, it was a false positive
+  if ! echo "$STRIPPED_PARA" | grep -qiE "$IMPLICIT_QUEUE_RE"; then
+    FP_SUPPRESSED=1
+  fi
+fi
+
+IMPLICIT_QUEUE_TRIGGER=0
+if [ "$IMPLICIT_QUEUE_MATCH" = "1" ] && [ "$FP_SUPPRESSED" != "1" ] && [ "$HAS_DISPATCH" = "0" ]; then
+  IMPLICIT_QUEUE_TRIGGER=1
+fi
+
+# CHECK 5 telemetry append (implicit_queue fields)
+printf '{"ts":"%s","session":"%s","check":"5","implicit_queue_match":%d,"fp_suppressed":%d,"dispatch":%d,"trigger":%d,"tail":"%s"}\n' \
+  "$TIMESTAMP" "$SESSION_ID" "$IMPLICIT_QUEUE_MATCH" "$FP_SUPPRESSED" "$HAS_DISPATCH" "$IMPLICIT_QUEUE_TRIGGER" \
+  "$TAIL_SAMPLE" >> "$TELEMETRY_LOG" 2>/dev/null || true
+
+if [ "$IMPLICIT_QUEUE_TRIGGER" = "1" ]; then
+  echo "[$TIMESTAMP] CHECK5-CAUGHT session=$SESSION_ID implicit_queue=1 fp_suppressed=0 dispatch=0 tail='$(printf '%s' "$LAST_PARA" | tail -c 300 | tr '\n' ' ' | tr "'" '_')'" >> "$AUDIT_LOG"
+
+  cat <<'EOF'
+{"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 5 — implicit-queue / standby framing, v4): your response contains a phrase that positions you as waiting for Brien's word before acting on already-authorized L4 work. Caught patterns include: 'ready to execute when you say go', 'let me know when', 'ready when you are', 'say the word', 'standing by', 'I'll wait for your call', 'let me know if you want me to [verb]', 'when you're ready', 'next steps depend on...'. These are structurally equivalent to bare-choice queuing even without a question mark. Documented in SIG-2026-05-27-pause-drift-* (4 incidents 2026-05-27) and SIG-2026-05-28-stop-hook-regex-extension-implicit-queue.md. 4-gate check: if the next action is reversible, Workspaces-local, has precedent, and has no info gap — EXECUTE it in this same turn. Do not standby. Do not wait. Do not frame yourself as ready-but-paused. Dispatch now, or name the specific L0 gate blocking execution (external comms to another human, money movement, NDA boundary, force-push-to-main)."}
 EOF
   exit 0
 fi
