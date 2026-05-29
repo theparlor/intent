@@ -1,0 +1,451 @@
+# Lambda settings by product — generated 2026-05-26 by lambda_fit.py
+# Paste relevant block into each product's .intent/INTENT.md under lambda_settings:
+# Per SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001 §16 (λ-scoping convention)
+#
+# Layering: these are per-product baseline λ values. Per-surface overrides
+# (e.g., cross_human_comms: 0.0) and per-actor topology adjustments
+# (theparlor-solo += 0.5-1.0) layer on top of the fit value.
+
+# === Core ===
+# closure_rate=100% (n=5, gold=5, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/frameworks/assessment ===
+# closure_rate=100% (n=1, gold=1, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/frameworks/coherence-engineering ===
+# closure_rate=62% (n=13, gold=8, sym=5, open=0)
+# lift_action: RECOMMENDED
+lambda_settings:
+  default: 1.096
+  fit_target: 1.192  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.385, containment_gap=0.625.
+    Lift investment recommended; default is mid-point of baseline and
+    fit_target. Promote default to fit_target after lift gap closes.
+
+# === Core/frameworks/design-systems ===
+# closure_rate=100% (n=1, gold=1, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/frameworks/governance ===
+# closure_rate=100% (n=1, gold=1, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/frameworks/intent ===
+# closure_rate=88% (n=17, gold=15, sym=2, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.059
+  fit_target: 1.059  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.118, containment_gap=0.133.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/frameworks/investment ===
+# closure_rate=50% (n=2, gold=1, sym=1, open=0)
+# lift_action: REQUIRED-BEFORE-λ-RAISE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.25  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.5, containment_gap=1.0.
+    Lift insufficient — invest in catch_mechanism + upstream_control
+    coverage BEFORE raising λ above baseline. Current default holds at
+    baseline 1.0; fit_target 1.25 applies after lift work.
+
+# === Core/frameworks/knowledge-engine ===
+# closure_rate=100% (n=2, gold=2, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/frameworks/measurement ===
+# closure_rate=100% (n=1, gold=1, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/frameworks/methodology-library ===
+# closure_rate=0% (n=2, gold=0, sym=2, open=0)
+# lift_action: REQUIRED-BEFORE-λ-RAISE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.5  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=1.0, containment_gap=10.0.
+    Lift insufficient — invest in catch_mechanism + upstream_control
+    coverage BEFORE raising λ above baseline. Current default holds at
+    baseline 1.0; fit_target 1.5 applies after lift work.
+
+# === Core/frameworks/protocols ===
+# closure_rate=0% (n=1, gold=0, sym=1, open=0)
+# lift_action: REQUIRED-BEFORE-λ-RAISE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.5  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=1.0, containment_gap=10.0.
+    Lift insufficient — invest in catch_mechanism + upstream_control
+    coverage BEFORE raising λ above baseline. Current default holds at
+    baseline 1.0; fit_target 1.5 applies after lift work.
+
+# === Core/frameworks/transformation ===
+# closure_rate=100% (n=1, gold=1, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/cast ===
+# closure_rate=95% (n=263, gold=250, sym=13, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.025
+  fit_target: 1.025  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.049, containment_gap=0.052.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/conduit ===
+# closure_rate=80% (n=10, gold=8, sym=2, open=0)
+# lift_action: OPTIONAL
+lambda_settings:
+  default: 1.1
+  fit_target: 1.1  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.2, containment_gap=0.25.
+    Lift adequate. Default = fit_target. Monitor sym-rep rate.
+
+# === Core/products/cortege ===
+# closure_rate=100% (n=5, gold=5, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/digital-declutter ===
+# closure_rate=80% (n=5, gold=4, sym=1, open=0)
+# lift_action: OPTIONAL
+lambda_settings:
+  default: 1.1
+  fit_target: 1.1  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.2, containment_gap=0.25.
+    Lift adequate. Default = fit_target. Monitor sym-rep rate.
+
+# === Core/products/fieldbook ===
+# closure_rate=71% (n=7, gold=5, sym=2, open=0)
+# lift_action: OPTIONAL
+lambda_settings:
+  default: 1.143
+  fit_target: 1.143  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.286, containment_gap=0.4.
+    Lift adequate. Default = fit_target. Monitor sym-rep rate.
+
+# === Core/products/forge ===
+# closure_rate=96% (n=24, gold=23, sym=1, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.021
+  fit_target: 1.021  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.042, containment_gap=0.043.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/library-index ===
+# closure_rate=57% (n=7, gold=4, sym=3, open=0)
+# lift_action: RECOMMENDED
+lambda_settings:
+  default: 1.107
+  fit_target: 1.214  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.429, containment_gap=0.75.
+    Lift investment recommended; default is mid-point of baseline and
+    fit_target. Promote default to fit_target after lift gap closes.
+
+# === Core/products/library-index-mcp ===
+# closure_rate=42% (n=12, gold=5, sym=7, open=0)
+# lift_action: REQUIRED-BEFORE-λ-RAISE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.292  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.583, containment_gap=1.4.
+    Lift insufficient — invest in catch_mechanism + upstream_control
+    coverage BEFORE raising λ above baseline. Current default holds at
+    baseline 1.0; fit_target 1.292 applies after lift work.
+
+# === Core/products/loom ===
+# closure_rate=100% (n=4, gold=4, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/org-design-tooling ===
+# closure_rate=50% (n=18, gold=9, sym=9, open=0)
+# lift_action: REQUIRED-BEFORE-λ-RAISE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.25  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.5, containment_gap=1.0.
+    Lift insufficient — invest in catch_mechanism + upstream_control
+    coverage BEFORE raising λ above baseline. Current default holds at
+    baseline 1.0; fit_target 1.25 applies after lift work.
+
+# === Core/products/parallax ===
+# closure_rate=100% (n=3, gold=3, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/pulse ===
+# closure_rate=100% (n=4, gold=4, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/reference-substrate ===
+# closure_rate=100% (n=3, gold=3, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/studio-control ===
+# closure_rate=75% (n=4, gold=3, sym=1, open=0)
+# lift_action: OPTIONAL
+lambda_settings:
+  default: 1.125
+  fit_target: 1.125  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.25, containment_gap=0.333.
+    Lift adequate. Default = fit_target. Monitor sym-rep rate.
+
+# === Core/products/throughline ===
+# closure_rate=100% (n=2, gold=2, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/topography ===
+# closure_rate=100% (n=4, gold=4, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/voices ===
+# closure_rate=100% (n=5, gold=5, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/warp ===
+# closure_rate=100% (n=5, gold=5, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Core/products/witness ===
+# closure_rate=100% (n=3, gold=3, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Home ===
+# closure_rate=100% (n=1, gold=1, sym=0, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.0  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.0, containment_gap=0.0.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === ROOT (Workspaces-wide) ===
+# closure_rate=91% (n=54, gold=49, sym=5, open=0)
+# lift_action: NONE
+lambda_settings:
+  default: 1.046
+  fit_target: 1.046  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.093, containment_gap=0.102.
+    Lift solid. Default = fit_target. Shadow-autonomy probes
+    can push higher.
+
+# === Work ===
+# closure_rate=35% (n=17, gold=6, sym=11, open=0)
+# lift_action: REQUIRED-BEFORE-λ-RAISE
+lambda_settings:
+  default: 1.0
+  fit_target: 1.324  # value to apply after lift investment
+  last_fit: 2026-05-26
+  fit_source: Core/frameworks/intent/tools/lambda_fit.py
+  rationale: |
+    stall_loss=0.647, containment_gap=1.833.
+    Lift insufficient — invest in catch_mechanism + upstream_control
+    coverage BEFORE raising λ above baseline. Current default holds at
+    baseline 1.0; fit_target 1.324 applies after lift work.

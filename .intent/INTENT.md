@@ -8,15 +8,15 @@ observe-via: entire
 created: 2026-03-28
 
 # === lambda_settings (managed by apply_lambda_settings.py, do not edit by hand) ===
-# closure_rate=64% (n=14, gold=9, sym=1, open=4)
+# closure_rate=88% (n=17, gold=15, sym=2, open=0)
 # lift_action: NONE
 lambda_settings:
-  default: 1.179
-  fit_target: 1.179  # value to apply after lift investment
+  default: 1.059
+  fit_target: 1.059  # value to apply after lift investment
   last_fit: 2026-05-26
   fit_source: Core/frameworks/intent/tools/lambda_fit.py
   rationale: |
-    stall_loss=0.357, containment_gap=0.111.
+    stall_loss=0.118, containment_gap=0.133.
     Lift solid. Default = fit_target. Shadow-autonomy probes
     can push higher.
 # === end lambda_settings ===
