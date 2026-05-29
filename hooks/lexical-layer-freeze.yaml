@@ -1,0 +1,58 @@
+# lexical-layer-freeze.yaml
+# ---------------------------------------------------------------------------
+# The CAP. The lexical Stop-hook layer is frozen at its current CHECK count.
+# No net-new CHECK ships without (a) a Drag-budget debit from drag_dashboard.py
+# and (b) a sunset clause tied to the structural successor (Layer 4.2 / flight
+# model). drag_dashboard.py reads this file and FLAGS any live CHECK beyond the
+# sanctioned baseline (status: ACCRETION-DRIFT, non-zero exit).
+#
+# Rationale + backlog: Core/frameworks/intent/.intent/signals/SIG-2026-05-29-friction-01
+# First-level remediation authorized by Brien 2026-05-29 ("hit the first level").
+# ---------------------------------------------------------------------------
+
+baseline:
+  hook: autonomy-grant-stop-check.sh
+  frozen_at_check: 6                 # CHECK 1-6 as of 2026-05-28 (see signals friction-01)
+  frozen_date: 2026-05-28
+  rationale: >
+    The autonomy Stop hook grew CHECK 1→2→3→4→5→6, each a reaction to a
+    linguistic variant the prior checks missed. Per autonomy-posture-check-
+    layer-4.2-DRAFT §1, this lexical approach cannot converge: caution-bias
+    generates variants faster than regex catches them. The layer is frozen
+    here. Convergence comes from the STRUCTURAL successor, not CHECK 7.
+
+# The companion drift class shares the same architecture and the same freeze.
+closure_discipline:
+  hook: closure-discipline-stop-check.sh
+  frozen: true
+  note: lexical completion-claim detector; same cap, same successor logic.
+
+successor_path:
+  structural_check: Core/frameworks/intent/spec/autonomy-posture-check-layer-4.2-DRAFT.md
+  decision_model:   Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md
+  ratification_tracker: Core/frameworks/intent/spec/autonomy-flight-model-ratification-tracker.md
+
+sunset:
+  trigger: >
+    Layer 4.2 (structural positive-execution posture) completes its 14-day
+    warn-only calibration with measured false-positive rate < 5%.
+  action: >
+    Retire CHECKs 1-6 OR demote them to a thin, explicitly-dated fallback.
+    Retirement is a measured, scheduled event — not "keep forever as
+    belt-and-suspenders." The Drag-dashboard block-rate at that point is the
+    evidence: a check with ~0 blocks over the window is retired outright.
+  owner: Tower (Loom cross-session) — portfolio-altitude decision, not Cockpit.
+
+# Any CHECK beyond frozen_at_check MUST appear here, each with a debit + sunset.
+# Empty = the layer is at baseline. The dashboard counts these as sanctioned.
+sanctioned_additions: []
+
+rule:
+  no_new_check_without:
+    - drag_budget_debit        # dashboard must show the per-turn cost + FP rate the check adds
+    - sunset_clause            # explicit retirement trigger, dated or condition-bound
+    - flight_model_cross_ref   # tie to Layer 4.2 / flight-model successor path
+  enforcement: >
+    drag_dashboard.py §C cap-guard. Live CHECK count > frozen_at_check +
+    len(sanctioned_additions) → status ACCRETION-DRIFT, exit 2. Wire into a
+    pre-commit / CI check on the hooks dir when the layer next changes.

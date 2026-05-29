@@ -83,7 +83,7 @@ iterations if drift rate doesn't drop.
 | 3. Soft-queue regex deepening (Stop hook v2) | Second detector in Stop hook — catches soft-queue tail phrases on pre-authorized continuation even when recommendation marker present | **Deployed** (`autonomy-grant-stop-check.sh`, 2026-05-13) |
 | 4. Linguistic detector (Stop hook) | Regex scan of last assistant message for bare-choice-without-recommendation pattern; blocks stop and forces revision | **Deployed** (`autonomy-grant-stop-check.sh`, 2026-04-28) |
 | 5. Dispatch-prompt pre-flight check | PreToolUse hook fires BEFORE subagent dispatch; scans the dispatch prompt for proposal-framing patterns ("Brien is the decider — your answers are PROPOSALS", `status: proposed`, "for Brien's review", etc.); blocks if detected without override token | **Deployed** (`autonomy-grant-dispatch-prompt-check.sh`, 2026-05-19) |
-| 6. Drift telemetry | Log every gate-check + every catch for feedback loop | Partially deployed via Layer 4/5 audit logs; no active feedback loop yet |
+| 6. Drift telemetry | Log every gate-check + every catch for feedback loop | **Aggregated 2026-05-29** via `tools/drag_dashboard.py` — rolls up Layer 4/5 telemetry + audit logs (block-rate, fire distribution, cap-guard). Replaces "no feedback loop"; feeds flight-model calibration. |
 
 ### Layer 1: SessionStart hook
 
@@ -286,6 +286,34 @@ Signal closure conditions:
   bare-choice-instead-of-recommendation drift requires audit-log-confirmed
   catches over multiple sessions without false-positive complaints from
   Brien.
+
+## The cap — lexical-layer freeze (2026-05-29)
+
+The Layer 4 detector grew CHECK 1→2→3→4→5→6, each a reaction to a variant the prior
+checks missed. `autonomy-posture-check-layer-4.2-DRAFT §1` establishes that this
+lexical approach **cannot converge** — caution-bias generates new phrasings faster
+than regex catches them. The aggregate cost was never measured.
+
+**As of 2026-05-29 the lexical layer is FROZEN at CHECK 6.**
+
+- **Registry:** `Core/frameworks/intent/hooks/lexical-layer-freeze.yaml` — declares the
+  baseline, the sunset trigger, and the rule: no net-new CHECK without a Drag-budget
+  debit AND a sunset clause AND a flight-model cross-reference.
+- **Instrument:** `Core/frameworks/intent/tools/drag_dashboard.py` — rolls up per-hook
+  telemetry that previously sat unaggregated. First reading (2026-05-29, window
+  2026-04-15→05-29): **1,463 Stop-hook runs, 61 blocks, 4.17% block rate** — 95.8% of
+  runs changed nothing. CHECK 3 has never fired; CHECK 2 fired once (retire candidates).
+- **Catch-net:** the dashboard §C cap-guard compares live CHECK count to the frozen
+  baseline and exits non-zero on `ACCRETION-DRIFT`. The dashboard polices the layer —
+  no new Stop hook is added to police the Stop hooks.
+- **Successor / sunset:** the structural replacement is Layer 4.2 (positive-execution
+  posture) feeding the decision-compute layer of `autonomy-flight-model-v1-DRAFT.md`.
+  CHECKs 1–6 retire (or demote to thin fallback) on a MEASURED schedule once Layer 4.2
+  clears 14-day warn-only calibration at FP < 5%. Staging:
+  `autonomy-flight-model-ratification-tracker.md`.
+
+Origin: friction backlog `.intent/signals/SIG-2026-05-29-friction-00…05`; Brien
+authorization 2026-05-29 ("hit the first level and stage the second").
 
 ## Related patterns
 

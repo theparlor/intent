@@ -18,7 +18,7 @@ related:
   - .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
 depth_score: 4
 depth_signals:
-  file_size_kb: 17.2
+  file_size_kb: 17.4
   content_chars: 15760
   entity_count: 0
   slide_count: 0
@@ -41,6 +41,20 @@ ratification_dependencies:
 # Autonomy Flight Model (v1 DRAFT)
 
 > Status: DRAFT. This spec replaces the weighted-sum trust formula with a coupled four-forces model derived from aeronautical engineering. It must not be promoted to `accepted` until the four ratification dependencies above are satisfied. The v1 weighted-sum formula remains operational until that happens.
+
+> **PUBLISHED SUCCESSOR (2026-05-29).** This spec is the designated successor path
+> for the lexical Stop-hook enforcement layer. The layer is now frozen at CHECK 6
+> (`Core/frameworks/intent/hooks/lexical-layer-freeze.yaml`); the
+> [Drag dashboard](../tools/drag_dashboard.py) measures its aggregate cost
+> (first reading 2026-05-29: **1,463 Stop-hook runs, 4.17% block rate — 95.8%
+> overhead**). The lexical layer **sunsets** when Layer 4.2 (the structural
+> positive-execution check) clears its 14-day warn-only calibration at FP < 5%.
+> Staging of the four ratification dependencies below is tracked in
+> [autonomy-flight-model-ratification-tracker.md](autonomy-flight-model-ratification-tracker.md).
+> This note is the road-readiness linkage requested by Brien on 2026-05-29
+> ("hit the first level and stage the second"); friction backlog at
+> `.intent/signals/SIG-2026-05-29-friction-00…05`. Draft status is unchanged —
+> "published successor" designates the path, it does not assert ratification.
 
 ## §1 Problem statement
 
