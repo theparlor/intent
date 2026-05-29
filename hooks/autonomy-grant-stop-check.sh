@@ -88,6 +88,9 @@
 #   SIG-2026-05-27-pause-drift-items-3-6-7-8-after-coverage-push.md et al.
 # Updated: 2026-05-28 — adds CHECK 6 trailing-observation-after-proposal detector per
 #   SIG-2026-05-27-pause-drift-cross-reference-sweep-after-prompt-rework.md.
+# Updated: 2026-05-29 — adds CHECK 7 scope-variant bare-choice ("do part OR do all"
+#   on pre-authorized work; fires regardless of recommendation marker) per
+#   SIG-2026-05-29-stop-hook-check-7-scope-variant.md.
 
 set -u
 
@@ -595,6 +598,65 @@ if [ "$TRAILING_OBS_TRIGGER" = "1" ]; then
 
   cat <<'EOF'
 {"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 6 — trailing-observation-after-proposal, v5): your response delivered a diagnosis/recommendation/analysis/artifact and stopped at a trailing analytical sentence (e.g., 'The biggest delta from the original...', 'Worth noting:', 'The most interesting aspect...', 'The key insight here is...'). This is the same drift class as bare-choice on pre-authorized work — just in dress-clothes. The closing observation makes the response feel complete when execution is the actual next step. Source incident: SIG-2026-05-27-pause-drift-cross-reference-sweep-after-prompt-rework. Fix: if the 4-gate check passes for the next action (reversible, local, precedented, no-info-gap), EXECUTE it in this same turn. Closing observations are only legitimate when (a) a concrete action was dispatched in this turn, (b) you have closure-DoD assertions (upstream_control_path / catch_mechanism / pipeline_survival), (c) you are actively surfacing an L2 decision with recommendation-and-reveal, or (d) you have named an explicit info gap. If none of those apply — dispatch."}
+EOF
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# CHECK 7: Scope-variant bare-choice — "do part OR do all" on pre-authorized
+#          work (v6 — 2026-05-29)
+#
+# Slips past CHECK 1 because a recommendation marker precedes the question
+# (REC_MATCH=1 disables CHECK 1's block). The question offers a SCOPE choice
+# between a partial subset and the FULL set of already-authorized work:
+#   "Want me to do just the first tier, or all of them?"
+#   "Should I do only the wave-1 personas, or the whole batch?"
+#   "Should I do all of them now, or just the first as a sample?"
+# Per feedback_full_scope_execution: when Brien has set scope ("all" / "every X"),
+# re-asking "part or all?" re-litigates settled scope. This fires REGARDLESS of
+# REC_MATCH — the recommendation marker is exactly what lets the question slip
+# CHECK 1, so CHECK 7 must not honor it.
+#
+# Implementation note: AND of four fast independent greps (a lead-in question +
+# a partial-scope token + a full-scope token + "or", all in the last paragraph).
+# Deliberately NOT a single mega-regex — a bounded-quantifier multi-group ERE
+# catastrophically backtracks under ugrep (the system grep on this host) and
+# HANGS the Stop hook. The conjunction of four specific signals keeps the
+# false-positive rate low (a genuine technical A/B like "Postgres or SQLite?"
+# lacks the partial+full scope tokens).
+#
+# Gate: dispatch=0 — if you actually executed/dispatched, the scope question is
+# narrative, not a queue.
+#
+# Spec/signal: SIG-2026-05-29-stop-hook-check-7-scope-variant.md
+# ---------------------------------------------------------------------------
+
+C7_LEADQ_RE='(want me to|should i|should we|do you want me to|would you like me to|do you want to|want to|shall i|do i)[^?]*\?'
+C7_PARTIAL_RE='(\bjust\b|\bonly\b|part of|a subset|the first|one of (them|the)|some of (them|the)|a few|a handful)'
+C7_FULL_RE='(\ball\b|everything|the whole|the rest|the entire|\bevery\b|each of|\bboth\b|the full|the complete)'
+
+C7_LEADQ_M=0; C7_PARTIAL_M=0; C7_FULL_M=0; C7_OR_M=0
+echo "$LOWER_PARA" | grep -qiE "$C7_LEADQ_RE"   && C7_LEADQ_M=1
+echo "$LOWER_PARA" | grep -qiE "$C7_PARTIAL_RE" && C7_PARTIAL_M=1
+echo "$LOWER_PARA" | grep -qiE "$C7_FULL_RE"    && C7_FULL_M=1
+echo "$LOWER_PARA" | grep -qiE '\bor\b'         && C7_OR_M=1
+
+SCOPE_VARIANT_TRIGGER=0
+if [ "$C7_LEADQ_M" = "1" ] && [ "$C7_PARTIAL_M" = "1" ] && [ "$C7_FULL_M" = "1" ] \
+   && [ "$C7_OR_M" = "1" ] && [ "$HAS_DISPATCH" = "0" ]; then
+  SCOPE_VARIANT_TRIGGER=1
+fi
+
+# CHECK 7 telemetry
+printf '{"ts":"%s","session":"%s","check":"7","leadq":%d,"partial":%d,"full":%d,"or":%d,"dispatch":%d,"trigger":%d,"tail":"%s"}\n' \
+  "$TIMESTAMP" "$SESSION_ID" "$C7_LEADQ_M" "$C7_PARTIAL_M" "$C7_FULL_M" "$C7_OR_M" "$HAS_DISPATCH" "$SCOPE_VARIANT_TRIGGER" \
+  "$TAIL_SAMPLE" >> "$TELEMETRY_LOG" 2>/dev/null || true
+
+if [ "$SCOPE_VARIANT_TRIGGER" = "1" ]; then
+  echo "[$TIMESTAMP] CHECK7-CAUGHT session=$SESSION_ID scope_variant=1 dispatch=0 tail='$(printf '%s' "$LAST_PARA" | tail -c 300 | tr '\n' ' ' | tr "'" '_')'" >> "$AUDIT_LOG"
+
+  cat <<'EOF'
+{"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 7 — scope-variant bare-choice on pre-authorized work, v6): your response ends with a question that offers a SCOPE choice between a partial subset and the full set of already-authorized work ('do just the first tier, or all of them?', 'only the wave-1 personas, or the whole batch?'). A recommendation marker preceding it does NOT redeem it — that marker is exactly what let this slip CHECK 1. Per feedback_full_scope_execution: when Brien has set scope ('all' / 'every X'), the scope is his and is already set; re-asking 'part or all?' re-litigates a settled decision. 4-gate check: if doing the FULL scope is reversible, Workspaces-local, precedented, and has no info gap — do the full scope in this same turn. Do not ask which slice. Do not narrow under cover of 'minor'. If there is a genuine reason a partial pass is safer (irreversibility, an NDA/external boundary, or a real info gap on one subset), state THAT specific reason as a recommendation-with-reveal ('I'll do all N; the exception is X because <reason>'), not as a bare part-or-all question."}
 EOF
   exit 0
 fi
