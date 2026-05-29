@@ -32,11 +32,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.42
 related_entities:
-  - {pair: manuel-pais ↔ matthew-skelton, count: 266, strength: 0.635}
-  - {pair: manuel-pais ↔ team-topologies, count: 232, strength: 0.856}
-  - {pair: matthew-skelton ↔ team-topologies, count: 232, strength: 0.555}
-  - {pair: marty-cagan ↔ teresa-torres, count: 224, strength: 0.399}
-  - {pair: matthew-skelton ↔ mik-kersten, count: 198, strength: 0.407}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 364, strength: 0.691}
+  - {pair: manuel-pais ↔ team-topologies, count: 327, strength: 0.881}
+  - {pair: matthew-skelton ↔ team-topologies, count: 327, strength: 0.624}
+  - {pair: marty-cagan ↔ teresa-torres, count: 263, strength: 0.402}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 231, strength: 0.384}
 ---
 # Productivity OS Layer Model — L1 Through L6
 

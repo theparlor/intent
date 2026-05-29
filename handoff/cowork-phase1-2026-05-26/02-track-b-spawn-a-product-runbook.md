@@ -5,7 +5,7 @@ maturity: draft-for-review
 created: 2026-05-26
 depth_score: 4
 depth_signals:
-  file_size_kb: 19.4
+  file_size_kb: 19.6
   content_chars: 19315
   entity_count: 0
   slide_count: 0

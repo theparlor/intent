@@ -3,7 +3,7 @@ title: Phase 2 Dispatch Brief — Code Filing Instructions
 created: 2026-05-26
 depth_score: 4
 depth_signals:
-  file_size_kb: 7.8
+  file_size_kb: 7.9
   content_chars: 7668
   entity_count: 0
   slide_count: 0

@@ -7,7 +7,7 @@ reusability: adaptable
 created: 2026-05-27
 depth_score: 2
 depth_signals:
-  file_size_kb: 4.2
+  file_size_kb: 4.4
   content_chars: 4165
   entity_count: 0
   slide_count: 0

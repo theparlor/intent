@@ -3,7 +3,7 @@ title: Open Decisions — Brien Closes (2026-05-26)
 created: 2026-05-26
 depth_score: 4
 depth_signals:
-  file_size_kb: 13.6
+  file_size_kb: 13.8
   content_chars: 13424
   entity_count: 0
   slide_count: 0

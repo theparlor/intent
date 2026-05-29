@@ -5,7 +5,7 @@ created: 2026-05-26
 related: DEC-010, WS-DDR-099, WS-DDR-080, WS-DDR-083, WS-DDR-084
 depth_score: 4
 depth_signals:
-  file_size_kb: 9.6
+  file_size_kb: 9.7
   content_chars: 9586
   entity_count: 0
   slide_count: 0

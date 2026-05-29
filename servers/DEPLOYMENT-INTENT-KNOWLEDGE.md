@@ -1,8 +1,18 @@
 ---
 title: intent-knowledge MCP server — deployment guide
 type: deployment-guide
-status: ready-for-brien-execution
 created: 2026-05-26
+depth_score: 4
+depth_signals:
+  file_size_kb: 17.2
+  content_chars: 16664
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.12
+status: ready-for-brien-execution
 purpose: "Brien-driven step to deploy the 4th MCP server (intent-knowledge) to FastMCP Cloud, completing the four-server family per WS-DDR-099 + DEC-010."
 prerequisites_repo_state: shipped 2026-05-26 (intent@1239121 + 17f6fd0 + 605cf6c + 1b55e85)
 sibling_guides:
@@ -13,7 +23,6 @@ related_decisions:
   - DEC-011 (bin/intent-init scaffold)
   - DEC-009 (two observabilities)
 ---
-
 # Deploying the intent-knowledge MCP Server
 
 > Brien-driven step. The framework code is shipped + tested (34/34 in `servers/test_knowledge.py`). What remains is the FastMCP Cloud project + endpoint registration. This guide is the click-by-click.

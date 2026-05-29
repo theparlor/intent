@@ -1,0 +1,200 @@
+{
+  "generated_input_window": {
+    "since": null,
+    "first": "2026-04-15",
+    "last": "2026-05-29"
+  },
+  "static_inventory": {
+    "hooks": [
+      {
+        "name": "autonomy-grant-check.sh",
+        "kb": 2.4,
+        "mtime": "2026-05-20"
+      },
+      {
+        "name": "autonomy-grant-dispatch-prompt-check.sh",
+        "kb": 6.3,
+        "mtime": "2026-05-20"
+      },
+      {
+        "name": "autonomy-grant-stop-check.sh",
+        "kb": 33.7,
+        "mtime": "2026-05-28"
+      },
+      {
+        "name": "closure-discipline-check.sh",
+        "kb": 2.8,
+        "mtime": "2026-05-20"
+      },
+      {
+        "name": "closure-discipline-signal-check.sh",
+        "kb": 4.7,
+        "mtime": "2026-05-20"
+      },
+      {
+        "name": "closure-discipline-stop-check.sh",
+        "kb": 10.6,
+        "mtime": "2026-05-29"
+      },
+      {
+        "name": "install.sh",
+        "kb": 2.5,
+        "mtime": "2026-05-27"
+      },
+      {
+        "name": "native-connector-precedence-check.sh",
+        "kb": 5.5,
+        "mtime": "2026-05-27"
+      },
+      {
+        "name": "overwatch-nested-init-check.sh",
+        "kb": 4.6,
+        "mtime": "2026-05-20"
+      },
+      {
+        "name": "overwatch-staleness-check.sh",
+        "kb": 4.3,
+        "mtime": "2026-05-20"
+      },
+      {
+        "name": "session-end.sh",
+        "kb": 6.6,
+        "mtime": "2026-05-27"
+      },
+      {
+        "name": "signal-recorder-silent-check.sh",
+        "kb": 6.0,
+        "mtime": "2026-05-26"
+      },
+      {
+        "name": "spec-age-lint.sh",
+        "kb": 5.0,
+        "mtime": "2026-05-20"
+      }
+    ],
+    "wired": {
+      "PreToolUse": [
+        "skill-intake-gate-check.sh",
+        "autonomy-grant-dispatch-prompt-check.sh",
+        "closure-discipline-signal-check.sh",
+        "signal-recorder-silent-check.sh",
+        "forge-shim-gate-check.sh",
+        "native-connector-precedence-check.sh"
+      ],
+      "PostToolUse": [
+        "product-paths.sh",
+        "count-check.sh",
+        "cast-yaml-validate.sh"
+      ],
+      "SessionStart": [
+        "autonomy-grant-check.sh",
+        "closure-discipline-check.sh",
+        "overwatch-staleness-check.sh",
+        "overwatch-nested-init-check.sh"
+      ],
+      "Stop": [
+        "autonomy-grant-stop-check.sh",
+        "closure-discipline-stop-check.sh",
+        "engagement-signal-cadence-check.sh",
+        "forge-signal-cadence-stop-check.sh",
+        "session-end.sh"
+      ]
+    },
+    "lexical_checks": 6,
+    "errors": [],
+    "hook_count": 13,
+    "total_kb": 95.0
+  },
+  "runtime_drag": {
+    "window": {
+      "since": null,
+      "first": "2026-04-15",
+      "last": "2026-05-29"
+    },
+    "autonomy_stop": {
+      "invocations": 1463,
+      "by_check": {
+        "check1-4_runs": 1172,
+        "next_stage": 311,
+        "bare_match": 15,
+        "check5_runs": 160,
+        "check5_trigger": 19,
+        "check6_runs": 131,
+        "check6_trigger": 19,
+        "soft_queue_trigger": 1
+      },
+      "fp_suppressed": 0,
+      "dispatch_present": 34
+    },
+    "blocks": {
+      "CHECK1": 9,
+      "CHECK4": 13,
+      "CHECK5": 19,
+      "CHECK6": 19,
+      "CHECK2": 1
+    },
+    "blocks_by_day": {
+      "2026-05-14": {
+        "CHECK1": 1
+      },
+      "2026-05-15": {
+        "CHECK1": 1
+      },
+      "2026-05-18": {
+        "CHECK1": 1
+      },
+      "2026-05-19": {
+        "CHECK1": 1
+      },
+      "2026-05-20": {
+        "CHECK1": 1
+      },
+      "2026-05-26": {
+        "CHECK1": 2
+      },
+      "2026-05-27": {
+        "CHECK4": 9
+      },
+      "2026-05-28": {
+        "CHECK5": 17,
+        "CHECK1": 2,
+        "CHECK4": 4,
+        "CHECK6": 17
+      },
+      "2026-05-29": {
+        "CHECK2": 1,
+        "CHECK6": 2,
+        "CHECK5": 2
+      }
+    },
+    "detections": {
+      "autonomy-grant-dispatch-detections.log": 9,
+      "autonomy-grant-stop-detections.log": 67,
+      "closure-discipline-signal-detections.log": 26,
+      "closure-discipline-stop-detections.log": 87,
+      "forge-signal-cadence-detections.log": 3
+    },
+    "bypasses": {
+      "native-connector-bypass.log": 2,
+      "build-intake-bypasses.log": 1
+    },
+    "other_logs": {
+      "signal-recorder-silent.jsonl": 3561
+    },
+    "errors": [],
+    "total_blocks": 61,
+    "block_rate": 0.0417
+  },
+  "cap_guard": {
+    "freeze_found": true,
+    "baseline": 6,
+    "live": 6,
+    "sanctioned": 0,
+    "status": "WITHIN-FREEZE",
+    "rule": [
+      "drag_budget_debit",
+      "sunset_clause",
+      "flight_model_cross_ref"
+    ]
+  }
+}

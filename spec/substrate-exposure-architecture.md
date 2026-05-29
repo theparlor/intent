@@ -5,8 +5,8 @@ maturity: filed
 created: 2026-05-26
 depth_score: 4
 depth_signals:
-  file_size_kb: 22.9
-  content_chars: 19257
+  file_size_kb: 23.9
+  content_chars: 19076
   entity_count: 0
   slide_count: 0
   sheet_count: 0

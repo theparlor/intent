@@ -23,11 +23,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.56
 related_entities:
-  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.203}
-  - {pair: josh-seiden ↔ teresa-torres, count: 88, strength: 0.201}
-  - {pair: jeff-patton ↔ josh-seiden, count: 81, strength: 0.275}
-  - {pair: josh-seiden ↔ outcomes-over-output, count: 68, strength: 0.362}
-  - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
+  - {pair: josh-seiden ↔ marty-cagan, count: 118, strength: 0.204}
+  - {pair: josh-seiden ↔ teresa-torres, count: 104, strength: 0.208}
+  - {pair: jeff-patton ↔ josh-seiden, count: 94, strength: 0.281}
+  - {pair: jeff-gothelf ↔ josh-seiden, count: 83, strength: 0.369}
+  - {pair: josh-seiden ↔ outcomes-over-output, count: 78, strength: 0.37}
 ---
 # Spec Template: Intent → Shape → Contract
 

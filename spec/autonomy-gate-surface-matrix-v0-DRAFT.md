@@ -9,7 +9,7 @@ related:
   - .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
 depth_score: 4
 depth_signals:
-  file_size_kb: 10.9
+  file_size_kb: 11.1
   content_chars: 10128
   entity_count: 0
   slide_count: 0

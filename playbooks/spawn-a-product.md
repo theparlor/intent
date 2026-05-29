@@ -5,8 +5,8 @@ type: playbook
 created: 2026-05-26
 depth_score: 4
 depth_signals:
-  file_size_kb: 21.3
-  content_chars: 18319
+  file_size_kb: 21.5
+  content_chars: 18140
   entity_count: 0
   slide_count: 0
   sheet_count: 0

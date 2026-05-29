@@ -9,8 +9,8 @@ companies:
   - subaru
 depth_score: 5
 depth_signals:
-  file_size_kb: 21.3
-  content_chars: 19859
+  file_size_kb: 21.5
+  content_chars: 19682
   entity_count: 1
   slide_count: 0
   sheet_count: 0

@@ -1,21 +1,30 @@
 ---
 title: Autonomy Posture Check — Layer 4.2 (PreSubmitResponse positive-execution check)
 id: SPEC-INTENT-AUTONOMY-POSTURE-CHECK-LAYER-4.2-001
-status: draft
-scope: framework
-date: 2026-05-26
 updated: 2026-05-26
-author: "intent framework — autonomous continuation during dentist-break 2026-05-26"
-source_signal: Workspaces/.intent/signals/SIG-2026-05-26-autonomy-grant-drift-recurrence-in-session.md §"Layer 4.2 — structural posture check (deferred, follow-up signal)"
 related:
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md
   - Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh
   - Core/frameworks/intent/tests/test_autonomy_grant_stop_hook_check4.sh
+depth_score: 4
+depth_signals:
+  file_size_kb: 11.4
+  content_chars: 10645
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.09
+status: draft
+scope: framework
+date: 2026-05-26
+author: intent framework — autonomous continuation during dentist-break 2026-05-26
+source_signal: "Workspaces/.intent/signals/SIG-2026-05-26-autonomy-grant-drift-recurrence-in-session.md §\"Layer 4.2 — structural posture check (deferred, follow-up signal)\""
 ratification_dependencies:
   - Brien-confirmation on matcher scope (over-blocking risk on legitimate forecasting)
   - calibration period (start in warn-only mode, promote to block-mode after telemetry shows zero false-positive rate)
 ---
-
 # Autonomy Posture Check — Layer 4.2 (positive-execution posture)
 
 > Status: DRAFT. Design + scaffold are L4; live activation requires Brien sign-off on matcher scope.

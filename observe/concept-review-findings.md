@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.91
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 224, strength: 0.399}
-  - {pair: jeff-patton ↔ marty-cagan, count: 136, strength: 0.272}
-  - {pair: jeff-patton ↔ teresa-torres, count: 133, strength: 0.309}
-  - {pair: marty-cagan ↔ product-engineering-coaching, count: 104, strength: 0.092}
-  - {pair: josh-seiden ↔ marty-cagan, count: 101, strength: 0.203}
+  - {pair: marty-cagan ↔ teresa-torres, count: 263, strength: 0.402}
+  - {pair: jeff-patton ↔ marty-cagan, count: 158, strength: 0.27}
+  - {pair: jeff-patton ↔ teresa-torres, count: 155, strength: 0.313}
+  - {pair: josh-seiden ↔ marty-cagan, count: 118, strength: 0.204}
+  - {pair: marty-cagan ↔ product-engineering-coaching, count: 108, strength: 0.085}
 ---
 # Concept Brief Quality Review
 

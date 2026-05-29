@@ -9,14 +9,14 @@ frameworks:
   - double-loop-learning
 depth_score: 5
 depth_signals:
-  file_size_kb: 36.0
-  content_chars: 19400
+  file_size_kb: 36.1
+  content_chars: 19221
   entity_count: 1
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.15
+vocab_density: 0.16
 source: prior Claude session (separate from this Workspaces session)
 date_range: 2026-05-24 → 2026-05-25
 ingested: 2026-05-26

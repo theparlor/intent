@@ -2,7 +2,7 @@
 type: practitioner-playbook
 depth_score: 4
 depth_signals:
-  file_size_kb: 6.2
+  file_size_kb: 6.1
   content_chars: 5583
   entity_count: 0
   slide_count: 0

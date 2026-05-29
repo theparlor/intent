@@ -8,7 +8,7 @@ related:
   - Core/frameworks/intent/tools/intent_signal_inventory.py (re-grounded v1)
 depth_score: 4
 depth_signals:
-  file_size_kb: 17.1
+  file_size_kb: 17.3
   content_chars: 16570
   entity_count: 0
   slide_count: 0

@@ -1,19 +1,28 @@
 ---
-spec_id: SPEC-NATIVE-CONNECTOR-PRECEDENCE
 title: Native-Connector Precedence Enforcement
-status: ratified
 created: 2026-05-27
 related:
   - SIG-2026-05-27-native-connector-precedence-hook-gap
   - memory/feedback_prefer_native_anthropic_connectors.md
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md (mechanism-pattern reference)
   - Core/frameworks/intent/spec/closure-discipline-enforcement.md (mechanism-pattern reference)
+depth_score: 3
+depth_signals:
+  file_size_kb: 5.6
+  content_chars: 4900
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+spec_id: SPEC-NATIVE-CONNECTOR-PRECEDENCE
+status: ratified
 authority:
   upstream_control: Core/frameworks/intent/hooks/native-connector-precedence-check.sh
   lookup_table: Core/frameworks/intent/hooks/native-connector-precedence-map.json
   registration: ~/.claude/settings.json (hooks.PreToolUse matcher='mcp__google-workspace__.*')
 ---
-
 # SPEC: Native-Connector Precedence Enforcement
 
 ## Problem
