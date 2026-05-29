@@ -87,17 +87,26 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
 - **Pull trigger:** Brien confirms the slate, then intake is L4-executable.
 
 ## D4 — Forge `panel-critique-v2-balanced` operator
-- **Status:** NOT STARTED. Renders the §10 composition (2 conservative / 2 bold / 1
-  wildcard) and outputs variance-across-panel as the typed uncertainty input for §4.
+- **Status:** ✓ DONE (emit side) 2026-05-29. The operator existed as a 2026-05-26 draft
+  that emitted only QUALITATIVE variance (low/mod/high); upgraded to emit a TYPED
+  per-facet uncertainty vector over §4's 7 estimands — `per_persona` never merged (Voices
+  law), `point_estimate`=median, `dispersion`=max−min, plus `cross_bucket_split.gap`.
+  Files: `Core/products/forge/outputs/claude-code/critique/panel-critique-v2-balanced/`
+  (SKILL.md + variance-estimate.md). Panel: Torres + Cagan (safety; Cagan→
+  engineering-excellence-advisor for eng/ops artifacts) + 2 bold (deterministic
+  ops-rigorous×conviction pairing) + per-run wildcard. Consumer side (deterministic model
+  reading the block) = §15 step-6 D-WIRE. presets.yml integration pending.
 - **DoR:** D3 personas exist (panel needs bold priors to compose); §10 recipe finalized.
 - **DoD:** operator rendered in `Core/products/forge/`; emits variance as a typed estimate
   the deterministic model consumes; closure signal shows a sample panel run.
 - **Pull trigger:** after D3.
 
 ## D-WIRE — Wire the deterministic flight model (the barrier step)
-- **Status:** BLOCKED on D4 (D1 tooling fixed; D2/D3 satisfied) + the §12 open design
-  questions — now resolved with documented defaults (below). Implementation is the v2
-  milestone after the 30-day shadow flight-test.
+- **Status:** All four §11 deps now SATISFIED (D1 ✓, D2 ✓, D3 ✓, D4 ✓ — 2026-05-29).
+  §12 design questions resolved with documented defaults (below). Remaining to v1→v2:
+  the D-WIRE implementation itself (§15 step 6) + the 30-day shadow flight-test (running
+  via Layer 4.2 warn-only since 2026-05-29). The deps are cleared; ratification is not —
+  that needs the build + flight-test window.
 - **§12 defaults (resolved 2026-05-29, Brien-override-able):** (1) λ is SCALAR with
   per-surface overrides per §16 — not a vector. (2) Hooks 1–7 remain the deterministic
   FLOOR; the flight model computes the band ABOVE them via an envelope-check layer
