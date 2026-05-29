@@ -14,6 +14,9 @@ depth_signals:
 vocab_density: 0.09
 status: approved
 intent: INT-006
+updated: 2026-05-29
+ratified_by: WS-DDR-101
+ratified_date: 2026-05-29
 contracts:
   - CON-008
   - CON-009
@@ -22,7 +25,10 @@ contracts:
   - CON-012
   - CON-013
   - CON-014
-completeness: 0.80
+  - CON-ENTITY-DEDUP
+  - CON-ENTITY-ONBOARD
+  - CON-ENTITY-DISPOSITION-ORTHOGONALITY
+completeness: 0.95
 agent_readiness: L2
 ---
 # SPEC-003: Intent Framework Entity Extensions
@@ -33,47 +39,96 @@ Five extensions to the Intent framework, motivated by the persona system dogfood
 
 ## Extension 1: Entity Lifecycle Primitive
 
+> **Status: RATIFIED** as a first-class Intent primitive per **WS-DDR-101** (2026-05-29) — a **sibling** of the work-ontology (WS-DDR-025), generalized from Cast's two-axis lifecycle (WS-DDR-071). The original single-axis `lifecycle` enum was amended to the two-axis `pipeline × disposition` shape (the one substantive amendment); the storage model, integration points, and CON-008 are kept and generalized. Cast's live registry is the reference instantiation. Source proposal: `Core/products/cast/.intent/assessments/2026-05-29-intent-entity-lifecycle-primitive-proposal.md`.
+
+### What an entity is
+
+An **entity** is a durable noun the system keeps understanding over time — a persona, an archetype, a dossier, a compiled knowledge artifact. Unlike a work item (promoted toward *done*, then no longer a live concern), an entity is *created*, *accumulates state* across an open-ended life, *persists* (steady state is *existing*, not *being-finished*), and is *superseded/deprecated but usually preserved*, not deleted. That is why it cannot live inside the work-ontology: it is a peer at a different pipeline position, composing with work at the `produces: entity` seam (Extension 2, INGEST).
+
 ### Schema Addition
 
-Entities are a new first-class concept in the work ontology, alongside signals/intents/specs/contracts:
+Entities are a first-class concept, sibling to signals/intents/specs/contracts:
 
 ```yaml
-# .intent/entities/ENT-NNN-slug.md frontmatter
-id: ENT-NNN
+# .intent/entities/ENT-{ulid}-slug.md frontmatter
+# The .intent/ record is a POINTER + lifecycle tracker, NOT a content store.
+id: ENT-{ulid}              # ULID per Key Decision #20 (NOT the legacy ENT-NNN
+                            #   sequential counter SIG-022 retired)
 type: entity
-entity_type: string         # persona | knowledge-artifact | dossier | archetype | (extensible)
+entity_type: string         # persona | archetype | dossier | knowledge-artifact | (extensible)
+                            #   The discriminator — declares which value-enums apply.
 name: string
-lifecycle: enum             # created | active | enriched | stale | deprecated | archived
+canonical_path: string      # Authoritative data location, OUTSIDE .intent/
+
+# --- State: TWO orthogonal axes (the WS-DDR-071 generalization) ---
+pipeline: enum              # ADVANCEMENT. "How far through intake/maturation?"
+                            #   Monotonic (no regressions), exactly one terminal state.
+                            #   VALUES are entity_type-specific (see per-type profiles).
+disposition: enum           # EDITORIAL. "How should consumers treat this now?"
+                            #   Independent of pipeline; free to move any direction.
+                            #   (Cast's `usage` axis, renamed type-neutral.)
+
+# --- Provenance ---
 created: datetime
 updated: datetime
-canonical_path: string      # Where this entity's authoritative data lives (outside .intent/)
-signals: [SIG-NNN]          # Signals that created or modified this entity
-specs: [SPEC-NNN]           # Specs that defined this entity's structure
-trace_id: string            # OTel trace for provenance
+signals: [SIG-...]          # Signals that created or mutated this entity
+specs: [SPEC-...]           # Specs that defined its structure
+trace_id: string            # OTel trace — ties entity life into Observe
+caused_by: [EVT-...]        # OPTIONAL — Witness lineage, if the event store is wired
 ```
+
+### Two axes, one machine — per-type profiles
+
+The framework owns the *rules*; each `entity_type` owns the *vocabulary*. A type registers a profile declaring its enum values and transitions:
+
+| `entity_type` | `pipeline` values (advancement) | `disposition` values (editorial) |
+|---|---|---|
+| **persona** (named-human) | `candidate → stub → draft → ready-for-assess → harvest-complete → assess-complete → active` | `eligible / quote-only / archival / deprecated / restricted` |
+| **archetype** | `candidate → synthesizing → synthesis-complete → active` | `eligible / archival / deprecated` |
+| **dossier** (company) | `candidate → drafting → active` | `eligible / stale-flagged / archival` |
+| **knowledge-artifact** | `candidate → compiled → active` | `current / superseded / archival` |
+
+Framework-owned invariants (the shared machine):
+- **`pipeline` is monotonic** — advancement only, no regressions.
+- **`pipeline` has exactly one terminal state** (conventionally `active`). Steady-state existence is `active`, not "done."
+- **`disposition` moves freely** — editorial judgment is reversible; demote and re-promote at will.
+- **Demotion never regresses `pipeline`** — an editorially-retired entity stays `pipeline: active`; retirement is expressed on `disposition` (`archival`/`deprecated`). See CON-ENTITY-DISPOSITION-ORTHOGONALITY.
+- **Provenance is required** — every entity carries `signals`, `specs`, `trace_id`.
+
+### The `candidate` entry state + admission hooks
+
+`candidate` is the canonical first `pipeline` state for every `entity_type` — the single front door — distinct from Cast's `proposed`/`stub` (which describe *scaffold readiness*, not *citizenship readiness*). A candidate is a nominee not yet admitted, which might duplicate an existing entity. Two contract-backed hooks govern the door:
+
+```
+candidate ──(dedup passes + onboarding complete)──▶ <first post-admission state> ──▶ … ──▶ active
+    │
+    └──(dedup finds an existing entity)──▶ MERGE-INTENT against the incumbent
+                                            (never a silent second entity)
+```
+
+- **CON-ENTITY-DEDUP** — on `candidate` creation, check for an existing entity of the same `entity_type` with a matching identity key (name + alias-normalized form). On match, the candidate does NOT advance; it raises a merge-intent. (CON-009 / INGEST `idempotent: true` pulled forward to the entry gate — write-through dedup; the chain_audit dedup sweep is the catch-net.)
+- **CON-ENTITY-ONBOARD** — a `candidate` advances only when its profile's minimum-admission criteria are met (persona: identity block + ≥1 source; archetype: ≥2 `source_humans`). The entry-gate analogue of a DoR.
 
 ### Lifecycle Transitions
 
 ```
-created → active       # After initial population (substance exists)
-active → enriched      # After corpus expansion or re-assessment
-enriched → enriched    # Repeated enrichment (most common steady state)
-active|enriched → stale  # Freshening overdue (lint-detected)
-stale → active|enriched  # After freshening
-any → deprecated       # Entity replaced or no longer relevant
-deprecated → archived  # Removed from active rendering
+(work-ontology INGEST emits)              → candidate
+candidate → <first post-admission state>    # CON-ENTITY-DEDUP + CON-ENTITY-ONBOARD pass
+… → active                                  # advancement complete (terminal pipeline state)
+active, disposition: eligible ⇄ archival ⇄ deprecated …   # editorial; never regresses pipeline
+candidate → MERGE-INTENT                    # dedup found an incumbent
 ```
 
 ### Integration Points
 
-- **Notice**: Entity staleness detected by lint → emits signal
-- **Spec**: Entity creation/modification driven by specs
-- **Execute**: Agents create/enrich entities per specs
-- **Observe**: Entity state changes emit events (`entity.created`, `entity.enriched`, `entity.stale`)
+- **Notice**: entity staleness (derived from `last_freshened` vs. channel cadence) and dedup collisions emit signals.
+- **Spec**: entity creation/mutation is driven by specs (persona-intake, archetype-synthesis).
+- **Execute**: agents create/advance/enrich entities per specs; advancement is a contract-gated state transition.
+- **Observe**: every transition emits an OTel event (`entity.candidate`, `entity.admitted`, `entity.advanced`, `entity.enriched`, `entity.demoted`, `entity.superseded`).
 
 ### Storage
 
-Entity metadata lives in `.intent/entities/`. The entity's actual content lives at `canonical_path` (e.g., `Core/personas/registry/pawel-huryn.yaml`). The `.intent/` record is a pointer + lifecycle tracker, not a content store.
+Entity metadata lives in `.intent/entities/`. The entity's actual content lives at `canonical_path` (e.g., `Core/products/cast/farm/registry/pawel-huryn.yaml`). The `.intent/` record is a pointer + lifecycle tracker, not a content store.
 
 ## Extension 2: INGEST Intent Type
 
@@ -217,14 +272,13 @@ The `fallback` field respects the trust model:
 ## Contracts
 
 ### CON-008: Entity Lifecycle Consistency
-An entity's lifecycle state must be consistent with its content:
-- `created`: has identity, may lack substance
-- `active`: has substance.voice at minimum
-- `enriched`: has corpus_path with content newer than last assessment
-- `stale`: freshening overdue per channel frequency
-- `deprecated`: must have deprecation reason in metadata
+An entity's state must be consistent with its content *per the `entity_type` profile* (Extension 1):
+- `pipeline: candidate`: has an identity key; may lack substance; has not yet cleared dedup.
+- `pipeline: active`: satisfies the type's admission + completeness floor (persona ⇒ `substance.voice`; archetype ⇒ ≥2 `source_humans`; etc.).
+- `disposition: deprecated`: must carry a deprecation reason in metadata.
+- `pipeline: active` + `disposition: archival` is a VALID combination (advancement-complete, editorially-retired) and must NOT be flagged inconsistent.
 
-**Verification**: For each entity, check lifecycle state against content presence. Report inconsistencies.
+**Verification**: For each entity, check both axes against content presence per its profile. Report inconsistencies. A demoted-but-active entity is consistent, not a violation.
 
 ### CON-009: INGEST Idempotency
 Running INGEST twice on the same entity must produce exactly one registry entry, one corpus directory, and two processing-log entries. The second run enriches; it does not duplicate.
@@ -255,3 +309,18 @@ A `request_human_input` signal must be emittable at any trust level (L0-L4). The
 When `observation.evaluated` produces a verdict of `fail` or `conditional_pass`, the system must emit a new signal describing the semantic gap. This signal must reference the original spec_id and include the evaluator's evidence.
 
 **Verification**: Trigger evaluation where contracts pass but LLM scores below threshold. Must emit new signal with `type: semantic_gap` referencing the spec. Trigger evaluation where LLM scores above threshold. Must NOT emit signal.
+
+### CON-ENTITY-DEDUP: Candidate Dedup Gate
+*(Added per WS-DDR-101.)* A `candidate` with an identity-key match (type + alias-normalized name) against an existing entity MUST NOT advance; it MUST raise a merge-intent against the incumbent. This is CON-009 idempotency pulled forward to the entry gate — write-through dedup; the chain_audit dedup sweep is the catch-net, not the primary fix.
+
+**Verification**: Create a candidate matching an incumbent → assert no second entity created AND a merge-intent emitted. Create a candidate with no match → assert it advances normally.
+
+### CON-ENTITY-ONBOARD: Admission DoR
+*(Added per WS-DDR-101.)* A `candidate` may advance out of `candidate` only when its `entity_type` profile's minimum-admission criteria are met.
+
+**Verification**: An under-specified candidate cannot leave `candidate`; a complete candidate can.
+
+### CON-ENTITY-DISPOSITION-ORTHOGONALITY: Disposition Never Regresses Pipeline
+*(Added per WS-DDR-101.)* Setting `disposition` to a retired value (`archival`/`deprecated`) MUST NOT regress `pipeline`. Advancement and editorial disposition are orthogonal axes (generalized WS-DDR-071 rule).
+
+**Verification**: Demote an `active` entity → assert `pipeline` is still `active`; re-promote `disposition` → assert no pipeline change.

@@ -13,20 +13,20 @@ technologies:
   - slack
 depth_score: 6
 depth_signals:
-  file_size_kb: 21.5
-  content_chars: 19236
+  file_size_kb: 24.0
+  content_chars: 19238
   entity_count: 3
   slide_count: 0
   sheet_count: 0
   topic_count: 1
   has_summary: 0
-vocab_density: 0.26
+vocab_density: 0.21
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 66, strength: 0.111}
-  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.094}
-  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.121}
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.124}
-  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.085}
+  - {pair: consulting-operations ↔ teresa-torres, count: 67, strength: 0.103}
+  - {pair: consulting-operations ↔ marty-cagan, count: 64, strength: 0.086}
+  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.119}
+  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.123}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.079}
 ---
 # Changelog
 
@@ -38,6 +38,25 @@ Intent uses timestamp-based versioning: `YYYY.MM.DD-MAJOR.MINOR.PATCH`
 - **Patch** — Bug fixes, documentation improvements, clarifications. No behavioral change.
 
 The timestamp prefix records when the release happened. The semver suffix records what kind of change it is.
+
+---
+
+## 2026.05.29 — v0.13.0
+
+### Added — Entity-Lifecycle Primitive ratified (SPEC-003 Extension 1 promoted)
+
+Per **WS-DDR-101** (theparlor/workspaces-governance, 2026-05-29), SPEC-003 Extension 1 is promoted from `approved`-but-unbuilt to a ratified, first-class Intent primitive — a **sibling** of the work-ontology (WS-DDR-025), generalized from Cast's two-axis lifecycle (WS-DDR-071). Closes the gap named by RETRO-2026-04-08-persona-design-SIG-1: the framework could spec the *work of creating* a durable entity but could not track the *entity's own life* afterward, so four products each reinvented a divergent lifecycle state-machine.
+
+- **Two-axis state shape.** Entities carry `pipeline` (advancement — monotonic, one terminal state) × `disposition` (editorial — free to move), replacing Extension 1's original single-axis `lifecycle` enum. Each `entity_type` declares its own enum *values*; the framework owns the *machine*. This is the one substantive amendment to Extension 1 as written.
+- **`candidate` canonical entry state** for every `entity_type`, with two new contracts: **CON-ENTITY-DEDUP** (identity-key match on candidate creation raises a merge-intent — write-through dedup at the door, chain_audit sweep demoted to catch-net) and **CON-ENTITY-ONBOARD** (admission DoR). Plus **CON-ENTITY-DISPOSITION-ORTHOGONALITY** (disposition demotion never regresses pipeline — generalized WS-DDR-071 rule). **CON-008** generalized to be `entity_type`-profile-aware.
+- **Cast `pipeline`/`usage` re-designated the reference instantiation** (not bespoke); `usage` maps to the generic `disposition` axis (role-rename, values unchanged).
+- Fixed a stale `canonical_path` storage example in Extension 1 (`Core/personas/registry/…` → `Core/products/cast/farm/registry/…`, the pre-WS-DDR-027 path).
+
+### Changed
+- `spec/SPEC-003-intent-framework-entity-extensions.md` — Extension 1 rewritten (two-axis + `candidate` + per-type profiles + `entity.*` events); `completeness` 0.80 → 0.95; `ratified_by: WS-DDR-101`. Extensions 2–5 and CON-009…CON-014 unchanged.
+
+### Compatibility
+**Minor (backward-compatible).** Existing signals, intents, and specs are untouched; no existing entity data changes meaning. The migration that instantiates the primitive in Cast (per-type profiles, `candidate`+hooks wiring, `ENT-NNN` repair) is sequenced separately and moves no data at ratification.
 
 ---
 
