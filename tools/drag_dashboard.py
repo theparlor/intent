@@ -370,7 +370,23 @@ def main(argv=None):
     ap.add_argument("--settings", default=str(DEFAULT_SETTINGS))
     ap.add_argument("--freeze", default=str(DEFAULT_FREEZE))
     ap.add_argument("--json", default=str(Path(__file__).with_name("drag-report.json")))
+    ap.add_argument("--check", action="store_true",
+                    help="cap-guard only (fast): no log parse, no json. Exit 2 on ACCRETION-DRIFT. "
+                         "For pre-commit / CI on the hooks dir.")
     args = ap.parse_args(argv)
+
+    if args.check:
+        inv = static_inventory(args.hooks_dir, args.settings)
+        guard = cap_guard(args.freeze, inv.get("lexical_checks"))
+        st = guard.get("status")
+        if st == "ACCRETION-DRIFT":
+            print(f"DRAG cap-guard: ACCRETION-DRIFT — live CHECK {guard['live']} exceeds frozen "
+                  f"baseline {guard['baseline']} (+{guard['sanctioned']} sanctioned). Add a "
+                  f"sanctioned_additions entry (Drag-budget debit + sunset clause) to "
+                  f"lexical-layer-freeze.yaml, or retire the check.", file=sys.stderr)
+            return 2
+        print(f"DRAG cap-guard: {st} (CHECK {guard['live']} vs {guard['baseline']}+{guard['sanctioned']}).")
+        return 0
 
     inv = static_inventory(args.hooks_dir, args.settings)
     rt = runtime_drag(args.logs_dir, args.audit_dir, args.since)

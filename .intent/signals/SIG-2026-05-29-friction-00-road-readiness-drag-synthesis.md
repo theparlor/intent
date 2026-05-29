@@ -145,6 +145,28 @@ Status stays **captured** (open): the lexical layer still runs at ~96% overhead.
 Convergence = the *sunset*, which is staged, not done. First-level remediation +
 measurement are in place; this is not `resolved`.
 
+## Companion: the F-series (live operational friction)
+
+A parallel session, working this same standing instruction during 2026-05-29 Cast work,
+captured a complementary catalog — `SIG-2026-05-29-road-readiness-friction-series`
+(items F-1..F-8). That series captures **live operational instances**; this series
+(friction-00..05) captures the **structural / measurement thesis**. Two halves of ONE
+backlog, not duplicates. Mapping:
+
+| F-series (live instance) | ↔ this series (structural) |
+|---|---|
+| **F-1** regex can HANG the Stop hook (self-DoS, ugrep backtracking) — S1 | friction-01 + friction-02 |
+| **F-8** closure hook false-fires on conversational words (observed live) — S2 | friction-02 (false-positive class) |
+| **F-4** closure-discipline NOT enforced on automated writers (asymmetry) — S1 | friction-00 — **new angle** |
+| **F-2 / F-3** render_all non-deterministic + verify/produce conflation — S2 | friction-03 (per-turn tax) adjacent |
+| **F-5 / F-6 / F-7** repo-topology / data-substrate / index drift — S3 | coherence debt |
+
+The first-level rollout already touches several: the freeze stops new regexes (F-1 root),
+Layer 4.2's structural approach is the template for F-8, and the `skip_rules.py` fix this
+session is the same catch-net-brittleness class as F-1/F-8. **Reconciliation pending
+Brien:** unify the numbering into one backlog or keep as a paired series; F-1 and F-4
+(both S1) warrant their own ratifiable specs.
+
 ## Open (for Brien / ratification review)
 
 - Is the Drag dashboard a Witness consumer, a Topography surface, or a standalone

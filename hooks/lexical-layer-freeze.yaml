@@ -12,14 +12,18 @@
 
 baseline:
   hook: autonomy-grant-stop-check.sh
-  frozen_at_check: 6                 # CHECK 1-6 as of 2026-05-28 (see signals friction-01)
-  frozen_date: 2026-05-28
+  frozen_at_check: 7                 # CHECK 1-7 as of 2026-05-29 (see signals friction-01)
+  frozen_date: 2026-05-29
   rationale: >
-    The autonomy Stop hook grew CHECK 1→2→3→4→5→6, each a reaction to a
-    linguistic variant the prior checks missed. Per autonomy-posture-check-
-    layer-4.2-DRAFT §1, this lexical approach cannot converge: caution-bias
-    generates variants faster than regex catches them. The layer is frozen
-    here. Convergence comes from the STRUCTURAL successor, not CHECK 7.
+    The autonomy Stop hook grew CHECK 1→2→3→4→5→6→7, each a reaction to a
+    linguistic variant the prior checks missed. CHECK 7 (scope-variant
+    bare-choice — "do part OR do all", commit e720fc7, 2026-05-29 13:32) landed
+    the SAME DAY this freeze was first written at CHECK 6 — Exhibit A that the
+    lexical approach cannot converge (autonomy-posture-check-layer-4.2-DRAFT §1:
+    caution-bias generates variants faster than regex catches them). Baseline
+    re-anchored 6→7 to reflect reality. The layer is frozen here; convergence
+    comes from the STRUCTURAL successor (Layer 4.2, now live warn-only), not
+    CHECK 8. Signal: SIG-2026-05-29-stop-hook-check-7-scope-variant.md.
 
 # The companion drift class shares the same architecture and the same freeze.
 closure_discipline:

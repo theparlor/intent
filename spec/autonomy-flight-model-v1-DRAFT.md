@@ -33,7 +33,7 @@ author: intent framework (external-input critique 2026-05-24/25 + this-session b
 supersedes_partially: Core/frameworks/methodology-library/meta/signal-scoring.md
 ratification_dependencies:
   - calibration corpus inventory (λ fit) — IMPLEMENTED at Core/frameworks/intent/tools/intent_signal_inventory.py
-  - Witness mandatory-recorder WS-DDR
+  - Witness mandatory-recorder WS-DDR — SATISFIED (WS-DDR-098, 2026-05-26)
   - Cast bravery-prior persona intakes (minimum 5)
   - panel-critique-v2-balanced Forge operator
   - flight-model signal schema amendment (per inventory-reported backfill gap)
@@ -186,7 +186,7 @@ The composition recipe is the Forge operator candidate `panel-critique-v2-balanc
 ## §11 Ratification dependencies (must clear before status → accepted)
 
 1. **Calibration corpus inventory.** Discovery-first crawler over Workspaces `.intent/signals/` and `.intent/decisions.md` corpora, tuned to actual frontmatter shape. Output: structured `(inputs, outcome, grant_correctness)` rows.
-2. **Witness mandatory-recorder WS-DDR.** Ratified in `Workspaces/.context/DECISIONS.md`. Products that emit autonomy decisions MUST route through Witness; non-routing products are Intent-decorated, not Intent-enabled.
+2. **Witness mandatory-recorder WS-DDR.** ✓ SATISFIED — **WS-DDR-098** (ratified 2026-05-26 by Brien direct authorization). Products that emit autonomy decisions MUST route through Witness; non-routing products are Intent-decorated, not Intent-enabled. (Earlier drafts of this spec cited the wrong number, WS-DDR-090; corrected 2026-05-29.)
 3. **Cast bravery-prior intakes.** Minimum 5 new entries (initial slate per §10) in `Core/products/cast/farm/registry/`. Each entry must include risk-appetite and decision-stance metadata sufficient for panel composition routing.
 4. **Forge `panel-critique-v2-balanced` operator.** Rendering of the §10 composition recipe in `Core/products/forge/`. Outputs variance-across-panel as a typed estimate for the §4 deterministic model.
 
@@ -224,7 +224,7 @@ lambda_settings:
     filesystem_write: 1.5
     cross_human_comms: 0.0  # L0 by autonomy grant — never raise
   rationale: |
-    Per-actor scoping per WS-DDR-090 (Witness mandatory-recorder)
+    Per-actor scoping per WS-DDR-098 (Witness mandatory-recorder, ratified 2026-05-26)
     and feedback_commit_autonomy memory. Solo blast-radius surfaces
     get high λ; cross-human-notification surfaces stay at 0.
   last_fit: 2026-05-26
@@ -256,7 +256,7 @@ Sequenced so each step unblocks the next:
 
 1. Run the re-grounded calibration corpus inventory.
 2. Fit λ per product from the inventory output. Persist in each product's `.intent/INTENT.md`.
-3. Ship the Witness mandatory-recorder WS-DDR. Backfill any Intent-decorated products to Intent-enabled.
+3. ✓ DONE — Witness mandatory-recorder shipped as WS-DDR-098 (2026-05-26). Backfill of Intent-decorated products to Intent-enabled remains.
 4. Intake 5 bravery-prior Cast personas; integrate into panel composition.
 5. Render `panel-critique-v2-balanced` as a Forge operator.
 6. Wire the deterministic flight model as the autonomy-band computation layer. Hooks (Layer 1–5) remain in front as the deterministic floor.

@@ -26,6 +26,13 @@ SKIP_RELATIVE_PATHS: frozenset = frozenset({
     'Core/external',  # vendored upstream forks — see FORK_RATIONALE.md
 })
 
+# Dot-dirs that must NEVER be skipped despite the leading-dot rule below —
+# they hold the signal/decision corpus the intent walkers exist to read.
+# Fixes the 2026-05-28 sibling-walker-skip-extension regression that made the
+# calibration inventory blind to .intent/ (intent_signal_inventory returned 0).
+# See SIG-2026-05-29-friction-02 (catch-net brittleness) + lambda-fit-report-2026-05-29.
+KEEP_DOTDIRS: frozenset = frozenset({'.intent', '.context'})
+
 
 def should_skip_subdir(dirname: str, dirpath, root) -> bool:
     """Path-aware skip — combines bare-name skip with relative-path check.
@@ -39,6 +46,8 @@ def should_skip_subdir(dirname: str, dirpath, root) -> bool:
         dirpath:  current directory path (str or Path — the first value from os.walk)
         root:     workspace root (str or Path — passed as the starting point to os.walk)
     """
+    if dirname in KEEP_DOTDIRS:
+        return False  # never skip the signal/decision corpus dirs
     if dirname in SKIP_DIRS or dirname.startswith('.'):
         return True
     try:

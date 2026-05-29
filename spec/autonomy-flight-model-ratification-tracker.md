@@ -48,10 +48,14 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
 ---
 
 ## D1 — Calibration-corpus λ-fit
-- **Status:** SCAFFOLDED (furthest along). Tools exist:
-  `tools/intent_signal_inventory.py` (v1, re-grounded to real schema),
-  `tools/extract_calibration_corpus.py`, `tools/lambda_fit.py`,
-  `tools/apply_lambda_settings.py`.
+- **Status:** TOOLING FIXED + verified 2026-05-29. Root bug found and fixed:
+  `tools/skip_rules.py` skipped `.intent/`/`.context/` dirs (a 2026-05-28
+  sibling-walker-skip regression), so `intent_signal_inventory.py` returned 0
+  artifacts. Now returns **1,551 artifacts / 460 labeled-gold**. Real λ re-fit in
+  progress (replacing provisional manual-compute values an earlier broken-tool run
+  produced; the destroyed 2026-05-26 corpus was restored from git). Tools:
+  `intent_signal_inventory.py`, `extract_calibration_corpus.py`, `lambda_fit.py`,
+  `apply_lambda_settings.py`.
 - **DoR (entry):** inventory script runs clean over all `**/.intent/signals/` +
   `decisions` corpora; signal-schema backfill gap (W/T/L/D fields) assessed.
 - **DoD (exit):** structured `(inputs, outcome, grant_correctness)` rows produced; λ fit
@@ -61,7 +65,10 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
 - **Pull trigger:** ready now; gated only on Brien starting the v2 train.
 
 ## D2 — Witness mandatory-recorder WS-DDR
-- **Status:** NOT STARTED. Governance gate (L0-class — a ratified DDR).
+- **Status:** ✓ SATISFIED — already ratified as **WS-DDR-098** (2026-05-26, Brien
+  direct authorization). This tracker's prior "NOT STARTED" was stale; the
+  flight-model spec also cited the wrong number (WS-DDR-090 → corrected to 098 on
+  2026-05-29). No new DDR needed (the speculative WS-DDR-102 draft was retired).
 - **DoR:** Witness ingest path stable enough to mandate; WS-DDR drafted in
   `Workspaces/.context/DECISIONS.md` per DDR template.
 - **DoD:** WS-DDR ratified + governance commit pushed (per `feedback_ratification_includes_governance_commit`); products emitting autonomy decisions route through Witness; non-routing products flagged "Intent-decorated, not Intent-enabled."
@@ -69,8 +76,10 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
 - **Blocks:** D-WIRE (the shadow-autonomy protocol §9 needs Witness as recorder).
 
 ## D3 — Cast bravery-prior intakes (min 5)
-- **Status:** NOT STARTED. Initial slate (flight-model §10): Jobs, Grove, Andreessen,
-  Graham, Horowitz — each needs risk-appetite + decision-stance metadata for panel routing.
+- **Status:** ✓ SATISFIED — 5 registry entries exist (bravery-prior-batch, 2026-05-26):
+  steve-jobs, andy-grove, marc-andreessen, paul-graham, ben-horowitz — each with
+  risk_appetite + decision_stance + panel_role (bold-prior) metadata (provenance field
+  backfilled 2026-05-29). Slate matches flight-model §10. Browser regen pending to surface in UI.
 - **DoR:** persona-intake pipeline ready (it is); slate confirmed by Brien (the bold-prior
   selection is a judgment call — info gap → his to set).
 - **DoD:** ≥5 registry entries in `Core/products/cast/farm/registry/` with risk-appetite
@@ -86,7 +95,15 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
 - **Pull trigger:** after D3.
 
 ## D-WIRE — Wire the deterministic flight model (the barrier step)
-- **Status:** BLOCKED on D1–D4.
+- **Status:** BLOCKED on D4 (D1 tooling fixed; D2/D3 satisfied) + the §12 open design
+  questions — now resolved with documented defaults (below). Implementation is the v2
+  milestone after the 30-day shadow flight-test.
+- **§12 defaults (resolved 2026-05-29, Brien-override-able):** (1) λ is SCALAR with
+  per-surface overrides per §16 — not a vector. (2) Hooks 1–7 remain the deterministic
+  FLOOR; the flight model computes the band ABOVE them via an envelope-check layer
+  between Layer 5 and the band — per §13/§14. (3) fail-forward vs rollback is a COCKPIT
+  choice for novel cases, deterministic for in-corpus patterns — per §6. (4) detection
+  latency stays folded into Lift (no 5th force) until calibration data argues otherwise.
 - **DoD:** flight model computes autonomy band; hooks 1–5 remain the deterministic floor
   in front; shadow-autonomy flight-test (§9) begins; after 30 days of flight-test data,
   ratify v1→v2 and mark `signal-scoring.md` superseded.
@@ -95,8 +112,10 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
 
 ## The near-term sunset train (does NOT wait for D-WIRE)
 
-1. Ship Layer 4.2 in **warn-only** mode (design + scaffold already L4 per its spec;
-   live activation needs Brien sign-off on matcher scope).
+1. ✓ DONE — Layer 4.2 built (8/8 tests pass) + wired live in **warn-only** mode
+   2026-05-29 (`~/.claude/settings.json` Stop array; hook
+   `hooks/autonomy-posture-check-layer-4.2.sh`). This IS the §9 shadow flight-test
+   running; the 14-day calibration clock starts now.
 2. Run 14-day calibration; `drag_dashboard.py` + Layer 4.2 telemetry report FP rate.
 3. If FP < 5% → promote Layer 4.2 to block; **retire CHECK 3 (0 fires) and CHECK 2
    (1 fire) immediately**, demote the rest per measured block-rate.
