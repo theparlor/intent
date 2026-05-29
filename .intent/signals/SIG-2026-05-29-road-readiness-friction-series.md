@@ -175,12 +175,35 @@ scripts.
 
 ---
 
+## F-8 (S2) — Closure Stop-hook false-fires on conversational completion-words (OBSERVED LIVE)
+
+**Bit:** 2026-05-29, the closure-discipline Stop hook fired on a purely
+**conversational** response (analysis of Anthropic's 1M-context UX) that made no
+completion claim about any tracked work — it pattern-matched completion words
+("fix", "own up") in prose with no closure context. This is an *observed* misfire,
+not a hypothesis.
+
+**Why it matters:** Same enforcement-precision class as F-1. The hook gates on
+trigger-WORDS without a closure-CONTEXT gate (did the turn actually write a
+`status: resolved` signal, or claim completion of a tracked unit/task?). False
+positives on conversation erode trust in the catch-net, waste turns, and —
+perversely — pressure the model toward *fabricating* an `upstream_control_path`
+to satisfy the regex, which is the exact ceremony-without-substance the hook
+exists to prevent. The enforcement layer can manufacture the drift it polices.
+
+**Operationalize:** add a closure-CONTEXT gate — evaluate the closure-DoD only when
+the turn (a) writes/edits a signal with `status: resolved`, or (b) claims completion
+of a tracked unit/task/wave — not on bare completion-words in prose. Test-first
+against piped samples (the CHECK-7 ugrep lesson, F-1).
+
+---
+
 ## Disposition
 
 F-1 and F-4 are **S1** and should be addressed before "road ready" is claimed —
 they are latent failures of the enforcement layer itself (self-DoS; asymmetric
-governance). F-2/F-3 are **S2** — they make the dogfooded DoD loop self-contradict.
-F-5/F-6/F-7 are **S3** coherence debt. None block today's units (all six landed
+governance). F-2/F-3/F-8 are **S2** — they make the dogfooded DoD loop
+self-contradict (F-8 observed live this session). F-5/F-6/F-7 are **S3** coherence debt. None block today's units (all six landed
 clean against the existing gates); all are about making the *operating model*
 trustworthy at scale. Recommend triaging F-1 and F-4 into their own ratifiable
 specs; F-2/F-3 into a render-pipeline determinism+verify spec; F-5/F-6/F-7 as
