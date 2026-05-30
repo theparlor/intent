@@ -1,0 +1,130 @@
+---
+# sample-variance-estimate.yaml
+# A realistic, well-formed flight-model-variance-estimate block.
+# Shape follows variance-estimate.md exactly.
+# Scenario: Publishing a Forge skill rendering to the Claude Code outputs/ directory.
+# Moderate-airworthy expected result: AIRWORTHY, band L2–L3.
+#
+# Panel composition (§10):
+#   safety_prior: teresa-torres, marty-cagan
+#   bold_prior:   marc-andreessen, andy-grove
+#   wildcard:     nassim-taleb
+
+flight-model-variance-estimate:
+  schema_version: 1
+  source_operator: panel-critique-v2-balanced
+  spec_consumer: SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001
+  artifact: Core/products/forge/outputs/claude-code/critique/panel-critique-v2-balanced/
+  date: 2026-05-30
+  panel:
+    safety_prior: [teresa-torres, marty-cagan]
+    bold_prior:   [marc-andreessen, andy-grove]
+    wildcard:     [nassim-taleb]
+    n: 5
+  conservation_law: voices
+  facets:
+    strategic_value:
+      per_persona:
+        teresa-torres: 0.55
+        marty-cagan: 0.60
+        marc-andreessen: 0.85
+        andy-grove: 0.80
+        nassim-taleb: 0.50
+      point_estimate: 0.60
+      dispersion: 0.35
+      cross_bucket_split:
+        safety_central: 0.575
+        bold_central: 0.825
+        gap: 0.25
+      dissent_preserved: true
+    blast_radius:
+      per_persona:
+        teresa-torres: 0.35
+        marty-cagan: 0.30
+        marc-andreessen: 0.15
+        andy-grove: 0.20
+        nassim-taleb: 0.45
+      point_estimate: 0.30
+      dispersion: 0.30
+      cross_bucket_split:
+        safety_central: 0.325
+        bold_central: 0.175
+        gap: 0.15
+      dissent_preserved: true
+    irreversibility:
+      per_persona:
+        teresa-torres: 0.30
+        marty-cagan: 0.25
+        marc-andreessen: 0.10
+        andy-grove: 0.15
+        nassim-taleb: 0.40
+      point_estimate: 0.25
+      dispersion: 0.30
+      cross_bucket_split:
+        safety_central: 0.275
+        bold_central: 0.125
+        gap: 0.15
+      dissent_preserved: true
+    exposure:
+      per_persona:
+        teresa-torres: 0.40
+        marty-cagan: 0.35
+        marc-andreessen: 0.20
+        andy-grove: 0.25
+        nassim-taleb: 0.50
+      point_estimate: 0.35
+      dispersion: 0.30
+      cross_bucket_split:
+        safety_central: 0.375
+        bold_central: 0.225
+        gap: 0.15
+      dissent_preserved: true
+    containment_posture:
+      per_persona:
+        teresa-torres: 0.65
+        marty-cagan: 0.70
+        marc-andreessen: 0.80
+        andy-grove: 0.75
+        nassim-taleb: 0.60
+      point_estimate: 0.70
+      dispersion: 0.20
+      cross_bucket_split:
+        safety_central: 0.675
+        bold_central: 0.775
+        gap: 0.10
+      dissent_preserved: true
+    detection_speed:
+      per_persona:
+        teresa-torres: 0.70
+        marty-cagan: 0.75
+        marc-andreessen: 0.85
+        andy-grove: 0.80
+        nassim-taleb: 0.65
+      point_estimate: 0.75
+      dispersion: 0.20
+      cross_bucket_split:
+        safety_central: 0.725
+        bold_central: 0.825
+        gap: 0.10
+      dissent_preserved: true
+    recovery_options:
+      per_persona:
+        teresa-torres: 0.75
+        marty-cagan: 0.80
+        marc-andreessen: 0.90
+        andy-grove: 0.85
+        nassim-taleb: 0.70
+      point_estimate: 0.80
+      dispersion: 0.20
+      cross_bucket_split:
+        safety_central: 0.775
+        bold_central: 0.875
+        gap: 0.10
+      dissent_preserved: true
+  aggregate:
+    max_dispersion_facet: strategic_value
+    max_dispersion: 0.35
+    max_cross_bucket_gap_facet: strategic_value
+    max_cross_bucket_gap: 0.25
+    consumer_routing_hint: moderate-uncertainty
+  flags: []
