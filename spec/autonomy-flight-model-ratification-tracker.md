@@ -63,6 +63,12 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
   signal cites the fit source + row count. `upstream_control_path:` = the fit pipeline;
   `catch_mechanism:` = λ-refit triggers (flight-model §16).
 - **Pull trigger:** ready now; gated only on Brien starting the v2 train.
+- **Update 2026-05-30:** the λ-orphan upstream control is now INSTALLED —
+  `apply_lambda_settings.py --commit` (tree-aware write-through) + `lambda_orphan_check.py`
+  (durable catch-net, exit 2 on any uncommitted managed λ block). This closes the
+  `catch_mechanism` the DoD called for: a λ-fit no longer leaves uncommitted orphans across
+  repos (the SYMPTOM-REPAIRED/UPSTREAM-PENDING gap from the cross-session synthesis §6).
+  Commit a0b8ead (theparlor/intent).
 
 ## D2 — Witness mandatory-recorder WS-DDR
 - **Status:** ✓ SATISFIED — already ratified as **WS-DDR-098** (2026-05-26, Brien
@@ -102,11 +108,17 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
 - **Pull trigger:** after D3.
 
 ## D-WIRE — Wire the deterministic flight model (the barrier step)
-- **Status:** All four §11 deps now SATISFIED (D1 ✓, D2 ✓, D3 ✓, D4 ✓ — 2026-05-29).
-  §12 design questions resolved with documented defaults (below). Remaining to v1→v2:
-  the D-WIRE implementation itself (§15 step 6) + the 30-day shadow flight-test (running
-  via Layer 4.2 warn-only since 2026-05-29). The deps are cleared; ratification is not —
-  that needs the build + flight-test window.
+- **Status:** All four §11 deps SATISFIED (2026-05-29) AND the D-WIRE implementation is
+  now **BUILT** (2026-05-30): `Core/frameworks/intent/tools/flight_model.py` — the
+  deterministic coupled-forces layer consuming panel-critique-v2-balanced's typed variance
+  vector, emitting W/T/L/D + autonomy band + envelope (stall/airworthy/overspeed) +
+  recommended action. 16/16 tests incl. the value-term/stall test. λ scalar w/ per-surface
+  override (§12); hooks 1–7 remain the deterministic floor. **First live reading is a STALL** —
+  fed the measured Drag (0.958 overhead from `drag-report.json`), T = strategic_value × λ does
+  not clear D, so the model diagnoses the current enforcement layer itself as the stall crash
+  §3 warns of. (Commit 44aadb2, theparlor/intent.) Remaining to v1→v2 ratification: the 30-day
+  shadow flight-test (Layer 4.2 warn-only since 2026-05-29 → 2026-06-28), then ratify and mark
+  `signal-scoring.md` superseded. The build is done; the flight-test window is not.
 - **§12 defaults (resolved 2026-05-29, Brien-override-able):** (1) λ is SCALAR with
   per-surface overrides per §16 — not a vector. (2) Hooks 1–7 remain the deterministic
   FLOOR; the flight model computes the band ABOVE them via an envelope-check layer
