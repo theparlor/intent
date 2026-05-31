@@ -268,9 +268,32 @@ bin/intent-init <product-name> \
 
 **Validation criteria:** (1) `query`/`get`/`list` return a non-empty `sightline`; (2) every returned entity carries `supply_policy`, derived from type with frontmatter override; (3) `get_core` returns a bounded standing core (≤ ~1k tokens); (4) `audit_chain` emits drift JSONL + color summary; (5) a test asserts a sourced `grounded`/`provisional` item round-trips byte-identical; (6) `query` semantics unchanged for existing clients.
 
-**Related:** DEC-010 (intent-knowledge substrate exposure — this DEC carries its verb table forward), `SPEC-substrate-exposure-envelope-extensions-DRAFT` (the ratified spec; §0 vocabulary reconciliation), `Core/products/voices/spec/SPEC-001-voices-dissent-preservation.md` (INV-1..INV-11 — preservation model), Witness conservation law (append-only / no merge verb — sibling pattern), `SIG-2026-05-31-personal-synthesis-layer-commoditizing` / `-personal-memory-altitude-mismatch` / `-verbatim-passthrough-differentiator` / `-exposed-vocabulary-divergence-principle` (establishing signals). **Still surfaced, not written:** the spine-vs-engine positioning DDR + the S2 altitude-placement atom.
+**Related:** DEC-010 (intent-knowledge substrate exposure — this DEC carries its verb table forward), `SPEC-substrate-exposure-envelope-extensions-DRAFT` (the ratified spec; §0 vocabulary reconciliation), `Core/products/voices/spec/SPEC-001-voices-dissent-preservation.md` (INV-1..INV-11 — preservation model), Witness conservation law (append-only / no merge verb — sibling pattern), `SIG-2026-05-31-personal-synthesis-layer-commoditizing` / `-personal-memory-altitude-mismatch` / `-verbatim-passthrough-differentiator` / `-exposed-vocabulary-divergence-principle` (establishing signals). **Now drafted (proposed, awaiting ratification):** the spine-vs-engine positioning DDR = **DEC-013**; the S2 altitude-placement atom = **DEC-CE-008**.
 
 **Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-substrate-exposure-envelope-extensions-DRAFT.md` + `/Users/brien/Workspaces/Core/frameworks/intent/spec/2026-05-31-personal-synthesis-layer-category-validation.md`
+
+### DEC-013: Differentiation is the orchestration spine + altitude, not the memory engine
+
+**Decided:** 2026-05-31 · **Status: PROPOSED — awaiting Brien's ratification** (surfaced from the LYKN category scan; not yet accepted)
+
+**Context:** The 2026-05-31 personal-synthesis-layer category scan (`SIG-2026-05-31-personal-synthesis-layer-commoditizing` / `-personal-memory-altitude-mismatch` / `-verbatim-passthrough-differentiator` + synthesis note `spec/2026-05-31-personal-synthesis-layer-category-validation.md`) found the memory/synthesis-engine layer commoditizing (LYKN, Mem0, Supermemory, Zep, the Karpathy-LLM-Wiki wave — ≥4 independent products shipping it). This records where Intent's defensibility lives, so positioning + build allocation stop being implicit.
+
+**Alternatives considered:**
+- (a) Compete on the memory engine (build a better one) — rejected; commoditizing (S1), a race to zero.
+- (b) Treat the memory engine as the product — rejected; it is a swappable component, not the moat.
+- (c) Locate differentiation in the orchestration spine + altitude (+ the verbatim contract) — selected.
+
+**Decision:** Intent's differentiation is **(1) the spine** — Notice→Spec→Execute→Observe, the 7-level work ontology, trust-gated autonomy (L0–L4), decision records as first-class state; **(2) the altitude** — cross-team Spec/Contract coupling, two-plane separation, governed autonomy (the category sits one altitude below — DEC-CE-008); and **(3) the verbatim-passthrough contract** (DEC-012 / Voices conservation law) the synthesis category structurally cannot offer. The memory/synthesis engine is a **swappable component beneath the spine** (Mem0/Supermemory/Zep are reference/fallback, not adopted). Scarce build budget goes to the spine's interface + contracts (e.g., the substrate-exposure envelope, DEC-012), never to a bespoke engine.
+
+**Rationale:** S1 (engine commoditizing), S2 (the altitude gap is the moat — DEC-CE-008), S3 (verbatim passthrough is architecturally impossible for a synthesis-first competitor). Consistent with the build-scope-vs-run-scope / overbuilding calculus: gate the low-value engine build, invest the high-value spine build.
+
+**Consequences:** A citable positioning anchor for external articulation + GTM; a build-allocation rule (investments must trace to spine / altitude / contract, not engine). Composes with DEC-CE-005 (Intent as CE's execution-framework reference impl) and DEC-CE-008 (altitude placement).
+
+**Validation criteria:** (1) external articulation leans on this without re-deriving; (2) build investments trace to spine/altitude/contract, not the engine; (3) no roadmap item proposes building/maintaining a bespoke memory engine.
+
+**Related:** DEC-012 (substrate-exposure envelope — the spine's interface this decision endorses investing in), DEC-CE-005, DEC-CE-008 (altitude placement — the premise), the four `SIG-2026-05-31-*` LYKN signals, `spec/2026-05-31-personal-synthesis-layer-category-validation.md` (synthesis).
+
+**Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/spec/2026-05-31-personal-synthesis-layer-category-validation.md`
 
 ---
 
