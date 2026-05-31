@@ -128,7 +128,7 @@ already targets.
 
 - **Signals:** S1–S3 + the vocabulary-principle signal in `Core/frameworks/intent/.intent/signals/` (filed).
 - **Design deltas:** `SPEC-substrate-exposure-envelope-extensions-DRAFT.md` (D1–D4 + preservation
-  invariant) — **RATIFIED 2026-05-31 (all five); not yet built.** Vocabulary reconciled to our canon (spec §0).
+  invariant) — **RATIFIED + BUILT 2026-05-31 (all five; commit 5ca8566, servers/test_knowledge.py green at 56 tests); deploy pending.** Vocabulary reconciled to our canon (spec §0).
 - **Decisions wired:** `DEC-012` records the ratified envelope/verb extensions + D2 typed-envelope
   schema + entity-frontmatter override + `preservation_invariant`; `DEC-010` carries a forward pointer.
 - **Still surfaced, not wired:** the spine-vs-engine positioning DDR (S1+S2) and the S2

@@ -7,7 +7,7 @@ confidentiality: internal
 reusability: specific
 created: 2026-05-31
 updated: 2026-05-31
-ratification_state: "RATIFIED 2026-05-31 — Brien approved all five deltas via decision surface; D2 override = entity frontmatter (Open Q1 closed). Recorded in decision-log.md DEC-012. NOTE: ratified ≠ built — no code written to servers/knowledge.py yet."
+ratification_state: "RATIFIED + BUILT 2026-05-31 — all five deltas approved (D2 override = entity frontmatter, Open Q1 closed) AND implemented in servers/knowledge.py (commit 5ca8566); servers/test_knowledge.py green at 56 tests (run via servers/.venv). Recorded in decision-log.md DEC-012. Remaining Execute step: deploy to intent-knowledge.fastmcp.cloud (Brien-driven)."
 vocabulary_state: reconciled to our canon 2026-05-31 — see §0 (intentionally divergent from the validating category)
 extends: substrate-exposure-architecture.md
 target: Core/frameworks/intent/servers/knowledge.py  # the intent-knowledge FastMCP server
