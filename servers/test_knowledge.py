@@ -441,6 +441,185 @@ def test_freshness_missing_path(knowledge_module):
     assert result["error"] == "not_found"
 
 
+# ─── DEC-012: envelope extensions (D1 sightline · D2 supply_policy ·
+#              D3 get_core · D4 audit_chain · preservation_invariant) ───
+
+def test_supply_policy_derives_from_entity_type(knowledge_module):
+    k = knowledge_module
+    # normative — binding decisions / contracts (always supply)
+    assert k._supply_policy({}, entity_id="DEC-200") == "normative"
+    assert k._supply_policy({}, entity_id="WS-DDR-099") == "normative"
+    assert k._supply_policy({}, entity_id="CON-001") == "normative"
+    # provisional — revisable signals / intents / specs
+    assert k._supply_policy({}, entity_id="SIG-INTERNAL-001") == "provisional"
+    assert k._supply_policy({}, entity_id="INT-100") == "provisional"
+    assert k._supply_policy({}, entity_id="SPEC-100") == "provisional"
+    # grounded — sourced observation/event (via frontmatter type)
+    assert k._supply_policy({"type": "observation"}, entity_id="") == "grounded"
+    assert k._supply_policy({"type": "event"}, entity_id="") == "grounded"
+
+
+def test_supply_policy_frontmatter_override_wins(knowledge_module):
+    k = knowledge_module
+    # explicit, valid override beats type derivation
+    assert k._supply_policy({"supply_policy": "normative"}, entity_id="SIG-1") == "normative"
+    assert k._supply_policy({"supply_policy": "grounded"}, entity_id="SIG-1") == "grounded"
+    # invalid override is ignored → falls back to type derivation
+    assert k._supply_policy({"supply_policy": "bogus"}, entity_id="SIG-1") == "provisional"
+
+
+def test_supply_policy_unknown_defaults_provisional_never_normative(knowledge_module):
+    k = knowledge_module
+    assert k._supply_policy({}, entity_id="") == "provisional"
+    assert k._supply_policy({}, entity_id="XYZ-9") == "provisional"
+
+
+def test_sightline_frontmatter_override_wins(knowledge_module):
+    k = knowledge_module
+    content = "---\nsightline: My one-liner\n---\n# Title\n\nBody text."
+    assert k._sightline(content, {"sightline": "My one-liner"}) == "My one-liner"
+
+
+def test_sightline_falls_back_to_first_prose_line(knowledge_module):
+    k = knowledge_module
+    content = "---\nid: SIG-1\n---\n# Heading\n\n> a framing blockquote\n\nThe first real prose sentence here."
+    sl = k._sightline(content, {"id": "SIG-1"})
+    assert "first real prose sentence" in sl
+    assert not sl.startswith("#")
+    assert not sl.startswith(">")
+
+
+def test_sightline_falls_back_to_title_when_no_body(knowledge_module):
+    k = knowledge_module
+    content = "---\nid: SIG-1\n---\n# Just A Title\n"
+    assert k._sightline(content, {"id": "SIG-1"}) == "Just A Title"
+
+
+def test_sightline_is_single_line_and_bounded(knowledge_module):
+    k = knowledge_module
+    sl = k._sightline("---\n---\n" + ("x" * 300), {})
+    assert "\n" not in sl
+    assert len(sl) <= 160
+
+
+def test_get_envelope_carries_sightline_and_supply_policy(knowledge_module):
+    r = json.loads(_call(knowledge_module.get,
+                         entity_id="SIG-INTERNAL-001", scope_token="internal"))
+    e = r["entity"]
+    assert e["supply_policy"] == "provisional"   # a signal is revisable
+    assert e["sightline"]                        # non-empty one-liner
+    assert "\n" not in e["sightline"]
+
+
+def test_get_decision_supply_policy_is_normative(knowledge_module):
+    r = json.loads(_call(knowledge_module.get,
+                         entity_id="DEC-200", scope_token="internal"))
+    assert r["entity"]["supply_policy"] == "normative"
+
+
+def test_list_entities_carry_sightline_and_supply_policy(knowledge_module):
+    r = json.loads(_call(knowledge_module.list_entities,
+                         type="signal", scope_token="internal", limit=20))
+    assert r["entities"]
+    for e in r["entities"]:
+        assert "sightline" in e
+        assert e["supply_policy"] == "provisional"   # all fixtures are signals
+
+
+def test_query_hits_carry_sightline_and_supply_policy(knowledge_module):
+    r = json.loads(_call(knowledge_module.query,
+                         text="signal", scope_token="internal", k=10))
+    assert r["hits"]
+    for h in r["hits"]:
+        assert "sightline" in h
+        assert h["supply_policy"] in ("normative", "grounded", "provisional")
+
+
+def test_preservation_invariant_get_returns_body_verbatim(knowledge_module, synthetic_repo):
+    # A sourced provisional/grounded item MUST round-trip byte-identical — no
+    # synthesis-rewrite at the exposure boundary (DEC-012 preservation_invariant).
+    path = synthetic_repo / ".intent" / "signals" / "2026-05-26-internal-sig.md"
+    raw = path.read_text()
+    body_on_disk = raw.split("\n---\n", 1)[1]   # body after closing delimiter
+    r = json.loads(_call(knowledge_module.get,
+                         entity_id="SIG-INTERNAL-001", scope_token="internal"))
+    e = r["entity"]
+    assert e["body"].strip() == body_on_disk.strip()       # verbatim round-trip
+    assert e["preservation"]["verbatim"] is True
+    assert e["preservation"]["applies"] is True            # provisional + sourced (source: cli)
+
+
+def test_preservation_invariant_marker_on_every_get(knowledge_module):
+    # A normative decision: body still never paraphrased; 'applies' is False
+    # (not a sourced grounded/provisional item) but verbatim holds.
+    r = json.loads(_call(knowledge_module.get,
+                         entity_id="DEC-200", scope_token="internal"))
+    e = r["entity"]
+    assert e["preservation"]["verbatim"] is True
+    assert e["preservation"]["applies"] is False
+
+
+def test_get_core_returns_bounded_shaped_items(knowledge_module):
+    r = json.loads(_call(knowledge_module.get_core, scope_token="internal"))
+    assert r["verb"] == "get_core"
+    assert r["items"]
+    for it in r["items"]:
+        assert {"id", "sightline", "supply_policy"} <= set(it)
+        assert "body" not in it              # standing core never dumps full bodies
+        assert it["id"]                       # canonical entities only
+    assert r["token_estimate"] <= 1000        # bounded (default budget)
+    assert r["bounded"] is True
+
+
+def test_get_core_excludes_out_of_scope(knowledge_module):
+    r = json.loads(_call(knowledge_module.get_core, scope_token="internal"))
+    ids = {it["id"] for it in r["items"]}
+    assert "SIG-ALPHA-001" not in ids         # confidential never in internal core
+
+
+def test_get_core_normative_before_provisional(knowledge_module):
+    r = json.loads(_call(knowledge_module.get_core, scope_token="internal"))
+    policies = [it["supply_policy"] for it in r["items"]]
+    if "normative" in policies and "provisional" in policies:
+        assert policies.index("normative") < policies.index("provisional")
+
+
+def test_audit_chain_returns_color_and_counts(knowledge_module):
+    r = json.loads(_call(knowledge_module.audit_chain, scope_token="internal"))
+    assert r["verb"] == "audit_chain"
+    assert r["color"] in ("green", "amber", "red")
+    for key in ("unspecced_signals", "uncontracted_specs",
+                "unverified_contracts", "orphans"):
+        assert key in r["counts"] and isinstance(r["counts"][key], int)
+    assert isinstance(r["findings"], list)
+
+
+def test_audit_chain_color_reflects_findings(knowledge_module):
+    r = json.loads(_call(knowledge_module.audit_chain, scope_token="internal"))
+    total = sum(r["counts"].values())
+    if total == 0:
+        assert r["color"] == "green"
+    else:
+        assert r["color"] in ("amber", "red")
+
+
+def test_audit_chain_excludes_out_of_scope(knowledge_module):
+    r = json.loads(_call(knowledge_module.audit_chain, scope_token="internal"))
+    ids = {f.get("id") for f in r["findings"]}
+    assert "SIG-ALPHA-001" not in ids        # confidential never audited in internal scope
+
+
+def test_audit_chain_intentional_orphan_opt_out(knowledge_module, synthetic_repo):
+    # Mark the lone public signal intentional → it must not be an orphan finding.
+    p = (synthetic_repo / "public-product" / ".intent" / "signals"
+         / "2026-05-26-public-sig.md")
+    p.write_text(p.read_text().replace(
+        "status: active\n", "status: active\nintentional: true\n"))
+    r = json.loads(_call(knowledge_module.audit_chain, scope_token="public"))
+    orphan_ids = {f["id"] for f in r["findings"] if f["kind"] == "orphan"}
+    assert "SIG-PUBLIC-001" not in orphan_ids
+
+
 # ─── library-index client behavior ──────────────────────────────
 
 def test_library_index_client_absent_catalog_raises(tmp_path):
@@ -691,6 +870,7 @@ def test_server_imports_clean():
             del sys.modules[mod]
     import knowledge  # noqa: F401
     for name in ("query", "get", "list_entities", "lineage", "freshness",
+                 "get_core", "audit_chain",
                  "knowledge_status", "knowledge_ingest", "knowledge_query",
                  "knowledge_lint", "knowledge_dossier"):
         assert hasattr(knowledge, name), f"missing tool: {name}"

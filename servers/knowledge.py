@@ -707,13 +707,113 @@ def _entity_summary(path: str) -> dict:
         return {"path": path, "error": "unreadable"}
     fm = parse_frontmatter(content)
     title = extract_title(content) or fm.get("title", "")
+    eid = (fm.get("id") or "").upper() if fm.get("id") else ""
     return {
-        "id": (fm.get("id") or "").upper() if fm.get("id") else "",
+        "id": eid,
         "title": title,
         "timestamp": fm.get("timestamp") or fm.get("created") or fm.get("declared_at") or "",
         "status": fm.get("status") or fm.get("maturity") or "",
+        "sightline": _sightline(content, fm),               # D1
+        "supply_policy": _supply_policy(fm, entity_id=eid),  # D2
         "path": os.path.relpath(path, ROOT),
     }
+
+
+# ─── DEC-012 envelope extensions: supply_policy (D2) + sightline (D1) ───
+
+_SUPPLY_POLICIES = ("normative", "grounded", "provisional")
+
+# Canonical-ID prefix → coarse entity type, for supply_policy derivation.
+# WS-DDR- is listed before DEC- so the longer prefix wins on inspection.
+_ID_PREFIX_TYPE = [
+    ("WS-DDR-", "decision"),
+    ("DEC-", "decision"),
+    ("CON-", "contract"),
+    ("SIG-", "signal"),
+    ("INT-", "intent"),
+    ("SPEC-", "spec"),
+]
+
+
+def _supply_policy(fm: dict, entity_id: str = "", type_hint: str = "") -> str:
+    """Derive the D2 `supply_policy` for an entity (DEC-012).
+
+    - normative   → binding (decision / DDR / contract / constraint): always supply
+    - grounded    → sourced ground-truth (observation / event): supply on demand
+    - provisional → revisable (signal / intent / spec / hypothesis): supply w/ confidence
+
+    An explicit, *valid* `supply_policy:` key in frontmatter overrides derivation
+    (Open Q1 — frontmatter is the authored override surface, ratified 2026-05-31).
+    Unknown types default to `provisional` — never `normative`.
+    """
+    fm = fm or {}
+    override = str(fm.get("supply_policy", "")).strip().lower()
+    if override in _SUPPLY_POLICIES:
+        return override
+
+    ftype = str(fm.get("type", "")).strip().lower()
+    if ftype in ("observation", "event"):
+        return "grounded"
+
+    t = (type_hint or "").strip().lower()
+    if not t:
+        eid = (entity_id or fm.get("id", "") or "").upper()
+        for prefix, typ in _ID_PREFIX_TYPE:
+            if eid.startswith(prefix):
+                t = typ
+                break
+
+    if t in ("decision", "ddr", "contract", "constraint"):
+        return "normative"
+    if t in ("observation", "event"):
+        return "grounded"
+    return "provisional"
+
+
+_SIGHTLINE_MAX = 140
+
+
+def _one_line(s: str) -> str:
+    """Collapse whitespace to a single bounded line."""
+    s = " ".join(str(s).split())
+    if len(s) > _SIGHTLINE_MAX:
+        s = s[:_SIGHTLINE_MAX].rstrip() + "…"
+    return s
+
+
+def _strip_frontmatter(content: str) -> str:
+    """Return the body with a leading YAML frontmatter block removed."""
+    if content.startswith("---"):
+        end = content.find("\n---", 3)
+        if end >= 0:
+            return content[end + 4:]
+    return content
+
+
+def _sightline(content: str, fm: dict) -> str:
+    """Derive the D1 one-line `sightline` for an entity (DEC-012).
+
+    Routing / preamble-as-router field — NOT authoritative content (the cheap
+    tier triages on it before a full-body read). Order: authored override
+    (`sightline` / `tagline` / `description`) → first prose line of body →
+    title. Always a single bounded line.
+    """
+    fm = fm or {}
+    for key in ("sightline", "tagline", "description"):
+        v = str(fm.get(key, "")).strip()
+        if v:
+            return _one_line(v)
+
+    skip_prefixes = ("#", ">", "---", "```", "|", "- ", "* ", "<!--")
+    for raw in _strip_frontmatter(content).splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith(skip_prefixes):
+            continue
+        return _one_line(line)
+
+    return _one_line(extract_title(content) or fm.get("title", ""))
 
 
 @mcp.tool()
@@ -768,12 +868,23 @@ def query(text: str, scope_token: str = "internal", k: int = 10) -> str:
         if not in_scope(scope_token, cls):
             omitted += 1
             continue
+        # D1/D2: every returned entity carries sightline + supply_policy.
+        full = hit.path if os.path.isabs(hit.path) else os.path.join(ROOT, hit.path)
+        try:
+            with open(full) as fh:
+                hcontent = fh.read()
+        except OSError:
+            hcontent = ""
+        hfm = parse_frontmatter(hcontent) if hcontent else {}
+        heid = hit.entity_id or hfm.get("id") or ""
         hits.append({
             "path": os.path.relpath(hit.path, ROOT) if os.path.isabs(hit.path) else hit.path,
             "chunk": hit.chunk[:800],   # bound chunk length defensively
             "score": hit.score,
             "entity_id": hit.entity_id,
             "tier": cls.tier,
+            "sightline": _sightline(hcontent, hfm) if hcontent else "",  # D1
+            "supply_policy": _supply_policy(hfm, entity_id=heid),         # D2
         })
         if len(hits) >= k:
             break
@@ -859,8 +970,23 @@ def get(entity_id: str, scope_token: str = "internal") -> str:
         if end >= 0:
             body_start = end + 4
 
+    sp = _supply_policy(fm, entity_id=entity_id)
+    has_provenance = bool(
+        fm.get("source") or fm.get("provenance") or fm.get("provenance_note")
+        or fm.get("author") or fm.get("origin")
+    )
+    # preservation_invariant (DEC-012): the exposure layer returns the body
+    # verbatim — never paraphrased/merged. `applies` flags the items the
+    # invariant specifically protects (sourced grounded/provisional). The
+    # round-trip test in test_knowledge.py is the wired catch-net.
+    preservation = {
+        "verbatim": True,
+        "applies": sp in ("grounded", "provisional") and has_provenance,
+    }
+
     _emit_event("knowledge.queried", entity_id, {
         "verb": "get", "scope": scope_token, "tier": cls.tier,
+        "supply_policy": sp, "preservation_applies": preservation["applies"],
     })
 
     return json.dumps({
@@ -869,6 +995,9 @@ def get(entity_id: str, scope_token: str = "internal") -> str:
             "id": entity_id,
             "title": title,
             "tier": cls.tier,
+            "sightline": _sightline(content, fm),               # D1
+            "supply_policy": sp,                                # D2
+            "preservation": preservation,                       # S3 invariant
             "frontmatter": fm,
             "body": content[body_start:].lstrip(),
             "path": os.path.relpath(path, ROOT),
@@ -1124,6 +1253,202 @@ def freshness(path: str, scope_token: str = "internal") -> str:
         "classification_source": cls.source_path,
         "last_event": last_event,
     }, indent=2)
+
+
+@mcp.tool()
+def get_core(scope_token: str = "internal", max_tokens: int = 1000) -> str:
+    """
+    Bounded always-on standing core (substrate exposure, D3 — DEC-012).
+
+    A small, cheap, always-on context slice — shaped items (id + title +
+    sightline + supply_policy), never full bodies. Normative (always-supply)
+    items lead, then grounded, then provisional. Out-of-scope items omitted.
+
+    Source resolution (Open Q2 — ratified default): a curated
+    `.intent/standing-core.md` is returned verbatim (bounded) when present;
+    otherwise the core is *synthesized* from the highest-supply entities.
+
+    Args:
+        scope_token:  "public" | "internal" | "engagement:<slug>". Default "internal".
+        max_tokens:   Soft budget. Default 1000, clamped to [100, 4000].
+
+    Returns:
+        JSON: {source: "curated"|"synthesized", items|standing_core, token_estimate, bounded}.
+    """
+    try:
+        scope_token = validate_scope_token(scope_token)
+    except ScopeTokenError as exc:
+        return json.dumps({"error": str(exc), "verb": "get_core"})
+
+    max_tokens = max(100, min(int(max_tokens), 4000))
+    char_budget = max_tokens * 4   # ~4 chars/token heuristic
+
+    # Curated override wins (repo-as-truth; authored standing core).
+    curated = os.path.join(ROOT, ".intent", "standing-core.md")
+    if os.path.exists(curated):
+        text = _read_file(curated)[:char_budget]
+        _emit_event("knowledge.queried", "get_core", {
+            "verb": "get_core", "source": "curated", "scope": scope_token,
+        })
+        return json.dumps({
+            "verb": "get_core", "scope_token": scope_token, "source": "curated",
+            "standing_core": text, "token_estimate": len(text) // 4, "bounded": True,
+        }, indent=2)
+
+    # Synthesized: gather across types, scope-filter, rank by supply policy.
+    resolver = _make_resolver()
+    seen: set[str] = set()
+    candidates: list[dict] = []
+    for type_key in ("decision", "contract", "spec", "intent", "signal"):
+        for path in _paths_for_type(type_key):
+            if path in seen:
+                continue
+            seen.add(path)
+            cls = resolver.resolve(path)
+            if not in_scope(scope_token, cls):
+                continue
+            summ = _entity_summary(path)
+            if summ.get("error") or not summ.get("id"):
+                continue
+            candidates.append({
+                "id": summ["id"],
+                "title": summ["title"],
+                "sightline": summ["sightline"],
+                "supply_policy": summ["supply_policy"],
+                "tier": cls.tier,
+            })
+
+    _policy_rank = {"normative": 0, "grounded": 1, "provisional": 2}
+    candidates.sort(key=lambda c: _policy_rank.get(c["supply_policy"], 3))
+
+    items: list[dict] = []
+    used = 0
+    for c in candidates:
+        cost = len(c["id"]) + len(c["title"]) + len(c["sightline"]) + 16
+        if used + cost > char_budget and items:
+            break
+        items.append(c)
+        used += cost
+
+    _emit_event("knowledge.queried", "get_core", {
+        "verb": "get_core", "source": "synthesized", "scope": scope_token,
+        "items": len(items),
+    })
+    return json.dumps({
+        "verb": "get_core",
+        "scope_token": scope_token,
+        "source": "synthesized",
+        "items": items,
+        "token_estimate": used // 4,
+        "bounded": True,
+    }, indent=2, default=str)
+
+
+@mcp.tool()
+def audit_chain(scope_token: str = "internal") -> str:
+    """
+    Graph drift audit over the traceability chain (substrate exposure, D4 — DEC-012).
+
+    The Observe-phase read on substrate health. Surfaces:
+      - unspecced_signals    — signals with no forward promotion (no intent/spec)
+      - uncontracted_specs   — specs with no linked contract
+      - unverified_contracts — contracts with no verification marker
+      - orphans              — entities with no inbound reference (opt out with
+                               `intentional: true` frontmatter)
+    Returns drift findings (JSONL-able) + a glanceable color (green/amber/red).
+    Only in-scope entities are audited.
+
+    Args:
+        scope_token:  "public" | "internal" | "engagement:<slug>". Default "internal".
+
+    Returns:
+        JSON: {color, counts: {...}, findings: [{kind, id, path}, ...]}.
+    """
+    try:
+        scope_token = validate_scope_token(scope_token)
+    except ScopeTokenError as exc:
+        return json.dumps({"error": str(exc), "verb": "audit_chain"})
+
+    resolver = _make_resolver()
+
+    def gather(type_key: str) -> list[dict]:
+        out: list[dict] = []
+        for path in _paths_for_type(type_key):
+            cls = resolver.resolve(path)
+            if not in_scope(scope_token, cls):
+                continue
+            content = _read_file(path)
+            fm = parse_frontmatter(content)
+            eid = (fm.get("id") or "").upper()
+            if not eid:
+                continue
+            out.append({"id": eid, "path": os.path.relpath(path, ROOT),
+                        "content": content, "fm": fm})
+        return out
+
+    signals = gather("signal")
+    specs = gather("spec")
+    contracts = gather("contract")
+    intents = gather("intent")
+    decisions = gather("decision")
+
+    by_id: dict[str, dict] = {}
+    for e in signals + specs + contracts + intents + decisions:
+        by_id.setdefault(e["id"], e)
+    all_entities = list(by_id.values())
+
+    findings: list[dict] = []
+
+    spec_intent_text = "\n".join(e["content"] for e in specs + intents)
+    for s in signals:
+        fm = s["fm"]
+        has_forward = bool(fm.get("related_intents") or fm.get("promoted_to")
+                           or fm.get("promotes_to"))
+        if not has_forward and s["id"] not in spec_intent_text:
+            findings.append({"kind": "unspecced_signal", "id": s["id"], "path": s["path"]})
+
+    contract_text = "\n".join(e["content"] for e in contracts)
+    for sp in specs:
+        fm = sp["fm"]
+        has_contract = bool(fm.get("contract") or fm.get("related_contracts")
+                            or fm.get("contracts"))
+        if not has_contract and sp["id"] not in contract_text:
+            findings.append({"kind": "uncontracted_spec", "id": sp["id"], "path": sp["path"]})
+
+    for c in contracts:
+        fm = c["fm"]
+        verified = (str(fm.get("verified", "")).lower() in ("true", "yes")
+                    or str(fm.get("status", "")).lower() in ("verified", "landed"))
+        if not verified:
+            findings.append({"kind": "unverified_contract", "id": c["id"], "path": c["path"]})
+
+    for e in all_entities:
+        if str(e["fm"].get("intentional", "")).lower() in ("true", "yes"):
+            continue
+        inbound = any(e["id"] in o["content"] for o in all_entities if o["id"] != e["id"])
+        if not inbound:
+            findings.append({"kind": "orphan", "id": e["id"], "path": e["path"]})
+
+    counts = {
+        "unspecced_signals": sum(1 for f in findings if f["kind"] == "unspecced_signal"),
+        "uncontracted_specs": sum(1 for f in findings if f["kind"] == "uncontracted_spec"),
+        "unverified_contracts": sum(1 for f in findings if f["kind"] == "unverified_contract"),
+        "orphans": sum(1 for f in findings if f["kind"] == "orphan"),
+    }
+    total = sum(counts.values())
+    color = "green" if total == 0 else ("red" if counts["orphans"] > 0 else "amber")
+
+    _emit_event("knowledge.linted", "audit_chain", {
+        "verb": "audit_chain", "scope": scope_token, "color": color, **counts,
+    })
+
+    return json.dumps({
+        "verb": "audit_chain",
+        "scope_token": scope_token,
+        "color": color,
+        "counts": counts,
+        "findings": findings,
+    }, indent=2, default=str)
 
 
 # ─── Entry point ─────────────────────────────────────────────

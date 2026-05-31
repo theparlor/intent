@@ -28,13 +28,14 @@ related_decisions:
 > preservation invariant. These sharpen the **spine's interface** (the defensible surface per the
 > S1–S3 synthesis) — they are not a new memory engine.
 
-> ## ✅ RATIFIED 2026-05-31 — cleared for build (NOT yet built)
+> ## ✅ RATIFIED + BUILT 2026-05-31
 > Brien ratified all five deltas via decision surface on 2026-05-31 — D1/D3/D4 + `preservation_invariant`
 > (low-risk) and **D2** (the schema change), with **D2's override surface = entity frontmatter**
-> (closes Open Q1). The decision is recorded in `spec/decision-log.md` **DEC-012**, with a forward
-> pointer added to DEC-010.
-> **Ratified ≠ applied:** no code has been written to `servers/knowledge.py`, the envelope schema,
-> or `classification.yaml`. The build is the next Execute step (see §Ratification + Notes).
+> (closes Open Q1). Recorded in `spec/decision-log.md` **DEC-012** (DEC-010 carries a forward pointer).
+> **Built + tested 2026-05-31 (TDD):** D1–D4 + `preservation_invariant` implemented in
+> `servers/knowledge.py` (new verbs `get_core`/`audit_chain`; new envelope fields `sightline`/`supply_policy`);
+> `servers/test_knowledge.py` is green at **56 tests** (20 new, RED→GREEN). The deploy step
+> (`intent-knowledge.fastmcp.cloud`) remains Brien-driven.
 
 **Status:** `draft` · **Created:** 2026-05-31 · **Last touched:** 2026-05-31
 
@@ -195,12 +196,12 @@ check and Witness's conservation law.
 
 ### Done when
 
-- [ ] `query`/`get`/`list` return a required non-empty `sightline` on every entity.
-- [ ] (post-D2 ratification) every returned entity carries `supply_policy ∈ {normative,grounded,provisional}`, derived from type with optional override.
-- [ ] `get_core` returns a bounded standing core (target ≤ ~1k tokens) with no full-body dump.
-- [ ] on-demand retrieval is the existing `query` (top-K; K default 10, max 25 — matches §Q4).
-- [ ] `audit_chain` emits drift JSONL + a single glanceable color (green/amber/red) summary.
-- [ ] `preservation_invariant`: a test asserts a sourced `grounded`/`provisional` item round-trips byte-identical.
+- [x] `query`/`get`/`list` return a required non-empty `sightline` on every entity. *(D1 — `test_*_carries_sightline`)*
+- [x] every returned entity carries `supply_policy ∈ {normative,grounded,provisional}`, derived from type with optional frontmatter override. *(D2 — `test_supply_policy_*`)*
+- [x] `get_core` returns a bounded standing core (≤ ~1k tokens) with no full-body dump. *(D3 — `test_get_core_*`)*
+- [x] on-demand retrieval is the existing `query` (top-K; K default 10, max 25). *(unchanged — existing `query` tests stay green)*
+- [x] `audit_chain` emits drift findings + a single glanceable color (green/amber/red) summary. *(D4 — `test_audit_chain_*`)*
+- [x] `preservation_invariant`: a test asserts a sourced `grounded`/`provisional` item round-trips byte-identical. *(`test_preservation_invariant_*`)*
 
 ### Smoke test
 
@@ -247,9 +248,10 @@ envelope/verb extension + the D2 typed-envelope schema + the frontmatter-overrid
 **DEC-010** carries a forward pointer to DEC-012. Still **surfaced, not written** (not part of this
 ratification): the spine-vs-engine positioning DDR and the S2 altitude-placement atom.
 
-**Not yet built.** Ratification recorded the decision; no code has been written to
-`servers/knowledge.py` or any schema file. The build is the next Execute step (TDD; the
-preservation round-trip test is the catch-net).
+**Built 2026-05-31 (TDD).** D1–D4 + `preservation_invariant` are implemented in
+`servers/knowledge.py` and covered by 20 new tests in `servers/test_knowledge.py` (full
+suite green at 56). The preservation round-trip test is the wired catch-net. Remaining
+Execute step is the deploy (`intent-knowledge.fastmcp.cloud`), which is Brien-driven.
 
 ---
 
