@@ -165,6 +165,8 @@ Each decision follows a consistent structure:
 
 **Decided:** 2026-05-26
 
+**Extended by: DEC-012 (2026-05-31)** — substrate-exposure envelope & verb extensions (D1–D4 + `preservation_invariant`): adds the `sightline` + `supply_policy` envelope fields and the `get_core` + `audit_chain` verbs, and binds the `preservation_invariant` boundary contract to this envelope. Ratified by Brien from the 2026-05-31 personal-synthesis-layer category-validation scan.
+
 **Context:** `Core/frameworks/intent/ARCHITECTURE.md` (line 107) defines `intent-knowledge` (port 8004) with verbs `ingest`, `query`, `lint` — per SPEC-001 and DDR-005. The CLI implementation is pending per Gap 7.1 / track E3 in `.intent/specs/2026-05-20-upgrade-plan.md`. The 2026-05-26 Cowork Phase 1 brief on substrate exposure identifies `intent-knowledge` as the natural host for cross-surface substrate exposure verbs. Two options exist: (a) build a new MCP server (`intent-substrate`, port 8005) dedicated to substrate exposure; (b) extend `intent-knowledge`'s scope to cover substrate exposure, treating substrate query as a specialization of knowledge query. This decision picks (b).
 
 **Alternatives considered:**
@@ -191,7 +193,9 @@ The server composes with `library-index` for the `query` verb's BM25+vector rank
 
 **Validation criteria:** Validated when (1) `intent-knowledge` MCP server is deployed at `intent-knowledge.fastmcp.cloud/mcp`; (2) the five read verbs are callable from a chat-surface client; (3) the `query` verb composes correctly with library-index's relevance filter; (4) token-context burn stays bounded — no single call returns more than one entity body or > N shaped summaries; (5) the four-server family at $0/mo is preserved.
 
-**Related:** WS-DDR-099 (substrate exposure mechanism — Workspaces-level placement & governance), DEC-009 (Entire scoped as authoring provenance), DEC-004 (file-native, git-tracked, OTel-compatible), ARCHITECTURE.md lines 107-111 + 303-307, `.intent/specs/2026-05-20-upgrade-plan.md` Gap 7.1 / track E3, SPEC-001.
+**Amendment (2026-05-31) — verb/envelope set extended; ratified; see DEC-012.** The intent-knowledge envelope + verb set was extended and **ratified 2026-05-31** via `SPEC-substrate-exposure-envelope-extensions-DRAFT` — D1 `sightline`, D2 `supply_policy` typing, D3 `get_core` (reusing this table's `query`), D4 `audit_chain`, and the `preservation_invariant`. The full ratified decision — including the D2 typed-envelope schema and the entity-frontmatter override (Open Q1 closed) — is recorded as **DEC-012**. DEC-010's substance is unchanged; DEC-012 carries this verb table forward. Vocabulary reconciled to our canon per `SIG-2026-05-31-exposed-vocabulary-divergence-principle`. Not yet built — ratified ≠ applied.
+
+**Related:** WS-DDR-099 (substrate exposure mechanism — Workspaces-level placement & governance), DEC-009 (Entire scoped as authoring provenance), DEC-004 (file-native, git-tracked, OTel-compatible), DEC-012 (envelope/verb extensions + D2 schema + preservation_invariant — ratified 2026-05-31), `SPEC-substrate-exposure-envelope-extensions-DRAFT`, ARCHITECTURE.md lines 107-111 + 303-307, `.intent/specs/2026-05-20-upgrade-plan.md` Gap 7.1 / track E3, SPEC-001.
 
 **Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/01-track-a-substrate-exposure-architecture.md`
 
@@ -239,6 +243,34 @@ bin/intent-init <product-name> \
 **Related:** WS-DDR-099 (substrate exposure — Track A sibling), DEC-010 (intent-knowledge MCP scope extension — Track A sibling), DEC-009 (Entire scoped as authoring provenance — upstream), WIT-004 #5 (`engine/adapters/entire-io.py` stub completion — Tier 2 dependency), `Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md` (this DEC is one of the six analog instances of the principle — the scaffold CLI declares all four classification tiers + Witness-federation hook on Day 1; engagement-tier federation is content-only deferral, not architectural), `Core/frameworks/intent/.intent/signals/2026-05-26-architecture-first-content-sequenced-pattern.md` (establishing signal — names DEC-011 explicitly as instance evidence).
 
 **Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/handoff/cowork-phase1-2026-05-26/02-track-b-spawn-a-product-runbook.md`
+
+### DEC-012: Substrate-exposure envelope & verb extensions ratified (D1–D4 + preservation_invariant)
+
+**Decided:** 2026-05-31 (ratified by Brien via decision surface)
+
+**Context:** The 2026-05-31 personal-synthesis-layer category scan (signals `SIG-2026-05-31-personal-synthesis-layer-commoditizing` / `-personal-memory-altitude-mismatch` / `-verbatim-passthrough-differentiator` + synthesis note `spec/2026-05-31-personal-synthesis-layer-category-validation.md`) confirmed the memory/synthesis category (LYKN, Mem0, Supermemory, Zep) is commoditizing the engine layer; our defensible surface is the spine's interface + a verbatim contract the category structurally cannot offer (synthesis = lossy rewrite by definition). `SPEC-substrate-exposure-envelope-extensions-DRAFT` proposed five refinements to the `intent-knowledge` envelope/verb set (DEC-010). This DEC ratifies them. Vocabulary was reconciled to our canon (not the category's) per `SIG-2026-05-31-exposed-vocabulary-divergence-principle`.
+
+**Alternatives considered:**
+- Build a better memory engine to compete in the category — rejected; the engine is commoditizing (S1); the moat is the spine + altitude (S2) and the verbatim contract (S3).
+- Adopt the category's vocabulary (`vault` / `rule`-`fact`-`belief` / `context_block`) — rejected; concedes the altitude argument and invites derivative challenges.
+- Hold D2 (the schema change) pending a separate write-go — superseded; Brien ratified D2 alongside the others, fixing the override surface (below), which collapses the risk.
+
+**Decision (ratified 2026-05-31 — all five deltas):**
+- **D1 `sightline`** — required one-line envelope field on every returned entity (relevance routing; cheap tier triages before full-body read).
+- **D2 `supply_policy` typing** — typed envelope field `normative | grounded | provisional` (maps to DDR/contract · observation/event · signal+confidence). **Derives from entity type by default; the override is authored as an optional `supply_policy:` key in the entity's frontmatter** (Open Q1 closed — frontmatter chosen for durability + repo-as-truth co-location; unknowns default to `provisional`, never `normative`). This is the typed-envelope schema change.
+- **D3 `get_core`** — new verb returning a bounded always-on standing core slice; the on-demand-retrieval half **reuses the existing `query` verb** (no new "search" verb; "vault" rejected).
+- **D4 `audit_chain`** — new Observe-phase verb auditing the traceability chain (un-specced signals, un-contracted specs, unverified contracts, orphans) → drift JSONL + glanceable color signal; Base-style views.
+- **`preservation_invariant`** — the envelope MUST return `grounded`/`provisional` items with named provenance **verbatim, source preserved**; no synthesis-rewrite at the boundary. Envelope-level analog of Voices' `named_dissents` preservation check + Witness's append-only conservation law ("no merge verb"). Dropping/paraphrasing a sourced item at the exposure layer is a regression, not "cleanup."
+
+**Rationale:** Invests exactly where the S1–S3 synthesis says the moat is — the spine's interface, the verbatim contract, the audit loop — and nowhere in the commoditizing engine. D2's risk collapses because `supply_policy` is mostly a projection of the existing ontology with a frontmatter override (no backfill). `preservation_invariant` is conservation-law-as-moat: cheap to hold (a refusal), impossible for a synthesis-first competitor to match, durable only as a tested invariant.
+
+**Consequences:** The intent-knowledge envelope gains two fields (`sightline`, `supply_policy`) and two verbs (`get_core`, `audit_chain`); `query` is reused. A round-trip test enforces `preservation_invariant` (wired like a Voices INV-*). `supply_policy` composes with — does not replace — classification tier (DEC-010). **Not yet built:** ratification cleared the design; no code has been written to `servers/knowledge.py` or any schema file. Build is the next Execute step (TDD; the preservation round-trip test is the catch-net).
+
+**Validation criteria:** (1) `query`/`get`/`list` return a non-empty `sightline`; (2) every returned entity carries `supply_policy`, derived from type with frontmatter override; (3) `get_core` returns a bounded standing core (≤ ~1k tokens); (4) `audit_chain` emits drift JSONL + color summary; (5) a test asserts a sourced `grounded`/`provisional` item round-trips byte-identical; (6) `query` semantics unchanged for existing clients.
+
+**Related:** DEC-010 (intent-knowledge substrate exposure — this DEC carries its verb table forward), `SPEC-substrate-exposure-envelope-extensions-DRAFT` (the ratified spec; §0 vocabulary reconciliation), `Core/products/voices/spec/SPEC-001-voices-dissent-preservation.md` (INV-1..INV-11 — preservation model), Witness conservation law (append-only / no merge verb — sibling pattern), `SIG-2026-05-31-personal-synthesis-layer-commoditizing` / `-personal-memory-altitude-mismatch` / `-verbatim-passthrough-differentiator` / `-exposed-vocabulary-divergence-principle` (establishing signals). **Still surfaced, not written:** the spine-vs-engine positioning DDR + the S2 altitude-placement atom.
+
+**Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-substrate-exposure-envelope-extensions-DRAFT.md` + `/Users/brien/Workspaces/Core/frameworks/intent/spec/2026-05-31-personal-synthesis-layer-category-validation.md`
 
 ---
 
