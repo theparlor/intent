@@ -180,6 +180,33 @@ def _load_registry(path: str | Path) -> list[dict]:
         return _parse_yaml_fallback(text)
 
 
+# ---------------------------------------------------------------------------- cross-product discovery
+# Per-product write-through: each product owns its value-term-registry.yaml beside
+# its score-computing code. The auditor discovers them rather than reading one monolith
+# (the monolith IS the write-through defect — a cast score declared in the intent repo
+# drifts because the score-owner never edits it). DEFAULT_ECOSYSTEM_ROOT = Core/.
+
+ECOSYSTEM_REGISTRY_NAME = "value-term-registry.yaml"
+DEFAULT_ECOSYSTEM_ROOT = Path(__file__).resolve().parents[3]  # tools→intent→frameworks→Core
+# Never audit vendored / worktree / cache copies — they are not the source of truth.
+_EXCLUDE_DIR_PARTS = {".venv", "venv", ".worktrees", "node_modules", "__pycache__", ".git"}
+
+
+def discover_registries(root: str | Path) -> list[Path]:
+    """Find every value-term-registry.yaml under root, skipping vendored/worktree/cache dirs.
+
+    Returns a sorted list of Paths. This is the cross-product seam: each product's
+    write-through registry is found by name, wherever it lives.
+    """
+    root = Path(root)
+    found: list[Path] = []
+    for p in sorted(root.rglob(ECOSYSTEM_REGISTRY_NAME)):
+        if any(part in _EXCLUDE_DIR_PARTS for part in p.parts):
+            continue
+        found.append(p)
+    return found
+
+
 # ---------------------------------------------------------------------------- invariant checks
 
 ACTIVITY_PROXY_SMELLS = [
@@ -404,6 +431,42 @@ def _render_scan(candidates: list[dict], target: str, strict: bool) -> str:
     return "\n".join(lines)
 
 
+def _render_all(sections: list[tuple], root: str, n: int) -> str:
+    """Render the cross-product ecosystem audit (one block per discovered registry)."""
+    total_fails = sum(len(f) for _, f, _, _ in sections)
+    total_warns = sum(len(w) for _, _, w, _ in sections)
+    lines = [
+        _SEP,
+        "  VALUE-TERM ECOSYSTEM AUDIT — every per-product write-through registry",
+        "  Anti-pattern: a score measuring its own activity, not the outcome it serves",
+        "  (flight-model §1 · SIG-2026-05-30-cross-session-coherence §1)",
+        _SEP,
+        "",
+        f"  Root       : {root}",
+        f"  Registries : {n}",
+        "",
+    ]
+    if not sections:
+        lines += ["  (no value-term-registry.yaml found under root)", ""]
+    for path, fails, warns, count in sections:
+        status = "✗ FAIL" if fails else ("⚠ WARN" if warns else "✓ PASS")
+        lines.append(f"  [{status}] {path}  ({count} entries)")
+        for f in fails:
+            lines.append(f"        ✗ {f}")
+        for w in warns:
+            lines.append(f"        ⚠ {w}")
+    lines += [
+        "",
+        _SEP,
+        f"  ECOSYSTEM: {total_fails} FAIL · {total_warns} WARN across {n} registries.",
+        ("  ✓ Every declared score/gate measures an outcome (or is a tracked defect)."
+         if not total_fails else
+         "  ✗ Untracked activity-proxy defect(s) found — register or fix above."),
+        _SEP,
+    ]
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------------------- main
 
 def main(argv=None):
@@ -432,7 +495,43 @@ def main(argv=None):
         "--scan-strict", action="store_true",
         help="With --scan: exit 1 if any smell is found.",
     )
+    ap.add_argument(
+        "--all", nargs="?", const="", default=None, metavar="ROOT",
+        help="Cross-product mode: discover + audit every per-product "
+             "value-term-registry.yaml under ROOT (default: Core/). "
+             "Exit 2 if any discovered registry has a FAIL.",
+    )
     args = ap.parse_args(argv)
+
+    # ── CROSS-PRODUCT --all MODE ─────────────────────────────────────────────────
+    if args.all is not None:
+        root = Path(args.all) if args.all else DEFAULT_ECOSYSTEM_ROOT
+        registries = discover_registries(root)
+        sections: list[tuple] = []
+        all_fails: list[str] = []
+        all_warns: list[str] = []
+        for reg in registries:
+            fails, warns, count = _audit_registry(reg)
+            sections.append((str(reg), fails, warns, count))
+            all_fails.extend(fails)
+            all_warns.extend(warns)
+        print(_render_all(sections, str(root), len(registries)))
+        if args.json:
+            Path(args.json).write_text(
+                json.dumps({
+                    "root": str(root),
+                    "registry_count": len(registries),
+                    "registries": [
+                        {"path": p, "fails": f, "warns": w, "entry_count": c}
+                        for p, f, w, c in sections
+                    ],
+                    "fails": all_fails,
+                    "warns": all_warns,
+                    "passed": len(all_fails) == 0,
+                }, indent=2),
+                encoding="utf-8",
+            )
+        return 2 if all_fails else 0
 
     # ── SCAN MODE ──────────────────────────────────────────────────────────────
     if args.scan is not None:

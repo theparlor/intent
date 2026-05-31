@@ -463,5 +463,90 @@ class TestYAMLFallbackParser(unittest.TestCase):
         self.assertEqual(first["status"], "healthy")
 
 
+# ---------------------------------------------------------------------------
+# Cross-product discovery + --all aggregate mode
+# (promotion to a cross-product chain_audit invariant class — per-product
+#  write-through registries instead of one monolith)
+# ---------------------------------------------------------------------------
+
+def _write_registry(dirpath, body, name="value-term-registry.yaml"):
+    """Write a registry file under dirpath, creating parents. Returns the path."""
+    p = Path(dirpath) / name
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(body, encoding="utf-8")
+    return p
+
+
+def _import_audit_module():
+    spec = importlib.util.spec_from_file_location("value_term_audit", str(AUDIT_SCRIPT))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class TestDiscoverRegistries(unittest.TestCase):
+    """discover_registries(root) finds every value-term-registry.yaml, skipping junk dirs."""
+
+    def test_discover_finds_multiple_registries(self):
+        mod = _import_audit_module()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "products" / "alpha", _minimal_healthy(id="a"))
+            _write_registry(root / "products" / "beta", _minimal_healthy(id="b"))
+            found = mod.discover_registries(root)
+            self.assertEqual(len(list(found)), 2, msg=f"Expected 2 registries, got {list(found)}")
+
+    def test_discover_skips_venv_and_worktrees(self):
+        """Vendored (.venv) and worktree (.worktrees) copies must NOT be audited."""
+        mod = _import_audit_module()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "products" / "real", _minimal_healthy(id="r"))
+            _write_registry(root / ".venv" / "junk", _minimal_healthy(id="v"))
+            _write_registry(root / "p" / ".worktrees" / "wt", _minimal_healthy(id="w"))
+            found = [str(p) for p in mod.discover_registries(root)]
+            self.assertEqual(len(found), 1,
+                             msg=f"Expected 1 (skip .venv/.worktrees), got {found}")
+            self.assertIn("real", found[0])
+
+
+class TestAllMode(unittest.TestCase):
+    """--all ROOT discovers every per-product registry, audits each, aggregates."""
+
+    def _run_all(self, root, *extra):
+        cmd = [sys.executable, str(AUDIT_SCRIPT), "--all", str(root), *extra]
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        return r.returncode, r.stdout, r.stderr
+
+    def test_all_clean_registries_exit_0(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "p1", _minimal_healthy(id="one"))
+            _write_registry(root / "p2", _minimal_healthy(id="two"))
+            rc, out, err = self._run_all(root)
+            self.assertEqual(rc, 0, msg=f"Expected exit 0\nstdout:{out}\nstderr:{err}")
+
+    def test_all_one_dirty_registry_exit_2_and_names_it(self):
+        """A single defective entry in any discovered registry fails the whole ecosystem audit."""
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "good", _minimal_healthy(id="g"))
+            dirty = _minimal_healthy(id="bad", measures="activity", value_term="NONE")
+            _write_registry(root / "baddir", dirty)
+            rc, out, err = self._run_all(root)
+            self.assertEqual(rc, 2, msg=f"Expected exit 2\nstdout:{out}\nstderr:{err}")
+            # Must come from the audit (stdout), not an argparse error (stderr) — proves real run
+            self.assertIn("baddir", out,
+                          msg=f"Expected dirty registry path in stdout\nstdout:{out}\nstderr:{err}")
+
+    def test_all_reports_each_registry_path(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "prodX", _minimal_healthy(id="x"))
+            rc, out, err = self._run_all(root)
+            self.assertEqual(rc, 0, msg=f"{out}\n{err}")
+            self.assertIn("prodX", out, msg=f"Expected registry path in output\n{out}")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1,28 +1,27 @@
 ---
-# value-term-registry.yaml
+# value-term-registry.yaml — INTENT (per-product, write-through)
 #
-# Authoritative write-through manifest of every score/gate in the ecosystem.
-# A score or gate is "registered as healthy" only by an explicit declaration
-# that names its value term and asserts it measures the outcome (not its own
-# activity, not a handling proxy, not its own invocation count).
+# Owned by Intent. Holds Intent's OWN scores/gates (autonomy gate, flight model).
+# As of 2026-05-31 the registry is PER-PRODUCT and write-through: cast / topography /
+# pulse each own their own value-term-registry.yaml beside their score code. The
+# cross-product auditor discovers them all by name:
+#
+#   python3 value_term_audit.py --all            # audit every per-product registry under Core/
+#   python3 value_term_audit.py --registry FILE  # audit one
+#   python3 value_term_audit.py --scan PATH       # catch-net grep for unregistered scores
+#   python3 value_term_invariants.py              # chain_audit invariant class (INV-VALUE-TERM-*)
+#
+# (Cast's CVRS dimensions + relevance/values scores moved to
+#  Core/products/cast/value-term-registry.yaml — write-through fix: a cast score
+#  declared in the intent repo drifts because the score-owner never edits it.)
 #
 # Anti-pattern under guard:
-#   A score or gate that measures its own ACTIVITY (proxy) instead of the
-#   OUTCOME it serves — with no value term — saturates or accretes overhead
-#   and cannot converge.  (flight-model §1; SIG-2026-05-30 §1)
+#   A score or gate that measures its own ACTIVITY (proxy) instead of the OUTCOME
+#   it serves — with no value term — saturates or accretes overhead and cannot
+#   converge. (flight-model §1; SIG-2026-05-30 §1)
 #
-# Three proven instances that seeded this registry:
-#   1. CVRS freshness (cast) — measured corpus-touch (our handling timestamp)
-#      instead of source recency → pinned 100%, meaningless. FIXED.
-#   2. CVRS breadth/variety (cast) — measured modern channels[] instead of
-#      body-of-work → historical voices scored 0. FIXED.
-#   3. Autonomy Stop-hook (intent) — measured regex-fires (its own firing)
-#      instead of drift-prevented → 95.8% overhead over 1,463 runs. CAPPED.
-#
-# scanner: value_term_audit.py (audit registry) + --scan (catch-net grep)
-# related: Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md §1
-#          Core/products/cast/.intent/signals/SIG-2026-05-30-cross-session-coherence.md §1-§2
-#          Core/frameworks/intent/tools/drag_dashboard.py (cap_guard sibling)
+# related: spec/autonomy-flight-model-v1-DRAFT.md §1 (the "no value term" diagnosis)
+#          tools/drag_dashboard.py (cap_guard sibling for lexical-CHECK accretion)
 #
 # Status vocabulary:
 #   healthy  — declared correct, value_term names the outcome, measures: outcome
@@ -31,32 +30,6 @@
 #   defect   — known defect; remediation path documented; must not claim healthy
 
 scores:
-
-  # ── CAST: CVRS freshness ────────────────────────────────────────────────────
-  - id: cvrs-freshness
-    product: cast
-    kind: score-dimension
-    measures: outcome
-    value_term: "source recency (last_post_date / authored-content date), topic-weighted at query time via RecencyFactor(topic_time_sensitivity)"
-    outcome_signal: "last_post_date from sources.yaml; undatable sources → 0"
-    activity_proxy_risk: "corpus-touch timestamp (our handling mtime) — THE ORIGINAL DEFECT, decoupled by commit 020edfbb"
-    status: fixed
-    remediation: "commit 020edfbb decoupled recency from CVRS; SPEC-topical-relevance-001 §RecencyFactor completes the topic-weighting arc"
-    saturation_guard: "Core/products/cast/engine/scripts/cvrs_saturation_audit.py flags >40% at ceiling"
-    notes: "Was pinned at 100% because we measured our own handling timestamp. Fix: read last_post_date from sources.yaml, make recency a topic-relative modifier (fast-moving topics penalize old dates harder than public-domain historical voices)."
-
-  # ── CAST: CVRS breadth/variety ──────────────────────────────────────────────
-  - id: cvrs-breadth-variety
-    product: cast
-    kind: score-dimension
-    measures: outcome
-    value_term: "voice body-of-work richness: unique work-forms (books, articles, talks, papers, interviews) regardless of era, derived from sources.yaml"
-    outcome_signal: "work_form_count from sources.yaml; era-agnostic enumeration"
-    activity_proxy_risk: "modern channels[] field in registry YAML — era-biased, excluded historical voices (breadth=0 for Lincoln/Tubman/Franklin)"
-    status: fixed
-    remediation: "SPEC-topical-relevance-001 §works-based-breadth decouples measurement from modern channel metadata; era-agnostic work_forms() derivation shipped"
-    saturation_guard: "Core/products/cast/engine/scripts/cvrs_saturation_audit.py flags >40% at ceiling"
-    notes: "Was 0 for all historical/public-domain voices because channels[] is a modern concept. Fix: derive from work-forms enumeration in sources.yaml, not from registry channels field."
 
   # ── INTENT: Autonomy Stop-hook lexical layer ────────────────────────────────
   - id: autonomy-stop-hook-lexical
@@ -96,29 +69,3 @@ scores:
     remediation: ""
     saturation_guard: "stall_threshold(L,D) is a coupled function, not a fixed ceiling — cannot saturate independently of L and D"
     notes: "The architectural unlock: estimate-decide split. LLM estimates component inputs; deterministic coupled model computes W/T/L/D; airworthy ⇔ L≥W AND T>stall_threshold. Solves stall AND overspeed modeling (the two crash modes v1 missed)."
-
-  # ── CAST: Relevance recency modifier ────────────────────────────────────────
-  - id: cast-relevance-recency
-    product: cast
-    kind: score-dimension
-    measures: outcome
-    value_term: "RecencyFactor(topic_time_sensitivity): recency penalty is topic-weighted, not a flat time decay. Fast-moving topics (AI, crypto) → high penalty for old dates; public-domain historical voices → low or zero penalty. Decouples calendar age from intellectual relevance."
-    outcome_signal: "topic_time_sensitivity parameter (query-time, per topic); last_post_date from sources.yaml (or era anchor for public-domain figures)"
-    activity_proxy_risk: "flat recency decay (treat all old dates equally) — the pre-SPEC-topical-relevance-001 model that scored historical voices near 0 on recency"
-    status: healthy
-    remediation: ""
-    saturation_guard: "ceiling is topic-relative; a voice rated 1.0 recency on one topic may be 0.2 on another — saturation is per-topic-query, not per-voice absolute"
-    notes: "The isomorphism with flight-model Thrust: relevance = DomainFit × Readiness × RecencyFactor(topic_time_sensitivity) × ValuesFactor(values_caution(voice,topic)) is structurally identical to autonomy = Value(Strategy) × Reversibility × CautionFactor(context). Same math, two uses."
-
-  # ── CAST: values_caution equity layer ───────────────────────────────────────
-  - id: values-caution
-    product: cast
-    kind: score-dimension
-    measures: outcome
-    value_term: "values_caution(voice, topic): down-weight factor applied when a voice's documented values are compromised relative to the query topic (e.g. era-compromised views on rights/equality topics). Measures alignment of voice-values to topic-values — the outcome is: avoid giving unqualified authority to a voice on topics where their historical record contradicts contemporary equity norms."
-    outcome_signal: "voice equity_flags from registry (documented era-limitations); topic equity_sensitivity tag (query-time); caution = sigmoid of overlap between flags and sensitivity"
-    activity_proxy_risk: "blanket historical exclusion (remove all old voices) — cruder alternative that loses legitimate intellectual contribution"
-    status: healthy
-    remediation: ""
-    saturation_guard: "caution factor is bounded [0,1] and topic-scoped; a voice with equity_flags on rights topics may be fully authoritative on craft/science topics"
-    notes: "Structurally identical to the autonomy gate (a context-relative down-weight). Canonical example of the §2 isomorphism: one pattern, two uses. Public-domain historical voices (Tubman, Lincoln, Franklin, da Vinci) use this to receive full authority on applicable topics while being down-weighted on compromised ones."
