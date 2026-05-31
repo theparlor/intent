@@ -51,7 +51,7 @@ Registering a defect makes the catch-net WATCH it; it does not fix the score. Ea
 |---|---|---|
 | cast `synthesis_quality` ([compute-cvrs.py:341](../../../products/cast/engine/scripts/compute-cvrs.py)) | our synthesis-production (model-tag cap + synthesis recency) — handling proxy, 25/85≈29% of CVRS | decouple from model-tag/our-recency; derive from corpus synthesizability — CVRS recalibration (cast, 3 dims saturated 2026-05-29) |
 | topography `vision_align` ([score.py:35](../../../products/topography/src/topography/score.py)) | hand-entered 0.9 with no canonical vision doc (no outcome signal) | Track B decision A — author vision doc under Throughline; pass vision=None until then |
-| pulse activity counters ([digest.py:222](../../../products/pulse/src/digest.py)) | channels_polled / items_extracted — loop runs daily but is activity-closed, not outcome-closed | Track B pulse_prove_on_11 — close the loop vs freshening ledger (4cc7865) + add an acted-on signal |
+| pulse activity counters ([digest.py:222](../../../products/pulse/src/digest.py)) | channels_polled / items_extracted — loop runs daily but is activity-closed, not outcome-closed | ✅ **CLOSED 2026-05-31** → `pulse-outcome-feedback` (acted_on_rate) + `score.saturation_report` added; activity counters flipped defect→fixed. Trace: `products/pulse/.intent/signals/SIG-2026-05-31-pulse-value-term-close.md` |
 
 Corrected against disk (trust disk over stale signal): the handoff's "Pulse: no loop ever
 closed" is false — briefs run daily 2026-05-06→05-31; the real gap is the missing
@@ -59,8 +59,11 @@ outcome-feedback signal. Topography's "phantom 10%" is mathematically sound
 (weight applied/redistributed correctly); the real defect is the unsourced input. Cast
 `breadth` "fixed" claim verified TRUE (work-forms path at compute-cvrs.py:662-679).
 
-One honest WARN remains on `pulse-relevance-score` (no saturation_guard) — correct: the
-381/383 tier-4-skip rate on 2026-05-31 is exactly the uncaught saturation signal.
+~~One honest WARN remains on `pulse-relevance-score` (no saturation_guard)~~ — **WARN cleared
+2026-05-31**: `score.saturation_report` (skip_rate≥0.95 OR T1+T2==0) is now the registered
+saturation_guard, wired into every brief. Demonstrated against the real brief history it
+fires on 12/13 (every brief since 05-20). The 381/383 tier-4-skip rate is exactly what it now
+catches. Ecosystem `--all` is now 0 FAIL · **0 WARN**.
 
 ## Commits (per-repo coherent units, specific-file staging)
 - intent: engine `--all` + invariant class + tests + registry migration + operator doc
