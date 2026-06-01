@@ -64,6 +64,9 @@ SCORE_PRODUCTS = {
     "topography": "products/topography/value-term-registry.yaml",
     "pulse": "products/pulse/value-term-registry.yaml",
     "intent": "frameworks/intent/tools/value-term-registry.yaml",
+    "voices": "products/voices/value-term-registry.yaml",
+    "loom": "products/loom/value-term-registry.yaml",
+    "forge": "products/forge/value-term-registry.yaml",
 }
 
 
