@@ -67,6 +67,8 @@ SCORE_PRODUCTS = {
     "voices": "products/voices/value-term-registry.yaml",
     "loom": "products/loom/value-term-registry.yaml",
     "forge": "products/forge/value-term-registry.yaml",
+    "cortege": "products/cortege/value-term-registry.yaml",
+    "org-design-tooling": "products/org-design-tooling/value-term-registry.yaml",
 }
 
 
