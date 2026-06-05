@@ -1,0 +1,26 @@
+{
+  "seam_id": "seam-schema",
+  "brief_id": "MB-seam-schema-p1",
+  "summary": "Authored the Mission Brief JSON Schema and validated it parses.",
+  "outputs": [
+    { "path": "formation/mission-brief.schema.json", "summary": "the dispatch-payload schema" }
+  ],
+  "touched_paths": ["formation/mission-brief.schema.json"],
+  "verification": {
+    "command": "python3 -c \"import json; json.load(open('formation/mission-brief.schema.json'))\"",
+    "ran": true,
+    "passed": true,
+    "output": "OK"
+  },
+  "vocabulary_terms": ["Mission Brief", "sortie", "seam"],
+  "invariants_selfcheck": [
+    { "invariant": "JSON Schema is the single source of truth", "held": true },
+    { "invariant": "no top-level field is renamed without a DEC", "held": true }
+  ],
+  "non_goals_selfcheck": [
+    { "non_goal": "do not modify the coherence gate", "respected": true },
+    { "non_goal": "do not edit servers/models.py", "respected": true }
+  ],
+  "contract_changed": false,
+  "notes": ""
+}

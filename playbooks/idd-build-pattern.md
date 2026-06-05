@@ -200,9 +200,15 @@ These are the drift shapes that recur. The hooks catch the worst cases; the cata
 **Correction:** F8 mandate — verify the mechanism before claiming resolution.
 **Prevention:** Always run an investigation commit when a count changes unexpectedly.
 
+### Semantic drift across isolated agents (formation breakup)
+**Shape:** Two or more parallel agents on one intent each produce locally-correct work that is globally incoherent — divergent vocabulary, a silently breached interface Contract, or a violated non-goal. Each agent reports "airworthy"; the formation has broken up.
+**Root cause:** Isolation severs the coherence channel — each fan-out agent is, by design, ignorant of the system's intent, vocabulary, and "don't do X" constraints. Worktree isolation (Shape 2) solves PHYSICAL collision but amplifies SEMANTIC collision.
+**Correction:** Fan out on frozen Contracts (Shape 4), hand each agent a Mission Brief, and close with the two-stage coherence gate — not a plain merge. `audit_chain` alone is a false-green gate (it sees graph topology, not output semantics).
+**Spec:** `spec/SPEC-INTENT-FORMATION-FLIGHT-001.md`, `spec/SPEC-INTENT-COHERENCE-GATE-001.md`.
+
 ---
 
-## Three Composition Shapes
+## Four Composition Shapes
 
 ### Shape 1: Sub-loops (Plan-A then Plan-B then Plan-C then Plan-D)
 Sequential plans within a single IDD loop. Plan B's entry criteria are Plan A's exit criteria. Plans accumulate toward a single Observe close. Use when plans are tightly coupled and can't run independently.
@@ -225,6 +231,13 @@ A capability surfaces during a build but is substantively independent. Open a No
 
 **Closure:** Parent build closes. Sibling loop starts its own arc. They reference each other via cross-links but are governed independently.
 
+### Shape 4: Formation (parallel agents on frozen Contracts + coherence gate)
+Many agents flying ONE intent at once — the multi-aircraft case. Extends Shape 2's physical isolation (worktrees) with semantic separation: each agent owns one frozen Contract (seam), receives a **Mission Brief**, and the merge is a **two-stage coherence gate**, not a plain merge. Use when work is BOTH parallel AND coherence-critical (≥2 agents on one intent — the ON-trigger).
+
+**When to use:** A multi-seam build where locally-correct agents could drift apart in vocabulary or breach each other's interfaces. Shape 2 handles small-surface, physical-only parallelism; Shape 4 adds the coherence gate for larger semantic surfaces.
+
+**Closure:** Each seam closes behind its frozen Contract (`verification_command` green). The formation closes when the coherence gate is **drift-clean** (Stage A empty + no NEW `audit_chain` findings vs the pre-fan-out baseline). Runnable kit: `formation/`. Spec: `spec/SPEC-INTENT-FORMATION-FLIGHT-001.md`.
+
 ---
 
 ## Hook Registry
@@ -241,6 +254,8 @@ All 7 hooks in `Core/frameworks/intent/hooks/` are load-bearing for IDD:
 | `closure-discipline-signal-check.sh` | PreToolUse (Write/Edit) | Signal files with `status: resolved` missing triad keys |
 | `skill-intake-gate-check.sh` | PreToolUse (Agent) | Build-intake gate — prevents unauthorized skill builds |
 
+> **Formation note:** the formation-flight coherence gate (`formation/coherence-gate.workflow.js`) is a synthesis-time check run *inside the orchestrator* — deliberately **NOT** an 8th hook. `pre-commit-drag-guard.sh` blocks hook growth and the lexical hook layer measured 95.8% overhead; enforcement-by-hook is earned only by measured collision data. See `spec/SPEC-INTENT-COHERENCE-GATE-001.md`.
+
 ---
 
 ## Cross-Links
@@ -252,3 +267,4 @@ All 7 hooks in `Core/frameworks/intent/hooks/` are load-bearing for IDD:
 - **Cross-product applicability:** `Core/frameworks/intent/playbooks/cross-product-applicability.md` (sibling)
 - **Process drift catalog:** `Core/frameworks/intent/learnings/process-drift-catalog.md` (sibling)
 - **Source build learnings:** `Core/products/cast/.worktrees/element-substrate-recursive-arb/.intent/learnings/2026-05-19-element-substrate-build-F1-F13.md`
+- **Formation Flight (Shape 4):** `Core/frameworks/intent/spec/SPEC-INTENT-FORMATION-FLIGHT-001.md` + runnable kit `Core/frameworks/intent/formation/`

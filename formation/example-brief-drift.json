@@ -1,0 +1,25 @@
+{
+  "brief_id": "MB-seam-gate-p1",
+  "intent": "INT-FORMATION-FLIGHT",
+  "seam_id": "seam-gate",
+  "title": "(drift fixture) author the coherence gate",
+  "interface_contract": "CON-FORMATION-GATE",
+  "reference_frame": {
+    "glossary": { "Mission Brief": "the typed coherence contract handed to a sortie" },
+    "canonical_terms": ["Mission Brief"],
+    "forbidden_synonyms": { "Mission Brief": ["Brief Envelope", "Dispatch Brief", "Flight Brief"] }
+  },
+  "invariants": ["the gate is template-only, never a new hook under hooks/"],
+  "non_goals": ["do not edit servers/models.py", "do not add a hook under hooks/"],
+  "drift_markers": ["any absolute-green gating"],
+  "trust_gate": "L3",
+  "lambda": 1.5,
+  "isolation": "worktree",
+  "model": "opus",
+  "verification_rubric": { "contract": "CON-FORMATION-GATE", "verification_command": "false" },
+  "lineage": {
+    "trace_id": "formation-INT-FORMATION-FLIGHT",
+    "span_id": "seam-gate-p1",
+    "parent_id": "formation-INT-FORMATION-FLIGHT"
+  }
+}

@@ -12,8 +12,8 @@ technologies:
   - slack
 depth_score: 5
 depth_signals:
-  file_size_kb: 20.7
-  content_chars: 19248
+  file_size_kb: 30.6
+  content_chars: 19246
   entity_count: 2
   slide_count: 0
   sheet_count: 0
@@ -21,11 +21,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.16
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 67, strength: 0.103}
-  - {pair: consulting-operations ↔ marty-cagan, count: 64, strength: 0.086}
-  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.119}
+  - {pair: consulting-operations ↔ teresa-torres, count: 67, strength: 0.099}
+  - {pair: consulting-operations ↔ marty-cagan, count: 64, strength: 0.082}
+  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.116}
   - {pair: consulting-operations ↔ slack, count: 41, strength: 0.123}
-  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.079}
+  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.078}
 ---
 # Decision Log
 
@@ -294,6 +294,37 @@ bin/intent-init <product-name> \
 **Related:** DEC-012 (substrate-exposure envelope — the spine's interface this decision endorses investing in), DEC-CE-005, DEC-CE-008 (altitude placement — the premise), the four `SIG-2026-05-31-*` LYKN signals, `spec/2026-05-31-personal-synthesis-layer-category-validation.md` (synthesis).
 
 **Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/spec/2026-05-31-personal-synthesis-layer-category-validation.md`
+
+---
+
+### DEC-014: Formation Flight — coherent non-colliding parallel development extends the flight model
+
+**Decided:** 2026-06-05 · **Status: RATIFIED (plan-approved by Brien 2026-06-05)** — the architectural decisions below are accepted; the spec *family* stays `draft` and ratifies together with the flight model + surface matrix after the exercise run (SPEC-INTENT-FORMATION-FLIGHT-001 §9).
+
+**Context:** A repo-blind prior session drafted a build prompt to extend Intent for parallel multi-agent development. Grounding (`.intent/discovery/2026-06-05-formation-flight-source-manifest.md`) showed ~half the substrate already existed. This DEC records the decisions made building the formation layer on Claude Code Dynamic Workflows.
+
+**Alternatives considered:**
+- (a) Build the prompt's new primitives (`audit_gaps`, "brief envelope", a new contract type) — rejected; they already exist as `audit_chain`, the substrate-exposure envelope, and the Work-Ontology Contract. Duplication.
+- (b) Coherence gate = wrap `audit_chain` + merge — rejected; **false-green** (audit_chain sees graph topology, not output semantics).
+- (c) Extend the existing single-aircraft flight model into formation flight + a two-stage gate — **selected.**
+
+**Decision:**
+1. **Formation Flight = the multi-aircraft extension of the Autonomy Flight Model** (`SPEC-INTENT-FORMATION-FLIGHT-001`), sibling / ratify-together with the flight model + surface matrix. Two collision types: physical (worktree-solved, idd Shape 2) vs semantic (the new work).
+2. **"Mission Brief"** names the typed dispatch payload (grep-clean; "Brief Envelope"/"Flight Brief"/"Dispatch" all overloaded). NEW dispatch-direction type, sibling to the flight-envelope and substrate-exposure-envelope; composes-by-reference with Contract/λ/lineage — only `reference_frame`/`invariants`/`non_goals`/`drift_markers` are genuinely new fields. Civil-ATC alternative **"Clearance"** noted; renamable pre-ratification.
+3. **The coherence gate is two-stage** (`SPEC-INTENT-COHERENCE-GATE-001`): Stage A brief-conformance (in-orchestrator; runs `verification_command`, diffs invariants/non_goals/glossary) + Stage B `audit_chain` wrap. Stage A is the load-bearing new behavior; the wrapper alone is false-green.
+4. **Drift-clean is a delta, not absolute** — gate on NEW `audit_chain` findings vs a pre-fan-out baseline, never absolute green (the repo carries pre-existing topology debt: baseline red, 66 unspecced signals / 75 orphans). Honors zero-violation-start.
+5. **Template, not hook** — all formation checks run in the orchestrator at synthesis time; no new enforced hook (`pre-commit-drag-guard.sh` blocks hook growth; lexical layer = 95.8% overhead). Invocation-scoped; ON-trigger = ≥2 parallel agents on one intent; solo N=1 path imports nothing.
+6. **Seam = the existing Contract** (Work-Ontology L4); fan out on frozen Contracts not files (`SPEC-INTENT-SEAM-DECOMPOSITION-001`; idd Shape 4). Governance matrix maps L0–L4 × λ → model/isolation/privilege/verification (`SPEC-INTENT-FORMATION-GOVERNANCE-001`, sibling to the surface matrix).
+
+**Rationale:** Consistent with DEC-013 (differentiation = spine + altitude, not engine): formation flight is *governed parallel autonomy* — the spine — built by reusing engine primitives. Orchestration mechanics cited as prior art (MapReduce, Argyris double-loop, Saltzer–Schroeder, Beer VSM, Alexander, fixpoint iteration); the governance layer (typed Mission Brief + two-stage gate) is the owned contribution.
+
+**Consequences:** New `formation/` runnable kit (two schemas + two-stage gate + reference harness, all `node --check`-clean + test-pinned 6/6). `idd-build-pattern.md` gains Shape 4 + a semantic-drift anti-pattern. Flight model + surface matrix gain formation siblings. Five new `draft` specs ratify together after the exercise.
+
+**Validation criteria:** (1) the exercise run catches a seeded vocabulary-drift / non-goal violation that `audit_chain` alone passes green; (2) no new enforced hook added (drag-guard green); (3) solo N=1 path imports nothing.
+
+**Related:** DEC-013 (spine/altitude/verbatim — the anchor), DEC-012 (`audit_chain`), the flight-model + surface-matrix specs (sibling set), `.intent/discovery/2026-06-05-formation-flight-source-manifest.md`, `formation/`, `SIG-2026-06-05-coherence-gate-false-green`.
+
+**Supporting evidence:** `/Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-INTENT-FORMATION-FLIGHT-001.md` + the four mechanism specs + `~/.claude/plans/tranquil-leaping-barto.md` (Brien-approved plan).
 
 ---
 

@@ -1,0 +1,40 @@
+{
+  "brief_id": "MB-seam-schema-p1",
+  "intent": "INT-FORMATION-FLIGHT",
+  "seam_id": "seam-schema",
+  "title": "Author the Mission Brief JSON Schema",
+  "interface_contract": "CON-FORMATION-SCHEMA",
+  "reference_frame": {
+    "glossary": {
+      "sortie": "one agent flying one seam",
+      "seam": "a frozen interface boundary owned by exactly one sortie",
+      "Mission Brief": "the typed coherence contract handed to a sortie"
+    },
+    "canonical_terms": ["Mission Brief", "sortie", "seam"],
+    "forbidden_synonyms": {
+      "Mission Brief": ["Brief Envelope", "Dispatch Brief", "Flight Brief"]
+    }
+  },
+  "invariants": [
+    "JSON Schema is the single source of truth",
+    "no top-level field is renamed without a DEC"
+  ],
+  "non_goals": [
+    "do not modify the coherence gate",
+    "do not edit servers/models.py"
+  ],
+  "drift_markers": ["any new top-level field absent from the schema"],
+  "trust_gate": "L3",
+  "lambda": 1.5,
+  "isolation": "worktree",
+  "model": "opus",
+  "verification_rubric": {
+    "contract": "CON-FORMATION-SCHEMA",
+    "verification_command": "python3 -c \"import json; json.load(open('formation/mission-brief.schema.json'))\""
+  },
+  "lineage": {
+    "trace_id": "formation-INT-FORMATION-FLIGHT",
+    "span_id": "seam-schema-p1",
+    "parent_id": "formation-INT-FORMATION-FLIGHT"
+  }
+}
