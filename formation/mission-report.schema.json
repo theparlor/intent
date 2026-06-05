@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://theparlor.github.io/intent/schemas/formation/mission-report.schema.json",
+  "title": "Mission Report",
+  "description": "The structured return one parallel agent (sortie) produces for its seam. Used directly as the Claude Code Workflow agent(prompt, {schema}) StructuredOutput, so the agent is FORCED to self-report against its Mission Brief. The coherence-gate Stage A diffs this report against the brief (invariants, non_goals, reference_frame, contract). Source of truth for the MissionReport dataclass (formation/formation.py).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["seam_id", "brief_id", "touched_paths", "verification", "vocabulary_terms", "invariants_selfcheck", "non_goals_selfcheck", "contract_changed"],
+  "properties": {
+    "seam_id": { "type": "string", "description": "Echoes the brief's seam_id. The gate keys reports to briefs by this." },
+    "brief_id": { "type": "string", "description": "Echoes the brief's brief_id." },
+    "summary": { "type": "string", "description": "One paragraph: what this sortie produced." },
+    "outputs": {
+      "type": "array",
+      "description": "Artifacts produced.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path"],
+        "properties": {
+          "path": { "type": "string" },
+          "summary": { "type": "string" }
+        }
+      }
+    },
+    "touched_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "EVERY path created or modified by this sortie. Stage A intersects touched_paths across sibling reports to detect mid-air collision (two agents that mutated the same file outside their seams)."
+    },
+    "verification": {
+      "type": "object",
+      "description": "Result of running the brief's verification_rubric.verification_command. The agent MUST actually run it.",
+      "additionalProperties": false,
+      "required": ["command", "ran", "passed"],
+      "properties": {
+        "command": { "type": "string" },
+        "ran": { "type": "boolean", "description": "False if the agent could not run it — itself a finding." },
+        "passed": { "type": "boolean", "description": "True only if the command exited 0." },
+        "output": { "type": "string", "description": "Tail of stdout/stderr for evidence." }
+      }
+    },
+    "vocabulary_terms": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The key terms the agent used for the brief's concepts. Stage A diffs these against reference_frame.canonical_terms / forbidden_synonyms to detect vocabulary drift."
+    },
+    "invariants_selfcheck": {
+      "type": "array",
+      "description": "One entry per brief invariant: did it hold? Self-report is a signal, not proof — the gate corroborates with verification + adversarial verify for high-lambda seams.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["invariant", "held"],
+        "properties": {
+          "invariant": { "type": "string" },
+          "held": { "type": "boolean" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "non_goals_selfcheck": {
+      "type": "array",
+      "description": "One entry per brief non_goal: was it respected (untouched)?",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["non_goal", "respected"],
+        "properties": {
+          "non_goal": { "type": "string" },
+          "respected": { "type": "boolean" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "contract_changed": {
+      "type": "boolean",
+      "description": "True if the sortie altered its FROZEN interface_contract. Any true here is a contract breach the gate escalates — a seam cannot change its own boundary unilaterally."
+    },
+    "notes": { "type": "string", "description": "Anything the gate or a human should know — ambiguities hit, decisions deferred, disambiguation signals raised." }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "seam_id": "seam-gate",
+  "brief_id": "MB-seam-gate-p1",
+  "summary": "(drift fixture) built the gate but drifted on every axis.",
+  "outputs": [
+    { "path": "formation/coherence-gate.workflow.js" },
+    { "path": "servers/models.py" }
+  ],
+  "touched_paths": ["formation/coherence-gate.workflow.js", "servers/models.py", "hooks/new-gate-hook.sh"],
+  "verification": { "command": "false", "ran": true, "passed": false, "output": "exit 1" },
+  "vocabulary_terms": ["Brief Envelope", "gate"],
+  "invariants_selfcheck": [
+    { "invariant": "the gate is template-only, never a new hook under hooks/", "held": true, "note": "self-claims held — but touched_paths added hooks/new-gate-hook.sh" }
+  ],
+  "non_goals_selfcheck": [
+    { "non_goal": "do not edit servers/models.py", "respected": true, "note": "self-claims respected — but touched_paths includes servers/models.py" },
+    { "non_goal": "do not add a hook under hooks/", "respected": true }
+  ],
+  "contract_changed": true,
+  "notes": "seeded drift fixture: forbidden synonym ('Brief Envelope'), non-goal touched (servers/models.py + hooks/), verification failed, contract changed, dishonest self-checks. The gate must CORROBORATE, not trust the self-report."
+}

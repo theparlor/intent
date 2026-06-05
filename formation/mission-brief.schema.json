@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://theparlor.github.io/intent/schemas/formation/mission-brief.schema.json",
+  "title": "Mission Brief",
+  "description": "Formation Flight dispatch payload: the typed coherence contract an orchestrator (Tower) hands DOWN to one parallel agent (a sortie) before it flies its seam. It is the structural fix for formation breakup — the 'don't do X' constraints that otherwise evaporate at turn 47 travel WITH the agent into isolation. Canonical spec: SPEC-INTENT-MISSION-BRIEF-001. Source of truth for the MissionBrief dataclass (formation/formation.py) — that dataclass is test-pinned to this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["brief_id", "intent", "seam_id", "interface_contract", "reference_frame", "invariants", "non_goals", "trust_gate", "lineage"],
+  "properties": {
+    "brief_id": {
+      "type": "string",
+      "description": "Unique id for this brief. Convention: MB-<ulid> (ULID per SPEC-003). One brief per seam per formation run."
+    },
+    "intent": {
+      "type": "string",
+      "description": "Parent intent id (INT-...) the whole formation is flying. The shared 'why'. All briefs in one formation share this — it is the shared reference frame anchor and the ON-trigger key (>=2 agents on the same intent => formation)."
+    },
+    "seam_id": {
+      "type": "string",
+      "description": "The interface boundary this agent owns. Unique within the formation; two briefs NEVER share a seam_id (separation minima — no two aircraft in the same airspace). Decomposition is on seams, not files (SPEC-INTENT-SEAM-DECOMPOSITION-001)."
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable label for this sortie."
+    },
+    "interface_contract": {
+      "type": "string",
+      "description": "Contract id (CON-...) — the FROZEN seam. Work-Ontology level 4. The agent MUST NOT change it unilaterally; changing it is a contract breach the coherence gate flags. References the existing Contract entity (ContractType.INTERFACE, servers/models.py); does not redefine it."
+    },
+    "reference_frame": {
+      "type": "object",
+      "description": "The shared datum every aircraft navigates against. Without it, 'straight and level' means something different to each agent — the root cause of vocabulary drift.",
+      "additionalProperties": false,
+      "required": ["glossary"],
+      "properties": {
+        "glossary": {
+          "type": "object",
+          "description": "Canonical term -> definition. The agent must use these terms with these meanings.",
+          "additionalProperties": { "type": "string" }
+        },
+        "canonical_terms": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Terms that MUST appear verbatim (e.g. 'Mission Brief', not a synonym)."
+        },
+        "forbidden_synonyms": {
+          "type": "object",
+          "description": "Canonical term -> [synonyms whose appearance signals drift]. Coherence-gate Stage A flags any forbidden synonym in a Mission Report's vocabulary_terms.",
+          "additionalProperties": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Things that must remain true for this seam. The constraints that evaporate at turn 47. Checked by coherence-gate Stage A against the Mission Report's invariants_selfcheck and (where testable) the verification_command."
+    },
+    "non_goals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit out-of-scope. No existing Intent artifact carries this concept — the Mission Brief is its home (and the reason audit_chain alone cannot catch non-goal violation)."
+    },
+    "drift_markers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What counts as drift for THIS seam (beyond the global checks): specific files not to touch, decisions not to revisit, framings not to re-open. Feeds the loop-until-drift-clean stop condition."
+    },
+    "trust_gate": {
+      "type": "string",
+      "enum": ["L0", "L1", "L2", "L3", "L4"],
+      "description": "Autonomy band for this seam (Intent trust model, trust_to_autonomy). Sets the privilege ceiling. The formation governance matrix (SPEC-INTENT-FORMATION-GOVERNANCE-001) maps trust_gate x lambda -> (model, isolation, privilege, verification intensity)."
+    },
+    "lambda": {
+      "type": "number",
+      "minimum": 0,
+      "default": 1.0,
+      "description": "Coefficient of bravery for this seam. References the product's .intent/INTENT.md lambda_settings (autonomy-flight-model §16). High-lambda solo surfaces earn worktree+Opus+adversarial-verify; cross-human stays 0."
+    },
+    "isolation": {
+      "type": "string",
+      "enum": ["worktree", "readonly", "none"],
+      "default": "none",
+      "description": "Physical containment (Lift, the force that buys autonomy). 'worktree' => own git worktree (parallel mutate, no file collision); 'readonly' => no mutate; 'none' => shared workspace (only safe at N=1 or for non-overlapping reads)."
+    },
+    "model": {
+      "type": "string",
+      "enum": ["opus", "sonnet", "haiku"],
+      "description": "Model tier for this sortie. Assigned by the governance matrix from trust_gate x lambda. Omit to inherit the orchestrator's model."
+    },
+    "verification_rubric": {
+      "type": "object",
+      "description": "How this seam's Contract is checked. References the Contract's verification_command — it does NOT redefine a parallel rubric. Coherence-gate Stage A actually RUNS this command (audit_chain only checks that a verified: flag exists).",
+      "additionalProperties": false,
+      "properties": {
+        "contract": { "type": "string", "description": "CON id (same as interface_contract)." },
+        "verification_command": { "type": "string", "description": "Shell command that must exit 0 for the seam to be airworthy." }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "description": "OTel trace context. Reuses make_event/TraceContext (servers/models.py) — does not mint a new lineage scheme. This is how the formation is observable through the existing event fabric and how the Observe loop closes.",
+      "additionalProperties": false,
+      "required": ["trace_id", "span_id"],
+      "properties": {
+        "trace_id": { "type": "string", "description": "= the formation / parent intent trace." },
+        "span_id": { "type": "string", "description": "= this seam / sortie work unit." },
+        "parent_id": { "type": ["string", "null"], "description": "Hierarchy parent (the orchestrator span)." }
+      }
+    }
+  }
+}

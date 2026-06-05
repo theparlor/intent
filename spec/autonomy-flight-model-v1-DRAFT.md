@@ -16,16 +16,17 @@ related:
   - Core/products/topography/ (Cockpit local-control mapping)
   - Core/products/loom/ (Tower cross-session mapping)
   - .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
+  - Core/frameworks/intent/spec/SPEC-INTENT-FORMATION-FLIGHT-001.md (child — multi-aircraft extension: coherent non-colliding parallel development; ratifies together)
 depth_score: 4
 depth_signals:
-  file_size_kb: 17.4
-  content_chars: 15760
+  file_size_kb: 18.6
+  content_chars: 16945
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.19
+vocab_density: 0.18
 status: draft
 scope: framework
 date: 2026-05-26
