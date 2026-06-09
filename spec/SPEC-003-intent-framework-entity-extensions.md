@@ -2,19 +2,19 @@
 title: "Intent Framework Extensions: Entity Lifecycle, INGEST Type, Contribution Contracts, Trust Modifiers"
 id: SPEC-003
 created: 2026-04-06 18:00:00+00:00
+updated: 2026-05-29
 depth_score: 4
 depth_signals:
-  file_size_kb: 11.3
-  content_chars: 11105
+  file_size_kb: 17.9
+  content_chars: 17613
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.09
+vocab_density: 0.06
 status: approved
 intent: INT-006
-updated: 2026-05-29
 ratified_by: WS-DDR-101
 ratified_date: 2026-05-29
 contracts:

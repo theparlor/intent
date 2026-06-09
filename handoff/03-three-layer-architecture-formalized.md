@@ -32,11 +32,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.60
 related_entities:
-  - {pair: manuel-pais ↔ matthew-skelton, count: 364, strength: 0.691}
-  - {pair: matthew-skelton ↔ team-topologies, count: 327, strength: 0.624}
-  - {pair: marty-cagan ↔ teresa-torres, count: 263, strength: 0.402}
-  - {pair: matthew-skelton ↔ mik-kersten, count: 231, strength: 0.384}
-  - {pair: matthew-skelton ↔ richard-rumelt, count: 170, strength: 0.281}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 382, strength: 0.698}
+  - {pair: matthew-skelton ↔ team-topologies, count: 344, strength: 0.632}
+  - {pair: marty-cagan ↔ teresa-torres, count: 291, strength: 0.419}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 233, strength: 0.373}
+  - {pair: matthew-skelton ↔ richard-rumelt, count: 175, strength: 0.275}
 ---
 # Formalized Architecture for the Three-Layer Compiled Knowledge System
 

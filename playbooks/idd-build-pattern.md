@@ -4,14 +4,14 @@ id: PLAYBOOK-IDD-BUILD-PATTERN-001
 type: playbook
 depth_score: 4
 depth_signals:
-  file_size_kb: 16.5
-  content_chars: 15493
+  file_size_kb: 18.9
+  content_chars: 17984
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.13
+vocab_density: 0.11
 status: ratified
 date: 2026-05-20
 upstream_control_path: "Core/frameworks/intent/playbooks/idd-build-pattern.md (this file) + all 7 hooks in Core/frameworks/intent/hooks/ (the mechanism-level enforcement layer)"

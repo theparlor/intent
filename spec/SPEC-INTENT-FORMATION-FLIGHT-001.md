@@ -2,11 +2,6 @@
 title: Formation Flight — Coherent Non-Colliding Parallel Development
 id: SPEC-INTENT-FORMATION-FLIGHT-001
 updated: 2026-06-05
-status: draft
-scope: framework
-plane: bridge
-date: 2026-06-05
-author: intent framework (formation-flight build, grounded in repo 2026-06-05)
 related:
   - spec/autonomy-flight-model-v1-DRAFT.md (parent — the single-aircraft model this extends)
   - spec/autonomy-gate-surface-matrix-v0-DRAFT.md (sibling — surface × mode floors)
@@ -15,12 +10,30 @@ related:
   - spec/SPEC-INTENT-COHERENCE-GATE-001.md (mechanism 3 — two-stage synthesis barrier)
   - spec/SPEC-INTENT-FORMATION-GOVERNANCE-001.md (mechanism 4 — L0–L4 × λ swarm matrix)
   - playbooks/idd-build-pattern.md (Shape 4 — formation; physical-collision substrate)
-  - servers/knowledge.py (audit_chain — Stage B engine, :1348)
+  - "servers/knowledge.py (audit_chain — Stage B engine, :1348)"
   - formation/ (runnable kit — schemas + workflow harnesses)
   - Core/products/loom/ (Tower — formation lead), Core/products/topography/ (Cockpit)
   - Core/products/witness/ (recorder/Lift), Core/products/voices/ (variance/adversarial-verify)
-sibling_set: [SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001, SPEC-INTENT-AUTONOMY-SURFACE-MATRIX-001, SPEC-INTENT-FORMATION-FLIGHT-001]
-ratify_together: true
+depth_score: 4
+depth_signals:
+  file_size_kb: 11.9
+  content_chars: 10301
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.10
+status: draft
+scope: framework
+plane: bridge
+date: 2026-06-05
+author: intent framework (formation-flight build, grounded in repo 2026-06-05)
+sibling_set:
+  - SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001
+  - SPEC-INTENT-AUTONOMY-SURFACE-MATRIX-001
+  - SPEC-INTENT-FORMATION-FLIGHT-001
+ratify_together: True
 source_manifest: .intent/discovery/2026-06-05-formation-flight-source-manifest.md
 related_decisions:
   - DEC-014 (formation flight extension — to be written)

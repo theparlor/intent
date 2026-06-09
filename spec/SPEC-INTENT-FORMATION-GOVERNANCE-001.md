@@ -2,19 +2,29 @@
 title: Formation Governance Matrix — L0–L4 × λ → model · isolation · privilege · verification
 id: SPEC-INTENT-FORMATION-GOVERNANCE-001
 type: spec
-status: draft
-plane: bridge
 created: 2026-06-05
 updated: 2026-06-05
-author: intent framework (formation-flight build)
-parent: SPEC-INTENT-FORMATION-FLIGHT-001
-sibling: SPEC-INTENT-AUTONOMY-SURFACE-MATRIX-001
-ratify_together: true
 related:
   - spec/autonomy-gate-surface-matrix-v0-DRAFT.md (sibling — surface × mode floors; cross-human L0 row)
   - spec/autonomy-flight-model-v1-DRAFT.md (λ source, §16; estimate-decide split §4)
   - spec/SPEC-INTENT-COHERENCE-GATE-001.md (verification intensity column → which Stage runs)
   - .intent/config/approval-rules.yml (SPEC-APPROVAL-GATE — output-side L0)
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.3
+  content_chars: 6512
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+status: draft
+plane: bridge
+author: intent framework (formation-flight build)
+parent: SPEC-INTENT-FORMATION-FLIGHT-001
+sibling: SPEC-INTENT-AUTONOMY-SURFACE-MATRIX-001
+ratify_together: True
 ---
 # Formation Governance Matrix
 

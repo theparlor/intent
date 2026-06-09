@@ -1,12 +1,21 @@
 ---
 title: Pre-Send Assertion Audit — enforcement spec
-status: active
 created: 2026-06-05
+depth_score: 2
+depth_signals:
+  file_size_kb: 2.8
+  content_chars: 2360
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+status: active
 origin: SIG-2026-06-04-assert-from-inference-drift (Subaru engagement)
-approved_by: Brien (2026-06-05 — "a presend assertion would be a good conservative check to have")
+approved_by: "Brien (2026-06-05 — \"a presend assertion would be a good conservative check to have\")"
 mechanism: Core/frameworks/intent/hooks/presend-assertion-check.sh (Stop hook)
 ---
-
 # Pre-Send Assertion Audit
 
 ## Problem it closes

@@ -2,16 +2,25 @@
 title: Autonomy Flight Model — Ratification Tracker (the staged second level)
 id: SPEC-INTENT-FLIGHT-MODEL-RATIFICATION-TRACKER-001
 created: 2026-05-29
-status: staging
-scope: framework
 related:
   - Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md
   - Core/frameworks/intent/spec/autonomy-posture-check-layer-4.2-DRAFT.md
   - Core/frameworks/intent/hooks/lexical-layer-freeze.yaml
   - Core/frameworks/intent/tools/drag_dashboard.py
   - Core/frameworks/intent/.intent/signals/SIG-2026-05-29-friction-00-road-readiness-drag-synthesis.md
+depth_score: 4
+depth_signals:
+  file_size_kb: 9.5
+  content_chars: 8958
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.11
+status: staging
+scope: framework
 ---
-
 # Autonomy Flight Model — Ratification Tracker
 
 > **What this is.** The "second level" Brien staged on 2026-05-29 ("hit the first

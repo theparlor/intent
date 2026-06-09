@@ -7,10 +7,10 @@ related:
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md
   - Core/frameworks/methodology-library/meta/signal-scoring.md
   - .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
-  - Core/frameworks/intent/spec/SPEC-INTENT-FORMATION-GOVERNANCE-001.md (sibling — formation/swarm dimension: L0–L4 × λ → model/isolation/privilege/verification; ratifies together)
+  - {Core/frameworks/intent/spec/SPEC-INTENT-FORMATION-GOVERNANCE-001.md (sibling — formation/swarm dimension: L0–L4 × λ → model/isolation/privilege/verification; ratifies together)}
 depth_score: 4
 depth_signals:
-  file_size_kb: 11.1
+  file_size_kb: 11.3
   content_chars: 10128
   entity_count: 0
   slide_count: 0

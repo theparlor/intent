@@ -19,10 +19,10 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.12
 related_entities:
-  - {pair: andrej-karpathy ↔ stafford-beer, count: 3, strength: 0.429}
-  - {pair: andrej-karpathy ↔ chris-argyris, count: 3, strength: 0.375}
+  - {pair: andrej-karpathy ↔ stafford-beer, count: 3, strength: 0.375}
+  - {pair: andrej-karpathy ↔ chris-argyris, count: 3, strength: 0.333}
   - {pair: christopher-alexander ↔ stafford-beer, count: 2, strength: 0.5}
-  - {pair: andrej-karpathy ↔ christopher-alexander, count: 2, strength: 0.333}
+  - {pair: andrej-karpathy ↔ christopher-alexander, count: 2, strength: 0.286}
   - {pair: chris-argyris ↔ stafford-beer, count: 2, strength: 0.286}
 ---
 # Federated Knowledge Base Architecture

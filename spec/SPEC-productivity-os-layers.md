@@ -24,7 +24,7 @@ summary: "How Intent's architecture — the loop, three layers, trust model, Kno
 depth_score: 7
 depth_signals:
   file_size_kb: 43.2
-  content_chars: 19217
+  content_chars: 19215
   entity_count: 10
   slide_count: 0
   sheet_count: 0
@@ -32,11 +32,11 @@ depth_signals:
   has_summary: 1
 vocab_density: 0.42
 related_entities:
-  - {pair: manuel-pais ↔ matthew-skelton, count: 364, strength: 0.691}
-  - {pair: manuel-pais ↔ team-topologies, count: 327, strength: 0.881}
-  - {pair: matthew-skelton ↔ team-topologies, count: 327, strength: 0.624}
-  - {pair: marty-cagan ↔ teresa-torres, count: 263, strength: 0.402}
-  - {pair: matthew-skelton ↔ mik-kersten, count: 231, strength: 0.384}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 382, strength: 0.698}
+  - {pair: manuel-pais ↔ team-topologies, count: 344, strength: 0.884}
+  - {pair: matthew-skelton ↔ team-topologies, count: 344, strength: 0.632}
+  - {pair: marty-cagan ↔ teresa-torres, count: 291, strength: 0.419}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 233, strength: 0.373}
 ---
 # Productivity OS Layer Model — L1 Through L6
 

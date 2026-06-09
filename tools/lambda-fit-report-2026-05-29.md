@@ -1,17 +1,27 @@
 ---
 title: Lambda Fit Report — 2026-05-29 (REAL FIT)
 type: report
-status: final
-date: 2026-05-29
 supersedes: lambda-fit-v1-report.md (provisional run with tool failure — see Tool Failure note below)
-fit_source: Core/frameworks/intent/tools/lambda_fit.py
-corpus: Core/frameworks/intent/tools/extracted-corpus-2026-05-29/
 related:
   - Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md (§8, §15, §16)
   - Core/frameworks/intent/tools/lambda_fit.py
   - Core/frameworks/intent/tools/extract_calibration_corpus.py
   - Core/frameworks/intent/tools/apply_lambda_settings.py
   - Core/frameworks/intent/tools/skip_rules.py
+depth_score: 4
+depth_signals:
+  file_size_kb: 13.6
+  content_chars: 13013
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.08
+status: final
+date: 2026-05-29
+fit_source: Core/frameworks/intent/tools/lambda_fit.py
+corpus: Core/frameworks/intent/tools/extracted-corpus-2026-05-29/
 ---
 # Lambda Fit Report — 2026-05-29 (REAL FIT)
 

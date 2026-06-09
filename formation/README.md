@@ -1,3 +1,21 @@
+---
+title: Readme
+type: framework
+maturity: final
+confidentiality: internal
+reusability: adaptable
+created: 2026-06-06
+depth_score: 2
+depth_signals:
+  file_size_kb: 4.7
+  content_chars: 4456
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+---
 # Formation Flight — runnable kit
 
 Coherent, non-colliding parallel multi-agent development for Intent. The **multi-aircraft extension**

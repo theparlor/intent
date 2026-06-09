@@ -15,7 +15,7 @@ frameworks:
 depth_score: 6
 depth_signals:
   file_size_kb: 23.6
-  content_chars: 19191
+  content_chars: 19192
   entity_count: 3
   slide_count: 0
   sheet_count: 0
@@ -23,11 +23,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.31
 related_entities:
-  - {pair: marty-cagan ↔ product-operating-model, count: 103, strength: 0.181}
-  - {pair: subaru ↔ turnberry, count: 68, strength: 0.576}
-  - {pair: consulting-operations ↔ teresa-torres, count: 67, strength: 0.103}
-  - {pair: product-operating-model ↔ teresa-torres, count: 66, strength: 0.128}
-  - {pair: consulting-operations ↔ marty-cagan, count: 64, strength: 0.086}
+  - {pair: marty-cagan ↔ product-operating-model, count: 110, strength: 0.182}
+  - {pair: subaru ↔ turnberry, count: 79, strength: 0.612}
+  - {pair: product-operating-model ↔ teresa-torres, count: 71, strength: 0.13}
+  - {pair: consulting-operations ↔ teresa-torres, count: 63, strength: 0.092}
+  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.081}
 ---
 # US Automotive OEM Industry Dossier
 

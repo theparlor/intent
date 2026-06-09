@@ -17,11 +17,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.36
 related_entities:
-  - {pair: manuel-pais ↔ matthew-skelton, count: 364, strength: 0.691}
-  - {pair: manuel-pais ↔ team-topologies, count: 327, strength: 0.881}
-  - {pair: matthew-skelton ↔ team-topologies, count: 327, strength: 0.624}
-  - {pair: matthew-skelton ↔ mik-kersten, count: 231, strength: 0.384}
-  - {pair: matthew-skelton ↔ richard-rumelt, count: 170, strength: 0.281}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 382, strength: 0.698}
+  - {pair: manuel-pais ↔ team-topologies, count: 344, strength: 0.884}
+  - {pair: matthew-skelton ↔ team-topologies, count: 344, strength: 0.632}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 233, strength: 0.373}
+  - {pair: matthew-skelton ↔ richard-rumelt, count: 175, strength: 0.275}
 source_type: substack-note + github-repo + podcast
 source_urls:
   - "https://substack.com/@aakashgupta/note/c-240536298"

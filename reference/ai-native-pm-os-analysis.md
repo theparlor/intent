@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.45
 related_entities:
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.123}
-  - {pair: jira ↔ subaru, count: 38, strength: 0.255}
-  - {pair: jira ↔ turnberry, count: 33, strength: 0.258}
-  - {pair: jira ↔ measurement-metrics, count: 32, strength: 0.219}
-  - {pair: consulting-operations ↔ jira, count: 31, strength: 0.087}
+  - {pair: consulting-operations ↔ slack, count: 40, strength: 0.121}
+  - {pair: jira ↔ subaru, count: 37, strength: 0.23}
+  - {pair: jira ↔ turnberry, count: 32, strength: 0.229}
+  - {pair: jira ↔ measurement-metrics, count: 32, strength: 0.204}
+  - {pair: consulting-operations ↔ jira, count: 28, strength: 0.079}
 ---
 # AI-Native PM OS — Competitive Analysis & Intent Framework Mapping
 

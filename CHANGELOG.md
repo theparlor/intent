@@ -13,8 +13,8 @@ technologies:
   - slack
 depth_score: 6
 depth_signals:
-  file_size_kb: 24.0
-  content_chars: 19238
+  file_size_kb: 26.3
+  content_chars: 19258
   entity_count: 3
   slide_count: 0
   sheet_count: 0
@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.21
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 67, strength: 0.103}
-  - {pair: consulting-operations ↔ marty-cagan, count: 64, strength: 0.086}
-  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.119}
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.123}
-  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.079}
+  - {pair: consulting-operations ↔ teresa-torres, count: 63, strength: 0.092}
+  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.081}
+  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.118}
+  - {pair: consulting-operations ↔ slack, count: 40, strength: 0.121}
+  - {pair: jira ↔ subaru, count: 37, strength: 0.23}
 ---
 # Changelog
 

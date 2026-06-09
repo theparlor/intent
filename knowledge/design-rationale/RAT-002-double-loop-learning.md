@@ -22,11 +22,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.28
 related_entities:
-  - {pair: josh-seiden ↔ marty-cagan, count: 118, strength: 0.204}
-  - {pair: josh-seiden ↔ teresa-torres, count: 104, strength: 0.208}
-  - {pair: jeff-patton ↔ josh-seiden, count: 94, strength: 0.281}
-  - {pair: jeff-gothelf ↔ josh-seiden, count: 83, strength: 0.369}
-  - {pair: josh-seiden ↔ outcomes-over-output, count: 78, strength: 0.37}
+  - {pair: josh-seiden ↔ marty-cagan, count: 128, strength: 0.206}
+  - {pair: josh-seiden ↔ teresa-torres, count: 114, strength: 0.212}
+  - {pair: jeff-patton ↔ josh-seiden, count: 101, strength: 0.285}
+  - {pair: jeff-gothelf ↔ josh-seiden, count: 96, strength: 0.397}
+  - {pair: josh-seiden ↔ outcomes-over-output, count: 88, strength: 0.388}
 name: Double-Loop Learning as the Critical Feedback Path
 confidence: 0.85
 origin: agent

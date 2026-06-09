@@ -2,17 +2,27 @@
 title: Seam Decomposition — fan out on Contracts, not files
 id: SPEC-INTENT-SEAM-DECOMPOSITION-001
 type: spec
-status: draft
-plane: bridge
 created: 2026-06-05
 updated: 2026-06-05
-author: intent framework (formation-flight build)
-parent: SPEC-INTENT-FORMATION-FLIGHT-001
 related:
   - playbooks/idd-build-pattern.md (Shape 2 physical isolation; Shape 4 formation — this is the semantic half)
   - spec/work-ontology.md (Contract = level 4, the seam unit)
   - servers/models.py (ContractType.INTERFACE, contract_frontmatter, verification_command)
   - knowledge-engine/spec/federation.md (inherit down / promote up / never leak sideways = separation minima)
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.0
+  content_chars: 6363
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+status: draft
+plane: bridge
+author: intent framework (formation-flight build)
+parent: SPEC-INTENT-FORMATION-FLIGHT-001
 ---
 # Seam Decomposition
 

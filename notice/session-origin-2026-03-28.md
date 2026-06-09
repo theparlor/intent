@@ -20,11 +20,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 1.11
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 67, strength: 0.103}
-  - {pair: consulting-operations ↔ marty-cagan, count: 64, strength: 0.086}
-  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.119}
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.123}
-  - {pair: consulting-operations ↔ jeff-patton, count: 40, strength: 0.079}
+  - {pair: consulting-operations ↔ teresa-torres, count: 63, strength: 0.092}
+  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.081}
+  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.118}
+  - {pair: consulting-operations ↔ slack, count: 40, strength: 0.121}
+  - {pair: jira ↔ subaru, count: 37, strength: 0.23}
 ---
 # Session Origin — 2026-03-28
 

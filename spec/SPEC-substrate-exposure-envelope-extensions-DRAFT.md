@@ -1,16 +1,26 @@
 ---
-title: "Substrate-Exposure Envelope & Verb Extensions (D1–D4)"
+title: Substrate-Exposure Envelope & Verb Extensions (D1–D4)
 type: spec
 maturity: draft
-status: draft
 confidentiality: internal
 reusability: specific
 created: 2026-05-31
 updated: 2026-05-31
+depth_score: 4
+depth_signals:
+  file_size_kb: 14.8
+  content_chars: 13697
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.07
+status: draft
 ratification_state: "RATIFIED + BUILT 2026-05-31 — all five deltas approved (D2 override = entity frontmatter, Open Q1 closed) AND implemented in servers/knowledge.py (commit 5ca8566); servers/test_knowledge.py green at 56 tests (run via servers/.venv). Recorded in decision-log.md DEC-012. Remaining Execute step: deploy to intent-knowledge.fastmcp.cloud (Brien-driven)."
 vocabulary_state: reconciled to our canon 2026-05-31 — see §0 (intentionally divergent from the validating category)
 extends: substrate-exposure-architecture.md
-target: Core/frameworks/intent/servers/knowledge.py  # the intent-knowledge FastMCP server
+target: Core/frameworks/intent/servers/knowledge.py
 source_signals:
   - SIG-2026-05-31-personal-synthesis-layer-commoditizing
   - SIG-2026-05-31-personal-memory-altitude-mismatch
@@ -21,7 +31,6 @@ related_decisions:
   - DEC-010 (intent-knowledge MCP scope extension — current verb set)
   - DEC-009 (two observabilities)
 ---
-
 # Substrate-Exposure Envelope & Verb Extensions (D1–D4)
 
 > Four validation-driven refinements to the `intent-knowledge` MCP envelope + verb set, plus a

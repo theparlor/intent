@@ -2,20 +2,30 @@
 title: Mission Brief — the Formation Flight dispatch payload
 id: SPEC-INTENT-MISSION-BRIEF-001
 type: spec
-status: draft
-plane: bridge
 created: 2026-06-05
 updated: 2026-06-05
+related:
+  - servers/models.py (Contract, make_event, TraceContext — the carriers this composes with)
+  - "servers/knowledge.py (get_core :1259 — sources the standing-core slice of reference_frame)"
+  - spec/SPEC-substrate-exposure-envelope-extensions-DRAFT.md (the OTHER, read-direction envelope — sibling, not this)
+  - spec/autonomy-flight-model-v1-DRAFT.md (§16 λ-scoping — trust_gate/lambda source)
+  - hooks/autonomy-grant-dispatch-prompt-check.sh (the dispatch-prompt sibling this complements)
+depth_score: 4
+depth_signals:
+  file_size_kb: 7.5
+  content_chars: 6639
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+status: draft
+plane: bridge
 author: intent framework (formation-flight build)
 parent: SPEC-INTENT-FORMATION-FLIGHT-001
 schema: formation/mission-brief.schema.json
 return_schema: formation/mission-report.schema.json
-related:
-  - servers/models.py (Contract, make_event, TraceContext — the carriers this composes with)
-  - servers/knowledge.py (get_core :1259 — sources the standing-core slice of reference_frame)
-  - spec/SPEC-substrate-exposure-envelope-extensions-DRAFT.md (the OTHER, read-direction envelope — sibling, not this)
-  - spec/autonomy-flight-model-v1-DRAFT.md (§16 λ-scoping — trust_gate/lambda source)
-  - hooks/autonomy-grant-dispatch-prompt-check.sh (the dispatch-prompt sibling this complements)
 ---
 # Mission Brief
 

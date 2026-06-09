@@ -6,9 +6,18 @@ confidentiality: internal
 reusability: universal
 created: 2026-05-31
 updated: 2026-05-31
-purpose: How the cross-product value-term/outcome catch-net works — the loop, the registry schema, and who consumes it.
+depth_score: 4
+depth_signals:
+  file_size_kb: 5.7
+  content_chars: 5350
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+purpose: "How the cross-product value-term/outcome catch-net works — the loop, the registry schema, and who consumes it."
 ---
-
 # Value-Term Registry & Cross-Product Chain-Audit
 
 **The discipline.** A score or gate must measure the **outcome** it serves, not its

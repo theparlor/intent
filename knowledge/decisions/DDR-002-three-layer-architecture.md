@@ -23,11 +23,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.36
 related_entities:
-  - {pair: manuel-pais ↔ matthew-skelton, count: 364, strength: 0.691}
-  - {pair: matthew-skelton ↔ team-topologies, count: 327, strength: 0.624}
-  - {pair: matthew-skelton ↔ mik-kersten, count: 231, strength: 0.384}
-  - {pair: matthew-skelton ↔ richard-rumelt, count: 170, strength: 0.281}
-  - {pair: john-kotter ↔ matthew-skelton, count: 169, strength: 0.286}
+  - {pair: manuel-pais ↔ matthew-skelton, count: 382, strength: 0.698}
+  - {pair: matthew-skelton ↔ team-topologies, count: 344, strength: 0.632}
+  - {pair: matthew-skelton ↔ mik-kersten, count: 233, strength: 0.373}
+  - {pair: matthew-skelton ↔ richard-rumelt, count: 175, strength: 0.275}
+  - {pair: john-kotter ↔ matthew-skelton, count: 171, strength: 0.278}
 status: accepted
 confidence: 0.90
 origin: human

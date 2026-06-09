@@ -2,19 +2,29 @@
 title: Coherence Gate — the two-stage synthesis barrier
 id: SPEC-INTENT-COHERENCE-GATE-001
 type: spec
-status: draft
-plane: bridge
 created: 2026-06-05
 updated: 2026-06-05
-author: intent framework (formation-flight build)
-parent: SPEC-INTENT-FORMATION-FLIGHT-001
-implements: formation/coherence-gate.workflow.js
 related:
-  - servers/knowledge.py (audit_chain :1348 — Stage B engine; what it can and cannot see)
-  - servers/models.py (Contract.verification_command :291 — Stage A engine)
+  - "servers/knowledge.py (audit_chain :1348 — Stage B engine; what it can and cannot see)"
+  - "servers/models.py (Contract.verification_command :291 — Stage A engine)"
   - Core/products/voices/ (conservation law — preserve contradictions, never merge)
   - Core/products/witness/ (findings routed via signal_emit/lineage)
   - hooks/pre-commit-drag-guard.sh (why this is a template, not a hook)
+depth_score: 4
+depth_signals:
+  file_size_kb: 9.1
+  content_chars: 8447
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.00
+status: draft
+plane: bridge
+author: intent framework (formation-flight build)
+parent: SPEC-INTENT-FORMATION-FLIGHT-001
+implements: formation/coherence-gate.workflow.js
 ---
 # Coherence Gate
 

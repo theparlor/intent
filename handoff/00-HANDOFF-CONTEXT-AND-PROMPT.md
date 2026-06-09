@@ -29,11 +29,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.51
 related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 263, strength: 0.402}
-  - {pair: jeff-patton ↔ marty-cagan, count: 158, strength: 0.27}
-  - {pair: jeff-patton ↔ teresa-torres, count: 155, strength: 0.313}
-  - {pair: josh-seiden ↔ marty-cagan, count: 118, strength: 0.204}
-  - {pair: marty-cagan ↔ product-engineering-coaching, count: 108, strength: 0.085}
+  - {pair: marty-cagan ↔ teresa-torres, count: 291, strength: 0.419}
+  - {pair: jeff-patton ↔ marty-cagan, count: 168, strength: 0.271}
+  - {pair: jeff-patton ↔ teresa-torres, count: 165, strength: 0.312}
+  - {pair: josh-seiden ↔ marty-cagan, count: 128, strength: 0.206}
+  - {pair: josh-seiden ↔ teresa-torres, count: 114, strength: 0.212}
 ---
 # Intent Project — Handoff Context & Agent Prompt
 

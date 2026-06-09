@@ -23,11 +23,11 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.06
 related_entities:
-  - {pair: consulting-operations ↔ slack, count: 41, strength: 0.123}
+  - {pair: consulting-operations ↔ slack, count: 40, strength: 0.121}
   - {pair: knowledge-engine ↔ knowledge-primitives, count: 18, strength: 0.667}
   - {pair: knowledge-primitives ↔ product-taxonomy-operating-models, count: 18, strength: 0.667}
   - {pair: knowledge-engine ↔ product-taxonomy-operating-models, count: 18, strength: 0.5}
-  - {pair: knowledge-engine ↔ matthew-skelton, count: 14, strength: 0.026}
+  - {pair: knowledge-engine ↔ matthew-skelton, count: 14, strength: 0.025}
 ---
 # HumanLayer Approval Patterns: Applicability to Intent Orchestrator
 

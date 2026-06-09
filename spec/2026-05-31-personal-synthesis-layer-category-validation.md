@@ -1,11 +1,21 @@
 ---
-title: "Personal-Synthesis-Layer Category — Validation Synthesis (S1–S3)"
+title: Personal-Synthesis-Layer Category — Validation Synthesis (S1–S3)
 type: synthesis-note
 maturity: draft
 confidentiality: internal
 reusability: adaptable
 created: 2026-05-31
 updated: 2026-05-31
+depth_score: 4
+depth_signals:
+  file_size_kb: 8.0
+  content_chars: 6543
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.31
 purpose: "Ties the LYKN / personal-synthesis-layer category scan (signals S1–S3) to the spine + altitude differentiation thesis. Records the category as downstream validation of prior committed design."
 related_signals:
   - SIG-2026-05-31-personal-synthesis-layer-commoditizing
@@ -16,7 +26,6 @@ related_specs:
   - substrate-exposure-architecture.md
   - SPEC-substrate-exposure-envelope-extensions-DRAFT.md
 ---
-
 # Personal-Synthesis-Layer Category — Validation Synthesis
 
 > **One line.** A market is converging on a layer we already built; the layer it is converging
