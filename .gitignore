@@ -9,6 +9,8 @@ __pycache__/
 
 # Test venvs + Python bytecode (not source)
 servers/.venv/
+observe/adapters/.venv/
+tools/intent-mcp/.venv/
 tests/__pycache__/
 __pycache__/
 *.pyc
