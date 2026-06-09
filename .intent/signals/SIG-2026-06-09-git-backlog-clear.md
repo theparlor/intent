@@ -78,7 +78,7 @@ mechanism exists, this signal stays upstream-pending.
 ## Addendum 2026-06-09 — venv churn-class fix executed
 
 The open question above was resolved the same day (4-gate pass: reversible,
-local, in-repo precedent `servers/.venv/`, no info gap). Commit `9e4cc78`:
+local, in-repo precedent `servers/.venv/`, no info gap). Commit `a82333b` (post-rebase hash):
 
 - `git rm -r --cached` on both trees — **2535 index entries removed**
   (`observe/adapters/.venv/` 1153 + `tools/intent-mcp/.venv/` 1382); venvs
