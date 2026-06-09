@@ -28,7 +28,7 @@ related_entities:
 ---
 # Event Catalog
 
-> 26 events, 7 emission mechanisms, OTel-compatible schema. What gets captured and how, from GitHub Actions to agent self-emission. Extended with pause/resume, human contact, LLM-as-judge, error-retry-escalate protocols (12-factor integration) and L0 approval gate (SPEC-APPROVAL-GATE). Both 2026-04-13.
+> 26 events, 7 emission mechanisms, OTel-compatible schema. What gets captured and how, from GitHub Actions to agent self-emission. Extended with pause/resume, human contact, LLM-as-judge, error-retry-escalate protocols (12-factor integration) and L0 approval gate (SPEC-APPROVAL-GATE). Both 2026-04-13. Amended 2026-06-09: `observation.evaluated` now requires typed-verdict fields (`criteria_origin`, `evaluator_model`, `evaluator_repo`) and a normative consumption invariant — self-graded verdicts cannot close specs at acceptance authority. See `typed-evaluation-verdicts.md`.
 
 ## Why Events?
 
@@ -273,7 +273,9 @@ After execution completes, the Observe phase can invoke an LLM to evaluate wheth
   "event": "observation.evaluated",
   "data": {
     "spec_id": "SPEC-NNN",
+    "criteria_origin": "self | distilled | derived",
     "evaluator_model": "opus-4.6",
+    "evaluator_repo": "same-repo | external",
     "criteria": [
       {
         "dimension": "completeness",
@@ -297,17 +299,29 @@ After execution completes, the Observe phase can invoke an LLM to evaluate wheth
 }
 ```
 
+### Verdict Typing (REQUIRED fields — 2026-06-09 amendment)
+
+Three fields are **REQUIRED** on every `observation.evaluated` event. An event missing any of them is schema-invalid and its verdict carries no authority:
+
+| Field | Values | Meaning |
+|-------|--------|---------|
+| `criteria_origin` | `self` \| `distilled` \| `derived` | Who authored the expected values the judge graded against. `self` = the spec's own prose criteria (builder-authored, zero displacement). `distilled` = criteria compiled from external evidence (UAT incidents, calibration labels) by the builder. `derived` = an exterior judge derived its own criteria from the artifact's claims, without reading the builder's rubric. |
+| `evaluator_model` | model id string | The model that rendered the verdict (e.g. `opus-4.6`). Was previously present but optional in practice; now required so judge-drift is traceable across model versions. |
+| `evaluator_repo` | `same-repo` \| `external` | Where the judge ran. `same-repo` = the judge operated inside the repo/frame that produced the work. `external` = the judge ran from outside the producing frame (e.g. Gauntlet exterior adjudication). |
+
+**Normative consumption invariant:** A verdict with `criteria_origin: self` **MUST NOT** close a spec at acceptance authority. It may serve as an **inner-loop instrument only** — a cheap fuzzy test that routes rework, never a gate that marks a spec complete. Spec closure on the basis of an `observation.evaluated` verdict requires `criteria_origin: derived`, **OR** an explicitly recorded Brien override (a `decision.recorded` event referencing the verdict and stating the override). A self-graded "pass" is a builder grading the builder's own work against the builder's own rubric — a typing flaw (eval-pattern mechanism at test-grade displacement consumed at UAT-grade authority), not an evaluation. Full rationale, the complete verdict type tuple, migration, and the enforcement catch-net: `spec/typed-evaluation-verdicts.md`.
+
 ### Integration with Observe Loop
 
 1. `contract.completed` fires (all mechanical assertions pass)
 2. If spec has `evaluate: true` in frontmatter, trigger LLM-as-judge
 3. LLM evaluates output against spec criteria (not contracts — the spec's prose intent)
-4. `observation.evaluated` fires with scores and verdict
+4. `observation.evaluated` fires with scores, verdict, and the required typing fields (`criteria_origin`, `evaluator_model`, `evaluator_repo`)
 5. If verdict is `fail`: emit a new signal describing the gap → feeds back to Notice
-6. If verdict is `conditional_pass`: emit signal + mark spec as complete with caveats
-7. If verdict is `pass`: spec marked complete, no further action
+6. If verdict is `conditional_pass`: emit signal; spec may be marked complete-with-caveats only if the consumption invariant is satisfied (`criteria_origin: derived` or recorded Brien override)
+7. If verdict is `pass`: spec marked complete **only if** the consumption invariant is satisfied. A `pass` with `criteria_origin: self` routes back to the inner loop (informational; closure requires a derived-criteria verdict or a recorded Brien override)
 
-This closes the gap between "contracts pass" (mechanical truth) and "the spec is satisfied" (semantic truth).
+This closes the gap between "contracts pass" (mechanical truth) and "the spec is satisfied" (semantic truth) — and the verdict typing keeps the second claim honest about *whose* truth the judge measured.
 
 ## Error-Retry-Escalate Pattern
 
