@@ -70,6 +70,27 @@ mechanism exists, this signal stays upstream-pending.
 
 ## Open questions (L2)
 
-- Should the two tracked `.venv` trees be untracked (`git rm -r --cached` +
+- ~~Should the two tracked `.venv` trees be untracked (`git rm -r --cached` +
   `.gitignore`, matching the existing `servers/.venv/` ignore)? They generated
-  113 of the 174 dirty files and will churn again on every interpreter bump.
+  113 of the 174 dirty files and will churn again on every interpreter bump.~~
+  **ANSWERED — executed 2026-06-09, see addendum below.**
+
+## Addendum 2026-06-09 — venv churn-class fix executed
+
+The open question above was resolved the same day (4-gate pass: reversible,
+local, in-repo precedent `servers/.venv/`, no info gap). Commit `9e4cc78`:
+
+- `git rm -r --cached` on both trees — **2535 index entries removed**
+  (`observe/adapters/.venv/` 1153 + `tools/intent-mcp/.venv/` 1382); venvs
+  untouched on disk, both interpreters verified functional after.
+- `.gitignore` extended with `observe/adapters/.venv/` and
+  `tools/intent-mcp/.venv/` alongside the existing `servers/.venv/` pattern.
+- Reproducibility preserved: sibling `requirements.lock.txt` files (pip freeze
+  per the python-environment-standard) were already committed by an earlier
+  wave today and verified against the live venvs.
+
+This removes the **churn class** behind theme 1 (113 of 174 dirty files):
+interpreter bumps and uv rebuilds can no longer dirty the index. Themes 2-3
+(enrichment rewrites, events appends) and the upstream commit-cadence
+automation gap remain open — signal status unchanged
+(`symptom-repaired, upstream-pending`).
