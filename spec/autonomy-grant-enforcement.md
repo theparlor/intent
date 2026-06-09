@@ -11,14 +11,14 @@ related:
   - Core/products/org-design-tooling/.intent/signals/SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13.md
 depth_score: 4
 depth_signals:
-  file_size_kb: 16.0
-  content_chars: 14840
+  file_size_kb: 18.1
+  content_chars: 16944
   entity_count: 0
   slide_count: 0
   sheet_count: 0
   topic_count: 0
   has_summary: 0
-vocab_density: 0.07
+vocab_density: 0.06
 date: 2026-04-22
 status: accepted
 scope: universal
@@ -289,12 +289,15 @@ Signal closure conditions:
 
 ## The cap — lexical-layer freeze (2026-05-29)
 
-The Layer 4 detector grew CHECK 1→2→3→4→5→6, each a reaction to a variant the prior
+The Layer 4 detector grew CHECK 1→2→3→4→5→6→7, each a reaction to a variant the prior
 checks missed. `autonomy-posture-check-layer-4.2-DRAFT §1` establishes that this
 lexical approach **cannot converge** — caution-bias generates new phrasings faster
 than regex catches them. The aggregate cost was never measured.
 
-**As of 2026-05-29 the lexical layer is FROZEN at CHECK 6.**
+**As of 2026-05-29 the lexical layer is FROZEN at CHECK 7.** (CHECK 7 — scope-variant
+detector — was added the same day the freeze was first written at CHECK 6; the freeze
+baseline was re-anchored 6→7 to match. Authoritative count: `lexical-layer-freeze.yaml`
+`frozen_at_check: 7`.)
 
 - **Registry:** `Core/frameworks/intent/hooks/lexical-layer-freeze.yaml` — declares the
   baseline, the sunset trigger, and the rule: no net-new CHECK without a Drag-budget
