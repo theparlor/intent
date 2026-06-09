@@ -94,3 +94,20 @@ interpreter bumps and uv rebuilds can no longer dirty the index. Themes 2-3
 (enrichment rewrites, events appends) and the upstream commit-cadence
 automation gap remain open — signal status unchanged
 (`symptom-repaired, upstream-pending`).
+
+### Incident during execution: rebase physically deleted the venvs
+
+`git rm -r --cached` is working-tree-safe only until a rebase. The
+`pull --rebase` before push checked out origin/main (which still *tracked*
+the .venv files, re-materializing them as tracked), then replayed the
+untrack commit — git applied it as a **full deletion, working tree
+included**. Both venvs were destroyed on disk (only ~433 never-tracked
+files like `CACHEDIR.TAG`/`__pycache__` survived).
+
+Recovery was trivial *because the lock files were committed first*: both
+venvs rebuilt from `requirements.lock.txt` via uv on CPython 3.12.13;
+import-verified (`opentelemetry.sdk` + OTLP exporter; `mcp` + `pydantic`;
+`server.py` parses). **Lesson:** when untracking a tree cached-only,
+rebase-replay onto a remote that still tracks it converts the cached rm
+into a physical rm — always have the reproducibility artifact committed
+BEFORE the untrack commit, or push without an intervening rebase.
