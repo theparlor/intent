@@ -33,7 +33,7 @@ sibling_set:
   - SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001
   - SPEC-INTENT-AUTONOMY-SURFACE-MATRIX-001
   - SPEC-INTENT-FORMATION-FLIGHT-001
-ratify_together: True
+ratify_together: true
 source_manifest: .intent/discovery/2026-06-05-formation-flight-source-manifest.md
 related_decisions:
   - DEC-014 (formation flight extension — to be written)

@@ -24,7 +24,7 @@ plane: bridge
 author: intent framework (formation-flight build)
 parent: SPEC-INTENT-FORMATION-FLIGHT-001
 sibling: SPEC-INTENT-AUTONOMY-SURFACE-MATRIX-001
-ratify_together: True
+ratify_together: true
 ---
 # Formation Governance Matrix
 
