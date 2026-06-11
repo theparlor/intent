@@ -5,7 +5,7 @@ type: learning-catalog
 status: ratified
 date: '2026-05-20'
 upstream_control_path: Core/frameworks/intent/learnings/process-drift-catalog.md (this file) + all 7 hooks in Core/frameworks/intent/hooks/ (the mechanism-level prevention layer) + Core/frameworks/intent/spec/autonomy-grant-enforcement.md + Core/frameworks/intent/spec/closure-discipline-enforcement.md
-catch_mechanism: autonomy-grant-stop-check.sh (Family 1, Layer 4) + autonomy-grant-dispatch-prompt-check.sh (Family 1, Layer 5) + autonomy-grant-check.sh (Family 1, Layer 1 banner) + closure-discipline-stop-check.sh (Family 2, Layer 4) + closure-discipline-signal-check.sh (Family 2, Layer 5) + closure-discipline-check.sh (Family 2, Layer 1 banner). Families 3-4: no hook yet; catalog is the prevention layer; future hooks target these families.
+catch_mechanism: "autonomy-grant-stop-check.sh (Family 1, Layer 4) + autonomy-grant-dispatch-prompt-check.sh (Family 1, Layer 5) + autonomy-grant-check.sh (Family 1, Layer 1 banner) + closure-discipline-stop-check.sh (Family 2, Layer 4) + closure-discipline-signal-check.sh (Family 2, Layer 5) + closure-discipline-check.sh (Family 2, Layer 1 banner). Families 3-4: no hook yet; catalog is the prevention layer; future hooks target these families."
 pipeline_survival: catalog is source-referenced (each entry has memory cross-links); overwatch sweeps cite this catalog; new drift patterns add entries here; the two enforcement specs are the mechanism-level companions
 source_builds:
   - element-substrate-and-recursive-arb (F1-F13 + 3 drift signals)

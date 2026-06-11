@@ -14,13 +14,34 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.60
 sources:
-  - {name: Techpresso Free Guide, url: https://academy.techpresso.co/free-guide.pdf, publisher: Techpresso / Dupple, date: 2025}
-  - {name: Snowflake: A Practical Guide to AI Agents, url: https://www.snowflake.com/resource/a-practical-guide-to-ai-agents/, publisher: Snowflake Inc., date: 2025-03}
-  - {name: PagerDuty: 2026 State of AI-First Operations, url: https://www.pagerduty.com/state-of-ai-first-operations/, publisher: PagerDuty Inc., date: 2026-03}
-  - {name: Airtable: AI Guides & Resources, url: https://www.airtable.com/articles/ai, publisher: Airtable Inc., date: 2025-2026}
-  - {name: Splunk: 5 Big Myths of AI and Agentic AI Debunked, url: https://www.splunk.com/en_us/pdfs/gated/ebooks/5-big-myths-of-ai-and-machine-learning-debunked.pdf, publisher: Splunk (Cisco), date: 2025}
-  - {name: Splunk: State of Observability 2025, url: https://www.splunk.com/en_us/pdfs/gated/ebooks/state-of-observability-2025.pdf, publisher: Splunk (Cisco) / Oxford Economics, date: 2025}
-  - {name: Confluent: Event-Driven Design for Agents and Multi-Agent Systems, url: https://assets.confluent.io/m/7d45554d056501e1/original/20250423-EB-Event-Driven_Design_for_Agents.pdf, publisher: Confluent Inc., date: 2025-04}
+  - name: Techpresso Free Guide
+    url: https://academy.techpresso.co/free-guide.pdf
+    publisher: Techpresso / Dupple
+    date: 2025
+  - name: 'Snowflake: A Practical Guide to AI Agents'
+    url: https://www.snowflake.com/resource/a-practical-guide-to-ai-agents/
+    publisher: Snowflake Inc.
+    date: 2025-03
+  - name: 'PagerDuty: 2026 State of AI-First Operations'
+    url: https://www.pagerduty.com/state-of-ai-first-operations/
+    publisher: PagerDuty Inc.
+    date: 2026-03
+  - name: 'Airtable: AI Guides & Resources'
+    url: https://www.airtable.com/articles/ai
+    publisher: Airtable Inc.
+    date: 2025-2026
+  - name: 'Splunk: 5 Big Myths of AI and Agentic AI Debunked'
+    url: https://www.splunk.com/en_us/pdfs/gated/ebooks/5-big-myths-of-ai-and-machine-learning-debunked.pdf
+    publisher: Splunk (Cisco)
+    date: 2025
+  - name: 'Splunk: State of Observability 2025'
+    url: https://www.splunk.com/en_us/pdfs/gated/ebooks/state-of-observability-2025.pdf
+    publisher: Splunk (Cisco) / Oxford Economics
+    date: 2025
+  - name: 'Confluent: Event-Driven Design for Agents and Multi-Agent Systems'
+    url: https://assets.confluent.io/m/7d45554d056501e1/original/20250423-EB-Event-Driven_Design_for_Agents.pdf
+    publisher: Confluent Inc.
+    date: 2025-04
 purpose: "Analyze enterprise AI guides to understand market vocabulary, depth levels, commodity vs. genuine advice, and competitive positioning for Intent's own guide. Extended to include observability and event-driven architecture perspectives relevant to Intent's Observe phase and Knowledge Engine."
 ---
 # Enterprise AI Guides — Competitive Landscape Analysis
