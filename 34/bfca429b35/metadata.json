@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "34bfca429b35",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "spec/signal-stream.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/34/bfca429b35/0/metadata.json",
+      "transcript": "/34/bfca429b35/0/full.jsonl",
+      "content_hash": "/34/bfca429b35/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 31035,
+    "cache_creation_tokens": 77967,
+    "cache_read_tokens": 657089,
+    "output_tokens": 11603,
+    "api_call_count": 8
+  }
+}
