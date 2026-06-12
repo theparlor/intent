@@ -20,11 +20,21 @@ depth_signals:
   has_summary: 0
 vocab_density: 0.10
 related_entities:
-  - {pair: consulting-operations ↔ teresa-torres, count: 63, strength: 0.092}
-  - {pair: consulting-operations ↔ marty-cagan, count: 63, strength: 0.081}
-  - {pair: consulting-operations ↔ subaru, count: 44, strength: 0.118}
-  - {pair: consulting-operations ↔ slack, count: 40, strength: 0.121}
-  - {pair: jira ↔ subaru, count: 37, strength: 0.23}
+  - pair: consulting-operations ↔ teresa-torres
+    count: 62
+    strength: 0.087
+  - pair: consulting-operations ↔ marty-cagan
+    count: 62
+    strength: 0.077
+  - pair: consulting-operations ↔ subaru
+    count: 44
+    strength: 0.117
+  - pair: consulting-operations ↔ slack
+    count: 40
+    strength: 0.12
+  - pair: jira ↔ subaru
+    count: 39
+    strength: 0.235
 ---
 # Signal Stream
 
@@ -94,6 +104,8 @@ A signal may transition to `status: resolved` ONLY when **one** of the following
 2. **Explicitly deferred with rationale.** Set `status: deferred`, add `deferral_rationale:` (why the upstream fix isn't being built now), and `reassess_by:` (a date, not a vague condition). Deferred signals remain active in the governance view; they do not disappear.
 
 **Intermediate state for symptom-only repairs:** If a defect has been repaired but the upstream control is NOT yet installed, use `status: symptom-repaired, upstream-pending`. This is a VISIBLE governance debt — it surfaces in overwatch and blocks "clean" closure reporting. It exists to prevent the premature-closure failure mode where running a one-time repair script looks like resolution.
+
+> **Canonical spelling (WS-DDR-113, 2026-06-12):** the token is `symptom-repaired, upstream-pending` — comma + space, exactly. The run-on variant `symptom-repaired-upstream-pending` had diverged organically (26 files); the corpus was normalized to the comma form and `hooks/closure-discipline-signal-check.sh` now blocks new writes of the variant. One spelling keeps status greps and the two-bucket governance views trustworthy.
 
 **Closure audit:** When a signal closes as `resolved`, the closer must answer:
 - What is the upstream control? (gate / policy / DoD / emission discipline)

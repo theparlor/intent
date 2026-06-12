@@ -88,6 +88,15 @@ try:
         sys.exit(0)
     fm = m.group(1)
 
+    # Vocabulary guard (WS-DDR-113): the intermediate closure token is
+    # canonically spelled "symptom-repaired, upstream-pending" (comma +
+    # space) per spec/signal-stream.md. The run-on hyphen variant diverged
+    # organically (26 files by 2026-06-12, normalized that day) — block new
+    # writes of it so status greps stay trustworthy.
+    if re.search(r"^status:\s*symptom-repaired-upstream-pending\b", fm, re.MULTILINE):
+        print("VOCAB")
+        sys.exit(0)
+
     # Find status:
     sm = re.search(r"^status:\s*([a-zA-Z][a-zA-Z_-]*)", fm, re.MULTILINE)
     if not sm:
@@ -117,6 +126,15 @@ except Exception:
     # Fail open on any parse error
     print("OK")
 ')
+
+if [ "$VERDICT" = "VOCAB" ]; then
+  TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  echo "[$TIMESTAMP] VOCAB session=$SESSION_ID tool=$TOOL_NAME file=$FILE_PATH" >> "$AUDIT_LOG"
+  cat <<EOF
+{"decision": "block", "reason": "CLOSURE-STATUS VOCABULARY (WS-DDR-113): 'symptom-repaired-upstream-pending' is the non-canonical run-on variant. Write the canonical token: 'status: symptom-repaired, upstream-pending' (comma + space) per Core/frameworks/intent/spec/signal-stream.md. The corpus was normalized to the comma form on 2026-06-12; one spelling keeps status greps trustworthy. Bypass: CLOSURE_DISCIPLINE_SIGNAL_BYPASSED=1 (logged)."}
+EOF
+  exit 0
+fi
 
 case "$VERDICT" in
   OK) exit 0 ;;
