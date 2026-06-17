@@ -3,6 +3,7 @@ id: SIG-036
 title: Cast/Voices malformation is Intent framework write-through discipline symptom — audit-as-catchnet anti-pattern at architectural scale
 date: 2026-04-21
 status: open
+last_triaged: 2026-06-17
 category: framework-discipline
 severity: high
 related:
@@ -96,3 +97,11 @@ All three recur because the framework they depend on has not yet codified write-
 - Journal entry `Core/products/org-design-tooling/journal/JRN-20260421-intent-framework-rigor-audit-pivot.md` captures the session arc
 - Tie-in to `feedback_audit_vs_writethrough.md` — promote this SIG to the canonical architectural example
 - Cross-link from Cast and Voices product READMEs (when they exist) to this SIG until #1 resolves
+
+---
+
+## Triage note — 2026-06-17 (still open; one write-through gate has since landed)
+
+**Disposition: stays open.** This signal's thesis is that Intent-framework discipline is *advisory, not write-through*, and the fix is the sub-project #1 rigor audit producing an `enforcement-map.md` that converts advisory stages to gates. That enforcement-map does NOT yet exist in `spec/`, and the #1 rigor audit has not been run, so the architectural-scale fix is still pending.
+
+**What IS new:** one concrete write-through gate from the recommended class now exists — `hooks/closure-discipline-signal-check.sh` (Layer 5 PreToolUse) enforces the signal-stream DoD at the write boundary, blocking `status: resolved` signal writes lacking `upstream_control_path:`/`catch_mechanism:`. That is exactly the "enforced on `status: resolved` transitions" row of this signal's upstream/downstream table — landed for the signal-stream lifecycle. The broader enforcement map (per-stage advisory-vs-gate audit across Notice/Spec/Execute/Observe, and the per-stage persona-intake DoD assertions) remains the open work. Not closing: the central deliverable (rigor-audit enforcement map) is absent.

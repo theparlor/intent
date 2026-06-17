@@ -4,6 +4,7 @@ title: Session-start lint behavior declared in CLAUDE.md but not wired through h
 severity: medium
 detected: 2026-04-05
 status: open
+last_triaged: 2026-06-17
 source: retroactive-extraction
 trust_score: 0.50
 autonomy: L2
@@ -20,3 +21,9 @@ The overwatch skill already runs at session start. The artifact registry and sig
 - A future session needs to extend overwatch (or add a hook) that loads .artifact-registry/registry.md and .signal-log/LOG.md at conversation start
 - Without this, each session starts cold — the knowledge graph data exists but isn't surfaced until Brien asks about it
 - The fix is likely a hook in settings.json or an overwatch extension, not new methodology
+
+---
+
+## Triage note — 2026-06-17 (still open; partial — mechanism exists, specific wiring does not)
+
+**Disposition: stays open, narrowed.** The signal's original claim ("no hook or overwatch integration actually implements this") is now partially false: `~/.claude/settings.json` registers SessionStart hooks (`overwatch-staleness-check.sh`, `overwatch-nested-init-check.sh`), and overwatch runs at session start. So the *mechanism* for session-start behavior now exists. But the SPECIFIC wiring this signal named — loading the artifact registry (`.artifact-registry/registry.md`) and signal log (`.signal-log/LOG.md`) silently at conversation start — is NOT what those hooks do (they check staleness and nested-init drift). The "each session starts cold w.r.t. the knowledge-graph data" gap remains. Low urgency; not closing because the named behavior is still unwired.

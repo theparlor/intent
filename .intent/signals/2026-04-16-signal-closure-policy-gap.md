@@ -4,6 +4,7 @@ title: Intent framework lacks signal-closure policy — premature-closure patter
 severity: high
 detected: 2026-04-16
 status: open
+last_triaged: 2026-06-17
 source: cross-product-audit
 trust_score: 0.95
 autonomy: L3
@@ -52,3 +53,11 @@ This signal is itself a test of the new closure policy. It will NOT close as `re
 ## Triage note — 2026-05-28 (still open)
 
 **Status:** still open. No `intent-signal lint` command has been added to the CLI suite (`Core/frameworks/intent/bin/`). The ~16-signal backfill audit (keyword-heuristic flagged but not individually verified) has not been run. The closure-discipline spec and DoR/DoD library additions from 2026-04-16 ARE in place — those resolution items landed. But the signal's own meta-criteria require the linter OR explicit deferral with a date, which have not been set. The follow-up items remain in their original `[ ]` state.
+
+---
+
+## Triage note — 2026-06-17 (still open; prospective-side control landed)
+
+**Disposition: stays open.** Re-verified `bin/` (intent-init, intent-intent, intent-knowledge, intent-signal, intent-spec, intent-status, mint-wsddr) — still NO `intent-signal lint` subcommand; `grep lint bin/intent-signal` is empty. The backfill audit of the ~16 suspect closures has still not run. The signal's own §Meta closure contract (linter exists OR explicit deferral-with-date, AND backfill complete OR deferred) remains unmet, so closing now would violate its own terms.
+
+**What IS new since the 2026-05-28 triage:** the *prospective* (new-closure) side of the closure-policy gap now has an executable upstream control — `hooks/closure-discipline-signal-check.sh` (Layer 5 PreToolUse, created 2026-04-30, last touched 2026-06-12 for WS-DDR-113). It blocks any Write/Edit to `*/.intent/signals/*.md` that sets `status: resolved|closed|done` without both `upstream_control_path:` and `catch_mechanism:`. That is the write-through gate the closure policy needed — but it is a DIFFERENT control than the linter this signal named, and it only catches the interactive tool-layer write path (NOT direct/automated filesystem writers — see road-readiness F-4) and does NOT perform the retrospective backfill audit. Remaining gap narrowed to: (1) retrospective lint/backfill of historical resolved signals, (2) write-boundary coverage for automated batch writers. Keeping open rather than substituting the hook for the author's stated criteria.
