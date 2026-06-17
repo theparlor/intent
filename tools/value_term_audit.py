@@ -251,6 +251,7 @@ def _audit_entry(entry: dict) -> tuple[list[str], list[str]]:
     vt = entry.get("value_term") or ""
     remediation = (entry.get("remediation") or "").strip()
     saturation_guard = (entry.get("saturation_guard") or "").strip()
+    outcome_signal = (entry.get("outcome_signal") or "").strip()
 
     fails: list[str] = []
     warns: list[str] = []
@@ -270,12 +271,28 @@ def _audit_entry(entry: dict) -> tuple[list[str], list[str]]:
             )
         # else: defect/capped with remediation → allowed (known defect with tracked fix)
 
-    # INV-2: healthy entries must measure outcome, not activity
+    # INV-2: healthy entries must measure outcome, not activity —
+    # UNLESS the entry honestly declares itself observability-only with an
+    # explicit outcome-close. An activity dimension labeled `measures: activity`
+    # whose `outcome_signal` begins with "n/a by design" has done exactly the
+    # honest disclosure the discipline prescribes: it states it is NOT outcome-
+    # bearing and points to the sibling dimension that closes the outcome. That
+    # is the GOOD pattern, not the anti-pattern. The real anti-pattern is an
+    # activity score *treated as* the outcome — silent about the gap, or claiming
+    # an outcome_signal while measuring activity. Without this exemption the
+    # invariant penalizes the very disclosure it exists to encourage and cannot
+    # hold zero-violation-start for any honest observability term.
+    # See gauge value-term-registry.yaml (gauge-audit / gauge-ensemble-pass);
+    # feedback_audit_vs_writethrough (when a fix is correct but the audit keeps
+    # firing, suspect the comparator).
     if status == "healthy" and measures == "activity":
-        fails.append(
-            f"[INV-2] {eid}: status=healthy but measures='activity' — "
-            f"measures its own activity (proxy), not the outcome it serves — the anti-pattern."
-        )
+        if not outcome_signal.lower().startswith("n/a by design"):
+            fails.append(
+                f"[INV-2] {eid}: status=healthy but measures='activity' — "
+                f"measures its own activity (proxy), not the outcome it serves — the anti-pattern. "
+                f"An honest observability-only term must declare "
+                f"outcome_signal: 'n/a by design — <outcome-close>'."
+            )
 
     # INV-3: defect/capped must have remediation
     if status in STATUS_KNOWN_DEFECT and not remediation:
