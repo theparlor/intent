@@ -9,6 +9,7 @@ topic: codelayer-pivot
 related:
   - RETRO-2026-04-12-humanlayer-approval-SIG-1
   - SPEC-APPROVAL-GATE
+status: promoted
 ---
 
 # Staged Human Review Gates: Review Earlier, Not Later

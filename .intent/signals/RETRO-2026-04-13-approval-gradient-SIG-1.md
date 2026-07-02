@@ -9,6 +9,7 @@ topic: approval-gradient
 related:
   - SPEC-APPROVAL-GATE
   - RETRO-2026-04-13-codelayer-pivot-SIG-1
+status: open
 ---
 
 # Two Complementary Gate Systems: Phase Gates vs Action Gates

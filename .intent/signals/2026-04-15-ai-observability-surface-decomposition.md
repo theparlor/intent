@@ -19,6 +19,7 @@ related_signals:
 related_specs:
   - pending — semantic-conventions-for-ai-work (this document is the precursor)
 pitch_status: "Draft — intended as push-ready content for Chris Markus review"
+status: needs-shaping
 ---
 # Signal / Draft Spec: AI Observability Surface Decomposition
 

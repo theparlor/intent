@@ -10,6 +10,7 @@ related:
   - SPEC-APPROVAL-GATE
   - RETRO-2026-04-12-humanlayer-approval-DEC-1
   - RETRO-2026-04-13-codelayer-pivot-SIG-1
+status: promoted
 ---
 
 # Uniform L0 Gate Reintroduces Ceremony Tax
