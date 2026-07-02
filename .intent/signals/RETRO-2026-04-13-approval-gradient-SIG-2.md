@@ -9,6 +9,7 @@ topic: approval-gradient
 related:
   - RETRO-2026-04-13-approval-gradient-DEC-3
   - SPEC-APPROVAL-GATE
+status: open
 ---
 
 # Payload Similarity Computation Is an Unstated Dependency

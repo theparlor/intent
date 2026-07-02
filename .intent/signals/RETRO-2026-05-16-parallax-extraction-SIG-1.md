@@ -6,6 +6,7 @@ severity: medium
 source: session-analysis
 detected: 2026-05-16
 topic: parallax-extraction
+status: open
 ---
 
 # Agent novelty-inflation: ingest claimed "new" without reconciling against founding themes
