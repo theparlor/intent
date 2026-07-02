@@ -599,6 +599,19 @@ class TestDiscoverRegistries(unittest.TestCase):
                              msg=f"Expected 1 (skip dist/ vendored copy), got {found}")
             self.assertNotIn("dist", found[0])
 
+    def test_discover_skips_build_and_out_dirs(self):
+        """build/ and out/ are dist's sibling build-output conventions — same rule."""
+        mod = _import_audit_module()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "products" / "real", _minimal_healthy(id="r"))
+            _write_registry(root / "p" / "build" / "bundle", _minimal_healthy(id="b"))
+            _write_registry(root / "p" / "out" / "site", _minimal_healthy(id="o"))
+            found = [str(p) for p in mod.discover_registries(root)]
+            self.assertEqual(len(found), 1,
+                             msg=f"Expected 1 (skip build/ and out/), got {found}")
+            self.assertIn("real", found[0])
+
 
 class TestAllMode(unittest.TestCase):
     """--all ROOT discovers every per-product registry, audits each, aggregates."""
