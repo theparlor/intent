@@ -116,6 +116,17 @@ If any answer is "N/A" or "we just fixed this instance," the correct status is `
 
 **Precedent — why this rule exists:** SIG-006 (persona-corpus YAML parse failures, 2026-04-08) was closed `resolved` after a repair script ran, even though its own Implication recommended a validation gate. The gate was never installed. The same class of defect recurred 8 days later as SIG-046 in a different file type. Discovery in SIG-F-001 found ~21 similar premature-closures across products (27% of all resolved signals). This rule is the meta-fix.
 
+### Downstream-fix ⇒ upstream examination (added 2026-07-02 per SIG-2026-06-27)
+
+When a signal records a **downstream / leaf fix of an upstream-originated drift** (a convention, contract, naming, or schema that changed at its source and left consumers bound to the old form), closing it as `resolved` REQUIRES one of:
+
+- `triggers_upstream_examination:` — pointing at a sibling open signal that asks "what convention drifted to allow this, and what else is still bound to it?", **or**
+- `upstream_examination: not-applicable` — with a one-line rationale (e.g. an isolated typo with no shared convention).
+
+Without this, the correction-propagation reflex (fix the leaf → examine the source → find the other bound consumers) stays an operator habit rather than a mechanism, and the *next* consumer bound to the same dead convention degrades silently — exactly the ~2-month synthesis-glob drift that surfaced this rule.
+
+**Enforcement:** `tools/closure_writeboundary_check.py` carries a write-boundary detector arm (`DOWNSTREAM-FIX-NO-UPSTREAM-SIGNAL`) that flags a `status: resolved` signal whose body uses downstream-fix framing but declares neither field. It is **date-scoped to signals dated on/after 2026-07-02** (zero-violation-start: legacy resolved signals are not retro-flagged). The upstream *sensor* that finds the other bound consumers is `tools/convention_migration_invariant.py` (Control A) reading `bound_consumers` / `forbidden_legacy_patterns` from port contracts.
+
 ## Schema v2: Flight-Model Input Fields (added 2026-05-26)
 
 Per SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001 (`Core/frameworks/intent/spec/autonomy-flight-model-v1-DRAFT.md`), forward signals SHOULD include flight-model input fields in their frontmatter to support λ calibration. These fields are **recommended, not required** — legacy signals are not retro-backfilled. The forthcoming `lambda_fit.py` tool will weight calibration-ready signals (those carrying these fields) higher than legacy signals (which use heuristic input derivation).
