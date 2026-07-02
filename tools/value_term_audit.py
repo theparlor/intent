@@ -61,6 +61,15 @@ INVARIANTS (audit mode)
     saturation_guard. Missing → WARN (not FAIL). Saturation is how the proxy defect
     hides (feedback_recalibrate_saturated_metrics).
 
+  INV-5 (status closed enum):
+    status MUST be one of {healthy, fixed, capped, defect}. Anything else
+    (including empty) → FAIL, and no other invariant is evaluated for that entry —
+    its obligations are undefined. Rationale: every invariant above is keyed off
+    status, so an unrecognized intermediate status ('instrumented-pending-data',
+    'parked', …) silently escapes ALL enforcement. Intermediate lifecycle state is
+    recorded in an annotation field (e.g. phase:) on top of one of the four
+    statuses (SIG-INTENT-STATUS-ENUM-2026-07-02; loom-score-thread precedent).
+
 RELATED
   - value-term-registry.yaml (authoritative write-through manifest)
   - Core/frameworks/intent/tools/drag_dashboard.py (cap_guard: sibling for lexical-CHECK accretion)
@@ -229,6 +238,16 @@ ACTIVITY_PROXY_SMELLS = [
 _SMELL_RE = re.compile("|".join(ACTIVITY_PROXY_SMELLS))
 
 STATUS_KNOWN_DEFECT = {"defect", "capped"}
+# CLOSED status enum (INV-5). Every invariant below is keyed off status, so an
+# unrecognized status silently escapes ALL enforcement (the loom
+# 'instrumented-pending-data' near-miss, SIG-INTENT-STATUS-ENUM-2026-07-02).
+# Obligations by status:
+#   healthy       → INV-1 (value term), INV-2 (measures outcome), INV-4 (saturation guard, WARN)
+#   fixed         → INV-1 (value term)
+#   defect|capped → INV-3 (remediation required); INV-1 exemption applies
+# Intermediate lifecycle state goes in an ANNOTATION field (e.g. phase:) on top of
+# one of these four — never a new status value.
+KNOWN_STATUSES = {"healthy", "fixed", "capped", "defect"}
 SCORE_KINDS = {"score-dimension", "composite-score"}
 
 
@@ -255,6 +274,19 @@ def _audit_entry(entry: dict) -> tuple[list[str], list[str]]:
 
     fails: list[str] = []
     warns: list[str] = []
+
+    # INV-5: status is a CLOSED enum — checked first. Every other invariant is
+    # keyed off status, so an unknown status means the entry's obligations are
+    # undefined and it would otherwise drop out of enforcement entirely.
+    if status not in KNOWN_STATUSES:
+        fails.append(
+            f"[INV-5] {eid}: unknown status {status!r} — status is a closed enum "
+            f"{sorted(KNOWN_STATUSES)}. An unrecognized status escapes ALL "
+            f"status-keyed enforcement (INV-1..4). For intermediate lifecycle "
+            f"state, keep one of the four statuses and add an annotation field "
+            f"(e.g. phase:) — see loom-score-thread."
+        )
+        return fails, warns
 
     # INV-1: value term exists
     if _vt_is_missing(vt):
@@ -394,6 +426,7 @@ def _render_audit(fails: list[str], warns: list[str], entry_count: int,
             "    INV-2 ✓  measures: outcome for all healthy entries",
             "    INV-3 ✓  remediation path for all defect/capped entries",
             "    INV-4 ✓  saturation_guard declared (or not applicable)",
+            "    INV-5 ✓  status within the closed enum {healthy, fixed, capped, defect}",
         ]
     else:
         if fails:

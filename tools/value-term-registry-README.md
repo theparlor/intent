@@ -69,7 +69,7 @@ One file per product. Top-level `scores:` is a list of entries:
 | `value_term` | names the outcome. Empty/`NONE` is a FAIL **unless** status is defect/capped with remediation |
 | `outcome_signal` | the concrete signal computed (intended vs actual, if defective) |
 | `activity_proxy_risk` | the proxy it could collapse to (or "none") |
-| `status` | `healthy` \| `fixed` \| `capped` \| `defect` |
+| `status` | **closed enum, enforced (INV-5)**: `healthy` \| `fixed` \| `capped` \| `defect`. Any other value (including empty) FAILs — an unrecognized status would silently escape all status-keyed enforcement. Intermediate lifecycle state goes in an annotation field (e.g. `phase:`) on top of one of the four |
 | `remediation` | required for `defect`/`capped`; the tracked path to the fix |
 | `saturation_guard` | the detector that catches ceiling-pinning (missing → WARN on healthy score-dims) |
 | `notes` | rationale, citations (`file:line`) |
@@ -80,6 +80,10 @@ One file per product. Top-level `scores:` is a list of entries:
 - **INV-2** healthy ⇒ measures outcome — `healthy` + `measures: activity` is the anti-pattern (FAIL).
 - **INV-3** defect/capped ⇒ has remediation (FAIL otherwise).
 - **INV-4** healthy score-dimension/composite ⇒ declares a saturation_guard (**WARN**, not FAIL).
+- **INV-5** status ∈ {healthy, fixed, capped, defect} — closed enum, checked first; an unknown
+  status FAILs and no other invariant is evaluated for that entry (its obligations are undefined).
+  Obligations by status: `healthy` → INV-1/2/4 · `fixed` → INV-1 · `defect`/`capped` → INV-3.
+  (SIG-INTENT-STATUS-ENUM-2026-07-02 — the loom `instrumented-pending-data` near-miss.)
 
 A **tracked defect** (`status: defect|capped` + `remediation`) PASSES — it is documented, not
 hidden. That is how known violations (e.g. cast `synthesis_quality`, topography `vision_align`,

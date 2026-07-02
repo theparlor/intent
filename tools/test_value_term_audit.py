@@ -206,6 +206,75 @@ class TestINV3DefectTracked(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# INV-5: status is a closed enum — unknown statuses fail loudly
+# (SIG-INTENT-STATUS-ENUM-2026-07-02: an intermediate lifecycle status like
+#  'instrumented-pending-data' used to pass SILENTLY and drop out of ALL
+#  status-keyed enforcement — INV-1's defect exemption, INV-2, INV-3, INV-4.)
+# ---------------------------------------------------------------------------
+
+class TestINV5StatusClosedEnum(unittest.TestCase):
+
+    def test_unknown_status_fails_even_with_remediation(self):
+        """
+        An unrecognized intermediate status must FAIL (exit 2) even when the
+        entry is otherwise fully documented — remediation cannot buy an entry
+        out of the closed enum. This is the exact loom scenario: a made-up
+        'instrumented-pending-data' status would silently escape INV-3.
+        """
+        yaml = _minimal_healthy(
+            status="instrumented-pending-data",
+            remediation="fully tracked remediation path",
+        )
+        rc, out, err = _run_audit(registry_text=yaml)
+        self.assertEqual(rc, 2, msg=f"Expected exit 2\nstdout: {out}\nstderr: {err}")
+        combined = out + err
+        self.assertIn("INV-5", combined,
+                      msg=f"Expected INV-5 in output\n{out}\n{err}")
+        self.assertIn("instrumented-pending-data", combined,
+                      msg=f"Expected the offending status named in output\n{out}\n{err}")
+
+    def test_empty_status_fails(self):
+        """Missing/empty status carries no obligations → must FAIL, not pass silently."""
+        yaml = _minimal_healthy(status="")
+        rc, out, err = _run_audit(registry_text=yaml)
+        self.assertEqual(rc, 2, msg=f"Expected exit 2\nstdout: {out}\nstderr: {err}")
+        self.assertIn("INV-5", out + err,
+                      msg=f"Expected INV-5 in output\n{out}\n{err}")
+
+    def test_fixed_status_is_recognized(self):
+        """'fixed' is part of the documented vocabulary → compliant entry passes."""
+        yaml = _minimal_healthy(status="fixed")
+        rc, out, err = _run_audit(registry_text=yaml)
+        self.assertEqual(rc, 0, msg=f"Expected exit 0\nstdout: {out}\nstderr: {err}")
+
+    def test_defect_with_phase_annotation_passes(self):
+        """
+        The sanctioned intermediate-lifecycle pattern: keep status: defect and
+        record progress in a phase: annotation field. Must stay a PASS.
+        """
+        yaml = _minimal_healthy(
+            status="defect",
+            remediation="tracked fix path",
+        ) + '    phase: "instrumented-pending-data (2026-07-02)"\n'
+        rc, out, err = _run_audit(registry_text=yaml)
+        self.assertEqual(rc, 0, msg=f"Expected exit 0\nstdout: {out}\nstderr: {err}")
+
+    def test_all_mode_unknown_status_fails_ecosystem(self):
+        """--all: one registry with an unknown status fails the whole ecosystem audit."""
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "good", _minimal_healthy(id="g"))
+            _write_registry(root / "sneaky",
+                            _minimal_healthy(id="s", status="parked-for-now"))
+            cmd = [sys.executable, str(AUDIT_SCRIPT), "--all", str(root)]
+            r = subprocess.run(cmd, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 2,
+                             msg=f"Expected exit 2\nstdout:{r.stdout}\nstderr:{r.stderr}")
+            self.assertIn("INV-5", r.stdout,
+                          msg=f"Expected INV-5 in ecosystem output\n{r.stdout}")
+
+
+# ---------------------------------------------------------------------------
 # INV-4: saturation guard (WARN, not FAIL)
 # ---------------------------------------------------------------------------
 
