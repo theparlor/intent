@@ -4,7 +4,7 @@ date: 2026-03-28
 source: cowork-session
 confidence: high
 related_intents: []
-status: new
+status: incorporated
 ---
 
 # Signal: Distributed tracing is the right observability model for Intent work

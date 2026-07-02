@@ -197,8 +197,12 @@ def _load_registry(path: str | Path) -> list[dict]:
 
 ECOSYSTEM_REGISTRY_NAME = "value-term-registry.yaml"
 DEFAULT_ECOSYSTEM_ROOT = Path(__file__).resolve().parents[3]  # tools→intent→frameworks→Core
-# Never audit vendored / worktree / cache copies — they are not the source of truth.
-_EXCLUDE_DIR_PARTS = {".venv", "venv", ".worktrees", "node_modules", "__pycache__", ".git"}
+# Never audit vendored / worktree / cache / build-output copies — they are not the
+# source of truth. 'dist'/'build'/'out' catch vendored bundles (e.g. forge
+# outputs/dist/voices-panel vendoring the voices registry): a write-through registry
+# lives beside its score-owning source, never in build output.
+_EXCLUDE_DIR_PARTS = {".venv", "venv", ".worktrees", "node_modules", "__pycache__", ".git",
+                      "dist", "build", "out"}
 
 
 def discover_registries(root: str | Path) -> list[Path]:

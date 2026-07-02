@@ -4,7 +4,7 @@ date: 2026-03-28
 source: cowork-session
 confidence: medium
 related_intents: []
-status: new
+status: incorporated
 ---
 
 # Signal: Work units need formal schemas to be agent-consumable

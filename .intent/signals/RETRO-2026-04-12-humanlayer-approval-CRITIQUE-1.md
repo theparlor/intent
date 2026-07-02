@@ -5,6 +5,7 @@ source: session-analysis
 created: 2026-04-12
 topic: humanlayer-approval
 severity: high
+status: promoted
 ---
 
 # Critique: L0 Governance Gap — Prose Enforcement of Highest-Stakes Gate

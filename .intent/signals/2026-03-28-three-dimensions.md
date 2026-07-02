@@ -4,7 +4,7 @@ date: 2026-03-28
 source: cowork-session
 confidence: high
 related_intents: []
-status: new
+status: incorporated
 ---
 
 # Signal: Intent needs three governance dimensions, not just the loop
