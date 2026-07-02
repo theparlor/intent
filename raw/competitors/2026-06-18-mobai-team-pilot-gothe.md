@@ -11,7 +11,7 @@ frameworks:
   - mob-programming
 source: "https://blog.crisp.se/2026/06/18/michaelgothe/mobai-from-copilot-to-team-pilot"
 author_external: Michael Göthe (Crisp AB)
-lineage_external: "MobAI coined by Joe Justice (observed at Tesla); builds on mob programming / software teaming (Woody Zuill)"
+lineage_external: "MobAI coined + branded by Joe Justice on 2023-05-15 in his #JoeDX expert course (after observing AI-assisted group work at Tesla); builds on mob programming / software teaming (Woody Zuill). Term is owned/attributed to Joe Justice and tied to his training offering — NOT a generic industry term."
 date_published: 2026-06-18
 ingested: 2026-07-02
 ingest_session_signal: .intent/signals/external/SIG-2026-07-02-mobai-team-pilot-convergence.md
