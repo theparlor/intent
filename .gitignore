@@ -14,3 +14,7 @@ tools/intent-mcp/.venv/
 tests/__pycache__/
 __pycache__/
 *.pyc
+
+# Binary artifacts do not belong in git (handoff packages, exports)
+*.zip
+*.docx
