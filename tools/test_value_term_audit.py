@@ -578,6 +578,27 @@ class TestDiscoverRegistries(unittest.TestCase):
                              msg=f"Expected 1 (skip .venv/.worktrees), got {found}")
             self.assertIn("real", found[0])
 
+    def test_discover_skips_dist_build_output(self):
+        """Vendored copies under a dist/ build-output dir must NOT be audited.
+
+        Real case: forge outputs/dist/voices-panel vendors the voices registry
+        (Core/products/forge/outputs/dist/voices-panel/Core/products/voices/
+        value-term-registry.yaml) — auditing it double-counts the product.
+        """
+        mod = _import_audit_module()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            _write_registry(root / "products" / "voices", _minimal_healthy(id="real"))
+            _write_registry(
+                root / "products" / "forge" / "outputs" / "dist" / "voices-panel"
+                / "Core" / "products" / "voices",
+                _minimal_healthy(id="vendored"),
+            )
+            found = [str(p) for p in mod.discover_registries(root)]
+            self.assertEqual(len(found), 1,
+                             msg=f"Expected 1 (skip dist/ vendored copy), got {found}")
+            self.assertNotIn("dist", found[0])
+
 
 class TestAllMode(unittest.TestCase):
     """--all ROOT discovers every per-product registry, audits each, aggregates."""
