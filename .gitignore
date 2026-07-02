@@ -14,3 +14,6 @@ tools/intent-mcp/.venv/
 tests/__pycache__/
 __pycache__/
 *.pyc
+
+# Transient event-log flock lock (created by intent-signal emit_event)
+.intent/events/*.lock
