@@ -168,14 +168,22 @@ const stageB = await agent(stageBPrompt(), {
 // violating the zero-violation-start principle (memory: feedback_invariant_zero_violation_start). So
 // Stage B gates on the DELTA: did THIS formation introduce NEW topology findings vs the pre-fan-out
 // baseline? Absolute color is reported but informational. (Surfaced by exercising the gate, 2026-06-05.)
+// The drift-clean predicate is a pure function of (stageAFindings, stageB, args).
+// The block between the sentinels below is extracted and executed verbatim by
+// coherence_gate_predicate.test.mjs — it is the SINGLE source of truth, tested
+// directly (the Workflow harness forbids importing a sibling module, so the
+// predicate must live inline; the test reads it here rather than a shadow copy).
+// A regression that gates on absolute stageB.color instead of the DELTA fails
+// those tests. Keep this block pure: reference only stageAFindings, stageB, args.
+// >>> coherence-gate:drift-predicate:start
 const fid = (f) => `${f && f.kind}:${f && f.id}`
 const hasBaseline = !!(args && args.baseline_findings)
 const baselineIds = new Set(((args && args.baseline_findings) || []).map(fid))
 const afterFindings = (stageB && stageB.findings) || []
 const newTopology = afterFindings.filter((f) => !baselineIds.has(fid(f)))
 const topologyClean = hasBaseline ? newTopology.length === 0 : true // no baseline => don't gate on pre-existing debt
-
 const driftClean = stageAFindings.length === 0 && topologyClean
+// <<< coherence-gate:drift-predicate:end
 
 log(`coherence-gate verdict: drift_clean=${driftClean} · StageA=${stageAFindings.length} · audit_chain.color=${stageB && stageB.color} (informational) · NEW topology=${hasBaseline ? newTopology.length : 'n/a (no baseline)'}`)
 

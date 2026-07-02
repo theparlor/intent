@@ -419,5 +419,81 @@ The work is complete. The corpus updated and all invariants pass.
         self.assertEqual(violations, [], f"Unexpected violations: {violations}")
 
 
+class TestUpstreamExamination(unittest.TestCase):
+    """Control B (SIG-2026-06-27): downstream-fix ⇒ upstream-examination signal."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.tmpdir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _check(self, content: str, name: str = "SIG-2026-07-05-downstream.md"):
+        p = _write_signal(self.tmpdir, name, content)
+        return cwb.check_file(p)
+
+    _DOWNSTREAM = """\
+---
+id: SIG-2026-07-05-x
+status: resolved
+created: 2026-07-05
+upstream_control_path: tools/x.py
+catch_mechanism: tools/test_x.py
+---
+# Fix
+Patched the caller in voices/tools.py; it was a downstream leaf-fix of the synthesis convention.
+"""
+
+    def test_post_cutoff_downstream_fix_without_field_is_flagged(self):
+        v = self._check(self._DOWNSTREAM)
+        self.assertTrue(any("DOWNSTREAM-FIX-NO-UPSTREAM-SIGNAL" in x.reason for x in v), v)
+
+    def test_triggers_upstream_examination_field_satisfies(self):
+        content = self._DOWNSTREAM.replace(
+            "catch_mechanism: tools/test_x.py",
+            "catch_mechanism: tools/test_x.py\ntriggers_upstream_examination: SIG-2026-07-05-upstream-conv")
+        v = self._check(content)
+        self.assertFalse(any("DOWNSTREAM-FIX" in x.reason for x in v), v)
+
+    def test_upstream_examination_not_applicable_waiver_satisfies(self):
+        content = self._DOWNSTREAM.replace(
+            "catch_mechanism: tools/test_x.py",
+            "catch_mechanism: tools/test_x.py\nupstream_examination: not-applicable — isolated typo, no convention")
+        v = self._check(content)
+        self.assertFalse(any("DOWNSTREAM-FIX" in x.reason for x in v), v)
+
+    def test_pre_cutoff_downstream_fix_is_grandfathered(self):
+        content = self._DOWNSTREAM.replace("2026-07-05", "2026-05-20")
+        v = self._check(content, name="SIG-2026-05-20-downstream.md")
+        self.assertFalse(any("DOWNSTREAM-FIX" in x.reason for x in v),
+                         f"pre-cutoff must be out of scope (zero-violation-start): {v}")
+
+    def test_resolved_without_downstream_language_not_flagged(self):
+        content = """\
+---
+status: resolved
+created: 2026-07-05
+upstream_control_path: tools/x.py
+catch_mechanism: tools/test_x.py
+---
+# A normal fix with an upstream control and no downstream-fix framing.
+"""
+        v = self._check(content)
+        self.assertFalse(any("DOWNSTREAM-FIX" in x.reason for x in v), v)
+
+    def test_live_tree_zero_violation_start(self):
+        # No pre-existing resolved signal may trip Control B on day one.
+        sig_dir = cwb.DEFAULT_SIGNALS_DIR
+        if not sig_dir.is_dir():
+            self.skipTest("no signals dir")
+        offenders = []
+        for md in sorted(sig_dir.glob("*.md")):
+            text = md.read_text(encoding="utf-8", errors="replace")
+            if cwb.check_upstream_examination(md, text):
+                offenders.append(md.name)
+        self.assertEqual(offenders, [], f"Control B fired on existing signals: {offenders}")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
