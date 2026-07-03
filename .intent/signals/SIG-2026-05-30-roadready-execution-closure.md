@@ -100,6 +100,13 @@ exists to flag them; remediation is a separate pull.
 3. **intent-site λ push** (`0267e48`) — deferred per Brien's explicit gate; verified clean FF,
    pushes the moment its concurrent session's tree clears.
 4. **Remediate the 18 premature-resolved signals** (or tune the 2–3 precision candidates).
+   **EXECUTED 2026-07-03** (Brien-authorized, pending-decisions register row 4, fresh
+   determination: population had grown to 22 findings across 15 files). Per-file classification
+   with repo-state evidence: 3 honest downgrades, 7 verified genuinely-complete, 5 checker
+   false-positives documented. Checker precision pass followed (6 narrow exemption classes from
+   the 8 residuals; "verify" dropped from the will-deferral verbs). Live checker now reports 0
+   violations; test suite 21 to 29 including a founding-F-4-still-flags guard. Commits 53683fa +
+   1ef796f.
 
 ## Meta — Exhibit B (the irony, captured)
 
