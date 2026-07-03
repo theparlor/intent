@@ -115,3 +115,56 @@ authority doc, so a newcomer doesn't conflate them.
 4. For any judgment call (which duplicate is canonical is unclear, a test failure looks *real*), **stop
    and surface it** rather than guessing.
 5. Output a **hygiene scorecard** (H1–H8: pass / fixed / needs-decision) in the PR body.
+
+---
+
+## Amendment (RATIFIED 2026-07-02) - Track E: engagement / confidential repos
+
+> Ratified 2026-07-02 (Brien) during the theparlor portfolio rollout (see signal
+> SIG-2026-07-02-repo-hygiene-confidential-track-gap). Additive only: nothing above is removed or
+> weakened. This profile now governs every hygiene pass on a confidential or engagement repo.
+
+**Motivation.** The portfolio rollout classified every owned repo into Track A (software) or Track C
+(static site). That scheme has no bucket for a large, real class: engagement and confidential repos
+(NDA client work under `engagement-*`, individual-personal advising under `advising-*`, a confidential
+app, and owner-private repos). For these, two of the eight checks as written are not merely N/A, they are
+actively wrong, and there are handling constraints the base convention never states.
+
+**What is different about these repos (evidence from the 2026-07-02 metadata scan).**
+- They are private with zero non-owner collaborators, so a draft PR notifies no external human. The
+  cross-human-notification concern is moot here. It is NOT moot for any repo that has collaborators.
+- Their binaries are canonical, not sprawl: client originals live in `from-client/` (immutable per the
+  Workspaces placement resolver), deliverables in `deliverables/`, models in `financials/`. Counts run to
+  the hundreds (one engagement repo carried 957 tracked binaries).
+- They are already Intent-native and schema-conformant (`.intent/`, `from-client/`, `working/`,
+  `deliverables/`, `reference/`), so the hygiene upside is small and a mechanical pass has large downside.
+
+**Track E check profile (overrides for confidential/engagement repos).**
+- **H7 (binaries) is REDEFINED, not applied as-is.** Do NOT untrack binaries that live in `from-client/`,
+  `deliverables/`, or `financials/`: those are canonical source-of-truth. H7 for Track E means only:
+  confirm binaries sit inside those sanctioned directories and none are strays loose at the repo root or
+  inside a code/source path. Never `git rm --cached` a client original.
+- **H2 (drift) respects `from-client/` immutability.** A `from-client/` original and a `working/` copy are
+  intentional (immutable evidence vs live edit), not drift. Never dedupe across that boundary.
+- **H1 / H6 are N/A** for doc-shaped engagement repos, and are the normal Track A checks only where the
+  repo actually contains an app (for example a confidential dashboard).
+- **H3 / H4 / H5 / H8 apply and are the whole value:** a confidential repo still benefits from a README
+  that leads with substance, a reading path, a code-vs-working-memory note, and a scope note. These add no
+  exposure (the repo stays private) and cost nothing canonical.
+
+**Track E handling rails (in addition to the base rails).**
+1. **Per-repo isolation.** One clone, one worker, one repo. A worker that touches Client A never sees
+   Client B. No shared context across confidential repos.
+2. **Guaranteed clone teardown.** Working clones of confidential repos are deleted after the pass. They
+   never persist in a shared working dir and never get committed anywhere.
+3. **Generic PR and commit text only.** No client-name specifics, no filenames, no internal reasoning, no
+   codenames or workspace paths in commit messages, PR titles, or PR bodies (the repo is private, but this
+   survives a future visibility change and honors the no-internal-leak rule).
+4. **Collaborator check before any PR.** If a confidential repo ever has a non-owner collaborator, opening
+   a PR becomes a cross-human action (L0): confirm with the owner first.
+5. **Owner reviews before any write.** Because the H7/H2 redefinition changes what "clean" means, a Track E
+   pass runs as an audit the owner reviews before merge, and this amendment is ratified, not assumed.
+
+**Obligation classes (handle distinctly, do not flatten into one "confidential"):** client-NDA
+(`engagement-*` plus confidential apps), individual-personal (`advising-*`, another person's data), and
+owner-private (personal repos with no third-party obligation).
