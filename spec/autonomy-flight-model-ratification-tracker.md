@@ -162,12 +162,24 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
    **Still open, still warn-only, still Brien's L2 call:** a fresh calibration
    window (recommend 7-10 days per the audit, not the originally-assumed 3-5) is
    needed against the corrected extractor before re-evaluating promotion.
-3. If the fresh window's FP rate (against fires, not just volume) is acceptable →
-   promote Layer 4.2 to block; **retire CHECK 3 (0 fires) and CHECK 2
-   (1 fire) immediately**, demote the rest per measured block-rate.
+2.6. ⚠ FOUND 2026-07-03 (cross-model challenge, Opus 4.8 + Fable 5) — every FP-rate
+   reading above (2.5, both prior calibration reviews) measured precision only. Recall
+   was never measured. Direct test of `NEXT_ACTION_RE` against the 231-entry lexical
+   true-positive ground truth (`~/.claude/audit/autonomy-grant-stop-detections.log`)
+   found only 17/231 (7.4%, tail-text lower bound) match. A near-silent detector with
+   clean precision is not ready to promote; a clean window under step 3 below would
+   likely be a vacuous read, not evidence of readiness. Full detail:
+   `.intent/signals/SIG-2026-07-03-layer42-recall-unmeasured.md`. **This re-sequences
+   step 3: widen the claim grammar and re-measure recall before running the window,
+   not after.**
+3. If the fresh window's FP rate (against fires, not just volume) is acceptable AND
+   step 2.6's recall gap has been closed (grammar widened, re-measured against the
+   231-entry ground truth) → promote Layer 4.2 to block; **retire CHECK 3 (0 fires)
+   and CHECK 2 (1 fire) immediately**, demote the rest per measured block-rate.
 4. Update `lexical-layer-freeze.yaml:sunset` with the executed schedule; close
    `SIG-2026-05-29-friction-01`.
 
 This train is the cheapest path to convergence and is the recommended next pull. Step
-2.5 (the extractor fix) is now done; step 3 (the actual re-calibration window and
-promote decision) remains open.
+2.5 (the extractor fix) is done. Step 2.6 (recall gap) is found but not closed. Step 3
+(the actual re-calibration window and promote decision) remains open and is now gated
+on 2.6, not just 2.5.
