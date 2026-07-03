@@ -5,6 +5,9 @@ date: 2026-04-11
 severity: medium
 status: resolved
 resolution: Product team operating model with Definition of Ready/Done adopted
+upstream_control_path: ".intent/decisions/RETRO-2026-04-11-intent-site-2.md (accepted DoR/DoD operating model) + intent-site/content-map.md (139 traceability rows as of 2026-07-03)"
+catch_mechanism: "intent-site/site-contracts.md (14 contracts, run after any docs/ change) + intent-site/.github/workflows/freshness-check.yml (daily scheduled drift check vs product repo, files issues on divergence)"
+pipeline_survival: "content-map.md maturity final and maintained through IA v3 (2026-06-05); contract set grew from 10 to 14 while staying the commit gate; freshness workflow runs on cron independent of anyone remembering"
 source: retroactive-extraction
 sessions: [local_83d2e42b]
 ---
@@ -29,3 +32,7 @@ Adopted a product team operating model:
 ## Pattern to Watch
 
 This same drift pattern applies to ANY documentation surface — CLAUDE.md files, engagement handoffs, persona registries. The countermeasure is always: structural traceability links + automated contract validation, not "remember to update it."
+
+## Remediation note (2026-07-03)
+
+Closure-DoD keys added retroactively; this April signal predates the key convention. Resolution verified against repo state 2026-07-03: the operating-model decision is accepted at .intent/decisions/RETRO-2026-04-11-intent-site-2.md; content-map.md in theparlor/intent-site carries 139 traceability rows (maturity final, updated through IA v3 on 2026-06-05); site-contracts.md grew from 10 to 14 contracts and stayed the run-after-any-change gate; .github/workflows/freshness-check.yml runs a daily scheduled drift check against the product repo and files issues on divergence. The structural prevention this signal called for exists and has operated since adoption. Status resolved stands.

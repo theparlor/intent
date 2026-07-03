@@ -8,6 +8,9 @@ source: audit-sweep
 session_topic: core-scripts-invocation-audit
 trust_score: 0.75
 autonomy: L2
+upstream_control_path: "Root requirements.txt structurally delegates via '-r servers/requirements.txt' (single canonical dep source; divergence impossible by construction). CLAUDE.md section Invocation documents all 4 dep-bearing components (root, servers/, tools/intent-mcp/, observe/adapters/)."
+catch_mechanism: "NONE TODAY: no automated check verifies that root requirements.txt stays a pure pointer or that CLAUDE.md Invocation coverage tracks newly added dep-bearing components."
+pipeline_survival: "Both artifacts (requirements.txt, CLAUDE.md) are hand-maintained; no generator or pipeline overwrites them."
 related:
   - Core/products/org-design-tooling/.intent/signals/RETRO-2026-04-21-prefix-legibility-SIG-1.md
   - Core/products/org-design-tooling/journal/AUDIT-20260421-core-scripts-invocation.md
@@ -53,8 +56,12 @@ Add an `## Invocation` section to `Core/frameworks/intent/CLAUDE.md` covering:
 
 **Per-component venv status at time of repair:** No venvs exist in any of the 4 locations. All 4 need setup before first invocation. Per-component venv strategy adopted (not a shared root venv).
 
-**Upstream still open:** root vs `servers/` requirements.txt duplication is unresolved — both contain `fastmcp>=2.0` with no clear rationale for two files. A follow-up signal or DDR should decide whether to collapse to one or explicitly justify the split.
+**Upstream (closed same day, 2026-04-22):** the root vs `servers/` requirements.txt duplication was resolved via Option 2 (consolidate to servers). Root `requirements.txt` is now a pure pointer (`-r servers/requirements.txt`), `servers/requirements.txt` is the canonical source, and `CLAUDE.md` section Invocation documents the delegation. See Resolution closure below; no separate signal or DDR was required.
 
 ## Resolution closure (2026-04-22)
 
 `fastmcp>=2.0` duplication resolved via **Option 2 (consolidate to servers)**. Root `requirements.txt` now contains `-r servers/requirements.txt` (pointer). `servers/requirements.txt` unchanged as the canonical source. `CLAUDE.md` §Invocation §Root updated to reflect delegation. All conditions in this signal are now resolved — status moved to `resolved`.
+
+## Remediation note (2026-07-03)
+
+Closure-discipline write-boundary sweep re-verified this signal against live repo state: root `requirements.txt` contains only `-r servers/requirements.txt`, `servers/requirements.txt` is canonical, and `CLAUDE.md` §Invocation §Root (line ~286) documents the Option 2 delegation citing this signal. The flagged interim wording in the 2026-04-22 Resolution section described work that closed the same day; it was rewritten to reflect completion. Status stays `resolved`. Closure-DoD keys added to frontmatter, predating-convention gap; `catch_mechanism` is honestly NONE TODAY (no automated pointer-integrity or invocation-coverage check exists).

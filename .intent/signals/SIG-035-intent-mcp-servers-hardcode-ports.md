@@ -5,7 +5,10 @@ source: agent-trace
 confidence: 0.95
 trust: 0.65
 autonomy_level: L3
-status: resolved
+status: symptom-repaired, upstream-pending
+upstream_control_path: "servers/port_resolver.py (commit ded2447, 2026-05-19) - shared preferred-plus-fallback resolver with two-stage availability probe, wired into the __main__ blocks of servers/notice.py:480, servers/spec.py:420, servers/observe.py:321 (and since extended to servers/knowledge.py:1459); env config documented in servers/DEPLOYMENT.md"
+catch_mechanism: "NONE TODAY - the functional tests claimed in the Resolution were session-run and never committed; no test_port_resolver.py exists in the repo, so fallback-on-conflict, env-override, malformed-config, and range-exhaustion behavior has no regression guard"
+pipeline_survival: "partial - resolver and server wiring are committed and survive (verified on disk 2026-07-03); nothing prevents a future server from hardcoding a bind, and the missing committed tests mean a regression would go uncaught"
 cluster: null
 author: brien
 related_intents: []
@@ -63,6 +66,33 @@ fallback on conflict, env override, malformed config, and range exhaustion.
 Operator docs updated in `servers/DEPLOYMENT.md`. No new lint errors
 introduced (pre-existing ruff findings on these files are unchanged and
 left out of scope).
+
+## Remediation note (2026-07-03)
+
+Closure-discipline remediation pass (checker flagged missing closure-DoD keys;
+this signal predates the DoD-key convention). Repo verification results:
+
+- VERIFIED LANDED: `servers/port_resolver.py` (commit ded2447, 2026-05-19,
+  "Resolves SIG-035") with preferred port, configurable fallback range,
+  two-stage probe, `PortConfigError` / `NoAvailablePortError`, env-driven
+  config. Wired into the `__main__` blocks of notice.py (8001), spec.py
+  (8002), observe.py (8003); each logs the actually-bound port. Operator
+  docs present in `servers/DEPLOYMENT.md` (INTENT_<SERVER>_PORT,
+  INTENT_MCP_HOST, INTENT_MCP_PORT_FALLBACK_COUNT). knowledge.py has since
+  gained the same wiring (knowledge.py:1459), superseding the "left
+  untouched" line above in the good direction.
+- NOT LANDED: the "functional tests" claimed in the Resolution do not exist
+  in the repo. No test_port_resolver.py in any directory or in git history;
+  commit ded2447 contains no test file. They were run in-session and never
+  persisted, so there is no committed catch mechanism for this fix.
+
+Status downgraded from `resolved` to `symptom-repaired, upstream-pending`:
+the upstream control (shared resolver) is real and in place, but the
+closure DoD requires a catch mechanism and none exists on disk. Open item:
+commit a functional test suite for `servers/port_resolver.py` covering
+preferred bind, fallback on conflict, env override, malformed config, and
+range exhaustion; on landing, this signal can be re-marked `resolved` with
+the test path in `catch_mechanism`.
 
 ## Trust Factors
 
