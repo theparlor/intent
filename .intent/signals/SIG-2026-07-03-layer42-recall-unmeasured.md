@@ -97,6 +97,30 @@ original patch-then-window-then-promote sequence produce a meaningful read. Full
 mechanism Fable proposed: `Core/frameworks/intent/spec/2026-07-03-autonomy-grant-pause-drift-audit.md`
 and this signal's `related` list above.
 
+## Addendum (same day, prompted by Brien asking whether pre-summarized system output is being trusted as source of truth)
+
+Measured how much the 7.4% figure above was itself an artifact of lossy telemetry: of the 231
+sessions behind the detections log, only 37 (16%) still have their full transcript on disk, 194 (84%)
+have already rotated away. On the 37 recoverable, re-running the match against the FULL last-assistant
+message instead of the logged 200/300-char tail raised the match rate from 10.8% (4/37) to 27.0%
+(10/37), more than double. The tail was discarding claim-bearing text that occurred earlier in the
+message, exactly the failure mode Brien named unprompted while this investigation was live. For the
+194 already-gone transcripts, this can never be corrected: the truncated tail is now the only record.
+
+Fixed the proximate cause in `autonomy-posture-check-layer-4.2.sh`: the telemetry tail was
+`LAST_TEXT[-200:]`, now `LAST_TEXT[-8000:]` (bounded against pathological input, not a fixed analysis
+window; detection/gating logic untouched and re-verified unchanged). NOT fixed, flagged as a follow-up:
+`autonomy-grant-stop-check.sh` (the lexical Stop-hook) has the identical pattern at 8 call sites
+(200-300 char tails on `LAST_PARA`), left alone in this pass given the larger blast radius of a first
+edit to a 664-line governance-critical file already flagged elsewhere for transcription risk.
+
+Broader point, stated for the record: this system already has an architectural principle for exactly
+this (Witness's conservation law, append-only + verbatim source preservation, no merge verb; Intent's
+own `raw/` vs `knowledge/` separation where `raw/` is immutable and LLM-write-never). This hook family's
+telemetry logging was not built to that standard. The gap is not missing architecture, it's an
+un-applied one, and it is reasonable to assume other telemetry/log sinks in this system have the same
+tail-truncation shape and have not been checked.
+
 ## Why this is `status: captured`, not `resolved`
 
 No fix has shipped for the recall gap. This signal documents a measurement and a re-sequencing
