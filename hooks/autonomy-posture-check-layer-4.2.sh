@@ -233,8 +233,16 @@ STOPWORD_TARGETS = {
     "and", "or", "but", "if", "so", "then",
 }
 
-# Tail sample (last 200 chars, single line) for telemetry/audit.
-tail_raw = LAST_TEXT[-200:].replace("\n", " ").replace("\r", " ")
+# Full-text sample (bounded only against pathological input, not a fixed analysis
+# window) for telemetry/audit. 2026-07-03: was LAST_TEXT[-200:]. Cross-model review
+# (SIG-2026-07-03-layer42-recall-unmeasured.md) found the 200-char tail is a lossy
+# summary that discards claim-bearing text earlier in the message, and that 194/231
+# of the session transcripts backing this hook's sibling audit log have already
+# rotated off disk, meaning a truncated log line is often the ONLY surviving record.
+# session_id is a durable pointer only as long as transcripts are retained; this repo
+# has already lost 84% of them within weeks. Log full text here so retrospective
+# recall/precision analysis never depends on transcript survival.
+tail_raw = LAST_TEXT[-8000:].replace("\n", " ").replace("\r", " ")
 tail_json = json.dumps(tail_raw)
 
 if not matches:
