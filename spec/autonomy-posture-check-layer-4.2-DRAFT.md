@@ -211,6 +211,34 @@ sys.exit(0)
 PY
 ```
 
+## §3.5 Grammatical-class exclusion (added 2026-07-03)
+
+Two calibration reviews (SIG-2026-06-12-layer42-calibration-review.md at 14 days,
+SIG-2026-06-28-flight-model-30day-ratification-readiness.md at 30 days) found the target
+extractor (§2.2, `NEXT_ACTION_RE` group 4) captures the single word immediately following
+the verb, which is frequently a pronoun/quantifier/preposition ("that", "each", "all",
+"with") when the real referent is anaphoric or the construction is a compliant
+recommendation-with-reveal, not a deferred action. 8 of 9 historical `would_block=1` fires
+through 2026-06-29 were this class.
+
+Fixed in the live hook (`autonomy-posture-check-layer-4.2.sh` §2.2b, 2026-07-03) with a
+closed-class exclusion set (pronouns, quantifiers/determiners, prepositions, conjunctions)
+plus trailing-punctuation stripping. This is a fixed part-of-speech set, not an open-ended
+phrase list — it does not reproduce the CHECK-1-through-7 whack-a-mole pattern the lexical
+layer hit (see `lexical-layer-freeze.yaml`).
+
+**Explicitly NOT fixed:** a real noun target is still would-block-eligible even when the
+surrounding sentence is a compliant recommendation-with-reveal. The 06-28 signal's own
+false-positive table mis-bucketed one such case (`team-configs`, a genuine compound noun)
+alongside the pronoun/quantifier fires without flagging that it doesn't fit that pattern.
+Re-verified live post-fix (2026-07-03): the `each`-class fires now correctly report
+`would_block:0`; a synthetic `team-configs`-shaped fire with gates forced to pass still
+correctly reports `would_block:1` — the residual is real and open, not silently patched
+away. Closing it requires strengthening `gate_no_info_gap` to detect
+recommendation-with-reveal phrasing semantically, which is separate, harder work (see
+`Core/frameworks/intent/spec/2026-07-03-autonomy-grant-pause-drift-audit.md` §2 root cause 3
+and §7 Phase 2) and is NOT done by this fix.
+
 ## §4 Calibration protocol
 
 Layer 4.2 starts in WARN-ONLY mode (emit telemetry, do not block) for at least 14 days. During calibration:
@@ -219,10 +247,10 @@ Layer 4.2 starts in WARN-ONLY mode (emit telemetry, do not block) for at least 1
 2. False-positive examples are categorized:
    - **legitimate forecast** (response describes next action but it requires a NEW session or future user input — not a same-turn obligation)
    - **gate heuristic mismatch** (4-gate heuristic was wrong)
-   - **lexical mismatch** (next-action regex caught something that wasn't a real next-action claim)
-3. After 14d: if false-positive rate < 5%, promote to BLOCK mode
+   - **lexical mismatch** (next-action regex caught something that wasn't a real next-action claim) — see §3.5, fixed 2026-07-03 for the pronoun/quantifier/preposition subclass
+3. After 14d: if false-positive rate < 5%, promote to BLOCK mode. As of the 30-day review (2026-06-28) the numeric trigger was met but precision was 0% (all 8 fires were the §3.5 false-positive class); a fresh re-calibration window against the corrected extractor is required before re-evaluating promotion — see the 2026-07-03 audit doc §7 Phase 2 for the sizing rationale (do not compress to 3-5 days).
 
-Promotion gate: Brien-confirmation on telemetry summary + matcher scope.
+Promotion gate: Brien-confirmation on telemetry summary + matcher scope. Unchanged by the 2026-07-03 extractor fix — that fix corrects the diagnosis, it does not itself authorize promotion.
 
 ## §5 Cross-references
 

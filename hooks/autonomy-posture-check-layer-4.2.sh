@@ -202,6 +202,37 @@ NEXT_ACTION_RE = re.compile(
 )
 matches = NEXT_ACTION_RE.findall(LAST_TEXT)
 
+# --- §2.2b Grammatical-class exclusion (closed class, not a growing phrase list) ---
+# The extractor grabs a single word after the verb ("I'll run TARGET"). When the
+# grammatical object is a pronoun/quantifier/preposition/determiner ("that", "each",
+# "all", "with"), the regex still matches, but there is no concrete noun to
+# tool-use-cross-reference — the real referent is elsewhere in the sentence (anaphora)
+# or the construction is a compliant recommendation-with-reveal, not a deferred action.
+# Closed grammatical class, not an enumerated phrase list: adding a word here does not
+# reproduce the CHECK-1-through-7 whack-a-mole (root cause: lexical-layer-freeze.yaml),
+# because pronouns/quantifiers/prepositions/determiners are a fixed, small part-of-speech
+# set, not an open-ended catalogue of ways to phrase hedging.
+# Provenance: SIG-2026-06-12-layer42-calibration-review.md + SIG-2026-06-28-flight-model-
+# 30day-ratification-readiness.md identified 8 of 9 historical fires as this class
+# ("each","that"x3,"all","with"x2,"those."); re-verified against the live jsonl log on
+# 2026-07-03 (Core/frameworks/intent/spec/2026-07-03-autonomy-grant-pause-drift-audit.md).
+# NOT COVERED: a real noun target (e.g. "team-configs") is NOT filtered here — it stays
+# a would-block candidate. Whether that class is a true or false positive is a Gate-4
+# semantic question (does the surrounding sentence read as recommendation-with-reveal?),
+# which gate_no_info_gap below does not yet detect. That gap is open, not silently
+# patched — see the audit doc §2 root cause 3 and §7 Phase 2.
+STOPWORD_TARGETS = {
+    # pronouns
+    "it", "this", "that", "these", "those", "them", "they", "he", "she", "we", "you", "i",
+    # quantifiers / determiners
+    "each", "all", "any", "some", "none", "both", "either", "neither", "other", "another",
+    "the", "a", "an",
+    # prepositions
+    "with", "without", "for", "from", "to", "of", "in", "on", "at", "by", "as", "into", "onto",
+    # conjunctions
+    "and", "or", "but", "if", "so", "then",
+}
+
 # Tail sample (last 200 chars, single line) for telemetry/audit.
 tail_raw = LAST_TEXT[-200:].replace("\n", " ").replace("\r", " ")
 tail_json = json.dumps(tail_raw)
@@ -242,8 +273,14 @@ for m in matches:
     action_target = m[3]  # the noun captured by the final group
     if not action_target:
         continue
+    # Strip a bare sentence-final period ("those." -> "those"). Does not affect
+    # real file-extension targets like "config.yaml", which do not end in ".".
+    at = action_target.rstrip(".").lower()
+    if at in STOPWORD_TARGETS:
+        # Grammatical function word, not a concrete deferred-action target.
+        # See §2.2b above. Not tool-use-cross-referenced; not would-block-eligible.
+        continue
     matched = False
-    at = action_target.lower()
     for blob in tool_blobs:
         if at and at in blob:
             matched = True

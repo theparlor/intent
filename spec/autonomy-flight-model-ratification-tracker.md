@@ -146,10 +146,28 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
    2026-05-29 (`~/.claude/settings.json` Stop array; hook
    `hooks/autonomy-posture-check-layer-4.2.sh`). This IS the §9 shadow flight-test
    running; the 14-day calibration clock starts now.
-2. Run 14-day calibration; `drag_dashboard.py` + Layer 4.2 telemetry report FP rate.
-3. If FP < 5% → promote Layer 4.2 to block; **retire CHECK 3 (0 fires) and CHECK 2
+2. ✓ DONE — 14-day (2026-06-12) and 30-day (2026-06-28) calibration reviews ran.
+   FP-rate-against-volume trigger passed both times (0.40%, 0.54%), but
+   precision-against-fires was 0% both times (all fires were the same
+   pronoun/quantifier/preposition target-extraction bug) — promotion was correctly
+   withheld pending a real fix, not executed. Brien's promote/retire/ratify decision
+   was surfaced twice and has not yet been taken.
+2.5. ✓ DONE 2026-07-03 — target-extractor patched (closed-class grammatical
+   exclusion, `hooks/autonomy-posture-check-layer-4.2.sh` §2.2b; spec update in
+   `autonomy-posture-check-layer-4.2-DRAFT.md` §3.5). Re-verified against all 9
+   historical fires: 8/9 (the pronoun/quantifier/preposition class) now correctly
+   suppressed; 1/9 (`team-configs`, a genuine noun) correctly and honestly left as
+   an open would-block candidate, not silently patched. Full diagnosis and
+   verification: `Core/frameworks/intent/spec/2026-07-03-autonomy-grant-pause-drift-audit.md`.
+   **Still open, still warn-only, still Brien's L2 call:** a fresh calibration
+   window (recommend 7-10 days per the audit, not the originally-assumed 3-5) is
+   needed against the corrected extractor before re-evaluating promotion.
+3. If the fresh window's FP rate (against fires, not just volume) is acceptable →
+   promote Layer 4.2 to block; **retire CHECK 3 (0 fires) and CHECK 2
    (1 fire) immediately**, demote the rest per measured block-rate.
 4. Update `lexical-layer-freeze.yaml:sunset` with the executed schedule; close
    `SIG-2026-05-29-friction-01`.
 
-This train is the cheapest path to convergence and is the recommended next pull.
+This train is the cheapest path to convergence and is the recommended next pull. Step
+2.5 (the extractor fix) is now done; step 3 (the actual re-calibration window and
+promote decision) remains open.
