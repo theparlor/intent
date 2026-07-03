@@ -118,11 +118,11 @@ authority doc, so a newcomer doesn't conflate them.
 
 ---
 
-## Amendment (PROPOSED, status: proposed) - Track E: engagement / confidential repos
+## Amendment (RATIFIED 2026-07-02) - Track E: engagement / confidential repos
 
-> Proposed 2026-07-02 during the theparlor portfolio rollout (see signal
+> Ratified 2026-07-02 (Brien) during the theparlor portfolio rollout (see signal
 > SIG-2026-07-02-repo-hygiene-confidential-track-gap). Additive only: nothing above is removed or
-> weakened. Ratify or amend this section before applying a hygiene pass to any confidential repo.
+> weakened. This profile now governs every hygiene pass on a confidential or engagement repo.
 
 **Motivation.** The portfolio rollout classified every owned repo into Track A (software) or Track C
 (static site). That scheme has no bucket for a large, real class: engagement and confidential repos
