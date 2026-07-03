@@ -5,7 +5,16 @@ source: knowledge-ingest
 confidence: 0.7
 trust: 0.35
 autonomy_level: L1
-status: captured
+status: resolved
+resolved_date: 2026-07-03
+disposition: |
+  DECIDED by Brien 2026-07-03 (direct, in-session): GitHub Actions is the always-on substrate
+  now (least change, already deep in git), with an explicit trajectory to cloud (MCP space,
+  cloud data space, multi-dev access) and named migration triggers. Promoted to DDR-009 per
+  this signal's own proposed action 1.
+upstream_control_path: /Users/brien/Workspaces/Core/frameworks/intent/knowledge/decisions/DDR-009-always-on-hosting-substrate.md
+catch_mechanism: DDR-009 validation criteria (14-day migrated-stage reliability run + NDA log spot-audit); migration triggers named in DDR-009 section 3 fire a fresh substrate DDR
+pipeline_survival: DDR-009 is a committed knowledge/decisions artifact; survives independently of this signal
 cluster: deployment-topology
 author: agent
 related_intents: []
