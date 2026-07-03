@@ -233,16 +233,18 @@ STOPWORD_TARGETS = {
     "and", "or", "but", "if", "so", "then",
 }
 
-# Full-text sample (bounded only against pathological input, not a fixed analysis
-# window) for telemetry/audit. 2026-07-03: was LAST_TEXT[-200:]. Cross-model review
-# (SIG-2026-07-03-layer42-recall-unmeasured.md) found the 200-char tail is a lossy
-# summary that discards claim-bearing text earlier in the message, and that 194/231
-# of the session transcripts backing this hook's sibling audit log have already
-# rotated off disk, meaning a truncated log line is often the ONLY surviving record.
-# session_id is a durable pointer only as long as transcripts are retained; this repo
-# has already lost 84% of them within weeks. Log full text here so retrospective
-# recall/precision analysis never depends on transcript survival.
-tail_raw = LAST_TEXT[-8000:].replace("\n", " ").replace("\r", " ")
+# Full text for telemetry/audit, unbounded except a 200000-char pathological-input
+# guard (text storage is not a real constraint; a fixed truncation window is exactly
+# the failure mode being fixed here, so do not reintroduce one). 2026-07-03: was
+# LAST_TEXT[-200:], then widened to LAST_TEXT[-8000:] same day (still truncated
+# 1/37, 2.7%, of a recovered sample), now effectively unbounded. Cross-model review
+# (SIG-2026-07-03-layer42-recall-unmeasured.md) found the 200-char tail was a lossy
+# summary discarding claim-bearing text earlier in the message, and that 194/231 of
+# the session transcripts backing this hook's sibling audit log have already rotated
+# off disk (settings.json cleanupPeriodDays: 7 is the root cause of that rotation,
+# NOT fixed here, out of scope for a repo-local hook). This log entry is the durable
+# governance record; it must not depend on the ephemeral session transcript surviving.
+tail_raw = LAST_TEXT[-200000:].replace("\n", " ").replace("\r", " ")
 tail_json = json.dumps(tail_raw)
 
 if not matches:
