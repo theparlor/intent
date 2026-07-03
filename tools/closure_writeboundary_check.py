@@ -93,13 +93,57 @@ WEASEL_PATTERNS: list[re.Pattern] = [
     re.compile(r"\bto be\s+(?:done|fixed|resolved|completed|verified|wired|established|built|shipped)\b", re.IGNORECASE),
     # "incomplete" — direct admission
     re.compile(r"\bincomplete\b", re.IGNORECASE),
-    # "will [fix/be/need/address/follow/complete/require/update/add/wire/establish/verify]"
-    # ONLY future-tense deferral verbs — NOT capability verbs (detect/catch/fire/run/prevent)
+    # "will [fix/be/need/address/follow/complete/require/update/add/wire/establish]"
+    # ONLY future-tense deferral verbs — NOT capability verbs (detect/catch/fire/run/prevent).
+    # 2026-07-03 precision pass: "verify" removed from the deferral list — it is a
+    # capability verb in catch-net descriptions ("overwatch sweeps will verify staleness"),
+    # which is exactly where it kept false-firing (SIG-EXEC-2026-05-20 residual).
     re.compile(
-        r"\bwill\s+(?:fix|be\s+done|need|address|follow|complete|require|update|add|wire|establish|verify|land|ship)\b",
+        r"\bwill\s+(?:fix|be\s+done|need|address|follow|complete|require|update|add|wire|establish|land|ship)\b",
         re.IGNORECASE,
     ),
 ]
+
+# ---------------------------------------------------------------------------
+# Precision exemptions (2026-07-03 pass — Brien-authorized remediation, register
+# row 4). Derived from the 8 residual false-positives after the 22-finding
+# remediation: every residual fell into one of these classes. Each exemption is
+# deliberately narrow; the founding F-4 case (pipeline_survival admitting
+# "needs update-mode pass (follow-up)" with no reference, no negation, no
+# honesty declaration) still flags under all of them.
+# ---------------------------------------------------------------------------
+
+# (a) Cross-reference lines: a weasel token inside a line that names another
+#     signal by ID is a REFERENCE to that signal (often to its title, e.g.
+#     "SIG-EXEC-...-CONT follow-up #1 — now closed"), not a deferral of this
+#     signal's own work.
+_SIGNAL_REF_RE = re.compile(r"\b(?:SIG|RETRO|INT|SPEC|DDR|CON)-[A-Za-z0-9]")
+
+# (b) Closed-follow-up evidence on the same line ("— now closed", "(landed
+#     2026-06-03: path)"): the language records completion, not deferral.
+_CLOSED_EVIDENCE_RE = re.compile(
+    r"now closed|\(closed\b|— closed\b|\(landed\b|landed 20\d\d|closed 20\d\d|completed 20\d\d",
+    re.IGNORECASE,
+)
+
+# (c) Negation immediately governing "needs", including across a line wrap
+#     ("no new\n   invariant needs to be authored"). Checked against a two-line
+#     window (tail of previous line + current line).
+_NEGATED_NEEDS_RE = re.compile(
+    r"\bno(?:thing|ne)?\s+(?:\w+[-']?\w*\s+){0,3}needs\b", re.IGNORECASE
+)
+
+# (d) Explicit honesty declaration: "Honest status:" inside a DoD field value is
+#     the sanctioned convention for qualifying a catch-net's current scope
+#     without claiming more than exists (closure-DoD allows an explicit
+#     no-catch-net/partial-catch-net justification). Lines carrying the marker
+#     are self-declared qualifications, not premature-resolution evidence.
+_HONEST_STATUS_RE = re.compile(r"\bHonest status:", re.IGNORECASE)
+
+# (e) Inline code spans quote trigger phrases and regex literals verbatim
+#     ("`brien needs to decide`"); stripped before matching. Blockquote lines
+#     ("> ...") quote OTHER documents' text; skipped entirely.
+_INLINE_CODE_RE = re.compile(r"`[^`]+`")
 
 # Required closure-DoD fields (must appear as YAML-key: or body-key: lines)
 REQUIRED_FIELDS = ["upstream_control_path:", "catch_mechanism:"]
@@ -152,13 +196,41 @@ def _has_required_fields(text: str) -> tuple[bool, list[str]]:
 
 
 def _find_weasel(text: str) -> list[tuple[re.Pattern, str]]:
-    """Return list of (pattern, offending_line) for all weasel hits."""
+    """Return list of (pattern, offending_line) for all weasel hits.
+
+    Applies the 2026-07-03 precision exemptions (see the exemption constants
+    above): blockquotes, inline-code spans, signal cross-references,
+    closed-follow-up evidence, negated "needs", and "Honest status:" declared
+    qualifications are not deferral evidence.
+    """
     hits: list[tuple[re.Pattern, str]] = []
     lines = text.splitlines()
+    prev_line = ""
     for line in lines:
+        stripped = line.strip()
+        # Blockquotes quote other documents; never this signal's own admission.
+        if stripped.startswith(">"):
+            prev_line = line
+            continue
+        # Explicit honesty declaration is sanctioned qualification language.
+        if _HONEST_STATUS_RE.search(line):
+            prev_line = line
+            continue
+        # Match against the line with inline-code spans removed (quoted
+        # trigger phrases / regex literals are not prose claims).
+        checkable = _INLINE_CODE_RE.sub("", line)
+        two_line_window = prev_line[-60:] + " " + checkable
         for pat in WEASEL_PATTERNS:
-            if pat.search(line):
-                hits.append((pat, line.strip()))
+            if not pat.search(checkable):
+                continue
+            # Cross-reference or recorded-completion lines are not deferrals.
+            if _SIGNAL_REF_RE.search(checkable) or _CLOSED_EVIDENCE_RE.search(checkable):
+                continue
+            # Negation governing "needs", including across a wrapped line.
+            if "needs" in pat.pattern and _NEGATED_NEEDS_RE.search(two_line_window):
+                continue
+            hits.append((pat, stripped))
+        prev_line = line
     return hits
 
 

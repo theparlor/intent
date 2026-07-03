@@ -419,5 +419,74 @@ The work is complete. The corpus updated and all invariants pass.
         self.assertEqual(violations, [], f"Unexpected violations: {violations}")
 
 
+class TestPrecisionExemptions(unittest.TestCase):
+    """2026-07-03 precision pass — each fixture is a real residual false-positive
+    from the Brien-authorized remediation (register row 4). Every case must NOT
+    flag. The final test asserts the founding F-4 case STILL flags, so the
+    exemptions can never be widened into a bypass without breaking a test."""
+
+    BASE = """\
+---
+status: resolved
+---
+upstream_control_path: somewhere/real.py
+catch_mechanism: chain_audit INV-REAL
+pipeline_survival: yes
+"""
+
+    def _check(self, body_line: str):
+        import os
+        content = self.BASE + body_line + "\n"
+        with tempfile.NamedTemporaryFile(
+            "w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
+            f.write(content)
+            path = f.name
+        try:
+            return cwb.check_file(Path(path))
+        finally:
+            os.unlink(path)
+
+    def test_blockquote_line_exempt(self):
+        """Residual: SIG-2026-05-28 — blockquote quoting an upstream doc's gap."""
+        v = self._check("> `hooks/autonomy-grant-stop-check.sh` — needs new pattern class")
+        self.assertEqual(v, [], f"Blockquote should be exempt: {v}")
+
+    def test_inline_code_literal_exempt(self):
+        """Residual: SIG-2026-05-28 — backtick-quoted regex trigger literal."""
+        v = self._check("The trigger is `brien needs to decide` which is legitimate surfacing.")
+        self.assertEqual(v, [], f"Inline-code literal should be exempt: {v}")
+
+    def test_signal_cross_reference_exempt(self):
+        """Residual: SIG-EXEC-2026-06-03 — list item naming another signal's title."""
+        v = self._check("- SIG-EXEC-2026-05-20-ML-SPEC-001-CONT follow-up #1")
+        self.assertEqual(v, [], f"Signal cross-reference should be exempt: {v}")
+
+    def test_closed_evidence_exempt(self):
+        """Residual: SIG-EXEC-2026-06-03 — follow-up recorded as now closed."""
+        v = self._check("The earlier item follow-up #1 — now closed.")
+        self.assertEqual(v, [], f"Recorded-closed follow-up should be exempt: {v}")
+
+    def test_negated_needs_across_wrap_exempt(self):
+        """Residual: SIG-INTENT-BROKEN-LINKS — 'no new / invariant needs' wrapped."""
+        v = self._check("The contract IS the catch-net; no new\n   invariant needs to be authored.")
+        self.assertEqual(v, [], f"Negated needs should be exempt: {v}")
+
+    def test_honest_status_declaration_exempt(self):
+        """Residual: SIG-2026-06-10 — sanctioned 'Honest status:' qualifier."""
+        v = self._check("Honest status: the ledger is the monitor's data feed, not yet the monitor.")
+        self.assertEqual(v, [], f"Honest status declaration should be exempt: {v}")
+
+    def test_will_verify_capability_exempt(self):
+        """Residual: SIG-EXEC-2026-05-20 — 'will verify' is a capability verb."""
+        v = self._check("overwatch sweeps will verify staleness on each run.")
+        self.assertEqual(v, [], f"'will verify' capability should be exempt: {v}")
+
+    def test_founding_f4_case_still_flags(self):
+        """GUARD: the founding F-4 pattern must survive every exemption."""
+        v = self._check("pipeline_survival admits: needs update-mode pass (follow-up) — still pending")
+        self.assertTrue(len(v) > 0, "Founding F-4 weasel case must still flag")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
