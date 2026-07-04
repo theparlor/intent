@@ -171,7 +171,9 @@ can run on D1+D2 alone — it does not wait for the full flight model. Two relea
    likely be a vacuous read, not evidence of readiness. Full detail:
    `.intent/signals/SIG-2026-07-03-layer42-recall-unmeasured.md`. **This re-sequences
    step 3: widen the claim grammar and re-measure recall before running the window,
-   not after.**
+   not after.** DONE 2026-07-03 late evening: recall 4/231 (1.7%) to 178/231 (77.1%),
+   adversarially verified and trimmed (commit 9c0e6bf). The fresh calibration window
+   against the widened grammar is now the only thing between here and step 3.
 3. If the fresh window's FP rate (against fires, not just volume) is acceptable AND
    step 2.6's recall gap has been closed (grammar widened, re-measured against the
    231-entry ground truth) → promote Layer 4.2 to block; **retire CHECK 3 (0 fires)

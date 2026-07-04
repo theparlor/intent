@@ -121,6 +121,24 @@ telemetry logging was not built to that standard. The gap is not missing archite
 un-applied one, and it is reasonable to assume other telemetry/log sinks in this system have the same
 tail-truncation shape and have not been checked.
 
+
+## Executed (2026-07-03 late evening, same day)
+
+The re-sequencing this signal recommended ran: an Opus build pass derived three closed
+grammatical claim classes from the 231-entry ground truth and an independent Opus verify pass
+reproduced the numbers exactly and refuted one branch (bare "want to", deleted, zero recall
+cost, re-confirmed 178/231 post-trim). Would-block-eligible recall: 4/231 (1.7%) before,
+178/231 (77.1%) after. Residual 53 misses bucketed honestly (23 trailing-observation + 27
+clean-closure tails, both partly the lossy-tail artifact; 2 citation dumps and 1
+conversational question that SHOULD not match; silent-stop named structurally unreachable by
+any text grammar). Commit 9c0e6bf. upstream_control_path:
+Core/frameworks/intent/hooks/autonomy-posture-check-layer-4.2.sh sections 2.2c (grammar) and
+2.2b (stopwords). catch_mechanism: the load-bearing-branch rule in spec section 2.2d (a new
+Class A branch requires a ground-truth catch that depends on it) plus the window
+read-protocol caveat; no automated recall-regression test yet, which keeps this signal OPEN.
+Still pending before the promote decision returns to Brien: the fresh warn-only calibration
+window against the widened grammar, read per the spec's caveat.
+
 ## Why this is `status: captured`, not `resolved`
 
 No fix has shipped for the recall gap. This signal documents a measurement and a re-sequencing
