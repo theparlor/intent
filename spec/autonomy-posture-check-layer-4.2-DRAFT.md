@@ -239,6 +239,105 @@ recommendation-with-reveal phrasing semantically, which is separate, harder work
 `Core/frameworks/intent/spec/2026-07-03-autonomy-grant-pause-drift-audit.md` §2 root cause 3
 and §7 Phase 2) and is NOT done by this fix.
 
+## §2.2d Deferred-claim grammar: recall widening (added 2026-07-03)
+
+The §2.2 `NEXT_ACTION_RE` and §3.5 stopword exclusion were both authored and calibrated
+against a 9-fire would-block sample, i.e. entirely against **precision**. A cross-model
+breadth pass (Fable 5, spot-checked by Opus 4.8) measured the missing axis for the first
+time: recall against the lexical Stop-hook's own true-positive corpus, the 231 genuine
+CHECK1-7 catches in `~/.claude/audit/autonomy-grant-stop-detections.log`. That corpus is
+the exact behavior Layer 4.2 exists to structurally replace, so it is the correct recall
+ground truth. Full finding: `SIG-2026-07-03-layer42-recall-unmeasured.md`.
+
+**Measured recall of the pre-2026-07-03 grammar (replayed over all 231 tails):**
+
+| Grammar | Caught | Rate | Note |
+|---|---|---|---|
+| `NEXT_ACTION_RE`, matched at all | 17 / 231 | 7.4% | the signal's headline lower bound |
+| `NEXT_ACTION_RE`, non-stopword (would-block-eligible after §3.5) | 4 / 231 | 1.7% | what actually reaches the 4-gate estimator |
+
+A detector at ~2% recall with near-perfect precision on 9 fires has barely fired; a clean
+calibration window under that condition is not evidence of readiness (it is evidence of
+silence). Before spending another window on the patch-then-window-then-promote sequence, the
+claim grammar had to be widened to catch what the lexical layer already catches.
+
+**What was added (live hook §2.2c):** three closed-grammatical-class detectors, run
+alongside `NEXT_ACTION_RE` rather than folded into it. Each produces a synthetic match tuple
+shaped like `NEXT_ACTION_RE.findall()` output (target at index [3]) carrying a class marker
+(`OFFER` / `TRIGGER` / `COND`), so it flows unchanged through §3.5 stopword filtering, §2.4
+tool_use cross-reference, and the §2.3 4-gate logic. A class marker is not a stopword (a
+deferral is real, unlike an anaphoric pronoun) and will not substring-match a tool_use blob
+(a genuine deferral has no same-turn execution), so it correctly reaches the gate estimator.
+
+| Class | Marker | Closed construction (why it is not a phrase list) | Ground-truth example from the corpus |
+|---|---|---|---|
+| A. interrogative offer | `OFFER` | fixed set of 1st/2nd-person offer openers (`want me to`, `should I`, `shall I`, `would you like me to`). You cannot coin a new interrogative-offer opener the way you can coin a new hedge sentence | 2026-05-04: "Want me to draft a TSD ticket to Omar requesting the OAuth scope grant, or is the current ticket-queue model the intended steady state?" |
+| B. deferral-on-trigger-phrase | `TRIGGER` | fixed set of idiomatic go-signal frames (`say the word`, `say go`, `on your word/go/nod/confirm/green light`, `standing by for`, `wait for your call`, `when you're ready`). Conventional idioms, a bounded set | 2026-07-02: "Say the word Tuesday and we run both tracks." |
+| C. conditional offer / alternative-punt | `COND` | subordinating conditional (`unless`/`if`) bound to a fixed 2nd-person preference verb (`rather`/`prefer`/`want`/`redirect`/`steer`/`flag`). Recommendation-WITHOUT-reveal; the conjunction+verb frame is grammatically closed | 2026-06-04: "if you'd rather I tackle one specifically ..." |
+
+This is the standing lexical-layer-freeze objection ("phrase lists never converge") answered
+directly: these three classes are bounded by grammar (pronoun sets, subordinating
+conjunctions, interrogative-offer frames, go-signal idioms), not by phrasing creativity, so
+they do not reproduce the CHECK-1-through-7 whack-a-mole (`lexical-layer-freeze.yaml`).
+
+**Adversarial-verify trim (2026-07-03, same day):** the independent verify pass refuted one
+branch of the original Class A draft: a bare `want (?:me )?to` alternative that collapses to
+the open bigram "want to" and fired advice-shaped in telemetry (33/123 OFFER hits were
+"you might want to review"-class text, not deferrals). Load-bearing test: deleting it changed
+231-corpus recall by ZERO (178 to 178); no ground-truth catch depended on it. It was removed
+before the calibration window opened, leaving only the closed offer openers in the table
+above. Rule going forward: a new Class A branch requires a ground-truth catch that depends on
+it. Window read-protocol note (also from the verify pass): would-block ELIGIBILITY on stored
+tails widens roughly 16 to ~310 of 1757 telemetry rows, but full-path would_block was 0 to 5
+on stored 200-char tails because gate_precedent fails most; the concurrent telemetry-tail
+unbounding means the live rate will run higher than that stored-tail estimate, and the next
+calibration read must not treat the 5-row figure as the expected fire rate.
+
+**Measured recall after the widening (same 231 tails):**
+
+| Grammar | Caught | Rate |
+|---|---|---|
+| `NEXT_ACTION_RE` + §2.2c classes A/B/C | **178 / 231** | **77.1%** |
+
+**Residual misses (53), bucketed honestly. Some are structurally unreachable by ANY text regex over the tail:**
+
+| Bucket | Count | Reachable by a text regex? |
+|---|---|---|
+| trailing-observation closure (CHECK6 class: closure + "one observation / worth noting", NO offer or question in the tail) | 23 | No in the tail. Either a compliant executed turn (correct non-catch) or the offer sat earlier in the message and the 200-char telemetry tail truncated it away (the lossy-tail artifact documented in SIG-2026-07-03 addendum; the tail widening to unbounded fixes this going forward, but the 194/231 already-rotated transcripts can never be re-measured) |
+| clean status report / handoff (no offer-verb, no trailing question in tail) | 27 | No. Same tail-truncation / clean-closure split as above |
+| URL / citation dump (trailing link lines) | 2 | No. Telemetry noise, not a hedge; catching would be a false positive |
+| info-question close ("Who's your pick to win this season?") | 1 | Yes but MUST NOT. A conversational info-question, not an L4 deferral; catching it would be a false positive |
+
+The honest floor: **silent-stop is structurally unreachable.** A turn that finishes work,
+says nothing about a next action, and simply stops (no offer, no trigger, no conditional, no
+declarative claim) leaves no text for any regex to match. That failure mode is out of scope
+for a text detector by construction and is named here rather than chased. It is exactly the
+class the §2.4 tool_use cross-reference and the positive-execution posture (not the claim
+grammar) are meant to reason about.
+
+**Precision guard (unchanged verdicts on the historical fires).** Replayed against the 9
+would-block=1 telemetry rows: the 8 stopword-class fires (`each`, `that`×3, `all`, `with`×2,
+`those.`) still route through the §3.5 stopword path on their old-regex target and are
+untouched by the new classes; the genuine `team-configs` residual (§3.5) stays would-block-
+eligible and open: the widening neither resurfaces the suppressed 8 nor masks the one real
+residual. Separately, several of those same tails DO carry a genuine CLASS B/C construction
+(e.g. "on your word", "if you'd rather I tackle one"): that is not a regression but the
+recall win: the old grammar could only see their stopword target and suppressed it, while the
+new grammar sees the actual deferral. End-to-end hook runs (real stdin JSON, real telemetry
+sink, then cleaned): a compliant executed-action turn logs `would_block=0 has_tool_use=1`; a
+genuine "say the word" hedge turn (invisible to the old grammar) logs `would_block=1
+next_actions=['TRIGGER']`; an empty turn logs `would_block=0 next_actions=[]`; exit 0 in all
+three. Syntax gates: `bash -n` on the hook and `ast.parse` on the embedded python block both
+pass.
+
+**What this does NOT change** (same discipline as §3.5): the hook stays warn-only (widening
+detection is calibration-safe by construction: it can only add would-block *observations*, it
+cannot block); the §3.5 stopword exclusions, the 4-gate heuristic, and all promotion machinery
+are untouched. Promotion to block-mode remains Brien's L2 call. What this fixes is the
+diagnosis, not the readiness: it makes the next calibration window measure a detector that
+actually fires, so a clean read would mean precision, not silence. Per §4, a fresh window
+against this widened grammar is required before promotion is re-evaluated.
+
 ## §4 Calibration protocol
 
 Layer 4.2 starts in WARN-ONLY mode (emit telemetry, do not block) for at least 14 days. During calibration:

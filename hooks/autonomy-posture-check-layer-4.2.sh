@@ -202,6 +202,88 @@ NEXT_ACTION_RE = re.compile(
 )
 matches = NEXT_ACTION_RE.findall(LAST_TEXT)
 
+# --- §2.2c Deferred-claim grammar (2026-07-03 recall widening) --------------
+# NEXT_ACTION_RE only catches the FORWARD-declarative claim shape ("I'll run X").
+# The lexical Stop-hook's true-positive corpus (autonomy-grant-stop-detections.log,
+# 231 genuine catches) is dominated by three OTHER constructions that NEXT_ACTION_RE
+# never matched. Recall against that corpus was 17/231 (7.4%) matched-at-all, and
+# only 4/231 (1.7%) survived the §2.2b stopword filter as would-block-eligible
+# (SIG-2026-07-03-layer42-recall-unmeasured.md). Widening to these three closed
+# grammatical classes raises recall to 178/231 (77.1%). Each class below is a CLOSED
+# grammatical construction (a finite syntactic frame keyed on a small fixed token
+# set), NOT an open-ended phrase catalogue, so it does not reproduce the
+# CHECK-1-through-7 whack-a-mole that motivated lexical-layer-freeze.yaml. The
+# standing reviewer objection to the lexical layer ("phrase lists never converge")
+# does not apply: you cannot invent a new pronoun, a new subordinating conjunction,
+# or a new first-/second-person interrogative-offer opener the way you can invent a
+# new way to phrase a hedge sentence. The set of go-signal idioms and question
+# frames is bounded by grammar, not by phrasing creativity.
+#
+# Each new hit yields a SYNTHETIC match tuple shaped exactly like NEXT_ACTION_RE's
+# findall() output (4 groups, action-target at index [3]) so it flows unchanged
+# through §2.2b stopword filtering, §2.4 tool_use cross-reference, and §2.3 4-gate
+# logic below. The target is a CLASS MARKER ("OFFER"/"TRIGGER"/"COND"), not a concrete
+# noun, because these constructions defer an action named elsewhere (or offered, not
+# yet named). A class marker is intentionally NOT in STOPWORD_TARGETS (it is a real
+# deferral, unlike an anaphoric pronoun) and intentionally will not substring-match a
+# tool_use blob (a genuine deferral has no same-turn execution), so it correctly
+# reaches the 4-gate estimator, which is where would-block eligibility is decided.
+#
+# CLASS A, interrogative offer (marker "OFFER"). The assistant asks Brien whether to
+#   act instead of acting. Ground truth (2026-05-04): "Want me to draft a TSD ticket to
+#   Omar requesting the OAuth scope grant, or is the current ticket-queue model the
+#   intended steady state?"  Closure: a fixed set of 1st/2nd-person offer openers
+#   ("want me to", "should I", "shall I", "would you like me to"). The optional leading
+#   "w?" tolerates the logged/truncated "ant me to ..." tail shape.
+#   2026-07-03 adversarial-verify trim: the original draft also carried a bare
+#   "want (?:me )?to" branch, which collapses to the open bigram "want to" and fired
+#   advice-shaped (33/123 telemetry hits: "you might want to review", "teams want to
+#   walk in"). Load-bearing test: removing it changed 231-corpus recall by ZERO
+#   (178 -> 178). Deleted as the sole open-list leak; only the closed offer openers
+#   remain. Do not re-add without a ground-truth catch that depends on it.
+CLAIM_OFFER_RE = re.compile(
+    r"\b(w?ant me to|should i|shall i|do you want me to|would you like me to|"
+    r"want (?:this|it|these|that) (?:as|in))\b",
+    re.IGNORECASE
+)
+# CLASS B, deferral-on-trigger-phrase (marker "TRIGGER"). The assistant parks executed-
+#   ready work behind a Brien speech-act. Ground truth (2026-07-02): "Say the word Tuesday
+#   and we run both tracks."; (2026-05-28): "I can start the refactor. Just say the word.";
+#   (2026-06-16, logged): "on your word, so it does not get dropped."  Closure: a fixed,
+#   small set of idiomatic go-signal frames ("say the word", "say go", "on your word/go/
+#   nod/confirm/green light", "standing by for", "wait for your call", "when you're
+#   ready"). These are conventional idioms, not a generative phrase space.
+CLAIM_TRIGGER_RE = re.compile(
+    r"\b(say the word|say go\b|just say the word|"
+    r"on your (?:word|go|nod|confirm|green light)|"
+    r"whenever you(?:_re| are|'re)? ready|when you(?:_re| are|'re)? ready|"
+    r"ready when you are|standing by for|wait for your call|"
+    r"say (?:the word|go) and)\b",
+    re.IGNORECASE
+)
+# CLASS C, conditional offer / alternative-punt (marker "COND"). The assistant gates the
+#   action on Brien choosing an alternative, i.e. recommendation-WITHOUT-reveal (it defers
+#   rather than executing-then-revealing). Ground truth (2026-06-04): "if you'd rather I
+#   tackle one specifically ..."; (2026-05-28): "My recommendation: go with option A ...
+#   Unless you prefer option B ...".  Closure: a subordinating conditional ("unless"/"if")
+#   bound to a fixed 2nd-person preference verb (rather/prefer/want/redirect/steer/flag).
+#   The conditional-conjunction + preference-verb frame is grammatically closed.
+CLAIM_COND_OFFER_RE = re.compile(
+    r"\b(unless you(?:_d| would|'d)?\s*(?:rather|prefer|want|redirect|steer|flag|say)|"
+    r"if you(?:_d| would|'d)?\s*(?:rather|prefer|want)|"
+    r"which way do you want|which do you want)\b",
+    re.IGNORECASE
+)
+# Append one synthetic tuple per firing class. Tuple index [3] is the target, matching
+# NEXT_ACTION_RE.findall() shape ((g1, g2, g3, target)); groups 0-2 are provenance-only
+# and carry the class name so audit lines stay legible.
+if CLAIM_OFFER_RE.search(LAST_TEXT):
+    matches.append(("claim-class", "", "offer", "OFFER"))
+if CLAIM_TRIGGER_RE.search(LAST_TEXT):
+    matches.append(("claim-class", "", "trigger", "TRIGGER"))
+if CLAIM_COND_OFFER_RE.search(LAST_TEXT):
+    matches.append(("claim-class", "", "cond-offer", "COND"))
+
 # --- §2.2b Grammatical-class exclusion (closed class, not a growing phrase list) ---
 # The extractor grabs a single word after the verb ("I'll run TARGET"). When the
 # grammatical object is a pronoun/quantifier/preposition/determiner ("that", "each",
