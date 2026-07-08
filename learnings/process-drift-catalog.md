@@ -1,18 +1,27 @@
 ---
-id: LEARN-PROCESS-DRIFT-CATALOG-001
 title: Process Drift Catalog — All Families
+id: LEARN-PROCESS-DRIFT-CATALOG-001
 type: learning-catalog
+depth_score: 4
+depth_signals:
+  file_size_kb: 30.4
+  content_chars: 18531
+  entity_count: 0
+  slide_count: 0
+  sheet_count: 0
+  topic_count: 0
+  has_summary: 0
+vocab_density: 0.11
 status: ratified
-date: '2026-05-20'
-upstream_control_path: Core/frameworks/intent/learnings/process-drift-catalog.md (this file) + all 7 hooks in Core/frameworks/intent/hooks/ (the mechanism-level prevention layer) + Core/frameworks/intent/spec/autonomy-grant-enforcement.md + Core/frameworks/intent/spec/closure-discipline-enforcement.md
+date: 2026-05-20
+upstream_control_path: "Core/frameworks/intent/learnings/process-drift-catalog.md (this file) + all 7 hooks in Core/frameworks/intent/hooks/ (the mechanism-level prevention layer) + Core/frameworks/intent/spec/autonomy-grant-enforcement.md + Core/frameworks/intent/spec/closure-discipline-enforcement.md"
 catch_mechanism: "autonomy-grant-stop-check.sh (Family 1, Layer 4) + autonomy-grant-dispatch-prompt-check.sh (Family 1, Layer 5) + autonomy-grant-check.sh (Family 1, Layer 1 banner) + closure-discipline-stop-check.sh (Family 2, Layer 4) + closure-discipline-signal-check.sh (Family 2, Layer 5) + closure-discipline-check.sh (Family 2, Layer 1 banner). Families 3-4: no hook yet; catalog is the prevention layer; future hooks target these families."
-pipeline_survival: catalog is source-referenced (each entry has memory cross-links); overwatch sweeps cite this catalog; new drift patterns add entries here; the two enforcement specs are the mechanism-level companions
+pipeline_survival: "catalog is source-referenced (each entry has memory cross-links); overwatch sweeps cite this catalog; new drift patterns add entries here; the two enforcement specs are the mechanism-level companions"
 source_builds:
   - element-substrate-and-recursive-arb (F1-F13 + 3 drift signals)
   - multiple prior sessions (memory entries cited per item)
 memory_base: ~/.claude/projects/-Users-brien-Workspaces/memory/
 ---
-
 # Process Drift Catalog
 
 > Consolidated drift library. Every entry: symptom (what it looks like) → mechanism (why it happens) → correction (how to land it cleanly) → prevention (hook, template, or memory entry).
@@ -421,6 +430,88 @@ These are cases where the multi-agent / multi-session coordination pattern break
 - Signal: `Core/frameworks/intent/.intent/signals/SIG-OVERWATCH-STALENESS-PATTERN-2026-05-20.md`
 - Spec: `Core/frameworks/intent/spec/closure-discipline-enforcement.md` (Family 4 catch-net pattern)
 - Discipline: for every new governance/audit skill, name the trigger mechanism in its INTENT.md before authoring the skill body. If no trigger exists, the skill ships incomplete.
+
+---
+
+## Family 5 — Workflow Fan-out and Conformance Drifts
+
+These are cases where the Workflow tool's fan-out or file-write surface bypasses a control that exists
+for hand-driven work, because the control lived only in a prompt line or in habit, not in code the next
+author automatically inherits.
+
+---
+
+### 5.1 — Unpaced fan-out bursts the rate-limiter
+
+**Source:** SIG-2026-07-02-repo-hygiene-fanout-rate-limit, SIG-2026-07-06-workflow-fanout-burst-throttle
+
+**Symptom:** A batch of agents (14, 23, 30+) is dispatched in one burst via `parallel()`/`pipeline()` or
+hand-rolled background spawns. Anthropic's server-side rate-limiter fires ("Server is temporarily
+limiting requests (not your usage limit)"). Read-then-write-at-end agents lose all work on the trip;
+commit-as-you-go agents survive with partial results. The 2026-07-06 incident was a direct recurrence of
+2026-07-02 through a different vehicle (Workflow tool instead of hand-dispatched agents) -- proof the
+first repair never became a structural control.
+
+**Mechanism:** The default posture is "fan out everything at once to be fast." Nothing in the authoring
+surface forces or even suggests pacing; the wave-based dispatch pattern has to be hand-rolled every time,
+so most authors skip it under time pressure.
+
+**Correction:** Embed the bidirectional pacing rail's `runWaves()` governor (copy from
+`Core/reference/competitive-intel/wave-runner.reference.js`) instead of calling `parallel()` on the raw
+item list. Tighten wave size fast on any trip, loosen slowly on a clean wave, never strand a rate-limited
+item (re-enqueue, don't drop).
+
+**Prevention:**
+- Playbook: `Core/frameworks/intent/playbooks/workflow-fanout-and-conformance.md` Section 1
+- Design: `Core/products/cortege/components/bidirectional-pacing-rail.md`
+- Reference impl (dogfooded): `Core/reference/competitive-intel/evaluate-entrants.workflow.js`
+- No hook exists for this (would violate `hooks/lexical-layer-freeze.yaml`'s freeze on new lexical
+  checks) -- the playbook + reference implementation are the control until an in-orchestrator gate
+  (formation-flight-shaped) exists for workflow authoring.
+
+---
+
+### 5.2 — Subagent file writes bypass glyph/date conformance
+
+**Source:** SIG-2026-07-07-workflow-file-conformance-gap
+
+**Symptom:** A file written by a dispatched subagent contains a banned glyph (em-dash, en-dash, ellipsis,
+arrow) or a placeholder date (`: undated`, a `-undated` filename) despite an explicit STYLE line in the
+dispatch prompt forbidding it. Found only by a post-hoc grep, cleaned by hand, does not scale.
+
+**Mechanism:** The Stop hooks that enforce this conformance on conversational responses
+(`emdash-stop-check.sh`, link-format checks) only inspect the agent's own response text, not files a
+subagent writes via `Write`/`Edit`. A prompt STYLE line is a request, not a gate.
+
+**Correction:** Add a mandatory Conformance phase after any phase that writes markdown: one paced agent
+dispatch per written file, instructed to run `Core/frameworks/intent/tools/conform_file.py <path> --fix`
+via Bash and hand-fix any residual date issue, reporting `clean: true/false`.
+
+**Prevention:**
+- Tool: `Core/frameworks/intent/tools/conform_file.py` (stdlib-only glyph + placeholder-date checker)
+- Playbook: `Core/frameworks/intent/playbooks/workflow-fanout-and-conformance.md` Section 2
+- Reference impl (dogfooded): the `Conformance` phase in
+  `Core/reference/competitive-intel/evaluate-entrants.workflow.js`
+
+---
+
+### 5.3 — Workflow `args` unreliable for load-bearing values
+
+**Source:** SIG-2026-07-07-workflow-args-not-threading
+
+**Symptom:** `args: {date: '...'}` passed to the Workflow tool does not reach the script's `args` global;
+`(args && args.date) || 'undated'` silently resolves to `'undated'` in frontmatter, `accessed:` fields,
+and filenames across multiple runs.
+
+**Mechanism:** Upstream defect in the Workflow tool's args-passing, not something fixable from this repo.
+
+**Correction:** Do not fake a local fix for an upstream bug. Keep a loud, obviously-wrong fallback
+(`'undated'`, never a guessed real-looking date) so 5.2's Conformance phase catches it; for one-off runs,
+hardcode the literal value in the script body instead of trusting `args` at all.
+
+**Prevention:**
+- Playbook: `Core/frameworks/intent/playbooks/workflow-fanout-and-conformance.md` Section 3
+- Signal stays open against the upstream fix: `SIG-2026-07-07-workflow-args-not-threading`
 
 ---
 
