@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.9
 trust: 0.8
 autonomy_level: L3
-status: active
+status: resolved
+upstream_control_path: "Core/products/cast/engine/schema/registry-entity.yaml (disambiguation block: anchors, anti_anchors, canonical_urls, verified)"
+catch_mechanism: "identity fields are stored per-entity in the registry schema, not per research session, and are reusable across every future query for that entity"
+verification_command: "grep -n -A3 'DISAMBIGUATION BLOCK' /Users/brien/Workspaces/Core/products/cast/engine/schema/registry-entity.yaml"
 cluster: methodology-adoption
 author: brien
 related_intents: []
@@ -35,3 +38,7 @@ The INGEST pipeline should treat disambiguation as a required substep, not an op
 - Disambiguation must be stored with the entity, not the research session (it's reusable)
 - Anti-anchors must be actively used during every research query, not just initial intake
 - The verified flag must be set by a human, not auto-set by the agent
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. Core/products/cast/engine/schema/registry-entity.yaml has a full DISAMBIGUATION BLOCK with anchors, anti_anchors, canonical_urls, and a verified flag, exactly the four fields this signal specified, with the same AND/NOT logic description (anchors confirm, anti_anchors exclude).

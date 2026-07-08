@@ -20,3 +20,7 @@ Reduces the effective utility of the persona investment. A persona that can only
 ## Recommended Action
 
 VPS deployment is the next infrastructure priority after Wave 1 extension enrichment completes. The architecture is designed (bearer token auth, federation boundaries, audit logging via observe layer). What remains is implementation and deployment.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Same finding as 2026-04-11-cowork-plugin-persona-access.md: the $10/month VPS deployment this signal calls the next infrastructure priority was never implemented. The persona system remains desktop/Cowork-session-bound; no hosted MCP server is reachable from mobile Claude chat today.

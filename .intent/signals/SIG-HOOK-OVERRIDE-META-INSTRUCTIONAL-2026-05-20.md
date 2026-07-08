@@ -5,9 +5,9 @@ status: resolved
 resolved: '2026-05-20'
 date: '2026-05-20'
 hook_affected: Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh
-upstream_control_path: Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh (line 156 — override-condition message confirmed widened to include "(b) the prompt is meta-instructional content that catalogs the anti-pattern as documented learning")
-catch_mechanism: hook error-message text (verified at line 156) now names TWO legitimate override cases: (a) genuinely L0 external work and (b) meta-instructional documentation. Future hook authors reading the error message will see the full override taxonomy. Override token `AUTONOMY-OVERRIDE-PROPOSAL-FRAMING-INTENTIONAL` mechanism was already correct; this closure confirms the description now matches.
-pipeline_survival: hook is git-tracked at Core/frameworks/intent/hooks/; symlinked from ~/.claude/hooks/; registered in ~/.claude/settings.json; message text persists across sessions. No behavior change — correction was documentation only.
+upstream_control_path: "Core/frameworks/intent/hooks/autonomy-grant-dispatch-prompt-check.sh (line 156, override-condition message confirmed widened to include \"(b) the prompt is meta-instructional content that catalogs the anti-pattern as documented learning\")"
+catch_mechanism: "hook error-message text (verified at line 156) now names TWO legitimate override cases: (a) genuinely L0 external work and (b) meta-instructional documentation. Future hook authors reading the error message will see the full override taxonomy. Override token AUTONOMY-OVERRIDE-PROPOSAL-FRAMING-INTENTIONAL mechanism was already correct; this closure confirms the description now matches."
+pipeline_survival: "hook is git-tracked at Core/frameworks/intent/hooks/; symlinked from ~/.claude/hooks/; registered in ~/.claude/settings.json; message text persists across sessions. No behavior change, correction was documentation only."
 ---
 
 # Hook override description widened: meta-instructional case added (hook line 156)

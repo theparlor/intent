@@ -51,3 +51,7 @@ The loop is the product. Breaking any link collapses it back to disconnected enr
 ## Connection to existing architecture
 
 This signal supersedes the implicit assumption in SPEC-002 (intake pipeline) that the pipeline is linear and complete. SPEC-002's six stages (Identify → Harvest → Assess → Render → Connect → Schedule) are a good starting point for Capability 2 (Sourcing) and the first pass of Capability 3 (Synthesis), but they don't account for iterative improvement, multi-model comparison, or eval gating. The persona product spec needs to wrap SPEC-002 in a larger system that includes feedback loops.
+
+## Triage, 2026-07-08
+
+Disposition: still pending on 3 of 5 pillars. Discovery (Brien-directed, L0) and Content Sourcing (the unguarded-voice hierarchy, GitHub over podcasts over workshops over interviews over blog over book) are implemented in the persona-intake pipeline. Model-Agnostic Synthesis, Multi-Armed Bandit Testing, and Eval-Driven Development (the same three gaps confirmed pending on the sibling signals above) are not. The loop this signal describes (each capability feeding the next) is only closed for 2 of its 5 links.

@@ -57,3 +57,7 @@ The concept maps directly to Intent's L3 (Team OS) layer in SPEC-productivity-os
 - Hannah Stulberg Substack note: https://substack.com/@hannahstulberg/note/c-244346568
 - Example repo: https://github.com/in-the-weeds-hannah-stulberg/team-os-example-repo
 - Full analysis: reference/aakash-gupta-team-os-analysis.md
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partially actioned. One of six recommended actions is verified done: the Hannah Stulberg persona exists in the Cast registry (Core/products/cast/farm/registry/hannah-stulberg.yaml, with two Opus repass cycles on record). The core recommendation is not done: spec/SPEC-productivity-os-layers.md line 227 still reads "small team (3-8 people)" for L3 scope, unchanged from before this signal proposed widening it to "up to ~20 with shared knowledge base." Grepped the spec directory for "launch gate" and "progressive context loading" as named patterns; zero hits for either. Needed control: update SPEC-productivity-os-layers.md L3 scope language, and decide whether "launch gate" and "progressive context loading" get written up as named L3 governance patterns or are dropped as too granular to formalize.

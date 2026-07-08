@@ -72,3 +72,7 @@ These require Brien's judgment:
 Without evals, the persona system has no feedback loop. It can only accumulate content — it can never improve quality. The bandit testing framework (SIG-039) needs a reward signal, and that reward signal IS the eval score. Without evals, bandits have nothing to optimize against. Without bandits, evals are just documentation of problems with no mechanism for systematic improvement.
 
 The eval layer is the thing that turns the persona system from "a collection of files" into "a system that gets better."
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Grepped Cast and the persona-intake skill for any of the three proposed eval layers (structural, content, fidelity); none exist as gates between synthesis and depth-score advancement. The synthesis agent still grades its own output. A parallel signal drain in org-design-tooling (RETRO-2026-04-12-final-eval-gap-SIG-039, same date, reviewed the same day as this pass) independently confirmed only a structural-adjacent CVRS computation exists; content and fidelity layers remain unbuilt. Consistent finding, both drains land on still pending.

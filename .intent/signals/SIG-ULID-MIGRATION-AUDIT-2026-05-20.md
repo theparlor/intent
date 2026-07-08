@@ -2,7 +2,10 @@
 id: SIG-ULID-MIGRATION-AUDIT-2026-05-20
 title: ULID migration audit — 86 legacy-named signals identified post-SPEC-003
 type: signal
-status: captured
+status: resolved
+upstream_control_path: "bin/lib/id_gen.sh (generate_id, validate_id dual-format) + tools/intent-mcp/server.py next_signal_id()"
+catch_mechanism: "new signal capture always calls generate_id/ULID path; legacy IDs remain valid by ratified design (CLAUDE.md Decision 20), not by omission"
+verification_command: 'grep -n "def next_signal_id\|_generate_ulid_id" /Users/brien/Workspaces/Core/frameworks/intent/tools/intent-mcp/server.py'
 confidence: 0.95
 trust: 0.80
 autonomy_level: L4
@@ -69,3 +72,7 @@ This signal creates the Notice for a dedicated migration Execute loop. It also s
 
 This is a high-volume rename (86 files) that merits its own Execute session with verification.
 Use `spawn-prompts/idd-build-execute.md` with this signal as Notice and Sub-tasks 1+2 as the DoD.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, but by superseding decision rather than by executing this signal's literal sub-task 1. Sub-task 2 (enforce ULID going forward) is done and verified: tools/intent-mcp/server.py's next_signal_id() calls the shared next_id() helper, which calls _generate_ulid_id() (ULID per SIG-022), and bin/intent-signal generates new signal IDs via generate_id SIG from bin/lib/id_gen.sh. Sub-task 1 (rename the ~86 legacy-named files) was not executed and the file count confirms it: 86 date-slug plus 10 SIG-NNN legacy-named files remain in .intent/signals/ today. But CLAUDE.md's own Decision 20 (2026-04-09, predating this signal) explicitly ratifies backward compatibility as the design, not a gap: "Legacy SIG-NNN IDs remain valid via backward-compat regex," and bin/lib/id_gen.sh's validate_id() accepts both legacy and ULID formats by design. The mass-rename this signal proposed as sub-task 1 is optional cleanup the ratified decision never required; the actual ask (new signals get real ULIDs, old ones stay valid) is met.

@@ -27,7 +27,8 @@ Usage:
 """
 
 from __future__ import annotations
-import os, re, json, sys
+import os, re, json, sys, shutil
+from datetime import datetime, timezone
 from pathlib import Path
 from collections import defaultdict
 
@@ -235,14 +236,36 @@ def lambda_recommendation(closure_rate: float):
         return ("CONFIRM-AND-PROBE", "λ × 1.1-1.2 — closing well; push higher via shadow autonomy")
 
 
+def backup_if_exists(path: Path) -> Path | None:
+    """Copy an existing file to a timestamped .bak sibling before it gets
+    overwritten. Returns the backup path, or None if there was nothing to
+    back up. Guards against the exact failure this fixes: a re-run silently
+    clobbering a prior corpus snapshot with empty or partial output (per
+    RETRO-2026-05-29-enforcement-drag-SIG-2, org-design-tooling).
+    """
+    if not path.exists():
+        return None
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup_path = path.with_name(f"{path.name}.pre-{stamp}.bak")
+    shutil.copy2(path, backup_path)
+    return backup_path
+
+
+def write_text_with_backup(path: Path, content: str) -> None:
+    backup_if_exists(path)
+    path.write_text(content)
+
+
 def write_outputs(gold, symptom, by_product, out_dir: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    (out_dir / "labeled-gold-v1.jsonl").write_text(
-        "\n".join(json.dumps(r) for r in gold) + "\n"
+    write_text_with_backup(
+        out_dir / "labeled-gold-v1.jsonl",
+        "\n".join(json.dumps(r) for r in gold) + "\n",
     )
-    (out_dir / "symptom-repaired-v1.jsonl").write_text(
-        "\n".join(json.dumps(r) for r in symptom) + "\n"
+    write_text_with_backup(
+        out_dir / "symptom-repaired-v1.jsonl",
+        "\n".join(json.dumps(r) for r in symptom) + "\n",
     )
 
     md = [
@@ -316,7 +339,7 @@ def write_outputs(gold, symptom, by_product, out_dir: Path):
         "Fit per-product λ from these counts. The fit script is the next tool to author (`lambda_fit.py`); ratification dependency for promoting SPEC-INTENT-AUTONOMY-FLIGHT-MODEL-001 from draft to accepted.",
     ])
 
-    (out_dir / "lambda-recommendations-2026-05-26.md").write_text("\n".join(md))
+    write_text_with_backup(out_dir / "lambda-recommendations-2026-05-26.md", "\n".join(md))
 
     print(f"Wrote {len(gold)} labeled-gold rows -> {out_dir}/labeled-gold-v1.jsonl")
     print(f"Wrote {len(symptom)} symptom-repaired rows -> {out_dir}/symptom-repaired-v1.jsonl")

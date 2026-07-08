@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.9
 trust: 0.6
 autonomy_level: L2
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md Extension 2 (INGEST Intent Type) + CON-009"
+catch_mechanism: "CON-009 idempotency verification (ingest twice, count files, registry count unchanged) plus CON-ENTITY-DEDUP at candidate creation"
+verification_command: "grep -n 'Extension 2: INGEST' /Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md"
 cluster: work-ontology-design
 author: brien
 related_intents: []
@@ -34,3 +37,7 @@ INGEST differs from RESEARCH in that it produces a *persistent entity*, not a *r
 - INGEST must produce entities (the new entity primitive from SIG-033), not just artifacts
 - INGEST must be idempotent — ingesting the same source twice should enrich, not duplicate
 - INGEST must handle disambiguation (SIG-036) as a required substep for named humans
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. SPEC-003 Extension 2 formally adds INGEST as a ninth intent type with the exact skill chain this signal named (identify to harvest to assess to render to connect to schedule-freshening), plus CON-009 (INGEST Idempotency: running INGEST twice enriches, does not duplicate) and CON-ENTITY-DEDUP as the entry-gate hook. INGEST+EVALUATE and INGEST+RESEARCH composition patterns are documented too.

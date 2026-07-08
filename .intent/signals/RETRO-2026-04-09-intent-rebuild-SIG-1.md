@@ -50,3 +50,7 @@ Related: this observation is the source of the recursive meta-moment — Intent'
 - Write the bootstrap prompt (RETRO-2026-04-09-bootstrap-prompt.md or similar) as a standing artifact
 - Surface this signal as a pattern in brien-operator's known failure modes: "Long sessions degrade before extraction happens"
 - Consider: should panel-review calls emit a session-stress signal if they detect excessive parallel dispatch count?
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partially actioned. The bootstrap-prompt recommendation is done: Core/products/org-design-tooling/prompts/session-bootstrap-2026-04-09.md exists. The other two recommendations, proactive mid-session session-extraction triggers (not just session-end) and a session-stress signal from panel-review on excessive parallel dispatch, were not built as standing mechanisms.

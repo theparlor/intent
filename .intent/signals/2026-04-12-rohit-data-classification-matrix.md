@@ -7,7 +7,10 @@ author: brien
 confidence: 0.7
 trust: 0.7
 autonomy_level: L1
-status: active
+status: resolved
+upstream_control_path: "memory/feedback_no_preemptive_redaction.md (ratified 2026-06-10)"
+catch_mechanism: "policy decision overtook the premise: no automated field-level or artifact-level projection pipeline is being built; sharing is a per-recipient human call"
+verification_command: "cat /Users/brien/.claude/projects/-Users-brien-Workspaces/memory/feedback_no_preemptive_redaction.md"
 cluster: persona-fidelity
 referenced_by:
   - "Rohit @rohit4verse, 'How to Build a Production-Grade AI Agent' (Feb 2026), Principles 5 and 7"
@@ -32,3 +35,7 @@ Intent's DDR-018 (redaction at tool level) prescribes that the MCP server applie
 ## Implication
 
 When the Knowledge Farm is deployed as a hosted MCP server accessible from mobile, field-level classification becomes important — Brien querying from a phone in public should get different projections than Brien querying from his studio desk. The federation boundary model needs a field-level confidentiality annotation in the knowledge artifact schema.
+
+## Triage, 2026-07-08
+
+Disposition: overtaken, same reasoning as 2026-04-06-redaction-projection.md above. This signal asked for field-level confidentiality classification to support automated per-field projection when the Knowledge Farm is hosted for mobile access. knowledge-engine/AGENTS.md and spec/redaction.md only ever implemented artifact-level confidentiality tags (public/internal/client-internal/nda), never field-level, and the automated-projection premise both signals share was superseded by memory/feedback_no_preemptive_redaction.md (2026-06-10): redaction is a human share-time decision, not a pipeline transform, so field-level granularity for automated projection is no longer a control this system needs to build.

@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.95
 trust: 0.7
 autonomy_level: L3
-status: active
+status: resolved
+upstream_control_path: "Core/products/cast/farm/registry/ (single source of truth) + Core/products/forge/ (rendering consumer)"
+catch_mechanism: "Cast owns identity/corpus; Forge renders from Cast rather than maintaining independent persona content, per the Cast-Forge boundary (WS-DDR-070)"
+verification_command: "grep -n 'Persona engine (was Unified Persona System)' /Users/brien/.claude/CLAUDE.md"
 cluster: methodology-adoption
 author: brien
 related_intents: []
@@ -31,3 +34,7 @@ This is the specific instance of the entity lifecycle problem (SIG-033). A perso
 - Migration must preserve all existing persona depth (Skills Engine personas are rich — don't lose that)
 - Knowledge Engine voice configs should reference registry entities, not duplicate their content
 - The registry is the authoritative source; downstream renderings are projections
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. The unified persona registry this signal called for is exactly what Cast became: the glossary entry for Cast records it directly as "Persona engine (was Unified Persona System)" with the registry as single source of truth (Core/products/cast/farm/registry/), and Forge renders it into downstream formats (personas, skills) as a rendering consumer, not a duplicate authoring surface.

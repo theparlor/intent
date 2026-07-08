@@ -30,3 +30,7 @@ This requires the Knowledge Engine MCP server (intent-knowledge) to serve person
 ## Deployment consideration
 
 For mobile access, the MCP server needs to be hosted (not localhost). Brien's preferred topology: self-hosted VPS (~$10/month), bearer token auth, federation boundaries for engagement data, audit logging via Intent observe layer.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partially actioned by a different route than proposed. The specific ask (personas queryable via the intent-knowledge MCP server, hosted for mobile/dispatch access on a self-hosted VPS with bearer-token auth) was not built as specified: tools/intent-mcp/server.py has no persona-related tools, and no hosted deployment exists. A substrate-exposure-architecture.md spec and a 2026-05-26 Cowork handoff track discuss hosted MCP access at a more general architectural level, but that work is still at the open-decisions-for-Brien stage, not deployed. Separately, library-index-mcp now provides queryable entity lookup over the Cast registry, which functionally covers part of the "query personas by name" ask through a different server than the one this signal named.

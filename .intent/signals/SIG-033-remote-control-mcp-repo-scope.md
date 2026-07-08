@@ -67,3 +67,7 @@ too tightly" and wants this captured rather than fixed blind.
 - Reversibility: high — allowlist config is trivially revertible.
 - Testability: high — "ask for an out-of-scope repo, observe allow/deny" is a clean test.
 - Precedent: low — no prior DDR on remote-control repo scoping; needs a decision.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, correctly so, this signal explicitly marks its own open questions as "for triage, not auto-resolution" and flags a real security-boundary tradeoff (widening what a remote/compromised session can reach). Checked .intent/config.yml and .intent/config/ for any multi-repo allowlist schema; none exists. No DDR or PENDING_DECISIONS.md row addresses remote-control repo scoping. Needed control: this is a genuine Brien-gated decision (blast radius, medium-high; precedent, none). Registering as tracked-pending rather than resolving unilaterally, consistent with the signal's own instruction not to auto-resolve.

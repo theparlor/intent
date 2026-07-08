@@ -137,3 +137,7 @@ Brien accepted: "Good challenge accepted" (2026-04-12)
 3. **Address the "collapse" feedback** — Intent's surface area is too large for practitioner adoption; needs a dramatically simpler entry point
 4. **Explain trust mechanics** — Chris flagged this as opaque; needs a one-page explainer
 5. **Add copyright/license to Intent repo** — governance gap Chris identified
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partially actioned. Of the 5 proposed actions, one is verified done: the Chris Markus persona exists in the Cast registry as a peer-type entity (Core/products/cast/farm/registry/chris-markus.yaml, corpus at farm/corpus/chris-markus/, rendered at outputs/browser/personas/chris-markus.html). The other three concrete artifacts this signal asked for do not exist on disk: no LICENSE file at the intent repo root (Chris's copyright/license gap), no two-pager document (searched for two-pager/two_pager anywhere in the repo, zero hits), and no standalone trust-mechanics explainer. Needed control: write the LICENSE file (cheap, should be done regardless of this signal), and treat the two-pager and trust explainer as their own scoped writing tasks, not folded into a research signal.

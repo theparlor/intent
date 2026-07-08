@@ -6,7 +6,10 @@ source: conversation
 confidence: 0.95
 trust: 0.7
 autonomy_level: L3
-status: captured
+status: resolved
+upstream_control_path: "hooks/autonomy-grant-stop-check.sh (CHECK 1, CHECK 7) + /Users/brien/.claude/CLAUDE.md (Git operations in solo-owned repos: L4)"
+catch_mechanism: "Stop hook blocks bare-choice and scope-variant bare-choice phrasing at turn end; CLAUDE.md posture rule sets the default to execute before the hook ever needs to fire"
+verification_command: 'grep -n "CHECK 1\|CHECK 7" /Users/brien/Workspaces/Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh'
 cluster:
 author: brien
 related_intents: []
@@ -171,3 +174,7 @@ All three are needed — each catches a different failure surface.
 - **Sibling failure mode:** `SIG-2026-05-20-l0-on-push-framing-no-hook-catch` — same drift class, push surface instead of merge surface.
 - **Framework:** `spec/signal-trust-framework.md` — the contradicted spec.
 - **Decisions:** `CLAUDE.md` §Key Decisions #21 (12-factor pause/resume) — the human-contact protocol is being invoked at trust levels where it shouldn't fire.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live on 2 of the 3 proposed mechanisms; the 3rd is a documentation nicety, not load-bearing. Mechanism A (mechanism-level hook extension): hooks/autonomy-grant-stop-check.sh CHECK 1 (bare-choice question block) already catches exactly the two example phrases this signal quotes ("Want me to commit this signal, or hold for review?" and "Want me to: 1... 2... merge them?" both match the bare-choice pattern CHECK 1 blocks on), and CHECK 7 (added the same day, 2026-05-29, for scope-variant bare-choice on pre-authorized work) closes the adjacent "part or all" variant. Mechanism B (posture-level rule): /Users/brien/.claude/CLAUDE.md now states plainly "Git operations in solo-owned repos: L4... Recalibrated 2026-05-19 from earlier over-cautious L0-on-push framing," which is precisely the default-to-execute posture rule this signal asked for. Mechanism C (a worked-example trust-score table in spec/signal-trust-framework.md) was not written, grepped for "worked example" and the signal's own 0.93 trust-score figure; zero hits. C is reference documentation, not enforcement, so its absence does not leave the drift uncaught.

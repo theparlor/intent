@@ -7,7 +7,10 @@ author: brien
 confidence: 0.9
 trust: 0.9
 autonomy_level: L2
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/intent/spec/SPEC-productivity-os-layers.md (### L1 through ### L6 sections)"
+catch_mechanism: "explicit six-layer altitude model with scope, autonomy default, and knowledge architecture defined per layer, closing the L2/L5 gaps this signal named"
+verification_command: "grep -n '^### L[0-9]:' /Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-productivity-os-layers.md"
 cluster: architecture
 ---
 
@@ -57,3 +60,7 @@ Without an explicit layering model:
 The three-layer architecture, the loop, trust/autonomy, federation, and the Knowledge Engine all exist. What's missing is the **altitude dimension** — a formal model for how these mechanisms vary across organizational scale. Think of it as the Z-axis that Intent's current X-Y (loop phase × work ontology) doesn't yet account for.
 
 This is analogous to Team Topologies (Pais/Skelton) providing the organizational altitude model for platform engineering — Intent needs its equivalent for AI-augmented product work.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. spec/SPEC-productivity-os-layers.md now has fully written sections for all six altitudes this signal named as gaps, including the two it specifically flagged as missing: L2 (Independent Builders, line 181) and L5 (Department OS, line 343), alongside L1/L3/L4/L6. The Z-axis (altitude) model this signal called for is built.

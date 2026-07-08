@@ -177,3 +177,7 @@ mutation and engagement-bounded data on a tighter leash.
   this; needs a wrapper.
 - First blacklist entries: enumerate current engagement repos
   (Subaru/ASA/F&G/Cargill/Footlocker) + any credential repos.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, Brien-gated architecture decision. This signal proposes inverting the remote-control GitHub token model from whitelist to blacklist with a specific config schema, creation-time hook, weekly lint, and per-push event emission. None of it exists: no .intent/config/github-token-scope.yml, no repository.created GitHub Action, no blacklist lint job. Checked .context/DECISIONS.md and PENDING_DECISIONS.md for any ratification of this specific inversion; none found. Needed control: this is a genuine security-tradeoff decision (R1 default-allow risk vs. R6 NDA-leakage risk, per the signal's own risk table) that needs Brien's ratification before building, not something this drain can decide unilaterally.

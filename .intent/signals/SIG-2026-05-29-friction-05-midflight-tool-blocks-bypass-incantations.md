@@ -69,3 +69,7 @@ it — and the recovery path is "know the right `*_BYPASSED=1` flag and supply a
 - For each PreToolUse gate: is the underlying decision deterministic enough to *route*
   instead of *block*? native-connector almost certainly yes; dispatch-prompt and
   build-intake need judgment — those keep a (discoverable, non-secret) override.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Checked hooks/native-connector-precedence-check.sh directly: the bypass is still the same environment-variable incantation this signal describes ("Bypass: set NATIVE_CONNECTOR_PRECEDENCE_BYPASSED=1 (logged when used)"), not the typed, discoverable, in-message exception surface this signal proposes. No evidence any of the listed PreToolUse gates were converted from block-and-retry to silent-route despite native-connector-precedence-map.json already encoding the deterministic mapping needed to do so. Needed control: unchanged, convert the native-connector precedence gate specifically from block to route (the signal's own highest-confidence candidate, "native-connector almost certainly yes"), and replace the env-var bypass pattern with a documented, in-message override field across all PreToolUse gates.

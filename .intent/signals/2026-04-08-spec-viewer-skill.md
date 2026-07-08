@@ -23,3 +23,7 @@ Build a reusable skill that renders any spec markdown as styled HTML:
 ## Parallel
 
 Typora selected as local markdown editor for WYSIWYG editing. The spec-viewer skill complements Typora for reading/sharing specs that need to look polished without a dedicated tool.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Searched for any spec-viewer skill or markdown-to-styled-HTML renderer; none exists as a reusable skill (only the one-off intent-site rendering this signal describes, done manually, not as a repeatable tool). Needed control: build the reusable skill this signal specified (input: markdown path, output: styled HTML with table of contents, syntax highlighting, section numbering, status badges).

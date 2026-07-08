@@ -24,3 +24,7 @@ Build a KE capability that automates product taxonomy scanning:
 ## Implication
 
 This connects to the Knowledge Farm GTM concept — a product taxonomy is one of the artifacts that lives in a client's Knowledge Farm instance.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. The manual output this signal describes exists (Core/frameworks/intent-site/products-taxonomy.yaml), confirming the pattern works, but the actual ask, a Knowledge Engine capability that automates product-taxonomy scanning from a codebase or artifact collection, was never built; the taxonomy file is still hand-curated. Needed control: the automated scan-and-classify capability this signal proposed as a KE opportunity.

@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.95
 trust: 0.85
 autonomy_level: L4
-status: active
+status: resolved
+upstream_control_path: "Core/products/cast/engine/schema/registry-entity.yaml (index: and substance: as parallel top-level blocks)"
+catch_mechanism: "schema structurally separates the two blocks; there is no taxonomy gate that would drop an observation not fitting a structured field, it goes into substance by construction"
+verification_command: 'grep -n "^index:\|^substance:" /Users/brien/Workspaces/Core/products/cast/engine/schema/registry-entity.yaml'
 cluster: methodology-adoption
 author: brien
 related_intents: []
@@ -36,3 +39,7 @@ Every entity model must have both an `index` block (standards-backed, machine-qu
 - No taxonomy gate: if an observation doesn't fit a structured field, it goes into substance, never into /dev/null
 - Structured fields are additive context (parallel access paths), not replacement for content
 - Lensing operates on substance, not on index — the index helps you find the entity, the substance is what you lens
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. Core/products/cast/engine/schema/registry-entity.yaml has both an index: block (structured, standards-backed fields) and a substance: block (freeform, never truncated) as parallel, non-collapsing layers, exactly the design constraint this signal specified.

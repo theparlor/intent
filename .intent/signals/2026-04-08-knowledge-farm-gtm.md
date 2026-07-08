@@ -36,3 +36,7 @@ This mirrors the Fieldbook model:
 - Business model design (pricing, packaging, delivery format)
 - Technical spec: what does a portable Farm instance look like? (YAML bundle? Git repo? Hosted instance?)
 - Engagement pilot: the first Knowledge Farm could be The Parlor's own (dogfood)
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Checked for an INT-NNN intent, business model/pricing decision, or technical spec for the Knowledge Farm as a carry-away product; found none. "Knowledge Farm" is now a well-established term in CLAUDE.md and SPEC-productivity-os-layers.md (as an L1 instance concept), but the GTM packaging question this signal raised (pricing, delivery format, engagement pilot) was never advanced past this signal. Needed control: none of the four Next Steps (INT-NNN, business model design, technical spec, engagement pilot) have been executed.

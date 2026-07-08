@@ -35,3 +35,7 @@ Current Intent MCP tools use Pydantic models for input but lack the error-respon
 ## Implication
 
 Before the Intent MCP servers are deployed as a hosted Knowledge Farm or registered in the Cowork plugin, they need a validation pass against Rohit's Principle 2 standard. This is a prerequisite for trust levels L3-L4 (agent executes with monitoring / full autonomy).
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Grepped Intent's MCP servers for idempotency keys or structured field-level error responses on write operations (create_signal, create_spec, ingest_event); none found. Note this is distinct from CON-009 (INGEST Idempotency), which governs entity-level ingestion semantics, not MCP tool-call retry safety, so that later contract does not close this gap.

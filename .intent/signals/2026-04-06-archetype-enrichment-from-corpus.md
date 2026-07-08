@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.85
 trust: 0.6
 autonomy_level: L2
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md CON-010 + Core/products/cast/farm/archetypes/*/source-humans.yaml"
+catch_mechanism: "contribution non-regression contract (before/after diff, set-empty verification) governs archetype enrichment; the REDACT step this signal proposed is superseded by the no-preemptive-redaction policy, not built"
+verification_command: "grep -n CON-010 /Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md"
 cluster: methodology-adoption
 author: brien
 related_intents: []
@@ -39,3 +42,7 @@ Every model at every level must provide standalone value AND contribute upward t
 - Archetypes must track which named-humans contributed (for provenance and reprocessing)
 - Adding a new named-human must be non-destructive to existing archetype content
 - Lenses operate on substance, not index — they shift emphasis, not classification
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, mostly, with one piece overtaken by later policy. The contribution-declaration and archetype-synthesis architecture this signal proposed is built: Cast's farm/archetypes/[slug]/source-humans.yaml tracks named-human contributors, and SPEC-003's CON-010 (Contribution Non-Regression) formalizes the non-destructive-merge contract this signal asked for. The one piece not built as proposed is the explicit REDACT (PII-removal) pipeline stage: that premise is superseded by memory/feedback_no_preemptive_redaction.md (ratified 2026-06-10), which rejects automated redaction pipelines in favor of a per-recipient human decision at share time. Same overtaking logic as this pass's disposition on SIG-029 below.

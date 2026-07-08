@@ -33,3 +33,7 @@ Rohit: "define incredibly explicit completion conditions, such as the task being
 ## Implication
 
 The persona enrichment skill (INT-013) should implement checkpointing as code, not as prompt instructions. Each phase writes a checkpoint file. The next phase reads the checkpoint before starting. If a session dies mid-phase, the next session reads the last checkpoint and resumes. This is Dex Horthy's "mechanical enforcement over trust-based collaboration" applied to the retrieval pipeline.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Grepped the persona-intake skill for a code-level checkpoint mechanism (write-checkpoint, read-checkpoint-and-resume); none exists. The write-to-disk-after-every-batch pattern remains a prompt instruction, exactly the gap this signal named, not a pipeline capability enforced mechanically.

@@ -72,3 +72,7 @@ any λ-fit toward "we pause a lot" rather than "we acted well N times silently."
 - Can the pause-drift capture be made fully mechanical (hook-emitted), so the policy
   becomes "the system notices you over-paused" instead of "you must confess before
   obeying"? That removes the paradox without losing the corpus.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, confirmed unchanged. The live memory rule this signal is about, feedback_pause_drift_meta_signal_on_nudge, still reads (per the current memory index): "bare 'proceed' nudge: write pause-drift signal w/ 4-gate analysis FIRST." The ordering this signal calls the paradox, write the diagnostic before acting on the exact command whose purpose is to remove pauses, is unchanged; the proposed inversion (execute first, capture the diagnostic asynchronously out of band) has not been implemented. Needed control: unchanged, invert the ordering or make the pause-drift capture a mechanical post-hoc hook rather than a pre-action model-authored step, exactly as this signal's own "Investigation direction" section specifies.

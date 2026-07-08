@@ -63,3 +63,7 @@ All fixed via explicit Edit operations after Brien flagged the first one. But th
 5. This is the first "integrity pass" type — future passes (link validity, accessibility, visual hierarchy) follow the same pattern
 
 Related: `theparlor/intent:.intent/signals/2026-04-09-panel-review-needs-first-click-sim.md` already captured this in the Intent product repo as SIG-054. This signal is the ODT-level echo, focused on the session-extraction perspective of catching structural gaps that text-reading panels miss.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Grepped Forge's panel-review outputs for a first-click-simulation or navigation-following sub-pass; none exists. This signal's own text confirms the intent-repo original (theparlor/intent SIG-054) as the primary record; this ODT-level echo remains open on the same unbuilt capability.

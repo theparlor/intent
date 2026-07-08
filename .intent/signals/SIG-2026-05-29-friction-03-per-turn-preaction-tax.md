@@ -73,3 +73,7 @@ when the answer is obviously "no."
 
 - Which of these gates are genuinely load-bearing vs. residue from a single past incident?
   Telemetry should rank them by "times this gate changed the action taken."
+
+## Triage, 2026-07-08
+
+Disposition: still pending. This signal asks for telemetry on the full pre-action gate stack (1%-rule skill check, build-intake, 4-gate self-check, drift-detector, governance-chain walk, TOOLS-INDEX scan), proportional gate application by stakes, an audit of the 1%-rule threshold, and a resolver call replacing the manual governance-chain walk. The Drag dashboard that did land (friction-00/01's remediation) instruments Stop-hook fires only, not this broader per-turn gate stack; none of the named gates (build-intake-mandatory, autonomy-grant-drift-detector, the governance-chain walk) emit telemetry of their own. Needed control: unchanged, none of the four investigation directions have concrete implementations on disk.

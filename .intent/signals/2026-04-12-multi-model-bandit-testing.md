@@ -76,3 +76,7 @@ This signal should progress to L2 once the eval layer is operational and Brien h
 ## Connection to SIG-036
 
 SIG-036 identified multi-model adversarial synthesis as a quality mechanism. This signal extends that insight: adversarial synthesis is one arm in a larger optimization framework. The bandit approach lets us systematically compare adversarial synthesis against simpler (cheaper) alternatives and determine when the added cost is justified.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, and explicitly blocked on its own prerequisite (the eval layer from the sibling signal above, which is also still pending). No multi-armed-bandit pipeline-configuration infrastructure exists.

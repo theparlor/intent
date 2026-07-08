@@ -80,3 +80,7 @@ with a second operator.
 - Which existing nets are already over their FP budget on day one? (timestamp-validator
   was; audit the rest before declaring any net "installed" — see
   `feedback_invariant_zero_violation_start`.)
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Checked the specific operationalization item most likely to have landed, replacing literal-string conformance with a structured field, directly in tools/closure_writeboundary_check.py: REQUIRED_FIELDS is still a literal string list (upstream_control_path:, catch_mechanism:), unchanged from what this signal describes as the conformance-tax smell. No catch-net health check (per-net fire rate, FP rate, age-since-last-true-positive) has been added to the friction-00 Drag dashboard beyond the per-CHECK Stop-hook counts it already tracks. Needed control: the four operationalization items (classify nets semantic vs lexical with an FP-rate SLO, replace literal-string closure fields with structured emission, add catch-net health to the Drag dashboard, make FP cost symmetric with FN cost) remain unbuilt.

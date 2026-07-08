@@ -1,6 +1,6 @@
 ---
 signal_id: RETRO-2026-04-08-intent-framework-SIG-2
-title: "Want me to proceed?" is a behavioral ceiling, not a technical limitation
+title: "\"Want me to proceed?\" is a behavioral ceiling, not a technical limitation"
 severity: high
 detected: 2026-04-05
 status: resolved

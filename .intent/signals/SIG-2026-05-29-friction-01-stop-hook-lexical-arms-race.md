@@ -85,3 +85,7 @@ accretion (exit 2 on drift). Sunset of CHECKs 1–6 staged behind Layer 4.2 cali
 - Does the lexical layer get fully retired, or kept as a thin fallback (Layer 4.2 §6 Q3)?
   If kept, on what measured trigger does it earn its continued cost? (Dashboard block-rate
   per check is now the evidence: CHECK 3 @ 0 says "retire", not "keep".)
+
+## Triage, 2026-07-08
+
+Disposition: still pending, same prerequisite as friction-00. hooks/lexical-layer-freeze.yaml confirms the freeze at CHECK 6 is still in force (CHECK 7 was in fact added 2026-05-29, the same day as the freeze note, and is documented in the freeze file's own history rather than violating it). The sunset this signal asks for is contingent on Layer 4.2 calibration clearing; that window opened today (2026-07-08) and runs 10 days, so no new evidence exists yet either way. Needed control: unchanged, wait for the calibration window to close (2026-07-18) and then act on its false-positive rate as the signal's own "Open" question specifies.

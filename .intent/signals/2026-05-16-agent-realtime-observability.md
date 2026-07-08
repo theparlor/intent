@@ -30,3 +30,7 @@ The "garbage by day 9" failure is the operational form of the staleness/decay pr
 2. Specify the circuit-breaker trigger for L3/L4 in measurable terms, not "monitoring."
 3. Feed into Observe product v1 scoping — this is a forcing function for visualization.
 </content>
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Grepped spec/ and .intent/ for an "agent health" observable, an output-quality-trend event, or any circuit-breaker trigger defined in measurable terms; zero hits outside this signal's own text. The events.jsonl schema (22 event types) has grown since this signal was filed, but none of the added event types measure running-agent output quality over time, and Overwatch still operates at the reasoning/incestuous-amplification level, not the long-running-loop-degradation level this signal names. Needed control: define the agent-health observable and wire it into the event stream and Observe product scoping, exactly as proposed.

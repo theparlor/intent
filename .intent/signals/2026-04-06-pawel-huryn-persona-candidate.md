@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.8
 trust: 0.7
 autonomy_level: L3
-status: active
+status: resolved
+upstream_control_path: "Core/products/cast/farm/registry/pawel-huryn.yaml"
+catch_mechanism: "persona-intake pipeline entity, subject to the same freshening/pipeline-progression contracts as every other Cast registry entry"
+verification_command: "ls /Users/brien/Workspaces/Core/products/cast/farm/registry/pawel-huryn.yaml"
 cluster: methodology-adoption
 author: brien
 related_intents: []
@@ -40,3 +43,7 @@ Subscription assessment: the $85-120/year is worth it primarily for the PM Skill
 - Corpus should include Substack archive (public posts) + LinkedIn activity
 - Primary freshening channel: productcompass.pm (weekly publication)
 - Disambiguation anchors: "Product Compass", "Warsaw Poland", "#1 AI PM newsletter"
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. Pawel Huryn is ingested: Core/products/cast/farm/registry/pawel-huryn.yaml exists as a registry entity.

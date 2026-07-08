@@ -63,3 +63,7 @@ The specific sequence:
 3. Add the recursive-dogfooding pattern as a note in brien-operator's flow patterns
 4. Use this signal as a reference example in the panel-review primitive's documentation — the async feedback loop IS the solution to this failure mode
 5. Consider: should major-milestone commits automatically trigger a lightweight session-extraction? That would make dogfooding automatic rather than operator-initiated.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partially actioned. Same bootstrap-prompt artifact as SIG-1 above now exists (session-bootstrap-2026-04-09.md). The broader recommendation, automatic session-extraction triggered by major-milestone commits rather than operator-initiated, was not built.

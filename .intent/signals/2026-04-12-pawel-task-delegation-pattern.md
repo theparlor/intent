@@ -47,3 +47,7 @@ This lives at L1/Prompt in the Productivity Stack — a CLAUDE.md block that enc
 ## Action
 
 Consider incorporating this exact pattern (or an adapted version) into Brien's CLAUDE.md files and into the Cowork plugin's default configuration. It's immediately usable and addresses a real cost/quality tradeoff.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partially converged from a different direction. No literal Haiku/Sonnet/Opus routing block was adopted verbatim into CLAUDE.md as this signal proposed. A related but less formal version exists in persistent memory (feedback_spawn_model_economy.md: chips default to Opus, use Agent with model:sonnet/haiku for audits and mechanical work), which captures the same mechanical-vs-judgment routing principle without the specific portable CLAUDE.md block this signal recommended incorporating.

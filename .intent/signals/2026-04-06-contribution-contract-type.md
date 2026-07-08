@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.85
 trust: 0.5
 autonomy_level: L2
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md Extension 3 (CONTRIBUTION Contract Type) + CON-010"
+catch_mechanism: "before/after snapshot diff; non-regression dimensions must be empty-diff, verified per entity contribution event"
+verification_command: "grep -n 'Extension 3' /Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md"
 cluster: work-ontology-design
 author: brien
 related_intents: []
@@ -39,3 +42,7 @@ Contribution contracts are testable: before/after diff of the archetype, dimensi
 - Must be direction-aware (upward contribution, not downward inheritance)
 - Must declare which dimensions are affected (voice_patterns, mental_models, stances, etc.)
 - Must be non-destructive by default — failing a contribution contract should block the merge, not silently degrade the composite
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. SPEC-003 Extension 3 (CONTRIBUTION Contract Type) adds exactly the fifth contract type this signal proposed, with the same fields (source_entity, target_composite, dimensions, non_regression) and the same before/after-diff verification method. CON-010 (Contribution Non-Regression) is the enforceable contract.

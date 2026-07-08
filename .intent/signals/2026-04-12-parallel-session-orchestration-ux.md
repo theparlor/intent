@@ -53,3 +53,7 @@ The Cowork plugin design should account for this: when Brien dispatches 22 tasks
 - **Dex Horthy / HumanLayer** — harness engineering addresses the governance layer.
 - **Confluent** — event-driven coordination patterns are the architectural foundation.
 - **The community at large** — this is a hot problem space and solutions will proliferate.
+
+## Triage, 2026-07-08
+
+Disposition: still pending on the specific gap named (agent-to-agent conflict detection, file lock management for parallel sessions). The governance layer this signal calls for has grown substantially since (the full autonomy-grant/closure-discipline hook stack), but that layer governs individual-session behavior, not cross-session coordination or conflict detection between simultaneously-running agents. Core/frameworks/intent/reference/lanes-session-orchestration.md exists as a reference note on the Lanes tool, not as an implemented coordination layer.

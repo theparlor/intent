@@ -2,7 +2,10 @@
 id: SIG-KE-CLI-IDD-TRIGGER-2026-05-20
 title: IDD trigger — bin/intent-knowledge CLI implementation (SPEC-001, 44 days since spec)
 type: signal
-status: captured
+status: resolved
+upstream_control_path: "bin/intent-knowledge (ingest, query, lint subcommands)"
+catch_mechanism: "shared find_intent_root() + emit_event() wiring matches the other three Intent CLI tools; event emission on every subcommand invocation"
+verification_command: 'grep -n "cmd_ingest\|cmd_query\|cmd_lint\|emit_event" /Users/brien/Workspaces/Core/frameworks/intent/bin/intent-knowledge'
 confidence: 0.90
 trust: 0.85
 autonomy_level: L4
@@ -53,3 +56,7 @@ This is not a signal about whether to build it — SPEC-001 is ratified. This is
 ## Do Not Implement Inline
 
 This signal is a Notice, not an Execute authorization. The Execute loop requires its own spec review, DoR confirmation, and DoD. Open a dedicated IDD session using `spawn-prompts/idd-build-execute.md` with this signal as the Notice source.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. bin/intent-knowledge exists (478 lines) with exactly the three subcommands this signal's DoD specified: ingest, query, lint. It shares find_intent_root() with the other CLI tools, emits events to events.jsonl via emit_event() (knowledge.ingested, knowledge.queried, knowledge.linted, confirmed by grep), and the ingest path documents a dossier subtype in addition to the base research/raw ingest path. The gap this signal named, "the Knowledge Engine as a standalone product is unusable from the terminal," is closed.

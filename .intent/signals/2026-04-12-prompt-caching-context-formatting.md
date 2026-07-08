@@ -74,3 +74,7 @@ These two cells are the foundation that everything above builds on. If L1-L2 are
 - **Dex Horthy / HumanLayer**: slopfiles is the leading open-source approach to structured prompt management.
 - **The Parlor / Intent**: Could publish a best-practices guide for L1-L2 formatting discipline as part of the Intent methodology. This would be the "Getting Started" content for the 401 level in the enterprise guide maturity ladder.
 - **Community tools**: MacWhisper-style "just works" tools that handle formatting automatically.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, and largely observational by the signal's own framing ("this doesn't have to be an Intent product... needs to be handled by SOMEONE in the L1-L2 stack"). No best-practices guide, XML-block discipline standard, or cache-efficiency audit was produced. The 5 specific investigate actions (audit cache efficiency, adopt slopfiles-style conditional blocks, define a markdown compilation standard, map provider caching support, model cost impact) remain undone.

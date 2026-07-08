@@ -67,3 +67,7 @@ is making it part of the contribution protocol, not an ad-hoc afterthought.
 - Testability: medium — "did the contributor run gates / stay subscribed?" is
   observable but the value (better merges) is lagging.
 - Precedent: low — no existing contribution protocol DDR.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Searched the repo for any written "definition of done" for outbound contributions (the four-item checklist this signal proposed: run target repo's own lint/type/test gates, scan adjacent issues, update operator-facing docs on behavior change, stay subscribed through merge); no CONTRIBUTING.md, no CLAUDE.md section, and no protocol doc encodes it. The one mechanism the signal called out as already existing, PR-activity subscription, is a session behavior, not a written protocol, so there is nothing to point to as the control. Needed control: write the outbound-contribution checklist into a durable doc (CLAUDE.md or a dedicated protocol file) so it survives past the session that produced this signal.

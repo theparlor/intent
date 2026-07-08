@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.9
 trust: 0.5
 autonomy_level: L2
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md Extension 1 (Entity Lifecycle Primitive) + CON-008"
+catch_mechanism: "two-axis pipeline/disposition state machine with per-entity-type profiles; CON-008 verifies content matches declared state for every entity"
+verification_command: "grep -n 'Extension 1: Entity Lifecycle' /Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md"
 cluster: work-ontology-design
 author: brien
 related_intents: []
@@ -32,3 +35,7 @@ This is not just a persona problem. The Knowledge Engine's compiled artifacts, t
 - Entities must support contribution (one entity enriching another)
 - Entity freshness must be observable (feeds the Notice phase via lint)
 - Must not add ceremony — entity lifecycle tracking should be metadata, not process
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. SPEC-003 Extension 1 (Entity Lifecycle Primitive) formalizes exactly the noun/verb split this signal named: entities carry two orthogonal axes, pipeline (advancement, monotonic, one terminal state) and disposition (editorial, free to move), with per-entity-type profiles for persona, archetype, dossier, and knowledge-artifact. CON-008 (Entity Lifecycle Consistency) is the enforceable contract.

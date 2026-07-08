@@ -5,7 +5,10 @@ source: conversation
 confidence: 0.95
 trust: 0.85
 autonomy_level: L4
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md Extension 4 (Trust Modifiers) + CON-011"
+catch_mechanism: "CON-011 requires git rev-parse machine verification before any non-baseline modifier applies; unverifiable context always falls back to in_place"
+verification_command: "grep -n -A20 'Extension 4' /Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC-003-intent-framework-entity-extensions.md"
 cluster: autonomous-infrastructure
 author: brien
 related_intents: []
@@ -37,3 +40,7 @@ The practical consequence: if we adopt worktree-based development as the default
 - The modifier must be verifiable (is this actually in a worktree? is the branch actually isolated?)
 - The modifier applies to the trust formula, not to the autonomy level directly — the level is still derived from the score
 - This should NOT reduce scrutiny of *what* is built — only *where* it's built during development
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live, matches proposed numbers exactly. SPEC-003 Extension 4 (Trust Modifiers) adds a deployment_context enum (in_place, branch, worktree, blue_green) with reversibility_bonus and blast_radius_multiplier values matching this signal's proposal (branch +0.1/x0.5, worktree +0.2/x0.25), plus CON-011 (Trust Modifier Verification: a modifier may only apply when git rev-parse machine-verifies the context, else falls back to in_place baseline), exactly the verifiability design constraint this signal specified.

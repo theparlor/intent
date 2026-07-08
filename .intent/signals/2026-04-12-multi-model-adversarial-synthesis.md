@@ -39,3 +39,7 @@ The multi-model gateway (LiteLLM/OpenRouter) isn't just a cost optimization or r
 ## Connection to depth scale v2.0
 
 This mechanism directly enables depth 17 ("cross-persona validation — this persona's claims tested against adjacent personas") by extending the concept to cross-MODEL validation. A persona that survives adversarial synthesis across two frontier models has demonstrably lower sycophantic bias than one validated by a single model only.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. No multi-model gateway (LiteLLM/OpenRouter) or dual-model adversarial synthesis step exists; Cast's persona pipeline remains single-model (Opus) per every synthesis file inspected across this pass. Same finding as the parallel org-design-tooling drain's RETRO-2026-04-12-final-adversarial-synthesis-SIG-038 disposition on this same date.

@@ -175,3 +175,7 @@ Brien:** unify the numbering into one backlog or keep as a paired series; F-1 an
 - Does "road-ready" require the flight model *shipped*, or the lexical layer *capped
   and measured* with the flight model as the published successor path? (Recommend the
   latter as the nearer-term gate; the former as the v2 milestone.)
+
+## Triage, 2026-07-08
+
+Disposition: still pending, confirmed unchanged from this signal's own last-recorded state. Verified the remediation artifacts it names are still on disk and current: hooks/lexical-layer-freeze.yaml (caps the Stop hook regex layer at CHECK 6) and tools/drag_dashboard.py with tools/drag-report.json (last regenerated 2026-07-03) both exist and are live. The signal's own closing line, "Status stays captured (open): the lexical layer still runs at ~96% overhead. Convergence = the sunset, which is staged, not done," remains accurate today: the Layer 4.2 structural successor's warn-only calibration window only opened this same day (SIG-2026-07-08-layer42-fresh-calibration-window-open.md, 2026-07-08T04:53:12Z to 2026-07-18T04:53:12Z), so the sunset trigger this signal is blocked on has not yet had a chance to fire. Needed control: unchanged, this signal is waiting on its own named prerequisite (Layer 4.2 calibration close), not on new work; re-check after 2026-07-18.
