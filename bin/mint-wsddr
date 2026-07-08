@@ -29,6 +29,7 @@ Consumer wiring decision:
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -51,6 +52,30 @@ if not _RS_SRC.exists():
     sys.exit(1)
 
 sys.path.insert(0, str(_RS_SRC))
+
+try:
+    import yaml  # PyYAML — transitively required by reference_substrate.registry
+except ImportError:  # pragma: no cover - exercised at runtime
+    # Bare `python3` resolved via the shebang/PATH may not carry PyYAML.
+    # Sibling of intent-init's 2026-07-08 fix (55d1bea): different module
+    # chain here, since this script does not import yaml directly, it
+    # imports reference_substrate, which imports yaml at the registry
+    # layer. Re-exec once via reference-substrate's own .venv (its
+    # requirements.txt pins PyYAML>=6.0), then fall back to Homebrew's
+    # python3.
+    if os.environ.get("_MINT_WSDDR_REEXEC") != "1":
+        for _candidate in (
+            _WORKSPACES_CORE / "products" / "reference-substrate" / ".venv" / "bin" / "python3",
+            Path("/opt/homebrew/bin/python3"),
+        ):
+            if _candidate.exists():
+                os.environ["_MINT_WSDDR_REEXEC"] = "1"
+                os.execv(str(_candidate), [str(_candidate), str(_HERE), *sys.argv[1:]])
+    sys.stderr.write(
+        "error: PyYAML is required (reference_substrate.registry dependency). "
+        "Install with: /opt/homebrew/bin/python3 -m pip install --user pyyaml\n"
+    )
+    sys.exit(1)
 
 from reference_substrate import mint  # noqa: E402 — path insertion required first
 
