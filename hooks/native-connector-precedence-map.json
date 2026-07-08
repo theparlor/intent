@@ -108,6 +108,21 @@
       "native_prefix": "drive",
       "native_verb": "search_files",
       "note": "Native search_files with file_type='document' achieves same result."
+    },
+    "mcp__google-workspace__create_spreadsheet": {
+      "native_prefix": "drive",
+      "native_verb": "create_file",
+      "note": "Native create_file makes a Google Sheet directly: pass text/csv content and it auto-converts to a spreadsheet (verified 2026-07-08), or create an empty one via mimeType application/vnd.google-apps.spreadsheet. Always on brientate@gmail.com. Fall back to workspace-mcp modify_sheet_values / format_sheet_range only for cell-level writes and formatting on the already-created file."
+    },
+    "mcp__google-workspace__create_doc": {
+      "native_prefix": "drive",
+      "native_verb": "create_file",
+      "note": "Native create_file makes a Google Doc directly: pass text/html or text/plain content and it auto-converts, or create empty via mimeType application/vnd.google-apps.document. Fall back to workspace-mcp batch_update_doc / modify_doc_text only for in-place structured editing."
+    },
+    "mcp__google-workspace__create_drive_folder": {
+      "native_prefix": "drive",
+      "native_verb": "create_file",
+      "note": "Native create_file with mimeType application/vnd.google-apps.folder creates a folder."
     }
   },
   "fallback_allowed": {
@@ -128,7 +143,6 @@
       "mcp__google-workspace__update_drive_file",
       "mcp__google-workspace__get_drive_shareable_link",
       "mcp__google-workspace__set_drive_file_permissions",
-      "mcp__google-workspace__create_doc",
       "mcp__google-workspace__get_doc_content",
       "mcp__google-workspace__get_doc_as_markdown",
       "mcp__google-workspace__update_doc_tab",
@@ -148,8 +162,6 @@
       "mcp__google-workspace__list_docs_in_folder",
       "mcp__google-workspace__list_document_comments",
       "mcp__google-workspace__manage_document_comment",
-      "mcp__google-workspace__create_drive_folder",
-      "mcp__google-workspace__create_spreadsheet",
       "mcp__google-workspace__create_sheet",
       "mcp__google-workspace__get_spreadsheet_info",
       "mcp__google-workspace__list_spreadsheets",
