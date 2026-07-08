@@ -5,12 +5,15 @@ source: conversation
 confidence: 0.85
 trust: 0.6
 autonomy_level: L2
-status: active
+status: resolved
 cluster: methodology-adoption
 author: brien
 related_intents: []
 referenced_by: []
 parent_signal: SIG-025
+upstream_control_path: "DEC-INTENT-013; knowledge-engine/spec/federation.md; Workspaces/AGENTS.md placement resolver"
+catch_mechanism: "federation.md defines inherit-down / promote-up / never-leak-sideways; lint detects cross-engagement references; the entire Workspaces engagement structure (Core vs Work/Consulting/Engagements/*) runs on exactly this topology every day"
+verification_command: "cat /Users/brien/Workspaces/Core/frameworks/intent/.intent/decisions/DEC-INTENT-013.md"
 ---
 # Intent's three-layer architecture must federate across Core and bounded engagements
 
@@ -34,3 +37,7 @@ Brien's practice operates multiple concurrent engagements (Subaru, ASA, F&G) plu
 - Reversibility: 0.9 — Convention-based; removing federation conventions doesn't break anything
 - Testability: 0.6 — Can be validated when first engagement scaffolds its knowledge base
 - Precedent: 0.8 — Mirrors Brien's proven Workspaces topology and federated glossary pattern
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. DEC-INTENT-013 ratified this the same day with its own upstream_control_path and catch_mechanism already on file. The federation model is not theoretical; it is the load-bearing rule the whole Workspaces tree runs on (Core = universal substrate, Work/Consulting/Engagements/* = bounded instances).

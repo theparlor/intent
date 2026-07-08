@@ -5,12 +5,15 @@ source: agent-trace
 confidence: 0.9
 trust: 0.8
 autonomy_level: L3
-status: captured
+status: resolved
 cluster: site-positioning
 author: panel-review-2026-04-09
 related_intents: []
 referenced_by: []
 parent_signal: SIG-042
+upstream_control_path: "theparlor/intent-site (separate repo)"
+catch_mechanism: "Overtaken by events: the Intent marketing site this signal critiques was extracted to its own repo, theparlor/intent-site; positioning governance for that content lives there now, out of this repo's scope"
+verification_command: "grep -n 'intent-site' /Users/brien/Workspaces/Core/frameworks/intent/CLAUDE.md"
 ---
 # Six category framings across six pages — Dunford clarity score 3/10
 
@@ -45,3 +48,7 @@ Cold Visitor confirmed: took 10 minutes to construct a mental model the site sho
 - Reversibility: 0.9 (text changes, easily reverted)
 - Testability: 0.85 (run Dunford clarity test after fix)
 - Precedent: 0.95 (Obviously Awesome prescribes this exact move)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. This is a site-content signal for pages that no longer live in this repo. theparlor/intent-site owns positioning governance now.

@@ -6,10 +6,13 @@ author: brien
 confidence: 0.95
 trust: 0.3
 autonomy_level: L1
-status: active
+status: resolved
 cluster: autonomous-infrastructure
 parent_signal:
 related_intents: [signal-lifecycle, autonomous-execution]
+upstream_control_path: ".intent/config/approval-rules.yml; spec/signal-trust-framework.md; trust/autonomy_level/parent_signal frontmatter fields present across the signal corpus"
+catch_mechanism: "The trust formula and L0 through L4 ladder are specced and the fields are populated on essentially every signal written since; the approval-rules.yml gate enforces L0 for external actions; CLAUDE.md 'When Stuck' documents the disambiguation-signal pattern"
+verification_command: "grep -c '^autonomy_level:' /Users/brien/Workspaces/Core/frameworks/intent/.intent/signals/*.md | grep -vc ':0' "
 ---
 # Autonomous signal processing with trust-based execution levels
 
@@ -37,4 +40,8 @@ When human intervention IS required, the system should not dead-end — it shoul
 
 ## Deployment Topology Implication
 
-This also surfaces a deployment model question: local CLI install vs. hosted web interface. The interface needs to support both modes via configuration — same tools, different backends. Start with static HTML reading from git (option 1), fast-follow with hosted service (option 2). The signal management interface is the forcing function for this decision.
+This also surfaces a deployment model question: local CLI install vs. hosted web interface. The interface needs to support both modes via configuration, same tools, different backends. Start with static HTML reading from git (option 1), fast-follow with hosted service (option 2). The signal management interface is the forcing function for this decision.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. Trust score, autonomy classification, and provenance chain are all live schema fields, not proposals. Builder-configurable thresholds live in .intent/config/approval-rules.yml. The deployment-model question (local vs hosted) is answered in practice: local file-native mode is what actually shipped and runs; hosted mode stays an explicitly documented "planned" option in CLAUDE.md rather than an open gap this signal is still waiting on.

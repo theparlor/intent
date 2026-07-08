@@ -26,4 +26,8 @@ New research skills (industry-scan, domain-scan, product-analysis, concept-explo
 
 ## Triage note — 2026-05-28 (still open)
 
-**Status:** still open. `Core/reference/` exists with other content (rate card, materials/brass, usage-tracker, etc.) but the four planned reusable scan directories (`industries/`, `domains/`, `concepts/`, `tools/`) do not exist. No industry-scan or domain-scan skill has been executed against the Core/reference target. The signal's own note says "self-healing gap — will resolve naturally once research skills execute" — that hasn't happened yet. Still valid; low urgency per original severity: medium / trust: 0.42.
+**Status:** still open. `Core/reference/` exists with other content (rate card, materials/brass, usage-tracker, etc.) but the four planned reusable scan directories (`industries/`, `domains/`, `concepts/`, `tools/`) do not exist. No industry-scan or domain-scan skill has been executed against the Core/reference target. The signal's own note says "self-healing gap, will resolve naturally once research skills execute", that hasn't happened yet. Still valid; low urgency per original severity: medium / trust: 0.42.
+
+## Triage note, 2026-07-08 (still open)
+
+Disposition: still pending. Reconfirmed directly: none of the four directories exist as of today (`ls Core/reference/industries Core/reference/domains Core/reference/concepts Core/reference/tools` all fail with "No such file or directory"). Two months after the 2026-05-28 note, the same gap persists; "self-healing" has not happened across two check-ins. Needed control: this stops being self-healing and becomes a real backlog item, either run one industry-scan or domain-scan against a live engagement to seed the first Core/reference/industries/ entry, or downgrade the research-skill specs so they stop pointing at directories nothing has ever populated.

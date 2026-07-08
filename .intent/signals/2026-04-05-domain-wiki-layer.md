@@ -5,12 +5,15 @@ source: conversation
 confidence: 0.9
 trust: 0.7
 autonomy_level: L2
-status: active
+status: resolved
 cluster: methodology-adoption
 author: brien
 related_intents: []
 referenced_by: []
 parent_signal:
+upstream_control_path: "DEC-INTENT-009 through DEC-INTENT-013; CLAUDE.md Three-Layer Architecture (v1.0, 2026-04-05); knowledge-engine/AGENTS.md"
+catch_mechanism: "The exact three-layer split and six-flow coupling proposed here is the architecture documented in CLAUDE.md today, ratified same-day by DEC-INTENT-009 through 013"
+verification_command: "grep -n 'Three-Layer Architecture' /Users/brien/Workspaces/Core/frameworks/intent/CLAUDE.md"
 ---
 # Karpathy's LLM Knowledge Base pattern should become Intent's Layer 1
 
@@ -36,3 +39,7 @@ All three layers are fully bidirectionally coupled through six data flows. Flow 
 - Reversibility: 0.8 — New directories can be removed, knowledge-engine/AGENTS.md can be deleted, no existing files modified destructively
 - Testability: 0.7 — Can be validated by running first ingest against dogfood data
 - Precedent: 0.6 — Karpathy's pattern proven at 100 articles / 400K words; Intent's adaptation is novel
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. This signal proposed the architecture verbatim; DEC-INTENT-009 through 013, all ratified the same day, are that proposal's ratification record, and CLAUDE.md's "Three-Layer Architecture" section is the living description of it in production use.

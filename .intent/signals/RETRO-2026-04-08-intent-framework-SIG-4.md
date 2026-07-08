@@ -21,3 +21,7 @@ Depth guarantees, compression forcing function, and audit tables were built in t
 - The context resolver can handle missing metadata gracefully but the gap will be visible
 - First refresh execution should serve as the retrofit template
 - Not urgent: the resolver adapts. Important: first new execution sets the standard.
+
+## Triage note, 2026-07-08
+
+Disposition: still pending, partial. The forward-looking half of this signal landed: the depth guarantee methodology module is built (Core/frameworks/methodology-library/research/depth-guarantees.md) and CLAUDE.md records "depth guarantee retrofits to company-dossier + individual-research" among April's work, so at least those two artifact types got the new structure going forward. What was not verified is a retrofit pass against the specific 20 pre-existing registry artifacts this signal named; no audit trail confirms the original backlog got the compression section and audit table added. Needed control: a one-time retrofit pass over the named 20, or, if the resolver's graceful-degradation behavior is now accepted as sufficient, an explicit decision saying so instead of leaving this open by default.

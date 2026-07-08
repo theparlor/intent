@@ -3,8 +3,11 @@ signal_id: SIG-037
 title: Layer 4 (linguistic detector / Stop hook) of autonomy-grant enforcement deployed
 date: 2026-04-28
 kind: closure-signal
-status: symptom-repaired
-source: 2026-04-28 main session — bare-choice slip on hook-vs-template-vs-CLAUDE.md decision
+status: resolved
+source: 2026-04-28 main session, bare-choice slip on hook-vs-template-vs-CLAUDE.md decision
+upstream_control_path: "Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh; ~/.claude/settings.json hooks.Stop[*]"
+catch_mechanism: "The hook is live and firing: confirmed registered in ~/.claude/settings.json Stop hooks today, symlinked from ~/.claude/hooks/, and the audit log at ~/.claude/audit/autonomy-grant-stop-detections.log carries 244 entries with the most recent dated 2026-07-08, spanning many sessions over more than two months"
+verification_command: "tail -5 ~/.claude/audit/autonomy-grant-stop-detections.log"
 related:
   - Core/frameworks/intent/spec/autonomy-grant-enforcement.md
   - Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh
@@ -51,4 +54,8 @@ The Stop hook is calibrated conservative for v0: false-negative bias preferred. 
 
 ## Upstream control
 
-Closes the closure criterion in RETRO-2026-04-21-autonomy-grant-reinforcement-SIG-1 and SIG-COH-DEBT-018 from "symptom-repaired" toward "resolved" once the hook has caught real slips over multiple sessions without false-positive complaints. The hook IS the upstream control — Layer 1 was anchoring; Layer 4 is enforcing.
+Closes the closure criterion in RETRO-2026-04-21-autonomy-grant-reinforcement-SIG-1 and SIG-COH-DEBT-018 from "symptom-repaired" toward "resolved" once the hook has caught real slips over multiple sessions without false-positive complaints. The hook IS the upstream control, Layer 1 was anchoring; Layer 4 is enforcing.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, this signal's own bar is met. It asked for the hook to catch real slips over multiple sessions before calling itself resolved; the audit log shows 244 detections spanning from deployment (2026-04-28) through today, across many distinct session IDs. Layer 3 (PreToolUse on TodoWrite/ExitPlanMode) and Layer 5 (drift telemetry) remain future iterations per this signal's own "Pending" list; those stay open as separate, not-yet-written work, not as reasons to hold this signal open.

@@ -33,3 +33,7 @@ rvk7895 implements this as a background opus subagent that fires after every que
 Status downgraded from resolved to symptom-repaired, upstream-pending. The decision this signal demanded did land: DDR-007 (knowledge/decisions/DDR-007-ke-mcp-query-write-back.md, accepted 2026-04-13) chose conditional auto-enrichment with confidence gating and a 5-tool surface including intent_knowledge_enrich. But the implementation never followed: servers/knowledge.py has no enrich tool, knowledge_query has no write pathway, knowledge/log.md contains zero [ENRICH] entries, and all five DDR-007 validation criteria are unchecked. The tool surface has since grown read-only (query, get, list_entities, lineage, freshness, get_core), which is the exact retrofit-cost scenario this signal warned about. Open work: implement the write-back pathway per DDR-007 and add a catch mechanism (lint or test) that asserts it stays present.
 
 Checker note: the flagged phrase "architecturally incomplete" in the body above quotes the research finding about read-only knowledge MCPs generally; it is not a self-referential admission. The line is left as written.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, confirmed unchanged. Re-checked directly: servers/knowledge.py still has no enrich tool, and knowledge/log.md still has zero ENRICH entries five days after the 2026-07-03 note. Needed control: implement the DDR-007 write-back pathway (intent_knowledge_enrich) plus a lint/test that fails if the tool surface grows read-only-only again.

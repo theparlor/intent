@@ -5,10 +5,11 @@ source: agent-trace
 confidence: 0.95
 trust: 0.65
 autonomy_level: L3
-status: symptom-repaired, upstream-pending
+status: resolved
 upstream_control_path: "servers/port_resolver.py (commit ded2447, 2026-05-19) - shared preferred-plus-fallback resolver with two-stage availability probe, wired into the __main__ blocks of servers/notice.py:480, servers/spec.py:420, servers/observe.py:321 (and since extended to servers/knowledge.py:1459); env config documented in servers/DEPLOYMENT.md"
-catch_mechanism: "NONE TODAY - the functional tests claimed in the Resolution were session-run and never committed; no test_port_resolver.py exists in the repo, so fallback-on-conflict, env-override, malformed-config, and range-exhaustion behavior has no regression guard"
-pipeline_survival: "partial - resolver and server wiring are committed and survive (verified on disk 2026-07-03); nothing prevents a future server from hardcoding a bind, and the missing committed tests mean a regression would go uncaught"
+catch_mechanism: "servers/test_port_resolver.py (added 2026-07-08) - 8 pytest cases covering preferred-port bind, fallback-on-conflict, env override, malformed port_env, malformed and negative fallback-count, full range exhaustion, and custom host env; all 8 pass under servers/.venv"
+pipeline_survival: "resolver and server wiring are committed and survive (verified on disk 2026-07-08); the new committed test suite means a future regression in fallback/env/config behavior is now caught in CI rather than silently reintroducing the hardcoded-port bug"
+verification_command: "cd /Users/brien/Workspaces/Core/frameworks/intent/servers && .venv/bin/pytest test_port_resolver.py -v"
 cluster: null
 author: brien
 related_intents: []
@@ -93,6 +94,18 @@ commit a functional test suite for `servers/port_resolver.py` covering
 preferred bind, fallback on conflict, env override, malformed config, and
 range exhaustion; on landing, this signal can be re-marked `resolved` with
 the test path in `catch_mechanism`.
+
+## Triage, 2026-07-08 (CHEAP TO INSTALL, now installed)
+
+Disposition: control exists now (installed this pass). The open item from the
+2026-07-03 remediation note was exactly the kind of small, well-scoped,
+low-risk fix this triage pass is authorized to install directly: wrote
+`servers/test_port_resolver.py` with 8 cases (preferred bind, fallback on a
+real socket collision, env override of the preferred port, malformed
+port_env, malformed fallback-count, negative fallback-count, full
+range-exhaustion via three occupied sockets, and custom host env). Ran under
+`servers/.venv/bin/pytest`: all 8 pass. The regression guard the prior note
+called for now exists on disk and is committed with this triage pass.
 
 ## Trust Factors
 

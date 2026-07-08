@@ -36,3 +36,7 @@ This is a concrete instance of why the trust framework and autonomy levels exist
 - Reversibility: 0.6 (recoverable via git history, but costly)
 - Testability: 0.5 (can write verification checks, but root cause is in agent behavior)
 - Precedent: 0.2 (first time this specific failure mode was observed)
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partial. A broad anti-fabrication enforcement layer exists now that did not exist in March: the presend-assertion-check.sh Stop hook, the closure-discipline Stop and signal-check hooks, and the memory rule requiring a verification_command in closure signals (feedback_subagent_claim_vs_execute.md) all target the general pattern of an agent claiming success it cannot back up. But the specific asks here, a post-push content-hash diff and an explicit per-push batch-size limit, were never built as their own control. Needed control: a hash-verify step in whatever tool performs multi-file GitHub pushes (compare SHA of intended vs actual per file), or an explicit N-file/token cap documented in the CLAUDE.md Agent Handoff Protocol section.

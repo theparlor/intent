@@ -5,12 +5,15 @@ source: conversation
 confidence: 0.95
 trust: 0.9
 autonomy_level: L4
-status: captured
+status: resolved
 cluster: methodology-gaps
 author: brien
 related_intents: [INT-012, INT-013]
 referenced_by: [DEC-20260409-02]
 parent_signal: SIG-049
+upstream_control_path: ".intent/methodology/psychological-safety/02-safety-contract-v1.md, Promise 10"
+catch_mechanism: "Promise 10 ('Infrastructure prerequisites for safe trust-scored autonomy') is written into the safety contract with the exact four capabilities this signal named, and the contract explicitly calls for a 'when NOT to adopt Intent' section naming infrastructure gaps"
+verification_command: "grep -n 'Promise 10' /Users/brien/Workspaces/Core/frameworks/intent/.intent/methodology/psychological-safety/02-safety-contract-v1.md"
 ---
 # Measurability + visibility are infrastructure prerequisites for adopting Intent
 
@@ -93,3 +96,7 @@ Psychological safety and measurability are technically distinct but operationall
 - **Martin Fowler** — feature toggles pattern
 - **Brien's own instinct** — "measurable and visible or don't use Intent"
 - **Amy Edmondson** — Right Kind of Wrong (2023) — failure classification requires visibility
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. All four required actions on this signal map onto the safety contract: Promise 10 is written with the exact four prerequisite capabilities (blue-green/reversibility, feature flags, automated testing, visible change reporting) and explicitly calls for the "when NOT to adopt Intent" section this signal specified. The site-facing half of that ask (the actual "when NOT to adopt" page) is theparlor/intent-site's concern now, same as the other content signals from this session, but the methodology-level obligation this signal created is discharged in the safety contract itself.

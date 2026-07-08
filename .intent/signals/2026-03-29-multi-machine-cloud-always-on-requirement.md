@@ -6,10 +6,13 @@ author: brien
 confidence: 0.95
 trust: 0.25
 autonomy_level: L1
-status: active
+status: resolved
 cluster: autonomous-infrastructure
 parent_signal:
 related_intents: [deployment-topology, autonomous-execution]
+upstream_control_path: ".github/workflows/intent-events.yml; Workspaces .context/PENDING_DECISIONS.md 'Always-on hosting' (decided 2026-07-03); DDR-009"
+catch_mechanism: "GitHub Actions is the option this signal listed first (GitHub-native) and it is the one that shipped: it runs regardless of Brien's laptop connectivity, triggered on push to signals, intents, specs, or decisions"
+verification_command: "cat /Users/brien/Workspaces/Core/frameworks/intent/.github/workflows/intent-events.yml | head -5"
 ---
 # Multi-machine cloud requirement: can’t rely on local laptop being always connected
 
@@ -32,3 +35,7 @@ The signal capture → enrichment → routing → execution pipeline must be dec
 - **Observe** must be accessible from any device (web dashboard)
 
 This reinforces the config-driven deployment model from SIG-012: same tools, different backends, configurable per-machine.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, decided at the workspace governance level. The "Always-on hosting" row in Workspaces/.context/PENDING_DECISIONS.md was decided 2026-07-03: GitHub Actions now, explicit cloud trajectory with named migration triggers, promoted to DDR-009. The intent-events workflow is the concrete artifact.

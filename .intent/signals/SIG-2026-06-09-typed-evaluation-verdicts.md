@@ -31,3 +31,7 @@ The original protocol let an in-repo, same-lineage judge grade the spec's own pr
 ## What remains (upstream-pending)
 - Register `INV-INTENT-NO-SELF-GRADED-CLOSURE` in chain_audit (portfolio or repo-local) and demonstrate zero-violation start.
 - Instrument the actual Observe-agent emitters to populate the three fields (the spec now requires it; no emitter code was changed in this pass).
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Ran this signal's own verification_command directly: it prints VERIFIED, confirming the spec-level write-through (event-catalog.md's required fields, the MUST-NOT consumption rule, typed-evaluation-verdicts.md's invariant name) is in place exactly as claimed. But the signal's own reconsider_when clause is explicit that VERIFIED at the spec level is not the same as resolved: that requires INV-INTENT-NO-SELF-GRADED-CLOSURE to actually register in chain_audit and fire zero violations on day one. Searched Core/products/library-index/ and this repo for the invariant name: no registration found anywhere. Needed control: register the invariant per the named pattern (INV-LI-* precedent in the library-index chain_audit portfolio, or a repo-local chain_audit for intent if stood up first) and demonstrate the zero-violation start this signal specifies.

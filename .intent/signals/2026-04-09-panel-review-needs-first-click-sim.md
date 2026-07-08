@@ -68,3 +68,7 @@ A panel reading pitch.html alone would have scored the page highly (clear user, 
 Confirmed by Brien in the same session: *"I have reviewed the first pages. the build is unchanged and links back to the old site. is that intentional?"*
 
 Not intentional. Caught on the first click. Exactly the kind of thing first-click-simulation would have caught before shipping.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. The parent primitive this signal extends, panel-critique (SIG-041), shipped and is live. Searched its rendered outputs directly for a first-click-simulation or narrative-whiplash pass; found neither term anywhere in the panel-critique skill tree. The specific nav-following, cold-visitor-driven sub-pass this signal specified was never added. Needed control: add first-click-simulation as a sub-pass of panel-critique's content-review preset, per this signal's own implementation sketch.

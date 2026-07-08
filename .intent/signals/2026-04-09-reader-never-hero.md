@@ -5,12 +5,15 @@ source: agent-trace
 confidence: 0.85
 trust: 0.85
 autonomy_level: L3
-status: captured
+status: resolved
 cluster: site-positioning
 author: panel-review-2026-04-09
 related_intents: []
 referenced_by: []
 parent_signal: SIG-042
+upstream_control_path: "theparlor/intent-site (separate repo)"
+catch_mechanism: "Overtaken by events: this is site copy guidance for pages that moved to theparlor/intent-site"
+verification_command: "grep -n 'intent-site' /Users/brien/Workspaces/Core/frameworks/intent/CLAUDE.md"
 ---
 # Reader is never the hero — StoryBrand violation across the site
 
@@ -37,3 +40,7 @@ Direct quote from Positioning panel (Miller voice): *"Current: 'Agile was right.
 - Reversibility: 1.0
 - Testability: 0.9 (count "Intent" vs "you" in hero copy)
 - Precedent: 0.9 (StoryBrand, Donald Miller)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. Site-copy signal, out of this repo's scope since the site moved.

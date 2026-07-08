@@ -5,10 +5,13 @@ type: insight
 source: conversation
 source_context: Claude mobile session — OTel vs Kafka vs MQTT clarification
 date: 2026-03-30
-status: active
+status: resolved
 cluster: observability
 autonomy_level: L2
 tags: [otel, observability, events, infrastructure, grafana]
+upstream_control_path: ".intent/events/events.jsonl (Phase 0, live); DEC-INTENT-004"
+catch_mechanism: "This signal validates rather than requests a build; the thing it validates, Phase 0 JSONL as a sound starting point, has been running in production via the intent-events GitHub Action since April with no rewrite required"
+verification_command: "wc -l /Users/brien/Workspaces/Core/frameworks/intent/.intent/events/events.jsonl"
 ---
 
 # SIG-017: OTel deployment is a spectrum, not a binary choice
@@ -48,3 +51,7 @@ Intent's existing event schema (JSONL with OTel-compatible envelope) means upgra
 ## Implication
 
 The work-system page and schemas page should present this as a progressive deployment story, not "you need OTel infrastructure to start." Intent works with a flat file and scales to distributed tracing.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. Phase 0 is confirmed sound in practice, not just in theory: events.jsonl has been accumulating structured, OTel-shaped events since April via the GitHub Action, with zero rewrite. Phase 1 through 3 remain exactly what this signal said they'd be, later options, not current gaps.

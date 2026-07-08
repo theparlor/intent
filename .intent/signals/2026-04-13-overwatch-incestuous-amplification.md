@@ -32,3 +32,7 @@ Boyd's prescription: "even attempting to assess your organization's status from 
 **Action:** Update overwatch SKILL.md to add incestuous amplification detection as an explicit check category. This is L3 — the skill spec is a file we own, the change is additive, and the risk is low (adding a check that may surface false positives is better than missing confirmation bias).
 
 **Grounded in:** Richards (2020), Boyd's "diseases of orientation," RAT-003.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, confirmed unchanged since the 2026-04-16 correction. Re-checked overwatch's actual SKILL.md (Core/products/forge/outputs/claude-code/meta/overwatch/SKILL.md) directly: still zero hits for incestuous, amplification, disconfirmation, or signal diversity. The fix stays cheap and well-specified (this signal's own text: L3, additive, low risk), but the file it needs to land in is outside this pass's write boundary (Core/products/forge, not Core/frameworks/intent). Needed control: add the disconfirmation-check, signal-diversity-audit, and freshness-vs-conclusion-freshness checks to overwatch's own SKILL.md and register-skill entry, as a Forge-scoped follow-up.

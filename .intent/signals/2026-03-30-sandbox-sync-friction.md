@@ -5,10 +5,13 @@ type: friction
 source: conversation
 source_context: Signal content lost/corrupted during multiple push attempts through GitHub MCP API
 date: 2026-03-30
-status: active
+status: resolved
 cluster: infrastructure
 autonomy_level: L1
 tags: [sync, github, sandbox, claude-code, tooling, friction]
+upstream_control_path: "Workspaces/CLAUDE.md 'Cowork to Code handoff protocol' section (WS-DDR-112)"
+catch_mechanism: "Cowork now writes directly to the granted folder and appends a row to .context/cowork-inbox/HANDOFF.md instead of pushing to GitHub itself; a Claude Code session (which has real git credentials) verifies placement and commits, eliminating the sandboxed-push path entirely"
+verification_command: "grep -n 'Cowork' /Users/brien/Workspaces/CLAUDE.md"
 ---
 
 # SIG-024: Cowork sandbox cannot reliably sync to GitHub — needs Claude Code CLI path
@@ -47,6 +50,10 @@ For reliable repo operations (especially pushing signal files, updating the site
 
 ## Relates To
 
-- SIG-014 on site (always-on requirement — processing can't die with laptop)
-- SIG-018 (cloud MCP hosting — servers need their own GitHub access)
+- SIG-014 on site (always-on requirement, processing can't die with laptop)
+- SIG-018 (cloud MCP hosting, servers need their own GitHub access)
 - Brien's workflow preferences (Cowork = architect, Claude Code = builder)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. The exact division of labor this signal asked for, Cowork as the architect surface writing locally and Claude Code as the builder surface with real git access doing the push, is now a ratified governance convention (WS-DDR-112) with a defined handoff artifact (.context/cowork-inbox/HANDOFF.md).

@@ -5,12 +5,15 @@ source: agent-trace
 confidence: 0.95
 trust: 0.8
 autonomy_level: L3
-status: captured
+status: resolved
 cluster: site-positioning
 author: panel-review-2026-04-09
 related_intents: []
 referenced_by: []
 parent_signal:
+upstream_control_path: "theparlor/intent-site (separate repo)"
+catch_mechanism: "Overtaken by events: the site this signal critiques moved to theparlor/intent-site, out of this repo's scope"
+verification_command: "grep -n 'intent-site' /Users/brien/Workspaces/Core/frameworks/intent/CLAUDE.md"
 ---
 # Site has no target user — 6 of 8 review panels flagged independently
 
@@ -40,3 +43,7 @@ One named user. One sentence. On the hero page. Every alternative framing delete
 - Reversibility: 0.9 (content changes are easy to revert)
 - Testability: 0.7 (run panel again after fix, compare agreement heatmap)
 - Precedent: 0.9 (Dunford, Moore, Cagan all prescribe this)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. Site-content signal for pages that no longer live in this repo.

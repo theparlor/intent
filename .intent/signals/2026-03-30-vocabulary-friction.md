@@ -44,7 +44,7 @@ These are the bookends of the core loop — the entry point and the action point
 
 ## Constraint
 
-Whatever we choose needs to work in the loop cadence: `___→Spec→___→Observe`. It should feel like a natural rhythm when said aloud.
+Whatever we choose needs to work in the loop cadence: `___ -> Spec -> ___ -> Observe`. It should feel like a natural rhythm when said aloud.
 
 ## Promotion Candidate
 
@@ -55,3 +55,7 @@ This is a naming decision, not a spec. Should be captured in decisions.md once r
 - Work System page redesign (uses the loop heavily)
 - Flow Diagram page (visualizes the loop)
 - Any marketing/pitch content
+
+## Triage, 2026-07-08
+
+Disposition: still pending. CLAUDE.md today still uses "NOTICE, SPEC, EXECUTE, OBSERVE" as the canonical loop name, unchanged from when this friction was raised. This signal's own "Promotion Candidate" line asked for the naming decision to be captured in decisions.md once resolved; no DEC-INTENT atom or decisions.md entry addresses the vocabulary question either way, and none of the 21 ratified DEC-INTENT atoms touch naming. The friction was neither acted on nor explicitly overruled; it appears to have simply stopped being discussed. Needed control: either log a decision atom stating the names were kept as-is with rationale, or actually run the rename this signal proposed if the friction still stands for Brien.

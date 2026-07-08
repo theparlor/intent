@@ -6,10 +6,13 @@ author: brien
 confidence: 0.9
 trust: 0.55
 autonomy_level: L2
-status: active
+status: resolved
 cluster: signal-capture-surfaces
 parent_signal:
 related_intents: [signal-trust-framework, enrichment-pipeline]
+upstream_control_path: "spec/signal-amplification.md; referenced_by frontmatter field (populated across the signal corpus); servers/notice.py and servers/observe.py amplification_score logic"
+catch_mechanism: "The referenced_by field is part of the standard signal template and is populated in practice; the amplification formula is specced and implemented in the notice/observe server prototypes"
+verification_command: "grep -l '^referenced_by:' /Users/brien/Workspaces/Core/frameworks/intent/.intent/signals/*.md | wc -l"
 ---
 # Signal amplification through reference frequency
 
@@ -37,3 +40,7 @@ The Intent signal model currently treats each signal as a static document with a
 - Reversibility: 0.7 (additive schema change, doesn't break existing signals)
 - Testability: 0.6 (can instrument reference tracking and measure whether amplified signals correlate with promoted intents)
 - Precedent: 0.3 (novel within Intent, but well-precedented in citation analysis and alerting systems)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. spec/signal-amplification.md formalizes the mechanism this signal proposed, referenced_by is a live, populated field across the corpus, and the reference_count and amplification_score computations are implemented in the notice/observe server code (prototype-stage persistence, but the logic exists and matches this signal's own proposal line for line).

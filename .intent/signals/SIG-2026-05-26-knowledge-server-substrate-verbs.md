@@ -99,3 +99,7 @@ Coverage by area:
 2. Agent 1's `.intent/classification.yaml` shape ratification → already aligned with the schema this implementation reads.
 3. Deploy to FastMCP Cloud as `intent-knowledge.fastmcp.cloud/mcp` (DEC-010 validation criteria #1) — out of scope here; deployment track.
 4. Wire scope_token into chat-surface MCP configs (Cowork, Claude.ai, mobile) per substrate-exposure-architecture.md §Phase 1 step 6 — out of scope here; config track.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, closer than before. The named upstream blocker moved: `library_search_ranked` now exists in `Core/products/library-index-mcp/server.py` (Port A extension landed). But the consuming side named in this signal's own "Next-step pointers" #1 did not: grepped `servers/lib/library_index_client.py` directly, still zero references to `library_search_ranked` or a swapped `_search_via_catalog`. The client still reads CATALOG.json directly with depth+keyword ranking, not the BM25+vector path. Needed control: perform the swap this signal specified now that its precondition is satisfied, then flip status to resolved with the new call site as catch_mechanism.

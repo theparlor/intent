@@ -11,6 +11,7 @@ author: glossary-ingestion-session-2026-04-09
 related_intents: [knowledge-engine, compass-forge, federated-glossary, subaru-engagement]
 referenced_by: []
 parent_signal:
+last_triaged: 2026-07-08
 ---
 # Glossary is a first-class Knowledge Engine asset type, not a generic document
 
@@ -59,3 +60,7 @@ A Knowledge Engine glossary asset type should specify at minimum:
 - `Work/Consulting/Engagements/Subaru/glossary.md` — engagement-scoped glossary (NDA-protected Subaru org terms)
 - `Core/frameworks/intent/knowledge-engine/spec/federation.md` — existing federation contract (document-level, needs glossary-level extension)
 - `Core/personas/registry/` — adjacent structured-card asset type (named-humans), useful as a prior art reference for the glossary schema
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partial. The informal half of this ask is now standard practice: the federated glossary convention (memory/glossary.md plus one glossary.md per engagement, never centralizing client-internal terms) is documented as policy in the global CLAUDE.md and used across every active engagement. What did not get built is the formal Knowledge Engine asset type this signal specified: no glossary-entry schema, scope resolver, ingest pipeline, or render-contract spec exists under knowledge-engine/spec/. The convention works by discipline, not by tooling. Needed control: author knowledge-engine/spec/glossary-asset-type.md per this signal's Design Constraint section, using the Subaru Agile & Jira glossary as the round-trip test case it proposes.

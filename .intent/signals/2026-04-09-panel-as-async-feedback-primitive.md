@@ -5,12 +5,15 @@ source: conversation
 confidence: 0.95
 trust: 0.85
 autonomy_level: L4
-status: captured
+status: resolved
 cluster: panel-primitive
 author: brien
 related_intents: []
 referenced_by: []
 parent_signal:
+upstream_control_path: "Core/products/forge/outputs/claude-code/critique/panel-critique/; forge-planning:panel-critique skill"
+catch_mechanism: "The panel-review primitive shipped as a first-class, callable Claude Code skill (panel-critique), rendered to both claude-code and cowork surfaces, with the structured critique plus cross-cutting synthesis this signal specified"
+verification_command: "ls /Users/brien/Workspaces/Core/products/forge/outputs/claude-code/critique/panel-critique/"
 ---
 # Panel-as-async-feedback-loop is the genuine breakthrough from this exercise
 
@@ -40,3 +43,7 @@ Needs to become a first-class skill in `Core/products/skills-engine/skills/claud
 - Reversibility: 0.9 (easy to remove if it doesn't land)
 - Testability: 0.85 (can A/B against single-voice review)
 - Precedent: 0.8 (this session is the precedent)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. This became the panel-critique skill, exactly the killer feature this signal called out: a first-class, callable primitive dispatching multiple persona voices in parallel with structured, two-channel output. It is live under Forge's outputs and used elsewhere in this session's own governing memory (feedback files reference "Panel Critique Skill" as an established capability).

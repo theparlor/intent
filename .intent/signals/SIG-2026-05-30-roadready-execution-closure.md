@@ -121,3 +121,7 @@ Status: **symptom-repaired, upstream-pending** — tools built, verified, commit
 demonstrated; load-bearing wiring + the time-gated sunset are the convergence, which is staged, not
 done. Honest per [[feedback_audit_vs_writethrough]]: the catch-nets are the catch-net; the
 write-through (wiring) is the primary fix still to land.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, one item since closed. Item 4 (remediate the premature-resolved signals) is confirmed executed per this signal's own 2026-07-03 addendum, commits 53683fa and 1ef796f, checker now clean. Item 1 (wire the catch-nets into a non-blocking coherence-preflight aggregator) remains unbuilt: confirmed no `.pre-commit-config.yaml` and no pre-commit reference to the five catch-nets. Item 2 (the time-gated sunset reviews) is out of scope for tonight (excluded *layer42* files carry that thread forward). This signal and SIG-2026-05-30-friction-unification are two records of the same open wiring gap; see that signal's triage note for the identical finding.

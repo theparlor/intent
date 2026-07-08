@@ -111,3 +111,7 @@ import-verified (`opentelemetry.sdk` + OTLP exporter; `mcp` + `pydantic`;
 rebase-replay onto a remote that still tracks it converts the cached rm
 into a physical rm — always have the reproducibility artifact committed
 BEFORE the untrack commit, or push without an intervening rebase.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. The venv-churn class fix (the addendum) holds; that class of dirty file cannot recur. The named upstream gap, commit-cadence automation or a staleness sweep that fires when dirty-file count or dirty-age crosses a threshold in this repo, still does not exist: no such mechanism was found anywhere under Core/frameworks/intent/hooks/ or tools/. Needed control: a periodic or pre-commit staleness check (dirty-file count, dirty-age) scoped to this repo, mirroring the pattern this signal's own recovery lesson argues for.

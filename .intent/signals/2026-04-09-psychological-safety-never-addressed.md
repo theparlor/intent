@@ -5,12 +5,15 @@ source: agent-trace
 confidence: 0.9
 trust: 0.7
 autonomy_level: L2
-status: captured
+status: resolved
 cluster: methodology-gaps
 author: panel-review-2026-04-09
 related_intents: []
 referenced_by: []
 parent_signal:
+upstream_control_path: ".intent/methodology/psychological-safety/02-safety-contract-v1.md"
+catch_mechanism: "The Psychological Safety Contract exists with nine promises (plus Promise 10) covering every required outcome named here: Promise 1 (trust scores are about the artifact, not the person), Promise 2 (scoped signal visibility), Promise 3 (appeal surface with trust-appeal/spec-critique-appeal/panel-review-appeal signal types), Promise 5 (accountability routing), Promise 6 (disagreement is protected), Promise 9 (cultures that cannot honor the contract must not adopt Intent)"
+verification_command: "grep -c '^### Promise' /Users/brien/Workspaces/Core/frameworks/intent/.intent/methodology/psychological-safety/02-safety-contract-v1.md"
 ---
 # Psychological safety is the biggest latent failure mode — Org Design panel (sole owner, critical)
 
@@ -46,3 +49,7 @@ Direct quote: *"Intent is built by engineers for engineers and treats safety as 
 - Reversibility: 0.6 (contract changes are policy changes)
 - Testability: 0.5 (psych safety is measurable but not easily)
 - Precedent: 1.0 (Fearless Organization, Amy Edmondson)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. The Org Design panel's single-owner warning got a full policy document, not a token gesture: the safety contract names who sees signals, states trust scores are not performance evaluation, protects disagreement, and gives autonomy decisions an appeal path. The contract's own "Open questions and uncertainties" section honestly flags residual risk (for example, self-attribution incentives in Promise 4's failure classification) rather than claiming the problem is fully solved, which matches this signal's own standard for what a real fix looks like.

@@ -5,10 +5,13 @@ type: friction
 source: conversation
 source_context: IDs SIG-006 through SIG-011 collided with existing site signals during Cowork session
 date: 2026-03-30
-status: active
+status: resolved
 cluster: schemas
 autonomy_level: L1
 tags: [ids, distributed, collision, schema, infrastructure]
+upstream_control_path: "DEC-INTENT-020; bin/lib/id_gen.sh; .intent/specs/SPEC-003-sig-022-ulid-migration.md"
+catch_mechanism: "id_gen.sh's generate_id function is the only wired ID-generation path for the CLI suite; backward-compat regex accepts legacy SIG-NNN; CLAUDE.md instructs future contributors to never write a new sequential counter"
+verification_command: "cat /Users/brien/Workspaces/Core/frameworks/intent/bin/lib/id_gen.sh"
 ---
 
 # SIG-022: Sequential signal IDs will collide in distributed multi-agent environments
@@ -56,5 +59,9 @@ The schema spec for all entity types needs an ID strategy decision before multi-
 
 ## Relates To
 
-- SIG-016 (multi-agent architecture — multiple writers)
-- SIG-018 (cloud hosting — stateless servers need coordination-free IDs)
+- SIG-016 (multi-agent architecture, multiple writers)
+- SIG-018 (cloud hosting, stateless servers need coordination-free IDs)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. DEC-INTENT-020 (ratified 2026-04-09) picked ULID, Crockford base32, over the other four candidates listed here, wired it into bin/lib/id_gen.sh as the sole generation path, and kept the legacy SIG-NNN format valid via backward-compat regex. This is a textbook example of the enforcement built after this signal was raised.

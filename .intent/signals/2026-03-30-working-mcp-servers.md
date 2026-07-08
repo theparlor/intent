@@ -5,10 +5,13 @@ type: opportunity
 source: conversation
 source_context: Claude mobile session produced deployable FastMCP servers
 date: 2026-03-30
-status: active
+status: resolved
 cluster: infrastructure
 autonomy_level: L2
 tags: [mcp, servers, code, fastmcp, deployment]
+upstream_control_path: "tools/intent-mcp/server.py (the CLAUDE.md-documented stable production MCP surface)"
+catch_mechanism: "Overtaken by events: verified servers/notice.py still holds signals in an in-memory _signals dict (checked 2026-07-08), so the Phase 4 git-backed persistence this signal called out as the next step never landed on that code path. Instead a separately built, file-native server (tools/intent-mcp/server.py, walks up to .intent/, writes real markdown) became the actual production MCP surface. The mobile-session prototype was superseded rather than completed"
+verification_command: "grep -n '_signals\\[' /Users/brien/Workspaces/Core/frameworks/intent/servers/notice.py"
 ---
 
 # SIG-021: Working MCP server code exists for all three loop phases
@@ -43,3 +46,7 @@ All files copied to `frameworks/intent/servers/` and `frameworks/intent/artifact
 
 - SIG-016 (multi-agent architecture)
 - SIG-018 (free cloud hosting)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. Checked directly: servers/notice.py at line 131 still does `_signals[sig_id] = signal`, an in-memory dict, so "Next Steps" item 3 (git-backed persistence) never happened on this code. What actually shipped as the real MCP server, per CLAUDE.md, is tools/intent-mcp/server.py, a different implementation using the base mcp library that was file-backed from the start. The prototype documented here was set aside in favor of that separately-built surface, not finished.

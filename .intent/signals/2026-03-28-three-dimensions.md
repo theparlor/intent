@@ -31,4 +31,8 @@ All three dimensions can be encoded in the spec file itself — a spec reference
 
 ## Evidence
 
-Brien's framing: "build the right things at the right time in the right way and make this flow of work visible at all times" — this is the Intent product's core value proposition stated as a design requirement.
+Brien's framing: "build the right things at the right time in the right way and make this flow of work visible at all times" - this is the Intent product's core value proposition stated as a design requirement.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, partial. Right Things and Right Time are operationalized: .intent/intents/ carries discovery status, the intent-intent CLI has a --priority flag, and specs can declare dependencies. Right Way stays informal. There is no .intent/tech-radar.md and no permit-level (play/build/operate) tagging anywhere in the repo; decisions.md and the DEC-INTENT-NNN atoms cover architectural precedent but not a radar-style forward view. Needed control: either author .intent/tech-radar.md with permit levels as this signal specified, or fold a permit_level field into the DEC-INTENT frontmatter schema so Right Way rides the same mechanism as the other two dimensions.

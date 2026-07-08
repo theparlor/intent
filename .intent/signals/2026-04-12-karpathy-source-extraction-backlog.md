@@ -48,3 +48,7 @@ Closure-discipline write-boundary remediation. Status downgraded from `resolved`
 - Architectural implications were surfaced as new signals per the action clause: `2026-04-13-ke-mcp-write-back.md`, `2026-04-13-overwatch-incestuous-amplification.md`, `2026-04-13-trust-as-orientation-proxy.md` all reference SIG-032.
 
 **What remains open:** the 14 lower-priority Section I sources (manifest items 8-21: Futurum Group, DAIR.AI diagram, Antigravity idea-file guide, Steph Ango thread, autoresearch README, Data Science Dojo explainer, Wiley double-loop paper, VSM Guide, Wind4Change, LogRocket, pmbod, GoPractice, Open Repo Guide, Nanochat explainer) were never fetched. `raw/research/` contains nothing for them. No mechanism tracks this residue; if the "lower but non-zero extraction value" claim still holds, it needs an owner or an explicit dismissal.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, confirmed unchanged since the 2026-07-03 remediation note. Re-checked `raw/research/` directly: still nothing for the 14 Section I items. The needed control is exactly what the prior note named: either assign an owner and extraction trigger to the residue, or write an explicit dismissal signal saying the lower-priority sources are no longer worth fetching. Leaving this as symptom-repaired, upstream-pending; it is not this pass's job to make that owner/dismiss call for Brien.

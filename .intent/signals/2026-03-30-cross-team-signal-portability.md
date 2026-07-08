@@ -5,10 +5,13 @@ type: insight
 source: conversation
 source_context: Brien identified need to pass signals between teams
 date: 2026-03-30
-status: active
+status: resolved
 cluster: schemas
 autonomy_level: L1
 tags: [ids, teams, portability, provenance, schema]
+upstream_control_path: "CLAUDE.md 'Owner: Brien, solo practitioner'; DEC-INTENT-020 (ULID adoption)"
+catch_mechanism: "Overtaken by events: Intent crystallized as a solo-practitioner tool rather than a cross-team product, so the provenance-carrying-ID need this signal anticipated never materialized; the collision-avoidance half of the same root problem (SIG-022) was resolved by ULID adoption"
+verification_command: "grep -n 'solo practitioner' /Users/brien/Workspaces/Core/frameworks/intent/CLAUDE.md"
 ---
 
 # SIG-023: Signals need cross-team portability with provenance-carrying IDs
@@ -42,6 +45,10 @@ The ID should be like a **return address on an envelope** — enough information
 
 ## Relates To
 
-- SIG-022 (ID collision in distributed environments — same root problem)
-- Work Ontology v2 ownership topology (Product → Capability → Team)
+- SIG-022 (ID collision in distributed environments, same root problem)
+- Work Ontology v2 ownership topology (Product to Capability to Team)
 - OTel trace propagation pattern (trace ID flows through all children)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. Intent never grew into a multi-team product; CLAUDE.md is explicit that the owner is "Brien, solo practitioner." The cross-team, provenance-carrying-ID design problem this signal raised has no user to serve. Its sibling problem, ID collision under concurrent writers, was real and got solved (SIG-022, DEC-INTENT-020, ULID adoption); that is the part of "same root problem" that mattered in practice.

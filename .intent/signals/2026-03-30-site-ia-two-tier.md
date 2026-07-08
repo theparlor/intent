@@ -5,10 +5,13 @@ type: friction
 source: conversation
 source_context: QA audit review revealed flat nav hiding depth differences
 date: 2026-03-30
-status: active
+status: resolved
 cluster: product
 autonomy_level: L1
 tags: [site, navigation, information-architecture, ux]
+upstream_control_path: "theparlor/intent-site (separate repo); Core/frameworks/intent/CLAUDE.md 'The site has been moved to its own repo' note"
+catch_mechanism: "Overtaken by events: the Intent marketing site was extracted to its own repo, theparlor/intent-site, which has its own IA spec and content-map.md; this repo explicitly carries no docs/ folder anymore, so site IA governance is out of this repo's scope"
+verification_command: "grep -n 'intent-site' /Users/brien/Workspaces/Core/frameworks/intent/CLAUDE.md"
 ---
 
 # SIG-020: Intent site needs two-tier information architecture
@@ -46,3 +49,7 @@ The flat nav needs to become a two-tier structure. Primary pages get the main ho
 ## Relates To
 
 - SIG-019 (vocabulary refinement affects page content)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. The site this signal is about no longer lives in this repo. It moved to theparlor/intent-site, which is out of this triage pass's bounded scope (writes here are limited to Core/frameworks/intent/.intent/). Whatever this repo's fix would have been is now that repo's concern.

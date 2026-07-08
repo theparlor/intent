@@ -232,3 +232,7 @@ Status honestly: `symptom-repaired, upstream-pending`.
 - F-1 wiring to pre-commit: pending.
 - F-4 routing to automated writers: pending.
 - Lexical sunset (the root cause): pending, time-gated to 2026-06-12.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, confirmed unchanged on the wiring question. Checked directly: no `.pre-commit-config.yaml` exists in this repo, and `.git/hooks/pre-commit` (if present) does not reference `hook_regex_contract.py` or `closure_writeboundary_check.py`. Both catch-nets remain advisory, callable manually but not load-bearing. The lexical-sunset half of this signal is tracked separately and is explicitly out of scope for tonight (files matching *layer42* are excluded from this pass; SIG-2026-06-12-layer42-calibration-review is the live thread for that). Needed control: the non-blocking `coherence-preflight` aggregator this signal itself proposes (run all standalone catch-nets, report, don't block) is still the concretely-named, not-yet-built next step.

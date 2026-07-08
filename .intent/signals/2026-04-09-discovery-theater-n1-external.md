@@ -47,3 +47,7 @@ Direct quote from Product Strategy panel (Fitzpatrick voice): *"This is the oppo
 - Reversibility: 1.0 (interviews are pure additive signal)
 - Testability: 0.9 (count external signals before/after)
 - Precedent: 0.9 (Torres/Blank/Fitzpatrick all prescribe this)
+
+## Triage, 2026-07-08
+
+Disposition: still pending. The tooling side of the required outcome got built: .intent/discovery/wave-1/ has a real interview protocol, participant-profile criteria, outreach template, synthesis template, opportunity-tree template, and a track-b-interviewer agent (v0 and v1). But those are templates and scaffolding, not conducted interviews; there is no completed synthesis or opportunity tree on disk. The external-signal count moved from 1 (Ari) to a second voice, Rohit (2026-04-12/13, 5 signals: checkpointing pattern, data classification matrix, contract rigor gap, intent architecture validation, team-os external validation), still far short of the 10 targeted and well past the "2 weeks from today" deadline this signal itself set (due ~2026-04-23, now 11 weeks overdue). Needed control: actually run the Wave 1 protocol against 8 more participants, or explicitly re-scope the target count given Rohit's evidence.

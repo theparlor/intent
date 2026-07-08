@@ -5,10 +5,13 @@ type: opportunity
 source: conversation
 source_context: Claude mobile session — cloud deployment research
 date: 2026-03-30
-status: active
+status: resolved
 cluster: infrastructure
 autonomy_level: L2
 tags: [mcp, deployment, cloud, fastmcp, cloudflare]
+upstream_control_path: ".github/workflows/intent-events.yml; Workspaces .context/PENDING_DECISIONS.md 'Always-on hosting' (decided 2026-07-03)"
+catch_mechanism: "Overtaken by events: the always-on requirement that motivated this hosting research (SIG-013) was solved with GitHub Actions instead, and the multi-agent server roster that would have needed FastMCP Cloud/Cloudflare hosting (SIG-016) was never built"
+verification_command: "cat /Users/brien/Workspaces/Core/frameworks/intent/.github/workflows/intent-events.yml | head -5"
 ---
 
 # SIG-018: Free-tier cloud MCP hosting is viable for Intent's agent layer
@@ -41,3 +44,7 @@ Intent's deployment topology decision (config-driven local vs hosted) now has a 
 
 - SIG-016 (multi-agent architecture)
 - Project memory: Intent Deployment Topology (config-driven local vs hosted)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. GitHub Actions (the simplest option, not the FastMCP Cloud/Cloudflare path researched here) turned out to be the winning always-on mechanism, and it is already live. The multi-agent MCP server mesh that would have consumed this hosting research (SIG-016) never got built either; see that signal's own triage note.

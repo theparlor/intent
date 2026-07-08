@@ -51,3 +51,13 @@ Two independent senior-engineering panels produced nearly the same list. That's 
 - Reversibility: 0.5 (some changes are hard to undo, e.g., ID format migration)
 - Testability: 0.95 (these are falsifiable engineering tests)
 - Precedent: 0.95 (standard operability hygiene)
+
+## Triage, 2026-07-08
+
+Disposition: still pending, mixed. Verified each P0 item against the repo:
+
+1. ID collision: control exists now. Resolved separately via DEC-INTENT-020 (ULID adoption). See SIG-022's own triage note.
+2. events.jsonl persistence: overtaken in framing. The feared failure mode (FastMCP Cloud container restart wiping signals) does not apply because notice.py/servers/ was never deployed there (see SIG-021's triage note); the file that actually matters, .intent/events/events.jsonl, is git-tracked and durable by construction. SQLite+WAL was never built and is not needed for the file-native path that shipped.
+3. Redaction hardening / cross-engagement leak test: still pending. .github/workflows/leak-test.yml exists and explicitly cites this signal ("Signal: SIG-051 via INT-009 P0 #3"), but its own header says the tests are xfail-marked scaffolding, "CI stays green, but the shape of the work is tracked", pending SPEC-005 fixtures and query-layer wiring. The control is scaffolded, not live.
+
+P1 and P2 items (runbooks/SLOs, 4-server topology spike, deployment-phase events, fitness functions, Wardley map, CRDT story) were not found built anywhere in the repo. Needed control: land SPEC-005's real fixtures so leak-test.yml stops being xfail, and either execute or explicitly shelve the P1/P2 list.

@@ -41,3 +41,7 @@ The "Challenge the Intent" pass is actually a specialized instance of the panel-
 - Reversibility: 0.8 (can remove the pass)
 - Testability: 0.6 (hard to measure "did this actually question assumptions")
 - Precedent: 0.9 (Argyris double-loop learning, 1978)
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Checked spec/spec-shaping-protocol.md directly: it still runs the four-persona sequence ratified in DEC-INTENT-019 (Shape, Outcome, Contract, Readiness); there is no "Pass 0: Challenge the Intent" and no persona pass carries reject power over an intent. The disconnect between the double-loop claim and the single-loop mechanism this signal identified is unchanged. Needed control: add the Pass 0 challenger step this signal specified, wired to the panel-as-a-service primitive (SIG-041) so a rejection can trigger deeper review, or revise D17's own language so it stops claiming double-loop learning it does not yet implement.

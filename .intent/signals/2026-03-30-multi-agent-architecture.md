@@ -5,10 +5,13 @@ type: opportunity
 source: conversation
 source_context: Claude mobile session during airport transit
 date: 2026-03-30
-status: active
+status: resolved
 cluster: infrastructure
 autonomy_level: L1
 tags: [agents, mcp, architecture, deployment]
+upstream_control_path: "Claude Code native Agent/Task subagent system; agent-teams plugin; servers/notice.py, spec.py, observe.py, knowledge.py"
+catch_mechanism: "Overtaken by events: Claude Code's own Agent tool and agent-teams plugin (specialization, model routing, parallel dispatch) superseded the bespoke seven-server mesh this signal proposed; the four core phases got their own server files without needing dedicated hosted FastMCP/Cloudflare deployments"
+verification_command: "ls /Users/brien/Workspaces/Core/frameworks/intent/servers/*.py"
 ---
 
 # SIG-016: Intent needs a multi-agent MCP architecture
@@ -50,5 +53,9 @@ This is the operational backbone that makes Intent's autonomy levels real. Witho
 
 ## Promotion Candidate
 
-→ INT-??? (Multi-Agent Infrastructure Intent)
-→ SPEC-??? (MCP Server Architecture Spec)
+-> INT-??? (Multi-Agent Infrastructure Intent)
+-> SPEC-??? (MCP Server Architecture Spec)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. This never got promoted to its own intent or spec, and it didn't need to be: Claude Code shipped native Agent Teams, a Task tool, and per-agent model routing directly into the harness Brien already runs sessions in, which is a better answer to "specialization beats generalism" than a bespoke seven-server mesh would have been. The four core loop phases (notice, spec, observe, knowledge) each got a server file; the other three roles in the proposed roster (contract generator, test automation, code reviewer) never shipped as separate servers because Claude Code's built-in subagent types cover the same ground on demand.

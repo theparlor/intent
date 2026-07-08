@@ -4,7 +4,10 @@ date: 2026-03-28
 source: cowork-session
 confidence: medium
 related_intents: []
-status: new
+status: resolved
+upstream_control_path: ".intent/templates/; bin/lib/id_gen.sh; DEC-INTENT-020"
+catch_mechanism: "YAML frontmatter plus markdown body is the adopted hybrid (answers the Open Question below); ULID-based IDs (DEC-INTENT-020) give every entity a unique, timestamp-sortable ID; status fields function as the state machine; the intent-events GitHub Action gives git-tracked observability"
+verification_command: "ls /Users/brien/Workspaces/Core/frameworks/intent/.intent/templates/"
 ---
 
 # Signal: Work units need formal schemas to be agent-consumable
@@ -31,3 +34,7 @@ Design the formal schemas for each unit type. Start with Contract (the atom) and
 ## Open Question
 
 What's the right balance between structured YAML (easy for agents) and readable markdown (easy for humans)? YAML frontmatter + markdown body may be the right hybrid.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. The open question resolved itself in practice: every entity type in the repo (signal, intent, spec, decision atom) uses YAML frontmatter plus a markdown body. Contract never became its own file type (see the linked triage note on SIG-001, work-ontology), so "start with Contract" did not happen literally, but the schema goal (visible, versioned, testable, observable) is met by the types that did ship.

@@ -4,7 +4,10 @@ date: 2026-03-28
 source: cowork-session
 confidence: high
 related_intents: []
-status: new
+status: resolved
+upstream_control_path: ".intent/events/events.jsonl; DEC-INTENT-004; .github/workflows/intent-events.yml"
+catch_mechanism: "GitHub Action emits a structured event (version, event, timestamp, trace_id, span_id, parent_id, source, data) on every push touching signals, intents, specs, or decisions; observe/adapters/file-tail.py is the built upgrade path to a real OTel collector"
+verification_command: "tail -3 /Users/brien/Workspaces/Core/frameworks/intent/.intent/events/events.jsonl"
 ---
 
 # Signal: Distributed tracing is the right observability model for Intent work
@@ -38,4 +41,8 @@ Structured JSONL event emission + local HTML dashboard gets 80% of value with ze
 
 ## Evidence
 
-Entire.io already captures the execution layer (agent sessions). What's missing is the work layer — structured events linking signals → intents → specs → contracts with trace IDs.
+Entire.io already captures the execution layer (agent sessions). What's missing is the work layer, structured events linking signals, intents, specs, and contracts with trace IDs.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. The minimal path proposed here (append-only JSONL in .intent/events/, git-tracked) is live and has been emitting since at least April: events.jsonl carries the exact schema this signal specified (trace_id, span_id, parent_id) and is written automatically by the intent-events GitHub Action on every relevant push. The Medium (Grafana Tempo) and Full (Datadog/Honeycomb) tiers were never needed since Witness (Core/products/witness) picked up the cross-product event-anchor role at a broader scope than this signal was scoped to solve.

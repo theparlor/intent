@@ -5,12 +5,15 @@ source: conversation
 confidence: 0.8
 trust: 0.75
 autonomy_level: L2
-status: captured
+status: resolved
 cluster: execution-posture
 author: panel-review-2026-04-09
 related_intents: []
 referenced_by: []
 parent_signal:
+upstream_control_path: "Core/products/cast/farm/operators/brien.yaml"
+catch_mechanism: "The operator persona this signal's Implication section calls for (SIG-048) exists, and its own v2.0 changelog names this exact signal as a captured failure mode: 'the persona's own documented failure mode SIG-052 (build-more reflex when the discipline is to subtract) was embodied in the registry's own growth', followed by a subtraction-led revision of the persona file itself"
+verification_command: "grep -n 'SIG-052' /Users/brien/Workspaces/Core/products/cast/farm/operators/brien.yaml"
 ---
 # Brien's reflex to "build more" when panels said "subtract more" — meta-failure pattern
 
@@ -46,3 +49,7 @@ This is exactly the kind of "self-prompt during self-directed development" use c
 - Reversibility: 1.0 (self-correction is cheap)
 - Testability: 0.7 (can measure delete-to-build ratio in each session)
 - Precedent: 0.9 (Rumelt, Porter, Perri all prescribe subtraction-first)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. Rare case of a self-referential loop actually closing: the meta-pattern named here got captured in the operator persona exactly as this signal's Implication section proposed, and that persona was later revised using the same subtraction discipline the pattern calls for. Note for the record: Brien's broader operating philosophy has since evolved a companion view (memory: "AI lowers cost of overbuilding") that over-building is acceptable when the result stays reversible; that does not contradict this signal, which is specifically about the sequence after structural critique, not about building in general.

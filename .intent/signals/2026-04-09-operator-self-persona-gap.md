@@ -5,12 +5,15 @@ source: conversation
 confidence: 0.9
 trust: 0.8
 autonomy_level: L3
-status: captured
+status: resolved
 cluster: panel-primitive
 author: brien
 related_intents: []
 referenced_by: []
 parent_signal:
+upstream_control_path: "Core/products/cast/farm/operators/brien.yaml"
+catch_mechanism: "A dedicated operator persona type exists (id: brien-operator, type: operator, created 2026-04-09, now at v2.0) with flow patterns, lineage, and known failure modes exactly as this signal specified; it is used as a self-prompting reference during self-directed development"
+verification_command: "head -10 /Users/brien/Workspaces/Core/products/cast/farm/operators/brien.yaml"
 ---
 # Team/operator self-persona missing from unified persona system
 
@@ -44,3 +47,7 @@ The operator persona becomes one of the voices the panel can call. When an agent
 - Reversibility: 1.0
 - Testability: 0.7 (can compare agent output with/without operator persona)
 - Precedent: 0.8 (Cooper's personas done right, but applied to self)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now. Core/products/cast/farm/operators/brien.yaml is the operator persona this signal asked for, created the same day (2026-04-09) and now on its second major revision (v2.0, 2026-05-29). It is explicitly used the way this signal proposed: a self-prompting reference for self-directed development, and its own changelog cites SIG-052 (subtract-before-build-reflex) as a captured failure mode, which is exactly the "Relationship to Panel-as-a-service primitive" use case this signal described.

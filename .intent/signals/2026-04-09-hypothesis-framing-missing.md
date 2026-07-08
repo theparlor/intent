@@ -5,12 +5,15 @@ source: conversation
 confidence: 0.9
 trust: 0.85
 autonomy_level: L3
-status: captured
+status: resolved
 cluster: content-attribution
 author: brien
 related_intents: []
 referenced_by: []
 parent_signal:
+upstream_control_path: "theparlor/intent-site (separate repo)"
+catch_mechanism: "Overtaken by events: the site content this signal wants reframed (tablestakes vs evolutionary vs open question) lives in theparlor/intent-site now, out of this repo's scope"
+verification_command: "grep -n 'intent-site' /Users/brien/Workspaces/Core/frameworks/intent/CLAUDE.md"
 ---
 # Site presents Intent as shipped product; Brien's instinct is to frame as active hypothesis
 
@@ -41,3 +44,7 @@ Specifically call out: the autonomy-and-execution-of-trust-via-signal-intent-cha
 - Reversibility: 1.0
 - Testability: 0.7
 - Precedent: 0.85 (Rumelt's "name the chain", McGrath's discovery-driven planning)
+
+## Triage, 2026-07-08
+
+Disposition: overtaken by events. This is site copy tone guidance for pages that moved to theparlor/intent-site.
