@@ -47,6 +47,21 @@ from typing import Optional
 try:
     import yaml  # PyYAML
 except ImportError:  # pragma: no cover - exercised at runtime
+    # Bare `python3` resolved via the shebang/PATH may not carry PyYAML
+    # (cross-repo follow-up, 2026-07-08, ODT drain batch 2). Re-exec once
+    # via a known-good interpreter before giving up: prefer this repo's
+    # servers/.venv (the root requirements.txt delegates to
+    # servers/requirements.txt, so that venv already carries the deps this
+    # script needs), then fall back to Homebrew's python3.
+    if os.environ.get("_INTENT_INIT_REEXEC") != "1":
+        _here = Path(__file__).resolve()
+        for _candidate in (
+            _here.parent.parent / "servers" / ".venv" / "bin" / "python3",
+            Path("/opt/homebrew/bin/python3"),
+        ):
+            if _candidate.exists():
+                os.environ["_INTENT_INIT_REEXEC"] = "1"
+                os.execv(str(_candidate), [str(_candidate), str(_here), *sys.argv[1:]])
     sys.stderr.write(
         "error: PyYAML is required. Install with: "
         "/opt/homebrew/bin/python3 -m pip install --user pyyaml\n"
