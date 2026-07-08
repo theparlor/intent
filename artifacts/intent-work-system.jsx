@@ -461,9 +461,9 @@ function AgentFlowTab() {
       name: "Observation",
       color: COLORS.observe,
       agent: "Observe-Cycle Agent",
-      input: "Entire.io traces from execution",
+      input: "Entire.io authoring traces plus OTel-emitted runtime metrics",
       output: "Updated .intent/decisions.md, .intent/risks.md, new signals",
-      description: "The loop closes. The observe agent reads what actually happened during execution, extracts decisions and risks, writes them back to .intent/. Drift between spec and implementation becomes a new signal.",
+      description: "The loop closes. The observe agent reads Entire.io traces to understand the authoring path and OTel-emitted runtime metrics to understand the outcome, extracts decisions and risks, writes them back to .intent/. Drift between spec and implementation becomes a new signal.",
       parallel: false,
     },
   ];
@@ -731,7 +731,7 @@ function VersusTab() {
     },
     {
       agile: { concept: "Sprint Retro", description: "Team reflects on process every 2 weeks. Action items often forgotten by next retro." },
-      intent: { concept: "Observe Cycle", description: "Agent reads Entire.io traces after every execution. Writes findings to .intent/decisions.md and .intent/risks.md. Nothing is forgotten." },
+      intent: { concept: "Observe Cycle", description: "Agent reads Entire.io traces to understand the authoring path and OTel-emitted runtime metrics to understand the outcome. Writes findings to .intent/decisions.md and .intent/risks.md. Nothing is forgotten." },
       shift: "From periodic human reflection to continuous automated observation.",
     },
     {

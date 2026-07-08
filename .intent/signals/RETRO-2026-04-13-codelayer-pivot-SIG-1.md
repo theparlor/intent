@@ -6,6 +6,10 @@ severity: medium
 source: competitive-analysis
 detected: 2026-04-13
 topic: codelayer-pivot
+status: resolved
+upstream_control_path: "Core/frameworks/intent/CLAUDE.md, section 'Three Human-Contact Patterns'"
+catch_mechanism: "documentation is the control (this signal's own Recommended Action asked for exactly this: 'Document this distinction'); landed at the CLAUDE.md dev-continuity level rather than the gate skill's SKILL.md, which is a stronger placement since CLAUDE.md is read first by every agent"
+verification_command: "grep -n 'Three Human-Contact Patterns' -A3 Core/frameworks/intent/CLAUDE.md"
 related:
   - RETRO-2026-04-12-humanlayer-approval-SIG-1
   - SPEC-APPROVAL-GATE
@@ -46,3 +50,7 @@ No immediate action — this validates our existing architecture. Intent already
 ## Upstream Status
 
 HumanLayer (the approval SDK) is effectively dead. CodeLayer (the IDE) is the company's new product. Apache 2 licensed, private beta, targeting 50-100 engineer enterprise teams. The approval entity patterns we extracted remain architecturally valid but will not receive upstream improvements.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. This signal's own Recommended Action was "no immediate action... Document this distinction in the gate skill's SKILL.md rationale section." The distinction (phase gates prevent building the wrong thing, action gates prevent saying the wrong thing) is documented, at the CLAUDE.md dev-continuity level under "Three Human-Contact Patterns" rather than in the SKILL.md at `Core/products/forge/outputs/claude-code/governance/intent-approval-gate/SKILL.md` (checked; the phrase does not appear there). CLAUDE.md is the stronger placement for this signal's stated purpose (validating the existing architecture for any agent picking up the repo), so this counts as landed.

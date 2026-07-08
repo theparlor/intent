@@ -1,14 +1,14 @@
 ---
 id: SIG-2026-06-05-formation-flight-build
 type: signal
-status: open
+status: resolved
 severity: build
 created: 2026-06-05
 target: Formation Flight — coherent non-colliding parallel development built + ready to exercise.
 discovered_during: "Brien handed a repo-blind build prompt to execute in-repo: 'go all the way ... our objective is to be able to exercise this and see where it can't stand up.'"
 requested_by: brien
-upstream_control_path: "Built artifacts under Core/frameworks/intent/: 5 specs (SPEC-INTENT-FORMATION-FLIGHT-001 + MISSION-BRIEF/SEAM-DECOMPOSITION/COHERENCE-GATE/FORMATION-GOVERNANCE-001), runnable kit formation/ (2 schemas + 2 workflow harnesses + dataclasses + test + README), idd-build-pattern Shape 4 + anti-pattern, DEC-014, source manifest. Static-verified: node --check x2 green, dataclass<->schema 6/6, audit_chain probe live."
-catch_mechanism: "Specs are draft; ratify-together gate (flight model + surface matrix) is the catch. The EXERCISE (run formation-flight.workflow.js on a real >=2-seam task, seed a drift, confirm Stage A catches what audit_chain alone misses) is the demonstrable-function close — pending."
+upstream_control_path: "Built artifacts under Core/frameworks/intent/: 5 specs (SPEC-INTENT-FORMATION-FLIGHT-001 + MISSION-BRIEF/SEAM-DECOMPOSITION/COHERENCE-GATE/FORMATION-GOVERNANCE-001), runnable kit formation/ (2 schemas + 2 workflow harnesses + dataclasses + test + README), idd-build-pattern Shape 4 + anti-pattern, DEC-014, source manifest. Static-verified: node --check x2 green, dataclass<->schema 6/6, audit_chain probe live. EXERCISED 2026-06-05 (see below) with proof obtained."
+catch_mechanism: "The exercise (formation-flight.workflow.js run on a clean sortie + a seeded-drift sortie) was executed and is recorded in-file below: Stage A caught 7 findings on the drift sortie and 0 on the clean sortie, while Stage B (audit_chain) was blind to the drift entirely, proving Stage A is load-bearing (DEC-014 validation criterion #1 satisfied). One gate bug (early-return drift_clean:true on empty sorties) was found and fixed to fail-closed during the same exercise."
 pipeline_survival: "Runnable kit survives (node-checked, test-pinned). The exercise will surface where it cannot stand up -> new signals."
 reconsider_when:
   - "the exercise run is executed -> capture failure modes as signals; promote the spec family from draft toward accepted per the ratify-together set."
@@ -57,3 +57,7 @@ criterion #1 satisfied.
    (9431 bytes)"; the file exists but was not actually modified (the fixture only *claimed* the touch). The
    finding is correct (non-goal violated per the report) but the embellishment shows Stage-A agents can
    over-read disk state. Watch for it; prefer claims grounded in the report + a run, not inferred disk deltas.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. This signal's own body already records the demonstrable-function close that its `catch_mechanism` field marked pending: the exercise ran, `drift_clean=false` was correctly produced on the seeded-drift sortie, and the false-green gap (Stage B alone would have missed it) was proven empirically, not just argued. A real bug (fail-open on empty sorties) was caught and fixed during the same exercise. Flipping status to resolved since the file's own content already demonstrates its exit criterion was met on the date of capture; no further action needed beyond what's tracked in the sibling `SIG-2026-06-05-coherence-gate-false-green.md` (the regression-test gap for the delta-gating logic specifically, which is a narrower, still-open item).

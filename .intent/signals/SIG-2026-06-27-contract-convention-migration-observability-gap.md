@@ -68,3 +68,7 @@ No new infrastructure, no daemon, no graph DB. Both controls reuse patterns the 
 ## Next
 
 Propose-only; nothing built here. If greenlit, build Control A first (it is the sensor whose absence let this form), then Control B. Status stays open until at least Control A's invariant + test land and pass zero-violation against the live tree.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, Brien-gated. Confirmed neither control has been built: no `tools/convention_migration_invariant.py` exists, and no `triggers_upstream_examination:` frontmatter field appears anywhere in the repo outside this signal's own proposal text. This signal is explicitly "propose-only" awaiting a greenlight decision per its own "Next" section. Not registering a new row in `Workspaces/.context/PENDING_DECISIONS.md` (read-only for this pass); it is not currently listed there, flagging for Brien in case he wants to prioritize it.

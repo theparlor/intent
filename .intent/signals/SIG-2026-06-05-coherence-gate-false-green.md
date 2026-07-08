@@ -43,3 +43,7 @@ pre-existing debt is still clean.
 
 This is itself a coherence-engineering datum: **any decision-driving health check needs a baseline/delta
 framing, or it indicts pre-existing state as if the current change caused it.**
+
+## Triage, 2026-07-08
+
+Disposition: still pending. This signal's own `catch_mechanism` field already names the gap as pending, with no automated catch yet. Re-verified: `formation/test_formation.py` exists but has no test asserting drift-clean delta behavior (no reference to `drift_clean` or `baseline` in it). The regression guard this signal specified, a unit test feeding a red baseline plus a clean formation asserting `drift_clean=true`, and the inverse with a new finding asserting `false`, has not been written. The delta-gating fix itself (Stage A/B two-stage gate) remains in place and un-reverted, but the missing catch-net means a future edit to the gate could silently reintroduce absolute-green gating with nothing to flag it.

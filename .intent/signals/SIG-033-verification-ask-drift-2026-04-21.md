@@ -2,9 +2,12 @@
 id: SIG-033
 title: Agent asked permission to run a read-only 10-second verification that passed 4-gate silently
 date: 2026-04-21
-status: open
+status: resolved
 category: autonomy-drift
 severity: medium
+upstream_control_path: "/Users/brien/.claude/projects/-Users-brien-Workspaces/memory/feedback_autonomy_grant_drift_pattern.md (2026-04-21 recurrence section, Type A vs Type B verification distinction) + /Users/brien/.claude/skills/autonomy-grant-drift-detector/SKILL.md (SessionStart-loaded)"
+catch_mechanism: "autonomy-grant-drift-detector skill forces a silent 4-gate self-check before any response with drift symptoms, loaded every session per the session-start skill list; memory file documents the Type A/Type B distinction as canonical reference"
+verification_command: "grep -n '2026-04-21 recurrence' -A20 /Users/brien/.claude/projects/-Users-brien-Workspaces/memory/feedback_autonomy_grant_drift_pattern.md"
 related:
   - memory/feedback_autonomy_grant_drift_pattern.md (recurrence — 2026-04-21 instance)
   - memory/feedback_decision_framing.md (4-gate check — was not applied)
@@ -78,3 +81,7 @@ The word "grounded" in the agent's own language acknowledged the gap. That self-
 - Update `feedback_autonomy_grant_drift_pattern.md` with 2026-04-21 recurrence + "Type A vs Type B verification" distinction
 - This is now the 5th tracked instance of the pattern (4 from 2026-04-17 + 2 from 2026-04-18 + today's). Pattern is not decaying.
 - Consider: does the autonomy-grant drift detector (skill listed in session-start reminders) run pre-response scans for this specific variant?
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. `memory/feedback_autonomy_grant_drift_pattern.md` carries the exact follow-up content: a dated section titled "2026-04-21 recurrence, costumed verification-ask drift" with the Type A/Type B verification distinction written out in full, plus a canonical-signal cross-reference back to this file. The `autonomy-grant-drift-detector` skill (`~/.claude/skills/autonomy-grant-drift-detector/SKILL.md`) is SessionStart-loaded and forces a silent 4-gate self-check before any response with drift symptoms, the mechanism-level answer to this signal's own open question about whether such a detector exists.

@@ -37,3 +37,7 @@ Start simple, validate, upgrade:
 4. **Embeddings** — only if 1-3 fail to discriminate routine from novel.
 
 Design the metric during Phase 1. Test it against Phase 1's approval records before shipping Phase 2.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. This critique's premise, that Phase 1 approval records will exist to test a similarity metric against, has not materialized: Phase 1 (typed IntentApproval entities) was never built (verified against disk, no `.intent/approvals/` directory). There is nothing yet for a payload-similarity metric to validate against. Needed control: same Phase 1 gap named across this cluster's other signals.

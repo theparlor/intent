@@ -151,3 +151,16 @@ Stop-array membership alone.
 
 No hook file, the freeze yaml, or `drag_dashboard.py` was edited to produce
 this signal. Signal only.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, Brien-gated (unchanged). Confirmed neither option
+has been implemented: `lexical-layer-freeze.yaml` still names only
+`autonomy-grant-stop-check.sh` and `closure-discipline-stop-check.sh`, with
+no new block for the four hooks this signal named. This signal's own
+`decision_owner` field states ratifying which extension option ships is
+Brien's call; deliberately not implementing either option in this pass, both
+because that is an explicit deferral in the signal itself and because doing
+so would mean editing the frozen lexical layer during the active Layer 4.2
+calibration window (see the companion 2026-07-03 audit signal, same
+directory).

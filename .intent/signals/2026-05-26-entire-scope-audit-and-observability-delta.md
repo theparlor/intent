@@ -6,7 +6,10 @@ author: brien
 confidence: 0.92
 trust: 0.85
 autonomy_level: L4
-status: active
+status: resolved
+upstream_control_path: "spec/decision-log.md DEC-009 (supersedes DEC-007) + CLAUDE.md lines ~132/143 (Persona table + repo-pattern label) + spec/intent-concept-brief.md + memory/reference_entire_io.md + artifacts/intent-work-system.jsx + artifacts/intent-native-repos.jsx + spec/observability-stack.md section 4"
+catch_mechanism: "all 8 items of the Phase 2 canonicalization handoff list verified against disk 2026-07-08: DEC-009 supersedes DEC-007 (done pre-existing), CLAUDE.md persona table + repo-pattern label both corrected (done pre-existing), intent-concept-brief.md corrected (done pre-existing), product-roadmap.md open question removed (done pre-existing), memory/reference_entire_io.md config path corrected (done pre-existing), intent-native-repos.jsx L391 corrected (done pre-existing); intent-work-system.jsx lines 464/734 were the two remaining stale mis-scoped examples, fixed this pass, plus the adjacent observability-stack.md section-4 overclaim + stale file-structure diagram fixed as the same class of correction (see SIG-034 triage note, same date)"
+verification_command: "grep -n 'authoring provenance\\|authoring-side provenance' CLAUDE.md spec/intent-concept-brief.md spec/observability-stack.md artifacts/intent-work-system.jsx"
 cluster: observability-boundaries
 parent_signal:
 related_intents:
@@ -183,3 +186,7 @@ If `Core/frameworks/intent/` gets a `render_all` pass before Phase 2 lands, this
 ---
 
 *Phase 1 complete. Phase 2 awaits Brien's confirmation of the recommended re-scope, then mechanical canonicalization across the 7 named files + memory update. Recommended dispatch: Sonnet sub-agent with this signal as the brief.*
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. Re-checked all 8 Phase 2 canonicalization items against disk: DEC-009 supersedes DEC-007 in `spec/decision-log.md`; `CLAUDE.md` line ~143 reads "Authoring provenance (agent-session traces from Entire.io)" and line ~132 has the separated "Authoring Provenance Sources" line; `spec/intent-concept-brief.md` reads "agent authoring provenance (Entire.io)"; the open question at the old `product-roadmap.md` line 177 is gone; `memory/reference_entire_io.md` has the corrected `witness/.entire/config.yaml` path; `artifacts/intent-native-repos.jsx` no longer contains the "closes the loop from execution" overclaim. The two items not yet done were `artifacts/intent-work-system.jsx` lines 464 and 734, which still read "Entire.io traces from execution" / "reads Entire.io traces after every execution"; fixed this pass to distinguish the authoring-trace input from the OTel runtime-metrics input, matching the pattern already applied at line 419. `spec/observability-stack.md` section 4 (not in the original 7-file list but the same overclaim class) was also corrected this pass, cross-referenced from the SIG-034 triage note dated the same day.

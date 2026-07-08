@@ -95,3 +95,7 @@ Brien's composable architecture has been building toward the callable-component 
 - Companion signals: `Core/personas/.intent/signals/2026-04-15-pipeline-components-as-callable-agents.md`, `Core/products/skills-engine/.intent/signals/2026-04-15-agent-sdk-as-new-rendering-target.md`
 - Source: Pawel Huryn newsletter 2026-04-14 (`Core/personas/corpus/pawel-huryn/newsletter-2026-04-14-claude-agent-sdk-production-agent.md`)
 - Related mental models: `intent-orchestrator` (Brien), `agent-as-callable-component` (Huryn)
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Checked all 4 recommended actions against disk: no `methodology/orchestration-choice.md` exists anywhere under `Core/frameworks/intent/`; no skill frontmatter uses an `orchestration: explicit-graph|single-call|either` field (grep across `.md` returns only this signal file itself); `knowledge-engine/templates/dor-dod-library.md` exists but has no orchestration-choice line in its DoR checklist. None of the 4 actions were executed in the ~3 months since capture.

@@ -1,7 +1,10 @@
 ---
 id: SIG-2026-05-31-exposed-vocabulary-divergence-principle
 type: architectural-principle
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/intent/spec/SPEC-substrate-exposure-envelope-extensions-DRAFT.md (vocabulary reconciliation table) + Core/frameworks/intent/servers/knowledge.py (get_core/audit_chain verbs, sightline/supply_policy fields)"
+catch_mechanism: "built and TDD-tested 2026-05-31 per the spec's own note; verified live in servers/knowledge.py: _sightline() and _supply_policy() functions exist and the envelope emits sightline/supply_policy fields per DEC-012"
+verification_command: "grep -n 'def get_core\\|def audit_chain\\|def _sightline\\|def _supply_policy' Core/frameworks/intent/servers/knowledge.py"
 date: 2026-05-31
 confidence: 0.88
 source: "Brien directive, 2026-05-31 — ratification-gating question on the D1–D4 spec vocabulary"
@@ -60,3 +63,7 @@ First applied in the D1–D4 reconciliation (`SPEC-substrate-exposure-envelope-e
 
 - **Confidence:** 0.88 — a Brien-stated directive, reusable across surfaces.
 - **Source:** ratification-gate exchange, 2026-05-31.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. `servers/knowledge.py` implements the renamed vocabulary exactly as specified in "Where applied": `_sightline()` and `_supply_policy()` functions exist and populate `sightline`/`supply_policy` envelope fields (D1/D2 per DEC-012), and `get_core`/`audit_chain` verb names appear in the server. The spec file itself notes this was "Built + tested 2026-05-31 (TDD)."

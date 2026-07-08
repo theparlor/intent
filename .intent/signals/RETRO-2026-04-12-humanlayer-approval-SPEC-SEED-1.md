@@ -133,3 +133,7 @@ Full HumanLayer architectural analysis: `Core/frameworks/intent/knowledge-engine
 ## Next Step
 
 Run through spec-shaping protocol (4-persona interrogation: Shape → Outcome → Contract → Readiness) to produce formal SPEC-NNN.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. The spec-shaping step did happen: `.intent/specs/SPEC-APPROVAL-GATE.md` exists (status: executing) and `.intent/config/approval-rules.yml` is on disk, so the formal SPEC-NNN this seed asked for was produced. What was not built is the entity itself: no `.intent/approvals/` directory and no file matching the `intent-appr-*` ID shape exist anywhere in the repo, so zero IntentApproval records have ever been created. Enforcement today is `hooks/autonomy-grant-check.sh` (SessionStart posture injection) plus the autonomy-grant Stop hook (lexical pattern match on bare-choice/soft-queue phrasing); neither constructs a typed, persisted approval record, and neither is a PreToolUse gate that blocks the underlying action until Brien decides. Needed control: a PreToolUse hook (or MCP-layer intercept) that, on a detected L0 action, writes an `.intent/approvals/*.md` record per this seed's schema and blocks until `status` leaves `pending`.

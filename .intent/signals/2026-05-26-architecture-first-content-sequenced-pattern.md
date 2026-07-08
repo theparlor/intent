@@ -6,7 +6,10 @@ author: brien
 confidence: 0.78
 trust: 0.72
 autonomy_level: L4
-status: active
+status: resolved
+upstream_control_path: "Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md (217 lines)"
+catch_mechanism: "the principle document exists at the exact recommended path, cross-referencing WS-DDR-099, DEC-009, DEC-011 as instances per this signal's own Recommendation section; two of the three pressure-test instances it called for have since run (see sibling 2026-05-27 signals)"
+verification_command: "wc -l Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md && grep -n 'WS-DDR-099\\|DEC-009\\|DEC-011' Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md"
 cluster: coherence-engineering-design-patterns
 parent_signal: 2026-05-26-entire-scope-audit-and-observability-delta.md
 related_intents:
@@ -94,6 +97,10 @@ Three reasons it belongs at the methodology level, not just the architecture lev
 The pattern observation came from a conversational moment after the D5-refined re-thread completed. It is not pressure-tested. It may be a Wittgensteinian "family resemblance" rather than a true structural commonality — six instances may all share enough surface features to look like a pattern without sharing the deeper mechanism. Pressure-testing against the three open questions above is the next step.
 
 If the pattern holds, it belongs in the methodology layer of coherence engineering, alongside sibling-over-parent-child (WS-DDR-025) and dissent-preservation (Witness conservation law). If it doesn't hold, this signal becomes the record of a hypothesis that was tested and discarded — which is itself worth preserving.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. `Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md` (217 lines) was created at exactly the recommended path, cross-referencing WS-DDR-099, DEC-009, and DEC-011 as this signal's Recommendation asked. The pressure-testing this signal called for as a precondition to external articulation has also progressed materially: the 2026-05-27 sibling signals ran two of the three planned pressure tests (Witness adapter completion, Phase 2 write-back sketch), one of which (write-back) produced a refinement that was applied back into this same principle document (see its "Per-pipeline-position scope" section).
 
 ---
 

@@ -3,10 +3,13 @@ signal_id: RETRO-2026-04-30-closure-discipline-SIG-1
 title: Two-layer drift in same response — symptom-patch escalation followed by bare-choice escalation
 severity: high
 detected: 2026-04-30
-status: open
+status: resolved
 source: retroactive-extraction
 trust_score: 0.75
 autonomy: L2
+upstream_control_path: "Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh (CHECK 1 through CHECK 7, frozen 2026-05-29 per lexical-layer-freeze.yaml) + ~/.claude/audit/autonomy-grant-stop-detections.log"
+catch_mechanism: "the Stop hook fires on every assistant turn (not just session-end) and runs 7+ distinct CHECK patterns in one invocation, directly answering this signal's ask for compound-drift coverage; continuously-updated audit log (93KB, last entry 2026-07-08) gives the investigation-log capability this signal asked for"
+verification_command: "wc -l /Users/brien/.claude/audit/autonomy-grant-stop-detections.log && grep -c '^# Pattern:' Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh"
 ---
 # Two-layer drift in same response — symptom-patch escalation followed by bare-choice escalation
 
@@ -36,3 +39,7 @@ Investigation actions:
 Broader pattern: two-layer drift is harder to catch than single-layer drift. The model can drift on dimension A (symptom-patch instead of upstream-fix), recover when prompted, but then drift on dimension B (bare-choice instead of execute) in the recovery response. Hooks need to consider compound drift, not just single-pattern drift.
 
 Possible upstream control: each behavioral hook should run on EVERY assistant response, not just session-end. The current Stop hook only fires when the model says "I'm done" — it should also fire on responses that include question-marks AND aren't pure task-clarification.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. Claude Code's Stop hook fires at the end of every assistant turn (not only on an explicit "I'm done" claim), which is the "every response" coverage this signal asked for. `hooks/autonomy-grant-stop-check.sh` has grown to CHECK 1 through CHECK 7 (formally frozen 2026-05-29 per `lexical-layer-freeze.yaml`) plus a companion `closure-discipline-stop-check.sh`, each targeting a different drift shape in the same invocation, directly addressing "hooks need to consider compound drift, not just single-pattern drift." The audit log at `~/.claude/audit/autonomy-grant-stop-detections.log` is continuously written (93KB, entries through 2026-07-08), giving the specific investigation capability this signal's Implication asked for (checking whether a hook fired, and on what basis). The specific historical incident this signal describes cannot be re-diagnosed (no timestamp/session ID given), but the infrastructure gap it identified is closed.

@@ -17,6 +17,10 @@ related_decisions:
 phase: 2-pressure-test
 pressure_test_instance: "(c) Phase 2 write-back design (substrate exposure)"
 result: PARTIAL PASS — read surface generalizes for most write verbs; Git surface for PR-as-arbiter is a genuine surface extension, not content-only
+status: resolved
+upstream_control_path: "Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md, section 'Per-pipeline-position scope (refinement 2026-05-27)'"
+catch_mechanism: "the signal's own text records the refinement as APPLIED in commit 12ff124; verified the section exists in the live principle document"
+verification_command: "grep -n 'Per-pipeline-position scope' Core/frameworks/coherence-engineering/principles/architecture-first-content-sequenced.md"
 ---
 
 # Architecture-first principle pressure-test (c): Phase 2 write-back design — PARTIAL PASS
@@ -196,3 +200,12 @@ new positions.
 
 User typed "keep going" in current session — triggered execution of
 the three queued items from prior response. This signal is item 2 of 3.
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. The refinement this signal
+recommended (scoping the architecture-first principle's claim per-pipeline-
+position rather than as an absolute absence-of-new-positions guarantee) is
+present in the principle document under "Per-pipeline-position scope
+(refinement 2026-05-27)", confirmed on disk, matching the signal's own
+"APPLIED 2026-05-27 in commit 12ff124" note.

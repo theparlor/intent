@@ -15,7 +15,11 @@ related_decisions:
   - WS-DDR-025 (sibling-over-parent-child)
 phase: 2-pressure-test
 pressure_test_instance: "(a) Witness adapter completion path (WIT-004 #5)"
-result: structural PASS, observational PENDING (gated on WIT-004 #5 stub-to-live)
+result: structural PASS, observational PASS (2026-07-08 verification)
+status: resolved
+upstream_control_path: "Core/products/witness/src/ingest_entire.py (248 lines, live implementation) + Core/products/witness/tests/test_ingest_entire.py"
+catch_mechanism: "the stub's declared contract surface (ADAPTER_ID, SOURCE_SYSTEM, MIGRATION_ORDER, SOURCE_PATTERN, ENTIRE_BINARY, the events_store.append(event, source_system=...) call shape) is unchanged in the live implementation; tests exist and the adapter file itself now documents the live implementation as a pointer, confirming no surface-level change was forced by filling in the stub"
+verification_command: "grep -n 'def append' Core/products/witness/src/events_store.py && grep -n 'events_store.append' Core/products/witness/src/ingest_entire.py"
 ---
 
 # Architecture-first principle pressure-test (a): Witness entire-io.py stub — structural PASS
@@ -111,3 +115,7 @@ match.
 - Stub under test: `Core/products/witness/engine/adapters/entire-io.py`
 - Witness adapter migration order: WIT-004 (in `Core/products/witness/.intent/decisions.md`)
 - Blocking dependencies for observational pressure-test: WIT-006 (SPEC-001 ratification — gated on library-index AM-3 audit + Conduit OTLP-emit)
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, observational pressure-test now also passes. `Core/products/witness/engine/adapters/entire-io.py`'s `migrate()` function is no longer a `NotImplementedError` stub: it is a documentation pointer to the live implementation at `Core/products/witness/src/ingest_entire.py` (248 lines, with `tests/test_ingest_entire.py` alongside). Checked whether filling in the stub forced any surface change, per this signal's own calibration note distinguishing structural from observational confirmation: it did not. All declared contract elements (`ADAPTER_ID`, `SOURCE_SYSTEM`, `MIGRATION_ORDER`, `SOURCE_PATTERN`, `ENTIRE_BINARY`) are unchanged, and the live adapter calls `events_store.append(event, source_system=SOURCE_SYSTEM)`, the exact signature the stub's docstring declared, unchanged in `events_store.py`. This is the empirical confirmation this signal said would be the principle's strongest evidence; instance (a) moves from ~0.5 to a full pressure-test pass.

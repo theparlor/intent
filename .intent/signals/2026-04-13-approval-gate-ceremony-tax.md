@@ -74,3 +74,7 @@ SPEC-APPROVAL-GATE as currently shaped treats all L0 actions uniformly (full gat
 ## Key Principle
 
 **The gate should create friction proportional to risk, not proportional to communication volume.** This is the same principle that drives Intent's L0-L4 gradient at the spec level — now applied within L0 at the action level.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. This signal's Phase 2 (contextual trust scoring, three friction tiers) presupposes Phase 1 (typed IntentApproval entities, full gate). Phase 1 itself is not built: no `.intent/approvals/` records exist on disk (see the sibling SPEC-SEED triage note, same date). What actually governs L0 today is a SessionStart posture injection plus a Stop-hook lexical check, not the approval-entity audit trail this signal's Phase 2 would read precedent/familiarity/novelty from. Needed control: same as the SPEC-SEED signal (Phase 1 entity + PreToolUse gate) before Phase 2's friction-tier design has anything to compute against.

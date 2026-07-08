@@ -54,3 +54,7 @@ The autonomy-grant Stop hook blocks **bare-choice** ("A or B?") and "would you l
 
 ## Corrective action taken this turn
 Per Brien's "fire away": executing the L4 increment now — a fresh-context independent eval-judge adapter behind `engine/eval_port.py` — and surfacing only the genuine remaining gate (vendor-external DeepEval key / human-peer opt-in) as a specific decision, not a blanket pause.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. This signal's own `upstream_control_path` field already names the target precisely: extend the Stop-hook family to catch soft-queue phrasing. Read `hooks/autonomy-grant-stop-check.sh` CHECK 2 in full: it does have a soft-queue detector (added 2026-05-13, predating this signal), but its three variants ("Say go and I", "unless you'd like/want", "want me to dispatch/proceed/launch/continue?") do not match this signal's specific named phrases: "when you want it," "standing recommendation," "the natural next step would be." Confirmed by grep: none of those three phrases appear anywhere in the hook. The bundling failure mode this signal diagnosed (a gated tail holding an executable head hostage) is still only caught by the sharpened rule living in this signal's prose, not by a hook pattern. Needed control: add a 4th CHECK-2 variant (or extend the phrase list) for "when you want it" / "standing recommendation" / "the natural next step" framing.

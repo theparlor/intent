@@ -286,3 +286,7 @@ Why this is worth Markus's time:
 - Precursor signals: SIG-002 (OTel model), SIG-017 (deployment spectrum)
 - Companion signals emitted today: `pipeline-components-as-callable-agents` (persona library), `agent-sdk-as-new-rendering-target` (skills-engine), `orchestration-choice-first-class-decision` (intent framework)
 - Source concepts: Pawel Huryn 2026-04-14 newsletter (OTel export via Agent SDK), Chris Markus peer architecture review (target audience)
+
+## Triage, 2026-07-08
+
+Disposition: still pending, Brien-gated. `Core/frameworks/intent/.intent/events/events.jsonl` still runs the original 7-field schema (version/event/timestamp/trace_id/span_id/parent_id/source/data); none of this signal's proposed domain-native namespaces (`inference.*`, `llm.*`, `tool.*`, `agent.*`, `session.*`, `hook.*`, `provider.*`, `surface.*`, `model.*`, `work.*`, `governance.*`, `derived.*`, `signal.*`) appear anywhere in the codebase. No `SPEC-NNN-ai-observability-semantic-conventions.md` was created, and there is no evidence the "Markus pitch" was ever sent. This is a large, ambitious design doc with 7 explicit "Open Decisions (Brien to Direct)" still unresolved, most load-bearing being the hook-span-lineage and content-vs-digest questions. Not registering a new PENDING_DECISIONS.md row here (register is read-only for this pass), flagging that Brien may want to.

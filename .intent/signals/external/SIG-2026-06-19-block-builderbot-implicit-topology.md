@@ -41,3 +41,7 @@ Three durable claims, each an external corrective to confirmation bias:
 ## Disconfirmation watch
 
 If declared-topology governance never demonstrably outperforms a well-tuned implicit map at scale, claim (1) weakens. Block's volume with no public coherence incident is itself mild evidence the implicit approach holds longer than Intent assumes. Track.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, Brien-gated. All three routing/next-action items are marked "propose-only" in this signal's own text and none have been executed: no "Implicit vs declared topology" Core/ positioning note exists (grepped coherence-engineering/ and frameworks/intent/ for "BuilderBot" and "implicit... topology," no hits outside this file), no fleet-retrospective-operator design work traceable to this signal, and no Agentic AI Foundation scan was run. The open positioning question ("does Intent argue inference-time vs design-time, or that they compose") remains unanswered. Not registering a new row in `Workspaces/.context/PENDING_DECISIONS.md` (read-only for this pass).

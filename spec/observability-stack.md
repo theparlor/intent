@@ -349,22 +349,24 @@ This replaces the File Tail Adapter for MCP-sourced events. The adapter remains 
 
 ### 4. Entire.io Session Bridge (Phase 2)
 
-Entire.io is the execution observability layer. It records full Claude Code session traces — every file read, edit, command, and test — and produces the `trace.completed` event that makes agent work visible to the Observe layer.
+Entire.io is the authoring-provenance recorder, not the runtime-observability layer (corrected 2026-05-26 per DEC-009, superseding DEC-007's earlier overclaim). It records full Claude Code session traces (every file read, edit, command, and test) during the agent authoring session, and produces the `trace.completed` event that makes that authoring path visible to the Observe layer. Runtime observability (what happened when the resulting code actually ran) is owned separately by the OTel Collector + Grafana/Tempo/Mimir/Loki stack described elsewhere in this document.
 
 | Entire.io Output | Intent Event | What It Captures |
 |-----------------|-------------|-----------------|
 | Session recording | `trace.completed` | Full execution trace: files, commands, durations |
-| File change log | (attribute on trace span) | Blast radius — what files were touched |
+| File change log | (attribute on trace span) | Blast radius: what files were touched |
 | Command log | (attribute on trace span) | What shell commands were run |
 | Session metadata | span attributes | Duration, exit code, agent model, token usage |
 
-Entire.io's `.entire/` directory in each repo holds the raw session data. The adapter reads completed sessions and emits them as OTel spans to the collector.
+Entire.io's `.entire/` directory in each repo holds the raw session data. As of Entire CLI v0.5+, this is a shadow-branch model, not a flat file tree: each session is a commit on a per-machine `entire/<hash>-<hash>` branch under `.entire/metadata/`, with `.entire/logs/` and `.entire/settings.json` alongside. (This corrects the pre-v0.5 file-tree description below, which no longer reflects the on-disk structure.) The adapter reads completed sessions from the shadow branch and emits them as OTel spans to the collector.
 
 ```
-.entire/sessions/
-├── 2026-03-30T10-42-00.json   ← raw session trace
-├── 2026-03-30T14-15-00.json
-└── ...
+.entire/
+├── settings.json
+├── logs/
+├── metadata/
+│   └── <session-id>/full.jsonl   (raw session trace, one line per step)
+└── (shadow git branch entire/<hash>-<hash> holds the commit history)
 ```
 
 Each session maps to an Intent trace when the session was invoked with a spec reference. The adapter looks up the spec's trace_id via TraceContext and parents the execution spans under it.

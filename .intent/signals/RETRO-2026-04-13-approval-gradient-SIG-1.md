@@ -6,6 +6,10 @@ severity: medium
 source: session-synthesis
 detected: 2026-04-13
 topic: approval-gradient
+status: resolved
+upstream_control_path: "Core/frameworks/intent/CLAUDE.md, section 'Three Human-Contact Patterns'"
+catch_mechanism: "documentation is the control here (a framing/positioning ask, not a runtime gate); CLAUDE.md is the mandatory dev-continuity entry point read before any agent touches this repo, per its own 'Agent Handoff Protocol' section"
+verification_command: "grep -n 'Three Human-Contact Patterns' -A3 Core/frameworks/intent/CLAUDE.md"
 related:
   - SPEC-APPROVAL-GATE
   - RETRO-2026-04-13-codelayer-pivot-SIG-1
@@ -35,3 +39,7 @@ CodeLayer's pivot from per-tool approval to per-phase review validates that phas
 These two systems should be documented as complementary, not competing. The phase gate is the quality mechanism. The action gate is the safety mechanism. Both are needed, but they serve different purposes and operate at different granularities.
 
 When explaining Intent's governance model, lead with phase gates (higher leverage), then introduce action gates (safety net for irreversible externalities).
+
+## Triage, 2026-07-08
+
+Disposition: control exists now, verified live. `Core/frameworks/intent/CLAUDE.md` under "Three Human-Contact Patterns" states exactly this distinction: phase gates (Notice to Spec transition) are mandatory and prevent building the wrong thing, and action gates (L0 approval) are mandatory and prevent saying the wrong thing, plus the third voluntary pattern (`request_human_input`). This is the framework's dev-continuity entry point, read first by any agent picking up the repo, so the documentation goal this signal asked for is met at the right altitude.

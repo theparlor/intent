@@ -71,3 +71,15 @@ criteria (§9) define what "actually promotable" looks like; no automated catch-
 re-verifying FP-table completeness before a promote recommendation ships, which is itself a gap worth
 a future signal if this pattern (a recommendation shipping with an uncaught classification gap)
 recurs.
+
+## Triage, 2026-07-08
+
+Disposition: still pending, Brien-gated (unchanged). This signal explicitly hands an L2 decision
+(promote/retire/ratify Layer 4.2) back to Brien and is tracked in
+`Workspaces/.context/PENDING_DECISIONS.md` row 3, which as of today records the calibration window as
+freshly opened (2026-07-08T04:53:12Z to 2026-07-18T04:53:12Z) against the widened recall grammar.
+Deliberately not touching `hooks/autonomy-posture-check-layer-4.2.sh`, `hooks/lexical-layer-freeze.yaml`,
+or the `team-configs` false-positive-table gap this signal names; those sit inside the active
+calibration window this triage pass is scoped to leave alone (adjacent to the protected layer42/recall
+family by subject matter, even though this file's own name does not match the literal protected
+patterns). No new information changes the disposition; still Brien's call.

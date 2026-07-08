@@ -39,3 +39,7 @@ Phase 2 can't ship without a payload similarity decision. This is the primary te
 ## Recommended Action
 
 Add to Phase 2 pre-work: design payload similarity metric. Start simple (TF-IDF or structural template matching per action type), validate against Phase 1 data, upgrade to embeddings only if simple approaches fail. Capture as a spec-level decision before Phase 2 implementation begins.
+
+## Triage, 2026-07-08
+
+Disposition: still pending. Same Phase 1 gap as the sibling CRITIQUE-1 signal: no IntentApproval records exist on disk, so there is no Phase 1 data to validate a payload-similarity metric against, and no similarity metric has been designed. Needed control: Phase 1 entity + PreToolUse gate (named across this cluster) before this pre-work item is even actionable.

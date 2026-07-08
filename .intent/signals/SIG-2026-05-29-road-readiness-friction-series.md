@@ -208,3 +208,15 @@ clean against the existing gates); all are about making the *operating model*
 trustworthy at scale. Recommend triaging F-1 and F-4 into their own ratifiable
 specs; F-2/F-3 into a render-pipeline determinism+verify spec; F-5/F-6/F-7 as
 catch-net invariants + a session-start topology surface.
+
+## Triage, 2026-07-08 (per-item disposition)
+
+Disposition: still pending overall, real progress on 3 of 8 items, none fully closed.
+
+- **F-1 (self-DoS regex):** partial. `tools/hook_regex_contract.py` + `tools/test_hook_regex_contract.py` exist and run (timing check + static-smell check), and `python3 tools/hook_regex_contract.py` passes clean today. But the tool's own docstring says it intentionally skips shell-variable-expanded patterns (`grep -qiE "$VAR"`) because it "cannot resolve the variable without executing the shell," and that is exactly how every production regex in `autonomy-grant-stop-check.sh` and `closure-discipline-stop-check.sh` is stored (`BARE_CHOICE_RE`, `COMPLETION_RE`, `TRAILING_OBS_RE`, `UPSTREAM_RE`, `INFLIGHT_RE`, etc.). Only 2 literal inline patterns get scanned; the actual load-bearing mega-regexes are never timing-tested. Needed control: extend the extractor to resolve simple static `VAR='...'` / `VAR=$'...'` assignments, or add an end-to-end piped-input timing harness per hook.
+- **F-2/F-3 (render_all verify/produce split):** partial. `render_all.py` has a `--skip-images` flag (the stopgap this signal's author added live), but no `--verify` dry-run mode exists and `computed_at`/`updated` timestamps are still unconditionally rewritten on every run; the determinism ask is not built.
+- **F-4 (closure-DoD at automated write boundary):** partial. `tools/closure_writeboundary_check.py` exists and works as a catch-net (running it today still finds live `PREMATURE-RESOLVED` violations, e.g. `SIG-KE-CLI-IDD-TRIGGER-2026-05-20.md`), but per its own docstring it is "the CATCH-NET... the write-through fix is teaching automated writers to RUN this tool before emitting"; that write-through wiring into actual automated/overnight batch writers has not happened. Enforcement asymmetry (interactive agent gated, automated writers not) persists.
+- **F-5 (git-topology.md):** not done. No `git-topology.md` exists anywhere in the repo.
+- **F-6 (ratification data-substrate gate):** not verified built; no dedicated data-substrate-readiness check found.
+- **F-7 (INV-SCRIPTS-INDEX-COMPLETE):** not done. No such invariant exists in Cast's chain_audit tooling.
+- **F-8 (closure-CONTEXT gate on Stop hook):** not done. Read `hooks/closure-discipline-stop-check.sh` in full: it still pattern-matches completion words against the response tail with no check for whether the turn actually wrote/edited a `status: resolved` signal or claimed completion of a tracked unit. The exact false-positive mode this signal observed live (conversational prose containing a completion word with no upstream marker) remains structurally possible.

@@ -28,4 +28,8 @@ Novelty inflation is a recurring agent failure mode when compiling against an ex
 ## Recommended Action
 
 Before any ingest artifact asserts a finding is "new," the compile step must reconcile it against the founding themes (THM-001, THM-002) and the Key Decisions list, and either (a) link as a sharpening of the existing thesis or (b) state explicitly which existing artifact it was checked against and why it differs. Add this as a lint check: a signal/theme containing "new" / "novel" / "not corroboration" with no link to a founding theme is flagged for reconciliation. Pairs with RETRO-2026-05-16-parallax-extraction-1 (bucket 3: rediscovery).
+
+## Triage, 2026-07-08
+
+Disposition: still pending. No novelty-inflation lint check exists anywhere in `knowledge-engine/` or `bin/` (grep for "novelty" / "founding theme" across those trees returns nothing). The only lint-style tooling found (`hooks/spec-age-lint.sh`) checks spec staleness, not novelty claims against founding themes. Needed control: the lint rule this signal specified, wired into whatever compiles ingest artifacts.
 </content>

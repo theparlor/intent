@@ -67,3 +67,7 @@ When Cagan's persona voice challenges "coherence engineer as role":
 - [ ] Incorporate "context governance vs. context engineering" distinction into coherence engineering positioning before Friday
 - [ ] Review Skills Engine architecture doc for explicit parallels to Cagan's stack — make the convergence visible
 - [ ] Prepare the "scaffold that dissolves" reframe for Cagan persona voice in critique panel
+
+## Triage, 2026-07-08
+
+Disposition: still pending. `Core/frameworks/coherence-engineering/DEFINITION.md` mentions "context engineering" once (line 174, re: Mike Mason/Anthropic) but does not carry the specific "context governance vs. context engineering" distinction, the Skills Engine-to-SVPG-stack parallel, or the "scaffold that dissolves" reframe this signal drafted. All three checklist items remain unchecked. Needed control: land the distinction in DEFINITION.md with the Cagan-sourced framing intact and attributed.
