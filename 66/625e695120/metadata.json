@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "66625e695120",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".intent/signals/SIG-2026-06-10-build-intake-gate-d4-scoped.md",
+    ".intent/signals/SIG-2026-06-12-layer42-calibration-review.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/66/625e695120/0/metadata.json",
+      "transcript": "/66/625e695120/0/full.jsonl",
+      "content_hash": "/66/625e695120/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 74,
+    "cache_creation_tokens": 1167355,
+    "cache_read_tokens": 11144809,
+    "output_tokens": 226353,
+    "api_call_count": 42
+  }
+}
