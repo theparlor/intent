@@ -1,6 +1,6 @@
 ---
 id: SIG-019
-title: "Notice" and "Execute" aren't landing as loop phase names
+title: "\"Notice\" and \"Execute\" aren't landing as loop phase names"
 type: friction
 source: conversation
 source_context: Brien flagged during pre-airport session
