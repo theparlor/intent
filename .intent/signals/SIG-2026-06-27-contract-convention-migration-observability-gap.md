@@ -2,14 +2,15 @@
 id: SIG-2026-06-27-contract-convention-migration-observability-gap
 product: intent
 type: signal
-status: open
+status: resolved
 severity: design
 created: 2026-06-27
+upstream_examination: not-applicable — this signal IS the upstream control (it defines Controls A + B); it is not a downstream leaf-fix.
 target: "Intent chain-observability. No mechanism surfaces downstream consumers still bound to an OLD contract/convention when an upstream product migrates it; and no closure rule forces a downstream leaf-fix to emit an upstream-examination signal. Both currently depend on the operator remembering."
 discovered_during: "2026-06-27 synthesis-glob consumer-drift remediation (cast 1a501f6c, forge e9612d8, voices 1234b91; symptom record /Users/brien/Workspaces/Core/products/cast/.intent/signals/SIG-2026-06-27-synthesis-glob-consumer-drift.md). A roughly 2-month-old convention split sat undetected and was found by accident."
 requested_by: brien
-upstream_control_path: "NONE YET. This signal proposes the controls. Candidate homes: (1) /Users/brien/Workspaces/Core/frameworks/intent/tools/convention_migration_invariant.py (new, stdlib, mirroring methodology_coverage_invariant.py and value_term_invariants.py) reading a per-contract bound_consumers + forbidden_legacy_patterns block declared in /Users/brien/Workspaces/Core/products/cast/contracts/*-port.md; (2) a new closure-DoD clause in /Users/brien/Workspaces/Core/frameworks/intent/spec/signal-stream.md plus a detector arm in /Users/brien/Workspaces/Core/frameworks/intent/tools/closure_writeboundary_check.py."
-catch_mechanism: "NONE YET, proposed below. Until built, status stays open (not resolved): no automated catch exists that (a) a consumer still references a retired convention after a contract migration, or (b) a downstream leaf-fix closed without an upstream-examination signal."
+upstream_control_path: "BUILT 2026-07-02, BOTH controls: (A) tools/convention_migration_invariant.py — stdlib invariant (INV-MIGRATION-NO-LEGACY hard + INV-MIGRATION-CONSUMER-RESOLVES advisory/--strict) reading bound_consumers + forbidden_legacy_patterns from *-port.md contracts; point --contracts-root/--consumer-root at cast/forge/voices from the nightly suite. (B) closure-DoD clause in spec/signal-stream.md §'Downstream-fix ⇒ upstream examination' + detector arm DOWNSTREAM-FIX-NO-UPSTREAM-SIGNAL in tools/closure_writeboundary_check.py."
+catch_mechanism: "BUILT: tools/convention_migration_invariant.py (+ test_convention_migration_invariant.py, 10 tests) and the DOWNSTREAM-FIX-NO-UPSTREAM-SIGNAL arm in tools/closure_writeboundary_check.py (+ new Control-B tests in test_closure_writeboundary_check.py, 27 total). Both pass ZERO-VIOLATION against the live tree on day one: no *-port.md here declares bound_consumers (Control A trivially clean), and Control B is date-scoped to >=2026-07-02 (the two pre-existing resolved signals with downstream language are grandfathered). Note: cast port contracts are not vendored in this checkout, so Control A's live bite arrives when cast adds the two frontmatter blocks; the framework mechanism + tests are in place."
 pipeline_survival: "SAFE to design. Both proposed controls are read-only auditors or write-boundary checks over source-of-truth files (port contracts, signal frontmatter), not pipeline outputs. Must satisfy zero-violation-start (feedback_invariant_zero_violation_start): declare bound_consumers only where it currently holds, so the invariant passes on day one."
 blast_radius: medium
 exposure: solo
@@ -39,7 +40,7 @@ This is not a Cast bug, a Forge bug, or a Voices bug. Those are the leaves, and 
 
 1. **No cross-product migration sensor.** When a named contract or convention changes at its upstream site, nothing enumerates the downstream consumers still bound to the old form. The pipeline scripts (compute-cvrs.py, chain_audit.py, and the rest) used robust *synthesis*.md globs and were fine; the CONSUMER surfaces with the dead glob were exactly the ones with no catch. A convention can split producer from consumer and the system stays green.
 
-2. **No enforcement that a downstream fix emits an upstream signal.** Brien's just-stated discipline, that a downstream leaf-fix must trigger an upstream-examination signal, is today an operator habit. The same shape already exists in memory as feedback_decision_atom_correction_propagation.md (a decision atom with affected files should dispatch a correction pass), but there is no framework mechanism that fires it. Closure-discipline enforcement (spec/closure-discipline-enforcement.md, the Stop + PreToolUse hooks) gates "resolved-without-upstream-control" but does NOT require that a leaf-level fix register an upstream-examination follow-up. A leaf can be patched and committed with no record asking "what convention drifted to allow this, and what else is bound to it?"
+2. **No enforcement that a downstream fix emits an upstream signal.** Brien's just-stated discipline, that a downstream leaf-fix must trigger an upstream-examination signal, is today an operator habit. The same shape already exists in memory as feedback_decision_atom_correction_propagation.md (a decision atom with affected files should dispatch a correction pass), but there is no framework mechanism that fires it. Closure-discipline enforcement (spec/closure-discipline-enforcement.md, the Stop + PreToolUse hooks) gates "resolved-without-upstream-control" but did NOT require that a leaf-level fix register an upstream-examination signal (Control B now does — see Resolution). A leaf can be patched and committed with no record asking "what convention drifted to allow this, and what else is bound to it?"
 
 ## Proposed improvement (mirror existing framework mechanisms; do not over-engineer)
 
@@ -65,10 +66,17 @@ Add a clause to the Closure Criteria section of /Users/brien/Workspaces/Core/fra
 
 No new infrastructure, no daemon, no graph DB. Both controls reuse patterns the framework already ships: a stdlib invariant in tools/ (Control A) and a write-boundary detector arm (Control B), each declared against existing source-of-truth files (port contracts, signal frontmatter). The Rule-of-Three is satisfied for extraction-grade attention: synthesis-glob (this session) plus the Subaru Story-Points "size" to complexity leaf canon-fix (D-060, same session) plus the prior canon-recovery findings are all the same meta-pattern, a downstream leaf-fix of an upstream convention that drifted with no catch-net.
 
-## Next
+## Resolution (2026-07-02)
 
-Propose-only; nothing built here. If greenlit, build Control A first (it is the sensor whose absence let this form), then Control B. Status stays open until at least Control A's invariant + test land and pass zero-violation against the live tree.
+Both controls built and passing zero-violation against the live tree:
+
+- **Control A — migration sensor:** `tools/convention_migration_invariant.py` (+ `tools/test_convention_migration_invariant.py`, 10 tests). `INV-MIGRATION-NO-LEGACY` (hard) fires when a `bound_consumers` file contains a `forbidden_legacy_patterns` token; `INV-MIGRATION-CONSUMER-RESOLVES` (advisory, `--strict` promotes to hard) fires when a declared consumer path resolves to nothing. Framework-owned; point `--contracts-root`/`--consumer-root` at cast/forge/voices from the nightly suite. Live run is clean because no `*-port.md` here declares the blocks yet — the bite arrives when cast adds them.
+- **Control B — downstream-fix ⇒ upstream examination:** closure-DoD clause in `spec/signal-stream.md` (§"Downstream-fix ⇒ upstream examination") + the `DOWNSTREAM-FIX-NO-UPSTREAM-SIGNAL` detector arm in `tools/closure_writeboundary_check.py` (+ Control-B tests). Date-scoped to `>=2026-07-02` so the live tree fires zero on day one.
+
+Both mirror existing framework mechanisms (stdlib invariant class; write-boundary detector) — no new infrastructure, per the "why not over-build" note above.
 
 ## Triage, 2026-07-08
 
 Disposition: still pending, Brien-gated. Confirmed neither control has been built: no `tools/convention_migration_invariant.py` exists, and no `triggers_upstream_examination:` frontmatter field appears anywhere in the repo outside this signal's own proposal text. This signal is explicitly "propose-only" awaiting a greenlight decision per its own "Next" section. Not registering a new row in `Workspaces/.context/PENDING_DECISIONS.md` (read-only for this pass); it is not currently listed there, flagging for Brien in case he wants to prioritize it.
+
+Reconciliation note, 2026-07-19: the triage above ran on a local checkout diverged from origin/main since 2026-07-02; it could not see the remote-side build. Its statement that neither control had been built was true of that checkout and false of the repository: both Control A (tools/convention_migration_invariant.py, 10 tests) and Control B (the DOWNSTREAM-FIX-NO-UPSTREAM-SIGNAL detector arm plus the signal-stream closure clause) landed remote-side on 2026-07-02 (see Resolution above). The Brien-gate the triage flagged had in fact already been passed remote-side. Disposition superseded; note preserved as evidence for the divergence record (SIG-2026-07-19-intent-repo-divergence-reconciled).

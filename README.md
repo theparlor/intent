@@ -1,15 +1,10 @@
 ---
-title: Readme
+title: Intent
 type: framework
 maturity: final
 confidentiality: shareable
-reusability: universal
-domains:
-  - consulting-operations
 created: 2026-03-29
-updated: 2026-05-20
-technologies:
-  - jira
+updated: 2026-07-02
 thought_leaders:
   - marty-cagan
   - jeff-patton
@@ -18,29 +13,9 @@ thought_leaders:
 frameworks:
   - product-operating-model
   - outcomes-over-output
-depth_score: 6
-depth_signals:
-  file_size_kb: 7.0
-  content_chars: 5808
-  entity_count: 7
-  slide_count: 0
-  sheet_count: 0
-  topic_count: 1
-  has_summary: 0
-vocab_density: 1.55
-related_entities:
-  - {pair: marty-cagan ↔ teresa-torres, count: 291, strength: 0.419}
-  - {pair: jeff-patton ↔ marty-cagan, count: 168, strength: 0.271}
-  - {pair: jeff-patton ↔ teresa-torres, count: 165, strength: 0.312}
-  - {pair: josh-seiden ↔ marty-cagan, count: 128, strength: 0.206}
-  - {pair: josh-seiden ↔ teresa-torres, count: 114, strength: 0.212}
 version: 0.11.0
 architecture: sibling-composable
 pipeline_position: team-operating-model
-known_siblings:
-  - Shape Up team model (Basecamp)
-  - Scrum (Ken Schwaber / Jeff Sutherland)
-  - bespoke team operating docs (per-company)
 port_contract: "consumes signals from practitioner surfaces; produces specs + contracts + events consumable by execute-layer tooling (Spec Kit, Kiro, Copilot, Claude Code)"
 ---
 # Intent — v0.11.0
@@ -50,6 +25,28 @@ port_contract: "consumes signals from practitioner surfaces; produces specs + co
 When AI collapses implementation from weeks to hours, the bottleneck moves upstream — from *delivery* to *discovery, specification, and observation*. Agile ceremonies built for slow, expensive delivery become overhead. The team's operating model needs to change.
 
 Intent is that operating model.
+
+---
+
+## Start here
+
+**Want the plain-language version, no jargon?** → [`translation/intent-in-plain-language.md`](translation/intent-in-plain-language.md)
+
+**Run it:**
+```bash
+make setup   # builds the servers venv (fastmcp, pyyaml, pytest)
+make test    # 169 repo-local tests, all green
+```
+
+**Reading path (for engineers — read in this order):**
+1. `servers/knowledge.py` + `servers/test_knowledge.py` — the knowledge/coherence engine and its 56-test suite (the `audit_chain`, lint, query, and entity-resolution logic).
+2. `spec/SPEC-INTENT-COHERENCE-GATE-001.md` — the load-bearing design: why the synthesis step is a coherence *gate*, not a merge.
+3. `knowledge/decisions/DDR-009-externally-authored-verification.md` — a worked decision record: provider/model-separated verification.
+4. `ARCHITECTURE.md` — how the pieces fit.
+
+**What's code vs. what's working memory:** `servers/`, `tools/`, `bin/`, and `formation/` are the running system. `.intent/` (180+ signals), `knowledge/`, and `spec/` are the *dogfood* — Intent tracking its own development through its own loop. It's a working record, not product surface; browse it for evidence of the method, not as an API.
+
+> **Two products share this repo.** *Intent* (this methodology) and the *Knowledge Engine* (`knowledge-engine/`, a separable compiled-knowledge product) are distinct. See `CLAUDE.md` §"This Repo Contains Two Products" before diving in.
 
 ---
 
@@ -91,7 +88,7 @@ Full architecture: `ARCHITECTURE.md`
 The directory structure *is* the loop:
 
 ```
-.intent/         ← Signals, intents, specs, contracts, events (130+ signals captured)
+.intent/         ← Signals, intents, specs, contracts, events (180+ signals captured)
 spec/            ← Shaped specifications: methodology, trust framework, enforcement specs
 learnings/       ← IDD playbook, cross-product applicability, process drift catalog
 hooks/           ← 8 governance hooks (autonomy-grant, closure-discipline, overwatch)

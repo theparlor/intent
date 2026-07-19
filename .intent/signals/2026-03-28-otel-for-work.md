@@ -46,3 +46,5 @@ Entire.io already captures the execution layer (agent sessions). What's missing 
 ## Triage, 2026-07-08
 
 Disposition: control exists now. The minimal path proposed here (append-only JSONL in .intent/events/, git-tracked) is live and has been emitting since at least April: events.jsonl carries the exact schema this signal specified (trace_id, span_id, parent_id) and is written automatically by the intent-events GitHub Action on every relevant push. The Medium (Grafana Tempo) and Full (Datadog/Honeycomb) tiers were never needed since Witness (Core/products/witness) picked up the cross-product event-anchor role at a broader scope than this signal was scoped to solve.
+
+Reconciliation note, 2026-07-19: the remote-side 2026-07-02 status hygiene pass (commit 5653b9c) classified this founding signal status: incorporated (absorbed into the methodology, terminal, not a discrete work item). The 2026-07-08 triage above reached the same terminal verdict and added closure evidence. Kept status: resolved because it carries the closure-DoD fields the write-boundary machinery keys on; the incorporated classification is preserved by this note.

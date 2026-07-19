@@ -4,7 +4,7 @@ date: 2026-03-28
 source: cowork-session
 confidence: high
 related_intents: []
-status: new
+status: open
 ---
 
 # Signal: Intent needs three governance dimensions, not just the loop
@@ -36,3 +36,5 @@ Brien's framing: "build the right things at the right time in the right way and 
 ## Triage, 2026-07-08
 
 Disposition: still pending, partial. Right Things and Right Time are operationalized: .intent/intents/ carries discovery status, the intent-intent CLI has a --priority flag, and specs can declare dependencies. Right Way stays informal. There is no .intent/tech-radar.md and no permit-level (play/build/operate) tagging anywhere in the repo; decisions.md and the DEC-INTENT-NNN atoms cover architectural precedent but not a radar-style forward view. Needed control: either author .intent/tech-radar.md with permit levels as this signal specified, or fold a permit_level field into the DEC-INTENT frontmatter schema so Right Way rides the same mechanism as the other two dimensions.
+
+Reconciliation note, 2026-07-19: the remote-side 2026-07-02 hygiene pass batch-classified all five founding 2026-03-28 signals as status: incorporated (terminal). The 2026-07-08 per-file triage above found this one is the exception: Right Things and Right Time are operationalized but Right Way has no control (no .intent/tech-radar.md, no permit-level tagging). Status set to open, the hygiene pass's own vocabulary for un-built items, because the per-file evidence is stronger than the batch classification. The other four founding signals stay terminal.

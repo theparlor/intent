@@ -1,7 +1,7 @@
 ---
 id: SIG-2026-06-09-typed-evaluation-verdicts
 type: signal
-status: symptom-repaired, upstream-pending
+status: resolved
 severity: high
 created: 2026-06-09
 target: "Observe-loop LLM-as-Judge — P0 same-frame evaluation made structurally visible via typed verdicts"
@@ -9,7 +9,7 @@ discovered_during: "Parallax testing-triad grounding (2026-06-09): the grounding
 requested_by: brien (via workflow orchestration)
 verification_command: "grep -c 'criteria_origin' /Users/brien/Workspaces/Core/frameworks/intent/spec/event-catalog.md && grep -q 'evaluator_repo' /Users/brien/Workspaces/Core/frameworks/intent/spec/event-catalog.md && grep -q 'MUST NOT.*close a spec at acceptance authority' /Users/brien/Workspaces/Core/frameworks/intent/spec/event-catalog.md && grep -q 'INV-INTENT-NO-SELF-GRADED-CLOSURE' /Users/brien/Workspaces/Core/frameworks/intent/spec/typed-evaluation-verdicts.md && echo VERIFIED"
 upstream_control_path: "Write-through is the amended LLM-as-Judge protocol itself (spec/event-catalog.md §Verdict Typing — emitters MUST populate criteria_origin / evaluator_model / evaluator_repo; Observe-loop steps 6-7 refuse closure on a self pass). The named catch-net is PENDING: chain_audit invariant INV-INTENT-NO-SELF-GRADED-CLOSURE (register in Core/products/library-index/chain_audit_portfolio.py per the INV-LI-* pattern, or a repo-local chain_audit for intent if stood up first). Zero-violation-start discipline applies — date-scoped to post-2026-06-09 closures/emissions so day one fires clean."
-catch_mechanism: "TODAY: spec-level normative invariant only (the consumption rule in event-catalog.md + typed-evaluation-verdicts.md §3). The closure-discipline hook family matches signal frontmatter keys, NOT observation.evaluated payloads in events.jsonl — adjacent, not covering. Status stays upstream-pending until INV-INTENT-NO-SELF-GRADED-CLOSURE runs green on day one."
+catch_mechanism: "BUILT 2026-07-02 (repo-local route per typed-evaluation-verdicts.md §5): tools/typed_verdict_invariants.py implements INV-INTENT-NO-SELF-GRADED-CLOSURE (Check A schema completeness + Check B no self-graded closure, date-scoped to the 2026-06-09 cutoff). RED-first suite tools/test_typed_verdict_invariants.py (15 tests, green). Runs zero-violation against the live events.jsonl on day one — closure criterion in reconsider_when #1 satisfied. The closure-discipline hook family matches signal frontmatter keys, NOT observation.evaluated payloads — this invariant is the genuine covering catch-net."
 pipeline_survival: "The rule survives as spec text (event-catalog.md amendment + typed-evaluation-verdicts.md) propagated to every .intent/ adopter; becomes machine-enforced when the chain_audit invariant registers."
 reconsider_when:
   - "INV-INTENT-NO-SELF-GRADED-CLOSURE registers and fires zero violations on day one -> flip status to resolved."
@@ -28,10 +28,14 @@ reconsider_when:
 ## Why
 The original protocol let an in-repo, same-lineage judge grade the spec's own prose criteria and feed the verdict straight into closure — a second camera at the same coordinate. The triad analysis showed the conflation precisely: eval mechanism, test-grade displacement, UAT-grade consumption. The fix makes the displacement label honest and load-bearing rather than deleting the judge — a same-frame fuzzy judge remains legitimate as the cheap fuzzy test it actually is.
 
-## What remains (upstream-pending)
-- Register `INV-INTENT-NO-SELF-GRADED-CLOSURE` in chain_audit (portfolio or repo-local) and demonstrate zero-violation start.
-- Instrument the actual Observe-agent emitters to populate the three fields (the spec now requires it; no emitter code was changed in this pass).
+## Resolution (2026-07-02)
+- ✅ **Catch-net built** — `tools/typed_verdict_invariants.py` implements `INV-INTENT-NO-SELF-GRADED-CLOSURE` via the repo-local route (the `library-index` portfolio is not present in this checkout; §5 authorizes a repo-local chain_audit). Check A = schema completeness on post-2026-06-09 `observation.evaluated` events; Check B = no `self`/`distilled` verdict at closure authority (Brien `decision.recorded` override is the relief valve). RED-first suite `tools/test_typed_verdict_invariants.py` (15 tests). Fires **zero violations** against the live `events.jsonl` on day one — `reconsider_when` #1 satisfied → status flipped to `resolved`.
+
+## Still open (tracked separately, not blocking this signal's closure)
+- Instrument the actual Observe-agent emitters to populate the three fields + a closure marker (`closes_spec` / `authority`). The spec requires it; no emitter code was changed. `reconsider_when` #2 governs this: if an emitter ships `observation.evaluated` without the required fields after 2026-06-09, the invariant will now **catch it** (Check A) rather than it passing silently — which is exactly the point of building the net first.
 
 ## Triage, 2026-07-08
 
 Disposition: still pending. Ran this signal's own verification_command directly: it prints VERIFIED, confirming the spec-level write-through (event-catalog.md's required fields, the MUST-NOT consumption rule, typed-evaluation-verdicts.md's invariant name) is in place exactly as claimed. But the signal's own reconsider_when clause is explicit that VERIFIED at the spec level is not the same as resolved: that requires INV-INTENT-NO-SELF-GRADED-CLOSURE to actually register in chain_audit and fire zero violations on day one. Searched Core/products/library-index/ and this repo for the invariant name: no registration found anywhere. Needed control: register the invariant per the named pattern (INV-LI-* precedent in the library-index chain_audit portfolio, or a repo-local chain_audit for intent if stood up first) and demonstrate the zero-violation start this signal specifies.
+
+Reconciliation note, 2026-07-19: the triage above ran on a local checkout diverged from origin/main since 2026-07-02; it could not see the remote-side build. Its finding of no registration anywhere was true of that checkout and false of the repository: tools/typed_verdict_invariants.py and its 15-test suite landed remote-side on 2026-07-02 via the spec section 5 repo-local route (see Resolution above). The disposition is superseded by that Resolution; the note is preserved as evidence for the divergence record (SIG-2026-07-19-intent-repo-divergence-reconciled).

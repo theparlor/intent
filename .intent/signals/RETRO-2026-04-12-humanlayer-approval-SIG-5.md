@@ -6,6 +6,7 @@ severity: high
 source: brien-statement
 detected: 2026-04-12
 topic: humanlayer-approval
+status: promoted
 ---
 
 # Brien Recognizes Approval Gate as Unfulfilled Original Intent

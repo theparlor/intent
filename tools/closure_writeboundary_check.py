@@ -160,6 +160,40 @@ SYMPTOM_REPAIRED_RE = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 
+# ---------------------------------------------------------------------------
+# Control B (SIG-2026-06-27): downstream-fix ⇒ upstream-examination signal.
+#
+# A resolved signal that records a downstream/leaf fix of an upstream-originated
+# drift (convention, contract, naming, schema) must point at the upstream
+# examination it triggered — else the correction-propagation reflex stays a
+# habit, not a mechanism. Enforced here as a write-boundary detector arm.
+#
+# ZERO-VIOLATION-START: date-scoped to signals dated on/after the effective date.
+# Legacy resolved signals (and undated ones) are out of scope, so the live tree
+# fires clean on day one (feedback_invariant_zero_violation_start).
+# ---------------------------------------------------------------------------
+UPSTREAM_EXAM_CUTOFF = "2026-07-02"
+
+# Downstream-fix FRAME markers — specific enough not to fire on any signal that
+# merely mentions "downstream". These describe a leaf patch of an upstream drift.
+DOWNSTREAM_FIX_PATTERNS: list[re.Pattern] = [
+    re.compile(r"\bleaf[- ]fix\b", re.IGNORECASE),
+    re.compile(r"\b(?:patched|fixed|updated) the (?:caller|consumer)\b", re.IGNORECASE),
+    re.compile(r"\bdownstream (?:fix|consumer|caller|patch|leaf)\b", re.IGNORECASE),
+    re.compile(r"\bconsumers?\s+(?:still\s+)?bound\b", re.IGNORECASE),
+    re.compile(r"\bbound to the (?:old|dead|retired|previous)\b", re.IGNORECASE),
+    re.compile(r"\bretired convention\b", re.IGNORECASE),
+]
+
+# The field that satisfies the clause: points at the sibling upstream signal, or
+# explicitly waives it with a rationale.
+UPSTREAM_EXAM_FIELD_RE = re.compile(
+    r"^(?:triggers_upstream_examination|upstream_examination):", re.IGNORECASE | re.MULTILINE
+)
+
+_CREATED_RE = re.compile(r"^created:\s*(\d{4}-\d{2}-\d{2})", re.IGNORECASE | re.MULTILINE)
+_ANY_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})")
+
 
 # ---------------------------------------------------------------------------
 # Data types
@@ -234,6 +268,41 @@ def _find_weasel(text: str) -> list[tuple[re.Pattern, str]]:
     return hits
 
 
+def _signal_date(text: str, path: Path) -> str | None:
+    """Best-effort signal date: `created:` field, else a date in the filename."""
+    m = _CREATED_RE.search(text)
+    if m:
+        return m.group(1)
+    m = _ANY_DATE_RE.search(path.name)
+    return m.group(1) if m else None
+
+
+def check_upstream_examination(path: Path, text: str, cutoff: str = UPSTREAM_EXAM_CUTOFF) -> list[Violation]:
+    """Control B: a post-cutoff resolved downstream-fix signal must declare the
+    upstream examination it triggered (or explicitly waive it)."""
+    if not _is_resolved(text):
+        return []
+    d = _signal_date(text, path)
+    if d is None or d < cutoff:
+        return []  # legacy / undated → out of scope (zero-violation-start)
+    if UPSTREAM_EXAM_FIELD_RE.search(text):
+        return []  # already declares triggers_upstream_examination / upstream_examination
+    for line in text.splitlines():
+        for pat in DOWNSTREAM_FIX_PATTERNS:
+            if pat.search(line):
+                return [Violation(
+                    file_path=str(path),
+                    reason=(
+                        "DOWNSTREAM-FIX-NO-UPSTREAM-SIGNAL: status: resolved records a "
+                        "downstream/leaf fix of an upstream-originated drift but declares no "
+                        "`triggers_upstream_examination:` (point it at a sibling open signal, or "
+                        "set `upstream_examination: not-applicable` with a one-line rationale)."
+                    ),
+                    offending_line=line.strip()[:200],
+                )]
+    return []
+
+
 def check_file(path: Path) -> list[Violation]:
     """Check a single .md file; return violations (empty = clean)."""
     try:
@@ -246,6 +315,9 @@ def check_file(path: Path) -> list[Violation]:
         return []
 
     violations: list[Violation] = []
+
+    # Control B: downstream-fix must trigger an upstream-examination signal
+    violations.extend(check_upstream_examination(path, text))
 
     # Check 1: missing required fields
     all_present, missing = _has_required_fields(text)
@@ -316,7 +388,8 @@ def print_report(violations: list[Violation], as_json: bool) -> int:
         print(f"\nclosure_writeboundary_check — {len(violations)} violation(s)\n")
         if violations:
             for v in violations:
-                print(f"  [PREMATURE-RESOLVED] {Path(v.file_path).name}")
+                tag = v.reason.split(":", 1)[0]
+                print(f"  [{tag}] {Path(v.file_path).name}")
                 print(f"    reason: {v.reason}")
                 if v.offending_line:
                     print(f"    line:   {v.offending_line}")

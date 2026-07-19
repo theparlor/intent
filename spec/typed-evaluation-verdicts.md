@@ -98,7 +98,7 @@ Write-through control is primary; the audit is the safety net (`feedback_audit_v
 
 **Primary (write-through):** the LLM-as-Judge protocol itself, as amended in `event-catalog.md` — emitters populate the required fields at emission time, and the Observe-loop integration steps refuse closure on a `self` pass.
 
-**Catch-net (named):** `INV-INTENT-NO-SELF-GRADED-CLOSURE` — a **future chain_audit invariant**, to be registered in the portfolio-level audit (`Core/products/library-index/chain_audit_portfolio.py`, following the `INV-LI-*` registration pattern) or a repo-local `chain_audit` for `Core/frameworks/intent` if one is stood up first. The invariant asserts:
+**Catch-net (BUILT 2026-07-02):** `INV-INTENT-NO-SELF-GRADED-CLOSURE` — implemented at `tools/typed_verdict_invariants.py` with RED-first suite `tools/test_typed_verdict_invariants.py` (15 tests, green). It uses the **repo-local route**: the portfolio-level audit (`Core/products/library-index/chain_audit_portfolio.py`, `INV-LI-*` pattern) is not present in this checkout, so the invariant is stood up local to `frameworks/intent` per the alternative named here. Run `python3 tools/typed_verdict_invariants.py` (exit 0 = clean). The invariant asserts:
 
 > For every spec whose status transitions to closed/complete on or after 2026-06-09 with an `observation.evaluated` event in its trace: the closing verdict has `criteria_origin: derived`, OR a `decision.recorded` event exists referencing that verdict as a Brien override. Additionally, every `observation.evaluated` event emitted on or after 2026-06-09 carries all three required fields.
 
@@ -116,4 +116,4 @@ This amendment is defined in Intent's event catalog and therefore applies to eve
 - Diagnosis: `Core/products/parallax/research/2026-06-09-test-uat-eval-triad.md` §1 (verdict type tuple), §6 (typing-flaw restatement)
 - Grounding: `Core/products/parallax/research/2026-06-09-three-vantage-testing-grounding.md` (headline gap; required-fields fix)
 - Signal: `.intent/signals/SIG-2026-06-09-typed-evaluation-verdicts.md`
-- Catch-net (future): `INV-INTENT-NO-SELF-GRADED-CLOSURE` (chain_audit; not yet registered — tracked via the signal)
+- Catch-net (built 2026-07-02): `INV-INTENT-NO-SELF-GRADED-CLOSURE` → `tools/typed_verdict_invariants.py` (+ `tools/test_typed_verdict_invariants.py`), repo-local route, zero-violation on day one

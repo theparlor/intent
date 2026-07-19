@@ -1,5 +1,5 @@
 ---
-id: DDR-009
+id: DDR-010
 title: Always-on hosting substrate is GitHub Actions now, with an explicit cloud trajectory
 status: ratified
 decided: 2026-07-03
@@ -13,7 +13,7 @@ related_themes:
   - THM-005
 ---
 
-# DDR-009: Always-on hosting substrate is GitHub Actions now, with an explicit cloud trajectory
+# DDR-010: Always-on hosting substrate is GitHub Actions now, with an explicit cloud trajectory
 
 ## Context
 
@@ -72,3 +72,7 @@ enumerated in CLAUDE.md since April: GitHub Actions, cloud service, dedicated ma
   for 14 consecutive days with the laptop's availability having no effect on run success.
 - No NDA-scoped content appears in any Actions log or artifact (spot-audit after first 14 days).
 - A fresh substrate DDR is written within one week of any migration trigger condition firing.
+
+## Renumbering note (2026-07-19)
+
+Minted as DDR-009 on the diverged local line (2026-07-03). The remote line had already minted DDR-009-externally-authored-verification on 2026-07-02 and pushed it. Renumbered to DDR-010 at reconciliation; the remote DDR keeps 009 because its identifier is in shared history and event-stream lineage. Decision content unchanged. See SIG-2026-07-19-intent-repo-divergence-reconciled.

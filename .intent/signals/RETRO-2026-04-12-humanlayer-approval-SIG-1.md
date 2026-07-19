@@ -6,6 +6,7 @@ severity: high
 source: session-analysis
 detected: 2026-04-12
 topic: humanlayer-approval
+status: promoted
 ---
 
 # L0 Governance Is Prose, Not Protocol

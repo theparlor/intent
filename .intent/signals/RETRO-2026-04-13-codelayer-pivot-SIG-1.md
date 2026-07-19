@@ -13,6 +13,7 @@ verification_command: "grep -n 'Three Human-Contact Patterns' -A3 Core/framework
 related:
   - RETRO-2026-04-12-humanlayer-approval-SIG-1
   - SPEC-APPROVAL-GATE
+status: promoted
 ---
 
 # Staged Human Review Gates: Review Earlier, Not Later

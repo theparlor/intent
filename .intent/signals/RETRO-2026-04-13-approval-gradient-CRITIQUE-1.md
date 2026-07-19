@@ -8,6 +8,7 @@ severity: medium
 related:
   - RETRO-2026-04-13-approval-gradient-SIG-2
   - RETRO-2026-04-13-approval-gradient-DEC-3
+status: open
 ---
 
 # Critique: Phase 2 Trust Model Has Unresolved Computation Dependencies

@@ -37,3 +37,5 @@ This signal file was itself generated during the conversation it describes, demo
 ## Triage, 2026-07-08
 
 Disposition: control exists now. Both mechanisms this signal asked for are built: the CLI/MCP path collapses capture to one action from inside a session, and the session-signal / session-extract skill pair does the post-session extraction this signal called mechanism 2. Mechanism 3 (an always-on observe-cycle agent tailing Entire.io traces on a schedule) was not built as a separate always-on process; the GitHub Action plus the two skills cover the same need without requiring a standing daemon.
+
+Reconciliation note, 2026-07-19: the remote-side 2026-07-02 status hygiene pass (commit 5653b9c) classified this founding signal status: incorporated (absorbed into the methodology, terminal, not a discrete work item). The 2026-07-08 triage above reached the same terminal verdict and added closure evidence. Kept status: resolved because it carries the closure-DoD fields the write-boundary machinery keys on; the incorporated classification is preserved by this note.

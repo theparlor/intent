@@ -38,3 +38,5 @@ What's the right balance between structured YAML (easy for agents) and readable 
 ## Triage, 2026-07-08
 
 Disposition: control exists now. The open question resolved itself in practice: every entity type in the repo (signal, intent, spec, decision atom) uses YAML frontmatter plus a markdown body. Contract never became its own file type (see the linked triage note on SIG-001, work-ontology), so "start with Contract" did not happen literally, but the schema goal (visible, versioned, testable, observable) is met by the types that did ship.
+
+Reconciliation note, 2026-07-19: the remote-side 2026-07-02 status hygiene pass (commit 5653b9c) classified this founding signal status: incorporated (absorbed into the methodology, terminal, not a discrete work item). The 2026-07-08 triage above reached the same terminal verdict and added closure evidence. Kept status: resolved because it carries the closure-DoD fields the write-boundary machinery keys on; the incorporated classification is preserved by this note.

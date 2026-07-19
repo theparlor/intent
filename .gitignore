@@ -14,3 +14,10 @@ tools/intent-mcp/.venv/
 tests/__pycache__/
 __pycache__/
 *.pyc
+
+# Binary artifacts do not belong in git (handoff packages, exports)
+*.zip
+*.docx
+
+# Transient event-log flock lock (created by intent-signal emit_event)
+.intent/events/*.lock

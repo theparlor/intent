@@ -6,6 +6,7 @@ severity: low
 source: session-analysis
 detected: 2026-04-12
 topic: humanlayer-approval
+status: promoted
 ---
 
 # Approve-With-Modification Pattern Missing

@@ -13,6 +13,7 @@ tags:
 related_mental_models:
   - agent-as-callable-component
   - intent-orchestrator
+status: needs-shaping
 ---
 # Signal: Orchestration Choice as a First-Class Design Decision
 

@@ -6,6 +6,7 @@ severity: medium
 source: session-analysis
 detected: 2026-04-12
 topic: humanlayer-approval
+status: promoted
 ---
 
 # No TTL on Approval Contexts — Stale Action Risk

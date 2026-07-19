@@ -13,6 +13,7 @@ verification_command: "grep -n 'Three Human-Contact Patterns' -A3 Core/framework
 related:
   - SPEC-APPROVAL-GATE
   - RETRO-2026-04-13-codelayer-pivot-SIG-1
+status: open
 ---
 
 # Two Complementary Gate Systems: Phase Gates vs Action Gates
