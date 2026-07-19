@@ -1,12 +1,16 @@
 ---
 id: SIG-2026-07-19-intent-repo-divergence-reconciled
 type: signal
-status: captured
+status: resolved
 severity: high
 created: 2026-07-19
 target: "Repo-level divergence: main vs origin/main forked at b439d27 (2026-07-02 07:42) and grew to 26 local-only vs 24 remote-only commits with no detection for 17 days"
 discovered_during: "2026-07-19 reconciliation session (Brien-directed after the 2026-07-18 session hit the push rejection and parked the work)"
 requested_by: brien
+upstream_control_path: "Core/products/org-design-tooling/src/check-repo-divergence.sh (new overwatch lens, commit e9e34f2, org-design-tooling repo) wired as Step 4 of src/launchers/governance-audit-launcher.sh with --fetch, running daily at 06:00 via com.brien.governance-audit."
+catch_mechanism: "check-repo-divergence.sh flags stale-ahead (ahead greater than 0, last local commit older than 24h) and deep-behind (behind greater than 20) across Core/products, Core/frameworks, and the Workspaces root repo; emits one idempotent SIG-REPO-DIVERGENCE-<repo>-<date>.md per flagged repo per day to Workspaces/.intent/signals. Red-green tested 17/17 (tests/test-repo-divergence.sh). First real run flagged 13 of 59 repos, proving live bite."
+pipeline_survival: "The detector is read-only over repo history plus best-effort signal emission; it cannot damage any pipeline. Its own home repo is committed and pushed (org-design-tooling in sync with origin as of 2026-07-19), so the control survives independent of this session. Honest status: the nightly launcher invocation is the standing execution path; overwatch two-surface registration (command file Section, Forge SKILL Section) is tracked in catch-net.md and has not been performed here."
+verification_command: "bash /Users/brien/Workspaces/Core/products/org-design-tooling/tests/test-repo-divergence.sh && bash /Users/brien/Workspaces/Core/products/org-design-tooling/src/check-repo-divergence.sh --no-emit; echo exit=$?"
 ---
 
 # Intent repo divergence, 26 local vs 24 remote, reconciled by merge
@@ -53,5 +57,6 @@ same session: every nested repo under Core/products/ and Core/frameworks/ plus
 the Workspaces root reports ahead/behind vs its remote; stale-ahead (ahead
 greater than 0 with last local commit older than 24 hours) or behind greater
 than 20 emits a signal file to Workspaces/.intent/signals/, one per repo per
-day, idempotent. This signal flips to resolved when that detector is live and
-red-green tested.
+day, idempotent. Landed same session: check-repo-divergence.sh (org-design-tooling
+commit e9e34f2), 17/17 fixture tests, wired as Step 4 of the nightly
+governance-audit launcher, first real run flagged 13 of 59 repos. Resolved.
