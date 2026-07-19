@@ -62,6 +62,46 @@ if [ "$FILE_PATH" = "NONE" ]; then
   exit 0
 fi
 
+# Fixtures-path exemption (SIG-2026-07-19-fixtures-exemption-ruled): a write
+# is exempt ONLY when BOTH hold — the target path contains a fixtures
+# directory segment (a component named `fixtures`, `__fixtures__`, or the
+# `tests/fixtures` sequence) AND the content carries an explicit
+# inert-test-data marker line. Either alone still falls through to full
+# enforcement below. Exemption use is logged (FIXTURE-EXEMPT) so it stays
+# observable — never a silent, untracked bypass.
+FIXTURE_VERDICT=$(printf '%s' "$INPUT" | python3 -c '
+import json, sys
+try:
+    raw = json.loads(sys.stdin.read() or "{}")
+    ti = raw.get("tool_input", {}) or {}
+    fp = ti.get("file_path", "") or ""
+    content = ti.get("content", "") or ti.get("new_string", "") or ""
+
+    comps = [c for c in fp.split("/") if c]
+    has_fixtures = False
+    for i, c in enumerate(comps):
+        if c in ("fixtures", "__fixtures__"):
+            has_fixtures = True
+            break
+        if c == "tests" and i + 1 < len(comps) and comps[i + 1] == "fixtures":
+            has_fixtures = True
+            break
+
+    markers = ("inert-test-data", "inert fixture", "deliberately-malformed test fixture")
+    content_lower = content.lower()
+    has_marker = any(m in content_lower for m in markers)
+
+    print("EXEMPT" if (has_fixtures and has_marker) else "NOEXEMPT")
+except Exception:
+    print("NOEXEMPT")
+')
+
+if [ "$FIXTURE_VERDICT" = "EXEMPT" ]; then
+  TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  echo "[$TIMESTAMP] FIXTURE-EXEMPT session=$SESSION_ID tool=$TOOL_NAME file=$FILE_PATH" >> "$AUDIT_LOG"
+  exit 0
+fi
+
 # Path filter: must be in `.intent/signals/*.md`
 case "$FILE_PATH" in
   */.intent/signals/*.md) ;;
