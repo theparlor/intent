@@ -39,6 +39,22 @@
 #
 # Created: 2026-05-29 — warn-only scaffold per road-readiness rollout replacing
 #   the frozen lexical layer with the structural successor (Layer 4.2).
+#
+# Updated: 2026-07-19: precision patch. The 2026-07-08..07-18 warn-only
+#   calibration window against the widened recall grammar (9c0e6bf) logged 14
+#   would-block fires; a full-population manual read (WINDOW-CLOSE READ,
+#   Core/products/_intake/2026-07-19-decision-surfaces-retrofit/
+#   layer42-calibration-promote-retire.md) classified 3 as true positive, 10
+#   as false positive, 1 as an ambiguous swing case. The false positives
+#   trace to legitimate-gate misclassification, not the pronoun/stopword
+#   mechanism the grammar already fixed. §2.3b below adds a fifth gate that
+#   discriminates five named false-positive categories plus one general
+#   discriminator (recommendation-with-reveal / already-autonomous framing)
+#   found necessary during fixture testing to fully clear the confirmed set.
+#   Fixtures: hooks/tests/fixtures/layer42/ (14 real firings, verbatim).
+#   Test: hooks/tests/test_layer42_precision.py. Mode is UNCHANGED: still
+#   warn-only, still never emits a block decision. This is precision
+#   refinement of the detector, not a promotion.
 
 set -u
 
@@ -414,7 +430,134 @@ gate_no_info_gap = not (
     "Brien decides" in tail1000 or "Brien needs to decide" in tail1000
 )
 
-gates_pass = 1 if (gate_reversible and gate_local_blast and gate_precedent and gate_no_info_gap) else 0
+# --- §2.3b False-positive language exclusion (2026-07-19 precision patch) --
+# The window-close read found the live false-positive mode is NOT the
+# stopword/pronoun mis-parse (already fixed pre-window, zero fires of that
+# class in the 14 observed). It is legitimate-gate misclassification: text
+# that correctly describes why an action is NOT L4-eligible right now, which
+# the existing four gates do not detect because they check for topic
+# presence (L4, autonomy, workspaces) rather than for a correctly-stated
+# deferral. Five categories were named in the window-close read; a sixth,
+# general discriminator was added after fixture testing showed the five
+# named categories alone left 4 of the 10 confirmed false positives firing
+# (see hooks/tests/test_layer42_precision.py for the full fixture-by-fixture
+# mapping). Each pattern below is deliberately narrow, built from exact
+# phrasing in the confirmed-false-positive fixtures, so it does not catch
+# the three confirmed true positives, which sit near adjacent vocabulary
+# (L0, Fable, warn-only) WITHOUT the compliant-deferral phrasing. Fail-open:
+# a regex that never matches only ever WIDENS would-block eligibility back
+# toward pre-patch behavior, it never suppresses a real catch.
+
+# CATEGORY 1: legitimate L0-language (prod-write and external-comms gating
+#   talked about correctly). Ground truth: 2026-07-14T00:09:52Z, "Rule
+#   creation is a prod config write (L0)... needs your L0 go." A prod-system
+#   write or cross-human send correctly held at L0 is policy-correct, not
+#   drift. Narrow to prod/L0 or cross-human/L0 co-occurrence (NOT bare "L0"
+#   alone: a true positive, 2026-07-10T17:10:37Z, mentions "L0" once in an
+#   unrelated DO-NOT list item and must keep firing on its own bare-choice
+#   violation elsewhere in the same message).
+CAT1_L0_RE = re.compile(
+    r"prod(?:uction)?[\s-]*(?:config\s*)?writes?\b.{0,80}\bL0\b|"
+    r"\bL0\b.{0,80}prod(?:uction)?\b|"
+    r"needs your L0 go|before (?:any |I create )?(?:a |the )?prod|"
+    r"cross-human.{0,80}\bL0\b|\bL0\b.{0,80}cross-human",
+    re.IGNORECASE | re.DOTALL
+)
+
+# CATEGORY 2: OAuth-only actions. Ground truth: 2026-07-13T13:20:02Z, "Miro
+#   needs a one-time re-auth in claude.ai connector settings." Categorically
+#   not agent-executable: no amount of autonomy grant makes an interactive
+#   OAuth flow a same-turn tool_use.
+CAT2_OAUTH_RE = re.compile(
+    r"\bre-auth\b|\boauth\b|connector settings|interactive[\s-]auth",
+    re.IGNORECASE | re.DOTALL
+)
+
+# CATEGORY 3: budget-threshold and Fable-window language. Ground truth:
+#   2026-07-10T17:33:53Z ("Start the session... on Fable, high effort"),
+#   2026-07-18T18:49:32Z and half of 18:55:02Z ("Say go and I launch B4
+#   (Fable-1M...)"). Fable-tier spend is correctly gated at L2 per the
+#   Budget decisions autonomy grant, naming it is not drift.
+CAT3_FABLE_RE = re.compile(
+    r"\bfable\b.{0,200}(?:window|budget|spend|burn|launch|say go|high effort)|"
+    r"(?:window|budget|spend|burn|launch|say go).{0,200}\bfable\b",
+    re.IGNORECASE | re.DOTALL
+)
+
+# CATEGORY 4: enforcement-standing-rule-change language. Ground truth: the
+#   other half of 2026-07-18T18:55:02Z, "confirm you want the text-lint
+#   consolidation... warn-only model-effort rule... and I build and test
+#   it", "Blocking vs warn-only for the model-effort rule", "holding this
+#   one for your explicit go", "needs your nod". A hook's own enforcement
+#   posture (warn-only vs block, retiring/building a check) is a reserved L2
+#   behavioral setpoint per this surface's own framing, proposing to touch
+#   it is not L4 drift. Narrowed to PROPOSAL phrasing (confirm/ship/promote/
+#   holding-for-go/needs-your-nod), not bare status mentions: two of the
+#   confirmed true positives and one false positive merely REPORT that
+#   Layer 4.2 is in its warn-only calibration window as one status line among
+#   many, which must not suppress unrelated drift elsewhere in those turns.
+CAT4_ENFORCEMENT_RE = re.compile(
+    r"confirm you want the .{0,60}(?:consolidation|hook)|"
+    r"ship .{0,20}warn-only first|"
+    r"promote (?:it |this )?to (?:blocking|block)\b|"
+    r"holding this (?:one )?for your (?:explicit )?go|"
+    r"needs your nod",
+    re.IGNORECASE | re.DOTALL
+)
+
+# CATEGORY 5: self-quotation of a trigger phrase while criticizing or
+#   analyzing it. Ground truth: 2026-07-13T03:25:29Z, 'Ending my last message
+#   with "want me to action X?" was exactly the proposal-framing-on-L4-work
+#   pattern the autonomy hook exists to block.' The regex must not treat a
+#   quoted-and-criticized PRIOR instance as a fresh live instance in THIS
+#   turn. Requires both a quoted trigger phrase AND adjacent meta-critique
+#   language, so an actual live claim that happens to sit near the word
+#   "pattern" is not accidentally suppressed.
+CAT5_SELFQUOTE_RE = re.compile(
+    r"[\"'‘’“”](?:want me to|should i|shall i|say the word|say go|on your word)",
+    re.IGNORECASE | re.DOTALL
+)
+CAT5_META_RE = re.compile(
+    r"exactly the|was exactly|the autonomy hook exists to block|shouldn.t have|the pattern this hook",
+    re.IGNORECASE | re.DOTALL
+)
+
+# CATEGORY 6 (additional, beyond the five named above; required by fixture
+#   testing to clear the confirmed set): recommendation-with-reveal /
+#   already-autonomous framing. Ground truth: 2026-07-08T04:42:38Z (Scout,
+#   "my recommendation is item 1... unless you would rather..."),
+#   2026-07-08T07:28:50Z ("My recommendation is to leave pushes... flag me if
+#   you want a one-shot push sweep instead"), 2026-07-13T12:18:34Z ("**My
+#   recommendation:** take the positioning arc first... Want me to start
+#   there, or...?"), 2026-07-18T07:18:53Z ("Your move: nothing required,
+#   this was a fully autonomous L4 run"). An explicit stated recommendation
+#   preceding or accompanying an offered alternative is Brien's own defined
+#   COMPLIANT pattern (CLAUDE.md: "recommendation-first, never bare
+#   choice": pick one option, give the reason, offer the alternative as
+#   "unless you'd prefer B"), not the violation this hook exists to catch.
+#   "Nothing required" / "fully autonomous run" marks a turn where the
+#   required work already executed and any offer left is optional bonus
+#   follow-up, not a punted action.
+CAT6_RECOMMENDATION_RE = re.compile(
+    r"my recommendation\b|\bi recommend\b|nothing required|nothing blocking|"
+    r"fully autonomous.{0,20}run",
+    re.IGNORECASE | re.DOTALL
+)
+
+cat1_l0 = bool(CAT1_L0_RE.search(LAST_TEXT))
+cat2_oauth = bool(CAT2_OAUTH_RE.search(LAST_TEXT))
+cat3_fable_budget = bool(CAT3_FABLE_RE.search(LAST_TEXT))
+cat4_enforcement_change = bool(CAT4_ENFORCEMENT_RE.search(LAST_TEXT))
+cat5_self_quotation = bool(CAT5_SELFQUOTE_RE.search(LAST_TEXT) and CAT5_META_RE.search(LAST_TEXT))
+cat6_recommendation_stated = bool(CAT6_RECOMMENDATION_RE.search(LAST_TEXT))
+
+gate_not_legit_deferral = not (
+    cat1_l0 or cat2_oauth or cat3_fable_budget or cat4_enforcement_change or
+    cat5_self_quotation or cat6_recommendation_stated
+)
+
+gates_pass = 1 if (gate_reversible and gate_local_blast and gate_precedent and
+                    gate_no_info_gap and gate_not_legit_deferral) else 0
 
 # would_block in block-mode == (unmatched next-action claim) AND (gates pass)
 # AND (no corresponding tool_use). The "no corresponding tool_use" is already
