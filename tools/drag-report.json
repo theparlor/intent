@@ -2,7 +2,7 @@
   "generated_input_window": {
     "since": null,
     "first": "2026-04-15",
-    "last": "2026-05-29"
+    "last": "2026-07-03"
   },
   "static_inventory": {
     "hooks": [
@@ -18,8 +18,13 @@
       },
       {
         "name": "autonomy-grant-stop-check.sh",
-        "kb": 33.7,
-        "mtime": "2026-05-28"
+        "kb": 38.1,
+        "mtime": "2026-05-29"
+      },
+      {
+        "name": "autonomy-posture-check-layer-4.2.sh",
+        "kb": 13.8,
+        "mtime": "2026-05-29"
       },
       {
         "name": "closure-discipline-check.sh",
@@ -28,8 +33,8 @@
       },
       {
         "name": "closure-discipline-signal-check.sh",
-        "kb": 4.7,
-        "mtime": "2026-05-20"
+        "kb": 5.8,
+        "mtime": "2026-06-12"
       },
       {
         "name": "closure-discipline-stop-check.sh",
@@ -37,9 +42,19 @@
         "mtime": "2026-05-29"
       },
       {
+        "name": "emdash-stop-check.sh",
+        "kb": 3.9,
+        "mtime": "2026-07-02"
+      },
+      {
+        "name": "install-git-hooks.sh",
+        "kb": 1.2,
+        "mtime": "2026-05-29"
+      },
+      {
         "name": "install.sh",
-        "kb": 2.5,
-        "mtime": "2026-05-27"
+        "kb": 2.6,
+        "mtime": "2026-06-09"
       },
       {
         "name": "native-connector-precedence-check.sh",
@@ -55,6 +70,16 @@
         "name": "overwatch-staleness-check.sh",
         "kb": 4.3,
         "mtime": "2026-05-20"
+      },
+      {
+        "name": "pre-commit-drag-guard.sh",
+        "kb": 1.8,
+        "mtime": "2026-05-29"
+      },
+      {
+        "name": "presend-assertion-check.sh",
+        "kb": 5.3,
+        "mtime": "2026-06-09"
       },
       {
         "name": "session-end.sh",
@@ -79,7 +104,8 @@
         "closure-discipline-signal-check.sh",
         "signal-recorder-silent-check.sh",
         "forge-shim-gate-check.sh",
-        "native-connector-precedence-check.sh"
+        "native-connector-precedence-check.sh",
+        "venv-guard-pretooluse-check.sh"
       ],
       "PostToolUse": [
         "product-paths.sh",
@@ -92,46 +118,55 @@
         "overwatch-staleness-check.sh",
         "overwatch-nested-init-check.sh"
       ],
+      "SessionEnd": [],
       "Stop": [
         "autonomy-grant-stop-check.sh",
+        "2.sh",
         "closure-discipline-stop-check.sh",
+        "link-format-stop-check.sh",
+        "emdash-stop-check.sh",
+        "presend-assertion-check.sh",
         "engagement-signal-cadence-check.sh",
         "forge-signal-cadence-stop-check.sh",
         "session-end.sh"
       ]
     },
-    "lexical_checks": 6,
+    "lexical_checks": 7,
     "errors": [],
-    "hook_count": 13,
-    "total_kb": 95.0
+    "hook_count": 18,
+    "total_kb": 126.6
   },
   "runtime_drag": {
     "window": {
       "since": null,
       "first": "2026-04-15",
-      "last": "2026-05-29"
+      "last": "2026-07-03"
     },
     "autonomy_stop": {
-      "invocations": 1463,
+      "invocations": 7979,
       "by_check": {
-        "check1-4_runs": 1172,
-        "next_stage": 311,
-        "bare_match": 15,
-        "check5_runs": 160,
-        "check5_trigger": 19,
-        "check6_runs": 131,
-        "check6_trigger": 19,
-        "soft_queue_trigger": 1
+        "check1-4_runs": 2877,
+        "next_stage": 501,
+        "bare_match": 61,
+        "check5_runs": 1821,
+        "check5_trigger": 100,
+        "check6_runs": 1711,
+        "check6_trigger": 26,
+        "soft_queue_trigger": 5,
+        "check7_runs": 1570,
+        "check7_trigger": 32
       },
       "fp_suppressed": 0,
-      "dispatch_present": 34
+      "dispatch_present": 126
     },
     "blocks": {
-      "CHECK1": 9,
-      "CHECK4": 13,
-      "CHECK5": 19,
-      "CHECK6": 19,
-      "CHECK2": 1
+      "CHECK1": 25,
+      "CHECK4": 36,
+      "CHECK5": 100,
+      "CHECK6": 26,
+      "CHECK2": 5,
+      "CHECK7": 32,
+      "CHECK3": 1
     },
     "blocks_by_day": {
       "2026-05-14": {
@@ -163,32 +198,185 @@
       },
       "2026-05-29": {
         "CHECK2": 1,
-        "CHECK6": 2,
+        "CHECK6": 3,
+        "CHECK5": 2,
+        "CHECK7": 1
+      },
+      "2026-05-30": {
+        "CHECK5": 3
+      },
+      "2026-05-31": {
+        "CHECK5": 6,
+        "CHECK1": 1
+      },
+      "2026-06-01": {
         "CHECK5": 2
+      },
+      "2026-06-02": {
+        "CHECK5": 5,
+        "CHECK4": 3
+      },
+      "2026-06-03": {
+        "CHECK5": 7,
+        "CHECK4": 2,
+        "CHECK2": 1,
+        "CHECK7": 5
+      },
+      "2026-06-04": {
+        "CHECK5": 7,
+        "CHECK4": 3,
+        "CHECK7": 1,
+        "CHECK1": 2
+      },
+      "2026-06-05": {
+        "CHECK1": 3,
+        "CHECK5": 7,
+        "CHECK4": 1
+      },
+      "2026-06-06": {
+        "CHECK5": 2
+      },
+      "2026-06-07": {
+        "CHECK4": 1
+      },
+      "2026-06-08": {
+        "CHECK5": 1
+      },
+      "2026-06-09": {
+        "CHECK5": 2,
+        "CHECK1": 1
+      },
+      "2026-06-10": {
+        "CHECK7": 1,
+        "CHECK6": 1
+      },
+      "2026-06-11": {
+        "CHECK5": 1,
+        "CHECK4": 1
+      },
+      "2026-06-12": {
+        "CHECK5": 1,
+        "CHECK1": 2
+      },
+      "2026-06-13": {
+        "CHECK6": 1,
+        "CHECK1": 1,
+        "CHECK7": 1
+      },
+      "2026-06-14": {
+        "CHECK7": 3,
+        "CHECK5": 1
+      },
+      "2026-06-15": {
+        "CHECK1": 1,
+        "CHECK5": 3,
+        "CHECK7": 2,
+        "CHECK4": 2
+      },
+      "2026-06-16": {
+        "CHECK7": 2,
+        "CHECK5": 4,
+        "CHECK4": 2,
+        "CHECK1": 1
+      },
+      "2026-06-17": {
+        "CHECK5": 2,
+        "CHECK7": 1
+      },
+      "2026-06-18": {
+        "CHECK5": 6,
+        "CHECK7": 4,
+        "CHECK1": 1,
+        "CHECK6": 1
+      },
+      "2026-06-19": {
+        "CHECK4": 2,
+        "CHECK5": 2
+      },
+      "2026-06-21": {
+        "CHECK6": 1,
+        "CHECK7": 1
+      },
+      "2026-06-22": {
+        "CHECK5": 2,
+        "CHECK6": 1
+      },
+      "2026-06-23": {
+        "CHECK4": 1,
+        "CHECK5": 1,
+        "CHECK1": 1
+      },
+      "2026-06-25": {
+        "CHECK5": 2,
+        "CHECK4": 1,
+        "CHECK2": 1
+      },
+      "2026-06-26": {
+        "CHECK5": 4,
+        "CHECK3": 1,
+        "CHECK4": 2,
+        "CHECK7": 1,
+        "CHECK1": 1
+      },
+      "2026-06-27": {
+        "CHECK5": 1,
+        "CHECK2": 1,
+        "CHECK7": 1
+      },
+      "2026-06-28": {
+        "CHECK5": 2,
+        "CHECK7": 1
+      },
+      "2026-06-29": {
+        "CHECK7": 1,
+        "CHECK5": 2,
+        "CHECK1": 1
+      },
+      "2026-06-30": {
+        "CHECK5": 1
+      },
+      "2026-07-01": {
+        "CHECK7": 4,
+        "CHECK5": 1,
+        "CHECK4": 1,
+        "CHECK2": 1
+      },
+      "2026-07-02": {
+        "CHECK5": 3,
+        "CHECK4": 1,
+        "CHECK6": 1,
+        "CHECK7": 1
+      },
+      "2026-07-03": {
+        "CHECK7": 1
       }
     },
     "detections": {
-      "autonomy-grant-dispatch-detections.log": 9,
-      "autonomy-grant-stop-detections.log": 67,
-      "closure-discipline-signal-detections.log": 26,
-      "closure-discipline-stop-detections.log": 87,
-      "forge-signal-cadence-detections.log": 3
+      "autonomy-grant-dispatch-detections.log": 13,
+      "autonomy-grant-stop-detections.log": 231,
+      "autonomy-posture-layer42-detections.log": 9,
+      "closure-discipline-signal-detections.log": 37,
+      "closure-discipline-stop-detections.log": 208,
+      "emdash-detections.log": 115,
+      "forge-signal-cadence-detections.log": 6,
+      "link-format-detections.log": 155,
+      "presend-assertion-detections.log": 25
     },
     "bypasses": {
-      "native-connector-bypass.log": 2,
-      "build-intake-bypasses.log": 1
+      "build-intake-bypasses.log": 2
     },
     "other_logs": {
-      "signal-recorder-silent.jsonl": 3561
+      "signal-recorder-silent.jsonl": 13115,
+      "autonomy-posture-layer42.jsonl": 1740
     },
     "errors": [],
-    "total_blocks": 61,
-    "block_rate": 0.0417
+    "total_blocks": 225,
+    "block_rate": 0.0282
   },
   "cap_guard": {
     "freeze_found": true,
-    "baseline": 6,
-    "live": 6,
+    "baseline": 7,
+    "live": 7,
     "sanctioned": 0,
     "status": "WITHIN-FREEZE",
     "rule": [
