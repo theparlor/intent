@@ -26,6 +26,8 @@ product: notice | spec | execute | observe | cross-cutting
 
 # {title}
 
+> **What this protects:** One plain sentence naming the real-world promise this contract holds, and what breaks if it fails. Example: "Signals never silently vanish. Every capture lands in events.jsonl within 5 seconds, or the CLI errors loudly." The Given/When/Then below is the same promise stated precisely for the machine.
+
 ## Assertion
 
 **Given** [precondition or context]
@@ -58,7 +60,7 @@ Link to the parent spec for full solution context.
 
 ## Related Contracts
 
-- CON-XXX — {related contract and why}
+- CON-XXX: {related contract and why}
 
 ## Revision History
 

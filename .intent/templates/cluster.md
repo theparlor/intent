@@ -2,7 +2,7 @@
 id: CLU-XXX
 name: ""            # kebab-case identifier (e.g., signal-capture-surfaces)
 title: ""           # Human-readable cluster name
-status: forming    # forming → active → promoted → dissolved
+status: forming    # forming to active to promoted to dissolved
 signals: []        # SIG-XXX IDs in this cluster
 weight: 0          # Aggregate signal weight (sum of trust scores)
 formed_date: YYYY-MM-DD
@@ -11,9 +11,11 @@ promoted_date:
 ---
 # Cluster: [title]
 
+> **In plain terms:** The single friction these signals all point at, and why it is worth grouping them. Say it so a reader who has not seen the individual signals gets the pattern in one breath. The member list and promotion math below are the record.
+
 ## Theme
 What connects these signals? Describe the underlying pattern or friction
-in one paragraph. This is the "so what" — why these signals belong together.
+in one paragraph. This is the "so what": why these signals belong together.
 
 ## Member Signals
 

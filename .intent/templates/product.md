@@ -20,6 +20,8 @@ file_paths: []             # directories this product owns within the repo
 
 # {title}
 
+> **In plain terms:** What this product is for and who feels the value, in one breath, no jargon. The capability, boundary, and team tables below are the record.
+
 ## Purpose
 
 What value this product delivers and to whom.

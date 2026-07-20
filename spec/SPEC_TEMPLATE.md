@@ -29,10 +29,12 @@ related_entities:
   - {pair: jeff-gothelf ↔ josh-seiden, count: 96, strength: 0.397}
   - {pair: josh-seiden ↔ outcomes-over-output, count: 88, strength: 0.388}
 ---
-# Spec Template: Intent → Shape → Contract
+# Spec Template: Intent to Shape to Contract
 
 > The unit of work in the **Intent** methodology. This replaces the Jira ticket.
 > A ticket tracks *status*. A spec communicates *intent*.
+>
+> This is the authoring guide, the full walkthrough. The terse operational scaffold with the complete frontmatter (used by the dogfood template set) lives at /Users/brien/Workspaces/Core/frameworks/intent/.intent/templates/spec.md.
 >
 > Part of: [Intent: Development Operating System](../../../reference/DEVELOPMENT_OPERATING_SYSTEM.md) | [Intent Product Concept](../../../../Work/Lab/Pipeline/ideas/INTENT_CONCEPT_BRIEF.md)
 
@@ -44,8 +46,8 @@ Copy everything below the `---` line into a new file. Name it descriptively:
 `specs/library-index-nightly-refresh.md`, `specs/workspace-health-check.md`, etc.
 
 The spec serves two audiences simultaneously:
-1. **You, later** — when you revisit and ask "why did I build this?"
-2. **The agent** — when Claude Code needs enough context to execute autonomously.
+1. **You, later**, when you revisit and ask "why did I build this?"
+2. **The agent**, when Claude Code needs enough context to execute autonomously.
 
 A good spec is the shortest document that makes the agent dangerous.
 
@@ -79,7 +81,7 @@ _The "notice" crystallized. What you observed, why it matters, and the outcome y
 
 ### Desired Outcome
 
-<!-- One sentence. Not a feature description — a state of the world after this ships.
+<!-- One sentence. Not a feature description, but a state of the world after this ships.
      Think Seiden: "What behavior changes? What becomes true that wasn't?" -->
 
 
@@ -134,7 +136,7 @@ _How we know it's done. Observable outcomes, not task checkboxes. These are what
 ### Done When
 
 <!-- Concrete, verifiable statements. Each one should be testable by running something,
-     reading something, or observing something — not by opinion. -->
+     reading something, or observing something, not by opinion. -->
 
 - [ ]
 - [ ]
@@ -158,7 +160,7 @@ _How we know it's done. Observable outcomes, not task checkboxes. These are what
 ### Observability
 
 <!-- How will you know this keeps working after it ships?
-     Logs, metrics, Entire.io traces, git evidence — whatever fits. -->
+     Logs, metrics, Entire.io traces, git evidence, whatever fits. -->
 
 -
 

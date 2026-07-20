@@ -17,6 +17,8 @@ escalation_path: ""        # who to escalate to for cross-boundary work
 
 # {title}
 
+> **In plain terms:** What this team exists to do and what it can decide on its own, said plainly. The membership, ownership, and autonomy-boundary detail below is the record.
+
 ## Mission
 
 What this team exists to do. Which products it owns.

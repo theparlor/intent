@@ -7,6 +7,8 @@ generated_by: ""   # cli | scheduled-action | manual
 ---
 # Intent Digest: [period_start] to [period_end]
 
+> **In plain terms:** The short story of the period. What moved, what is stuck, and the one thing worth doing next. A story with a point, not a table dump. The metric tables below are the record.
+
 ## Summary
 One paragraph overview of the period. What moved? What's stuck?
 What patterns are emerging?
@@ -61,5 +63,5 @@ Clusters gaining weight this period:
 
 ## Recommendations
 Based on this period's activity:
-1. [Recommendation — e.g., "Cluster X is ready for promotion"]
-2. [Recommendation — e.g., "SIG-XXX is stale, consider dismissing"]
+1. [Recommendation, e.g., "Cluster X is ready for promotion"]
+2. [Recommendation, e.g., "SIG-XXX is stale, consider dismissing"]

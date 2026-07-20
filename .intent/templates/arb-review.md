@@ -9,6 +9,8 @@ conditions: []     # conditions for approval (if approved-with-concerns)
 ---
 # ARB Review: [atom title]
 
+> **In plain terms:** The verdict in one line (does this pass, and if not, the one thing blocking it), in words the person who wrote the atom can act on. The per-persona assessments below are the record behind the call.
+
 ## Review Summary
 One paragraph verdict. Does this atom pass the ARB?
 
@@ -16,7 +18,7 @@ One paragraph verdict. Does this atom pass the ARB?
 
 ### triangle Practitioner-Architect
 **Assessment:** [pass | flag | block]
-- Fits existing patterns: [yes/no — explain]
+- Fits existing patterns: [yes/no, explain]
 - Integration points identified: [list]
 - Blast radius: [low | medium | high]
 
@@ -24,7 +26,7 @@ One paragraph verdict. Does this atom pass the ARB?
 **Assessment:** [pass | flag | block]
 - Signal-driven: [which signals/clusters drove this]
 - Adoption impact: [who uses this, how often]
-- Investment justified: [yes/no — explain]
+- Investment justified: [yes/no, explain]
 
 ### circle Design-Quality Advocate
 **Assessment:** [pass | flag | block]
@@ -41,7 +43,7 @@ One paragraph verdict. Does this atom pass the ARB?
 ### lightning Claude Code Lens
 **Assessment:** [pass | flag | block]
 - Session estimate: [S/M/L]
-- Stack compatible: [yes/no — which tools]
+- Stack compatible: [yes/no, which tools]
 - SIG-014 risk: [low | medium | high]
 - Dependencies met: [yes/no]
 
@@ -51,4 +53,4 @@ One paragraph verdict. Does this atom pass the ARB?
 
 ## Decision
 **Verdict:** [approved | approved-with-concerns | blocked | needs-info]
-**Next step:** [what happens next — e.g., "proceed to spec", "address concerns first"]
+**Next step:** [what happens next, e.g., "proceed to spec", "address concerns first"]

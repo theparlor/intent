@@ -22,6 +22,8 @@ journey_stage: JRN-NNN#stage-name
 ---
 # DDR: Decision Title
 
+> **In plain terms:** What we decided, the real reason in plain words, what it changes, and how to undo it. Written so anyone reading this cold in three months gets the call without archaeology. The structured alternatives, consequences, and propagation record below are the machine-precise version.
+
 ## Context
 
 Why this decision is needed now. What forces are at play.
@@ -61,9 +63,9 @@ outcomes that can be checked during the Observe phase.
 
 > Added 2026-05-07 per Brien directive following the 2026-05-07 Forge/Cast write-through panel critique. Open to refinement.
 
-**Required for restructure-class DDRs** — multi-file rename, schema change, directory reorganization, taxonomy shift, or any decision that authorizes changes across N>3 files. Optional for non-restructure decisions (e.g., a single-product policy choice or a standalone constraint).
+**Required for restructure-class DDRs:** multi-file rename, schema change, directory reorganization, taxonomy shift, or any decision that authorizes changes across N>3 files. Optional for non-restructure decisions (e.g., a single-product policy choice or a standalone constraint).
 
-A restructure DDR is not "accepted" until propagation is verified closed. Per Source-Pattern Principle 8 (`Core/frameworks/coherence-engineering/spec/source-pattern-principles.md`): a restructure event is not complete when file changes ship — it is complete when its propagation manifest is verified closed. Without these four fields, the restructure is not chartered.
+A restructure DDR is not "accepted" until propagation is verified closed. Per Source-Pattern Principle 8 (`Core/frameworks/coherence-engineering/spec/source-pattern-principles.md`): a restructure event is not complete when file changes ship. It is complete when its propagation manifest is verified closed. Without these four fields, the restructure is not chartered.
 
 ### Propagation Owner
 Who verifies claim-source alignment post-shipment. Default: DDR author. Named explicitly so the loop is closable.
@@ -82,22 +84,22 @@ List of files and surfaces touched by the change set. Auto-generated from `git d
 
 ---
 
-**Lineage:** Source-Pattern Principle 8 (`Core/frameworks/coherence-engineering/spec/source-pattern-principles.md`); Larsen + Meadows panel critique 2026-05-07; SIG-FORGE-ARCH-OPEN-2026-05-07 Decision 3. Empirical motivation: WS-DDR-026 authorized ~870 file changes 2026-04-18 with zero propagation owner; 19+ days of stale `forge/CONTEXT.md` followed. WS-DDR-070 (Cast↔Forge bounded context) is the first DDR authored against this addendum — the dogfood case. **Independent positive case:** the closure of `SIG-CAST-INTAKE-SYNTHESIS-WRITETHROUGH-GAP` (2026-05-07) populated equivalent closure-DoD fields (upstream control + catch-mechanism + pipeline survival) when remediating an unrelated synthesis write-through gap — same discipline shape applied at signal-closure level by an independent agent without prompting. Empirical validation that the four-field primitive is the natural shape.
+**Lineage:** Source-Pattern Principle 8 (`Core/frameworks/coherence-engineering/spec/source-pattern-principles.md`); Larsen + Meadows panel critique 2026-05-07; SIG-FORGE-ARCH-OPEN-2026-05-07 Decision 3. Empirical motivation: WS-DDR-026 authorized ~870 file changes 2026-04-18 with zero propagation owner; 19+ days of stale `forge/CONTEXT.md` followed. WS-DDR-070 (Cast/Forge bounded context) is the first DDR authored against this addendum, the dogfood case. **Independent positive case:** the closure of `SIG-CAST-INTAKE-SYNTHESIS-WRITETHROUGH-GAP` (2026-05-07) populated equivalent closure-DoD fields (upstream control + catch-mechanism + pipeline survival) when remediating an unrelated synthesis write-through gap. Same discipline shape applied at signal-closure level by an independent agent without prompting. Empirical validation that the four-field primitive is the natural shape.
 
 ## Definition of Done (Tool-Capability Assumptions)
 
 > Added 2026-07-08 per RETRO-2026-06-19-acoe-jira-canon-SIG-2. Open to refinement.
 
-**Required for any decision that turns on a tool or platform can/can't-do claim** — e.g. "system X cannot query Y," "the API has no endpoint for Z," "the UI has no bulk-edit option." Optional for decisions that make no such claim.
+**Required for any decision that turns on a tool or platform can/can't-do claim:** e.g. "system X cannot query Y," "the API has no endpoint for Z," "the UI has no bulk-edit option." Optional for decisions that make no such claim.
 
-A decision is not "accepted" while it rests on an untested tool-capability assumption. Reasoning about what a tool *should* be able to do is not a substitute for testing what it *actually* does — a half-true premise can feel fully verified (a queryable link TYPE mistaken for a non-existent FIELD, where the field genuinely does return zero results, is exactly the kind of confirmation that hides the error). Without these two fields, the capability claim is asserted, not verified.
+A decision is not "accepted" while it rests on an untested tool-capability assumption. Reasoning about what a tool *should* be able to do is not a substitute for testing what it *actually* does. A half-true premise can feel fully verified (a queryable link TYPE mistaken for a non-existent FIELD, where the field genuinely does return zero results, is exactly the kind of confirmation that hides the error). Without these two fields, the capability claim is asserted, not verified.
 
 ### Empirical Test
-The exact query, command, or action run against the live system, and its literal result — not a description of expected behavior, the actual output.
+The exact query, command, or action run against the live system, and its literal result, not a description of expected behavior, the actual output.
 
 ### Test Date
 When the empirical test was run. If the underlying system can change (schema, permissions, config, feature flags), a stale test is not sufficient grounds for re-ratifying a decision that was previously reversed on this claim.
 
 ---
 
-**Lineage:** RETRO-2026-06-19-acoe-jira-canon-SIG-2. A ratified canon decision reduced a workflow lane to flag-only on the unverified premise that vanilla Jira JQL cannot query an issue link. A live board contradicted it; a 30-second prod JQL test (`issueLinkType = "is blocked by"`) returned 68 results — a valid native field. The decision was reversed once the claim was actually tested: it had conflated a queryable link TYPE with a non-existent field, and the field alone genuinely did return 0 results, which is what made the wrong premise feel confirmed. The error survived multiple downstream audits and a full canon cascade because every artifact dutifully restated the unverified premise — a full reverse-cascade across ~13 files once the truth surfaced.
+**Lineage:** RETRO-2026-06-19-acoe-jira-canon-SIG-2. A ratified canon decision reduced a workflow lane to flag-only on the unverified premise that vanilla Jira JQL cannot query an issue link. A live board contradicted it; a 30-second prod JQL test (`issueLinkType = "is blocked by"`) returned 68 results, a valid native field. The decision was reversed once the claim was actually tested: it had conflated a queryable link TYPE with a non-existent field, and the field alone genuinely did return 0 results, which is what made the wrong premise feel confirmed. The error survived multiple downstream audits and a full canon cascade because every artifact dutifully restated the unverified premise, producing a full reverse-cascade across ~13 files once the truth surfaced.

@@ -34,6 +34,8 @@ closed_date:
 
 # {title}
 
+> **In plain terms:** What this single pass actually does, and what is true when it lands. One breath, for someone picking it up cold. The spec references, contracts, and ARB assessments below are the record the agent executes against.
+
 ## Execution Context
 
 What this atom accomplishes in a single pass through the work stream.

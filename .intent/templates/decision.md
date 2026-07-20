@@ -1,7 +1,7 @@
 ---
 id: DEC-XXX
 title: ""
-status: proposed   # proposed → accepted → superseded → deprecated
+status: proposed   # proposed to accepted to superseded to deprecated
 date: YYYY-MM-DD
 proposed_by: ""
 deciders: []       # who participated in the decision
@@ -10,6 +10,8 @@ related_intents: [] # INT-XXX IDs affected by this decision
 supersedes: ""     # DEC-XXX ID if this replaces a prior decision
 ---
 # Decision: [title]
+
+> **In plain terms:** What we decided, the real reason in words a newcomer would use, what it changes day to day, and how to undo it if we are wrong. Write it so someone reading this cold in three months understands the call without hunting for context. The structured rationale and alternatives below are the record.
 
 ## Context
 What is the situation that requires a decision? What forces are at play?

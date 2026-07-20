@@ -9,6 +9,8 @@ source: ""          # cli | mcp | github-action | slack | agent
 ---
 # Event: [event type]
 
+> **In plain terms:** One line on what it means when you see this event in a log, and what just happened to produce it. Events are machine records first. This gloss is the only human-facing part.
+
 ## Data Payload
 
 Structured data specific to this event type. Minimum fields:

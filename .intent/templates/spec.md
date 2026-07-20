@@ -29,6 +29,8 @@ agent_ready: false         # true when all contracts are binary pass/fail
 
 # {title}
 
+> **In plain terms:** What we are building and the one-line why, for the version of you who forgot the context. This file is the terse operational scaffold, with the complete frontmatter the tools expect. If you want the fuller authoring walkthrough (the fat-marker sketch, the "shortest document that makes the agent dangerous" framing), start from the authoring guide at /Users/brien/Workspaces/Core/frameworks/intent/spec/SPEC_TEMPLATE.md. The structured sections below are the record the agents execute against.
+
 ## Problem Statement
 
 What problem does this spec solve? Link to the parent intent and
@@ -36,7 +38,7 @@ the signals that drove it.
 
 ## Solution
 
-Descriptive solution — what the implementation looks like when done.
+Descriptive solution: what the implementation looks like when done.
 This section is human-readable context for anyone reviewing the spec.
 
 ## Contracts
@@ -47,7 +49,7 @@ but live as independent artifacts at `.intent/contracts/CON-NNN.md`.
 ### CON-XXX: {contract title}
 - **Type:** interface | behavior | quality | integration
 - **Assertion:** Given [context], when [action], then [expected result]
-- **Verification:** How to check — command, test, manual inspection
+- **Verification:** How to check, by command, test, or manual inspection
 
 ## Acceptance Criteria
 
