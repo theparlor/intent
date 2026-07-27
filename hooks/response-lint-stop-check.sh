@@ -130,7 +130,28 @@ try:
             "→": "right-arrow", "←": "left-arrow", "↔": "both-arrow",
             "⇒": "double-arrow", "…": "ellipsis",
         }
-        found = [name for g, name in GLYPHS.items() if g in text]
+        # WS-DDR-115 (2026-07-27): bullet-glyph carve-out.
+        # Platforms that strip markdown (LinkedIn, some ATS, plain-text email) have no
+        # list syntax, so a line-initial glyph is the only way to render a bullet. That
+        # convention predates LLMs and is NOT the AI tell; the tell is a dash used as a
+        # connector INSIDE prose. Scope the carve-out as tightly as possible:
+        #   - arrow/bullet glyphs only (dashes and ellipsis are never exempt, anywhere)
+        #   - line-initial only (mid-sentence arrows in prose still BLOCK)
+        #   - inside a fenced block only (that is the paste-this-elsewhere signal)
+        BULLET_EXEMPT = {"→", "←", "↔", "⇒", "•", "▪", "‣"}
+        scan_lines, in_fence = [], False
+        for ln in text.split("\n"):
+            if ln.lstrip().startswith("```"):
+                in_fence = not in_fence
+                continue
+            stripped = ln.lstrip()
+            if in_fence and stripped[:1] in BULLET_EXEMPT:
+                # drop only the leading bullet marker; the rest of the line still scans
+                scan_lines.append(stripped[1:])
+            else:
+                scan_lines.append(ln)
+        scan = "\n".join(scan_lines)
+        found = [name for g, name in GLYPHS.items() if g in scan]
         if found:
             audit("emdash-detections.log", "[%s] CAUGHT session=%s glyphs=%s" % (ts, sid, ",".join(found)))
             blocks.append(
