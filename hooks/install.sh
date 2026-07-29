@@ -38,6 +38,7 @@ install_hook() {
 install_hook autonomy-grant-check.sh
 install_hook native-connector-precedence-check.sh
 install_hook presend-assertion-check.sh
+install_hook budget-snapshot-check.sh
 
 # Symlink the lookup map for the native-connector hook so it stays adjacent
 # to the script when invoked via ~/.claude/hooks/.
