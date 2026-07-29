@@ -1,5 +1,5 @@
 ---
-title: Definition of Ready — Template
+title: Definition of Ready - Template
 id: TEMPLATE-DOR
 type: template
 created: 2026-04-14
@@ -23,11 +23,11 @@ related_templates:
   - dod.md
   - dor-dod-library.md
 ---
-# Definition of Ready (DoR) — Template
+# Definition of Ready (DoR) - Template
 
 ## What Is a DoR?
 
-A **Definition of Ready** is an **entry gate**: a set of preconditions that must be verified as true before work on a spec, skill, engagement, or task may begin. If any DoR item is unmet, work is explicitly blocked — not deferred, not skipped.
+A **Definition of Ready** is an **entry gate**: a set of preconditions that must be verified as true before work on a spec, skill, engagement, or task may begin. If any DoR item is unmet, work is explicitly blocked, not deferred, not skipped.
 
 DoR is the answer to: *"Are we ready to start this?"*
 
@@ -99,7 +99,7 @@ If the condition can't be checked with a file existence test, a git command, or 
 
 ### Keep the list short
 
-A DoR with 10 items will be ignored. Target 3–6. If you need more, consider whether the work type needs to be broken down first.
+A DoR with 10 items will be ignored. Target 3 to 6. If you need more, consider whether the work type needs to be broken down first.
 
 ### Link to the DoD library
 
@@ -135,7 +135,7 @@ Context: Brien has asked for a skill that synthesizes Harvest time data into a n
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
-| DOR-001 | Composition audit complete — `expense-narrative` classified vs existing fieldbook skills | `composition-audit-expense-narrative.md` exists | Yes | agent |
+| DOR-001 | Composition audit complete: `expense-narrative` classified vs existing fieldbook skills | `composition-audit-expense-narrative.md` exists | Yes | agent |
 | DOR-002 | Target repo identified: `skills-engine` (not a new repo) | Confirmed by agent check of `Core/products/skills-engine/.git` | Yes | agent |
 | DOR-003 | Harvest MCP connector confirmed available in session environment | Test call to `harvest_list_time_entries` succeeds | Yes | agent |
 | DOR-004 | Deployment plan: skill will live at `skills-engine/platforms/claude-code/financials/expense-narrative/` | Declared above | Yes | agent |

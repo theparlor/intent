@@ -21,6 +21,8 @@ origin: human | agent | synthetic
 ---
 # Persona: Display Name
 
+> **In plain terms:** A persona is a profile of a real type of person this work has to serve or work with: what they want, how they behave, and where they get stuck. Fill one in when later work (journeys, decisions, dossiers) needs to point at an actual human perspective instead of a vague stakeholder label. The needs, pain points, and evidence below are what make the profile checkable rather than a guess.
+
 ## Who
 
 Demographics, role, context, goals. What defines this person

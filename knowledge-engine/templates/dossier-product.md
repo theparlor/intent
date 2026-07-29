@@ -23,6 +23,8 @@ last_researched: YYYY-MM-DD
 ---
 # Product Dossier: Product Name
 
+> **In plain terms:** A product dossier is a teardown of one product from the outside: what it does, who it's for, and where it sits against alternatives. Fill one in when evaluating a competitor, a potential partner tool, or a build-versus-buy option, so the comparison rests on researched facts instead of impression. The market-signals section below is what keeps the read current instead of a snapshot that goes stale.
+
 ## What It Does
 
 Core value proposition. What problem does it solve and for whom?

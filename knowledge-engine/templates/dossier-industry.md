@@ -23,6 +23,8 @@ last_researched: YYYY-MM-DD
 ---
 # Industry Dossier: Industry Name
 
+> **In plain terms:** An industry dossier maps the market a client or product competes in: how big it is, who the players are, and what forces are pushing it to change. Fill one in when a recommendation needs to be grounded in the actual competitive landscape instead of a generic read on the sector. The forces and key-players sections below are what make the read specific rather than boilerplate.
+
 ## Landscape
 
 Market size, growth trajectory, key players, market structure

@@ -21,6 +21,8 @@ origin: human | agent | synthetic
 ---
 # Rationale: Rationale Name
 
+> **In plain terms:** A design rationale is the "why" behind a chosen approach, kept separate from the decision record itself. Fill one in when the reasoning needs to survive independent of whoever made the call, so a later reader can judge whether it still holds even if the decision gets revisited. The framework mapping and risks below are what keep the argument checkable rather than just persuasive.
+
 ## Argument
 
 The reasoning chain. Why does this approach make sense?

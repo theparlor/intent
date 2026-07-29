@@ -23,6 +23,8 @@ last_researched: YYYY-MM-DD
 ---
 # Person Dossier: Full Name
 
+> **In plain terms:** A person dossier is a research profile of one individual who matters to our work: how they got here, how they communicate, and what they currently care about. Fill one in before a meeting, pitch, or relationship-building push with that person, so the outreach is grounded in who they actually are, not a guess. The depth-guarantee audit below is the check that the research is current and not one-sided.
+
 ## Headline
 
 Three-sentence compression: who they are, what they're known for,
