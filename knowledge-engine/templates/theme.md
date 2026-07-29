@@ -19,6 +19,8 @@ origin: human | agent | synthetic
 ---
 # Theme: Theme Name
 
+> **In plain terms:** A theme is a pattern that showed up across more than one piece of evidence, a recurring insight worth acting on, not a one-off observation. Fill one in when several signals or sources are pointing at the same underlying truth, so the finding survives as a named, cited artifact instead of getting lost in the pile. The evidence and implications below are what make the theme checkable rather than just asserted.
+
 ## Insight
 
 The core finding in 1-2 sentences. What pattern emerged from
@@ -28,8 +30,8 @@ the evidence? Why does it matter?
 
 Supporting data points with source references:
 
-- [Source 1](../raw/research/source-file.md) — key quote or finding
-- [Source 2](../raw/analytics/source-file.md) — supporting data
+- [Source 1](../raw/research/source-file.md): key quote or finding
+- [Source 2](../raw/analytics/source-file.md): supporting data
 - Related signal: SIG-NNN
 
 ## Implications

@@ -20,9 +20,11 @@ origin: human | agent | synthetic
 ---
 # Journey: Journey Name
 
+> **In plain terms:** A journey walks through what one persona actually experiences, stage by stage, doing a specific thing, including where it hurts and what breaks trust. Fill one in when you need to see a process from the persona's point of view instead of the system's, so you can spot where an intervention would matter most. The stages and moments of truth below are what later decisions and specs point back to as evidence.
+
 ## Overview
 
-What this journey covers. Start condition → end condition.
+What this journey covers. Start condition to end condition.
 Which persona experiences this journey and in what context.
 
 ## Stages

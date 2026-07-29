@@ -23,6 +23,8 @@ last_researched: YYYY-MM-DD
 ---
 # Company Dossier: Company Name
 
+> **In plain terms:** A company dossier is a standing profile of one organization: what they do, where they're strong or exposed, and why they matter to our work. Fill one in before an engagement, pitch, or persona-mapping pass touches that company, so the same research doesn't get redone from scratch each time. The depth-guarantee audit below is the checklist that keeps the research current instead of just confirming what we already believed.
+
 ## Overview
 
 What they do, scale (revenue, headcount, market cap if public),

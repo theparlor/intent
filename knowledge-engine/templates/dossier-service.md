@@ -23,6 +23,8 @@ last_researched: YYYY-MM-DD
 ---
 # Service Dossier: Service Name
 
+> **In plain terms:** A service dossier is a teardown of one service offering: what it delivers, how it's sold and delivered, and what makes it different from the alternatives. Fill one in when sizing up a competitor's offer or scoping how our own service compares in a given market. The differentiation and integration sections below are what turn a description into something you can actually position against.
+
 ## What It Provides
 
 Core offering. What capability does it deliver and for whom?

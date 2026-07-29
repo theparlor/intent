@@ -1,5 +1,5 @@
 ---
-title: Definition of Done — Template
+title: Definition of Done - Template
 id: TEMPLATE-DOD
 type: template
 created: 2026-04-14
@@ -23,11 +23,11 @@ related_templates:
   - dor.md
   - dor-dod-library.md
 ---
-# Definition of Done (DoD) — Template
+# Definition of Done (DoD) - Template
 
 ## What Is a DoD?
 
-A **Definition of Done** is an **exit gate**: a set of postconditions that must be verified as true before work on a spec, skill, engagement, or task may be declared complete. If any DoD item is unmet, the work is **not done** — regardless of what has been written, built, or shipped.
+A **Definition of Done** is an **exit gate**: a set of postconditions that must be verified as true before work on a spec, skill, engagement, or task may be declared complete. If any DoD item is unmet, the work is **not done**, regardless of what has been written, built, or shipped.
 
 DoD is the answer to: *"Are we actually done?"*
 
@@ -38,8 +38,8 @@ It pairs with the Definition of Ready (DoR), which asks: *"Are we ready to start
 In the Intent work ontology:
 
 ```
-Signal → Intent → Spec → Contract → Capability → Feature → Product
-                                                  ↑
+Signal -> Intent -> Spec -> Contract -> Capability -> Feature -> Product
+                    ^
                                           DoD gates the transition
                                           OUT of Execution (to Observe)
 ```
@@ -82,7 +82,7 @@ owner: agent | brien | both
 
 ### The gate is the gate
 
-If something is listed as `must_be_true_to_close: true`, it CANNOT be overridden by saying "close enough" or "I'll do it later." If Brien approves a close without verifying, that's a governance failure to be captured as a signal — not a reason to soften the DoD.
+If something is listed as `must_be_true_to_close: true`, it CANNOT be overridden by saying "close enough" or "I'll do it later." If Brien approves a close without verifying, that's a governance failure to be captured as a signal, not a reason to soften the DoD.
 
 ### Write postconditions, not tasks
 

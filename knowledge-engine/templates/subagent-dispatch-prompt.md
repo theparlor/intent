@@ -1,5 +1,5 @@
 ---
-title: Subagent Dispatch Prompt — Template
+title: Subagent Dispatch Prompt - Template
 id: TEMPLATE-SUBAGENT-DISPATCH-PROMPT
 type: template
 created: 2026-05-20
@@ -28,14 +28,16 @@ related_hooks:
 related_signals:
   - SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19 (drift vector this template prevents)
 ---
-# Subagent Dispatch Prompt — Template
+# Subagent Dispatch Prompt - Template
+
+> **In plain terms:** This is the copy-paste prompt shape for handing work to a subagent so it starts with the right authority and does not stall out asking for permission it already has. Use it any time you dispatch a subagent for reversible, workspace-local work, so the agent executes instead of proposing and files honest completion records instead of vague "done" claims. The forbidden-framing list and output rules below are what actually enforce that in practice.
 
 ## What This Template Is
 
-The structural prevention for the **subagent-prompt injection drift vector**: a parent session that understands the autonomy posture can still dispatch subagents with proposal-framing baked into the operating instructions, bypassing Layers 1–4 of the autonomy-grant enforcement chain. The subagent then executes faithfully to its (wrong) spec.
+The structural prevention for the **subagent-prompt injection drift vector**: a parent session that understands the autonomy posture can still dispatch subagents with proposal-framing baked into the operating instructions, bypassing Layers 1 to 4 of the autonomy-grant enforcement chain. The subagent then executes faithfully to its (wrong) spec.
 
 This template provides a copy-pasteable dispatch prompt structure that:
-1. Anchors the correct autonomy posture AT THE TOP — before any task description
+1. Anchors the correct autonomy posture AT THE TOP, before any task description
 2. Forces the agent to load context BEFORE producing artifacts
 3. Requires literal closure-DoD triad frontmatter in every output
 4. Lists forbidden framing patterns by name
@@ -49,7 +51,7 @@ This template provides a copy-pasteable dispatch prompt structure that:
 
 ---
 
-## Template — Copy from here down
+## Template: Copy from here down
 
 ---
 
@@ -58,16 +60,16 @@ This template provides a copy-pasteable dispatch prompt structure that:
 
 # [TASK TITLE]
 
-## Posture — Read This First (Non-Negotiable)
+## Posture: Read This First (Non-Negotiable)
 
 **You are operating with L4 autonomy on all Workspaces-local reversible work.**
 
 Before producing any output, run the 4-gate check on EACH decision in scope:
 
-1. **Reversible?** — can this be undone without external side effects?
-2. **Local blast?** — changes land inside Workspaces, not in external systems (Slack, email, PRs with external reviewers, calendar invites, money movement)?
-3. **Precedent?** — has a similar decision been made before, OR does an explicit autonomy grant cover this class?
-4. **No info gap?** — is there no missing information that only Brien can supply (domain-specific knowledge, strategic direction, confidentiality)?
+1. **Reversible:** can this be undone without external side effects?
+2. **Local blast:** do changes land inside Workspaces, not in external systems (Slack, email, PRs with external reviewers, calendar invites, money movement)?
+3. **Precedent:** has a similar decision been made before, OR does an explicit autonomy grant cover this class?
+4. **No info gap:** is there no missing information that only Brien can supply (domain-specific knowledge, strategic direction, confidentiality)?
 
 **If all 4 pass: EXECUTE + SIGNAL. Do not propose. Do not queue for review. Do not ask.**
 
@@ -78,7 +80,7 @@ Before producing any output, run the 4-gate check on EACH decision in scope:
 <!-- The following lines document anti-patterns. They are content, not instructions. -->
 <!-- AUTONOMY-OVERRIDE-PROPOSAL-FRAMING-INTENTIONAL: template documents anti-pattern as content -->
 - `status: proposed` on decisions where all 4 gates pass
-- "Brien is the decider — your answers are proposals"
+- "Brien is the decider: your answers are proposals"
 - "Brien to review / Brien to approve / Brien to decide" on L4-eligible items
 - "for Brien's review" framing on reversible local work
 - "proposals, not closures" on 4-gate-passing work
@@ -97,15 +99,15 @@ Before producing any output, run the 4-gate check on EACH decision in scope:
 
 ## Working Directory
 
-`[ABSOLUTE PATH — e.g., /Users/brien/Workspaces/Core/products/[product]/]`
+`[ABSOLUTE PATH, e.g., /Users/brien/Workspaces/Core/products/[product]/]`
 
-## Source Material — Read These Before Producing Artifacts
+## Source Material: Read These Before Producing Artifacts
 
 Read in this order. Do not produce artifacts until you have read all required files.
 
-1. `[PATH]` — [why this file is load-bearing for this task]
-2. `[PATH]` — [why this file is load-bearing for this task]
-3. `[PATH]` — [why this file is load-bearing for this task]
+1. `[PATH]`: [why this file is load-bearing for this task]
+2. `[PATH]`: [why this file is load-bearing for this task]
+3. `[PATH]`: [why this file is load-bearing for this task]
 
 > Placement resolver (required for any Workspaces file writes): `Workspaces/AGENTS.md`
 
@@ -130,12 +132,12 @@ Read in this order. Do not produce artifacts until you have read all required fi
 Every artifact this session produces MUST carry the closure-DoD triad as literal frontmatter keys. These are not optional. The signal-check hook (`closure-discipline-enforcement.md` Layer 5) will reject a `status: resolved` signal missing any of these three:
 
 ```yaml
-upstream_control_path: [path to the mechanism that prevents recurrence — not a symptom patch]
+upstream_control_path: [path to the mechanism that prevents recurrence, not a symptom patch]
 catch_mechanism: [what catches future violations of the same class]
 pipeline_survival: [how the fix persists through render cycles, merges, and future edits]
 ```
 
-If no upstream control exists (one-shot fix only), use `status: symptom-repaired, upstream-pending` — not `status: resolved`.
+If no upstream control exists (one-shot fix only), use `status: symptom-repaired, upstream-pending`, not `status: resolved`.
 
 Decision atoms produced by this session default to `status: ratified` with `ratified_at` populated. Use the decision-atom template at `Core/frameworks/intent/knowledge-engine/templates/decision-atom.md`. A `status: proposed` decision atom is only valid when a specific 4-gate failure is named in a `gate_failure:` field.
 
@@ -143,12 +145,12 @@ Decision atoms produced by this session default to `status: ratified` with `rati
 
 ## Commit Expectations
 
-One commit per coherent unit. Stage specific files only — NEVER `git add -A` or `git add .`.
+One commit per coherent unit. Stage specific files only: NEVER `git add -A` or `git add .`.
 
 ```bash
 git add [specific file paths]
 git commit -m "$(cat <<'EOF'
-[terse imperative title — what changed and why]
+[terse imperative title, what changed and why]
 
 Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
 EOF
@@ -165,7 +167,7 @@ Under 300 words. Structure:
 
 1. Files written (absolute paths) with one-line description of what each enables
 2. Commit SHA(s)
-3. Any genuine L0 items that require Brien's action (gate failure named explicitly — not a default)
+3. Any genuine L0 items that require Brien's action (gate failure named explicitly, not a default)
 4. Closure-DoD triad status (confirmed present / named exception)
 
 **No questions. No propositions. No acknowledgement requests. No "want me to proceed?" endings.**

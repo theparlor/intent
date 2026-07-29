@@ -1,5 +1,5 @@
 ---
-title: DoR / DoD Library — Canonical Reusable Definitions
+title: DoR / DoD Library: Canonical Reusable Definitions
 id: TEMPLATE-DOR-DOD-LIBRARY
 type: library
 created: 2026-04-14
@@ -36,7 +36,7 @@ related_templates:
 2. **Load the DoR** at the start of the work (CATCH phase in skill-intake, before any execution).
 3. **Verify every DOR item** before proceeding. If any are unmet, surface them to Brien or resolve them before building.
 4. **Load the DoD** at the close of the work (DEPLOY GATE phase in skill-intake).
-5. **Verify every DOD item** before declaring complete. If any are unmet, list what's needed — do not mark complete.
+5. **Verify every DOD item** before declaring complete. If any are unmet, list what's needed, do not mark complete.
 6. **Add work-specific custom conditions** to the DoR/DoD blocks in the spec itself. The library entries are the floor, not the ceiling.
 
 ---
@@ -45,15 +45,15 @@ related_templates:
 
 | Work Type | DoR | DoD |
 |-----------|-----|-----|
-| [Skill Build](#skill-build) | DOR-SKB-001 – 006 | DOD-SKB-001 – 006 |
-| [Spec Authoring](#spec-authoring) | DOR-SPC-001 – 004 | DOD-SPC-001 – 005 |
-| [Plan Authoring](#plan-authoring) | DOR-PLN-001 – 005 | DOD-PLN-001 – 006 |
-| [Engagement Kickoff](#engagement-kickoff) | DOR-EKO-001 – 005 | DOD-EKO-001 – 005 |
-| [Engagement Closure](#engagement-closure) | DOR-ECL-001 – 004 | DOD-ECL-001 – 005 |
-| [Persona Enrichment Pass](#persona-enrichment-pass) | DOR-PEP-001 – 004 | DOD-PEP-001 – 06 |
-| [Critique Panel](#critique-panel) | DOR-CPL-001 – 04 | DOD-CPL-001 – 05 |
-| [Signal Closure](#signal-closure) | DOR-SCL-001 – 03 | DOD-SCL-001 – 05 |
-| [YAML-Emitting Stage](#yaml-emitting-stage) | DOR-YML-001 – 02 | DOD-YML-001 – 03 |
+| [Skill Build](#skill-build) | DOR-SKB-001 to 006 | DOD-SKB-001 to 006 |
+| [Spec Authoring](#spec-authoring) | DOR-SPC-001 to 004 | DOD-SPC-001 to 005 |
+| [Plan Authoring](#plan-authoring) | DOR-PLN-001 to 005 | DOD-PLN-001 to 006 |
+| [Engagement Kickoff](#engagement-kickoff) | DOR-EKO-001 to 005 | DOD-EKO-001 to 005 |
+| [Engagement Closure](#engagement-closure) | DOR-ECL-001 to 004 | DOD-ECL-001 to 005 |
+| [Persona Enrichment Pass](#persona-enrichment-pass) | DOR-PEP-001 to 004 | DOD-PEP-001 to 06 |
+| [Critique Panel](#critique-panel) | DOR-CPL-001 to 04 | DOD-CPL-001 to 05 |
+| [Signal Closure](#signal-closure) | DOR-SCL-001 to 03 | DOD-SCL-001 to 05 |
+| [YAML-Emitting Stage](#yaml-emitting-stage) | DOR-YML-001 to 02 | DOD-YML-001 to 03 |
 
 ---
 
@@ -61,27 +61,27 @@ related_templates:
 
 > Use for any new skill, plugin, command, or composable system being built into the skills-engine. Activates via skill-intake internal-build mode.
 
-### Definition of Ready — Skill Build
+### Definition of Ready: Skill Build
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
 | DOR-SKB-001 | Composition audit completed; request classified as extend / compose / new+compose / true-new / don't-build | `composition-audit.md` or equivalent artifact exists at skill directory or session notes | Yes | agent |
 | DOR-SKB-002 | Target git repository identified and confirmed initialized | `git status` or `git log` succeeds in target repo path | Yes | agent |
 | DOR-SKB-003 | Deployment plan documented: target directory, category, skill name, registration path | Declared in spec INTENT.md or session-captured decision | Yes | both |
-| DOR-SKB-004 | Architecture decision locked (extend vs. compose vs. new) — Brien's pick recorded if non-obvious | Decision recorded in session or `.intent/decisions.md` | Yes | both |
+| DOR-SKB-004 | Architecture decision locked (extend vs. compose vs. new), Brien's pick recorded if non-obvious | Decision recorded in session or `.intent/decisions.md` | Yes | both |
 | DOR-SKB-005 | Budget declared: ceiling estimate and model allocation (Sonnet vs. Opus) | Ceiling stated in spec or session | No | brien |
 | DOR-SKB-006 | DoD for this build is declared and understood | DoD block populated in spec (or this library entry loaded) | Yes | agent |
 
-### Definition of Done — Skill Build
+### Definition of Done: Skill Build
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
-| DOD-SKB-001 | All code/files committed to managed git repo — NOT orphaned in Workspaces | `git log --oneline -- [skill-path]` shows commit | Yes | agent |
+| DOD-SKB-001 | All code/files committed to managed git repo, NOT orphaned in Workspaces | `git log --oneline -- [skill-path]` shows commit | Yes | agent |
 | DOD-SKB-002 | Skill registered and discoverable: SKILL.md exists at canonical path in skills-engine | `Glob platforms/claude-code/**/[skill-name]/SKILL.md` returns file | Yes | agent |
 | DOD-SKB-003 | CONTEXT.md present at skill directory or category level | File exists | Yes | agent |
-| DOD-SKB-004 | Memory updated if skill is load-bearing or process-changing | Memory file exists OR explicit "n/a — not load-bearing" declared | Yes | both |
+| DOD-SKB-004 | Memory updated if skill is load-bearing or process-changing | Memory file exists OR explicit "n/a: not load-bearing" declared | Yes | both |
 | DOD-SKB-005 | At least one composition scenario tested: skill invoked with realistic input, output verified | Test output documented in session or `composition-test-[skill]-[date].md` | Yes | both |
-| DOD-SKB-006 | Signal captured if this skill changes how Brien works or resolves an active signal | Signal file exists OR explicit "n/a — no signal" declared with reason | Yes | agent |
+| DOD-SKB-006 | Signal captured if this skill changes how Brien works or resolves an active signal | Signal file exists OR explicit "n/a: no signal" declared with reason | Yes | agent |
 
 ---
 
@@ -89,16 +89,16 @@ related_templates:
 
 > Use when authoring a new SPEC-NNN or major revision to an existing spec in the Intent framework.
 
-### Definition of Ready — Spec Authoring
+### Definition of Ready: Spec Authoring
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
 | DOR-SPC-001 | Parent intent (INT-NNN) exists and is accepted | `intent-intent show INT-NNN` returns status `accepted` | Yes | agent |
-| DOR-SPC-002 | Related existing specs reviewed — no duplicate spec being authored | Agent has read all `SPEC-NNN` files in adjacent domain | Yes | agent |
+| DOR-SPC-002 | Related existing specs reviewed, no duplicate spec being authored | Agent has read all `SPEC-NNN` files in adjacent domain | Yes | agent |
 | DOR-SPC-003 | Contract numbering scheme confirmed: next CON-NNN known | `grep -r "CON-" .intent/specs/` scan completed; next ID confirmed | Yes | agent |
 | DOR-SPC-004 | Applicable DoR/DoD library entries loaded for the work type this spec governs | This file consulted; work-type entry copied into spec | Yes | agent |
 
-### Definition of Done — Spec Authoring
+### Definition of Done: Spec Authoring
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -112,27 +112,27 @@ related_templates:
 
 ## Plan Authoring
 
-> Use when authoring a new PLAN-NNN or major revision to an existing plan. Activates per `Core/frameworks/intent/spec/plan-artifact-convention.md` (SPEC-PLAN-001) + Annex A. Plans are sibling to specs — a plan answers *how/when*, a spec answers *what/why*.
+> Use when authoring a new PLAN-NNN or major revision to an existing plan. Activates per `Core/frameworks/intent/spec/plan-artifact-convention.md` (SPEC-PLAN-001) + Annex A. Plans are sibling to specs: a plan answers *how/when*, a spec answers *what/why*.
 
-### Definition of Ready — Plan Authoring
+### Definition of Ready: Plan Authoring
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
-| DOR-PLN-001 | Source spec exists with `status: accepted` (or explicit `TBD — spec pending` placeholder + `SIG-PLAN-NO-SPEC` emitted per SPEC-PLAN-001 §2.1.1) | `source_spec:` field in plan frontmatter resolves to extant spec file | Yes | agent |
+| DOR-PLN-001 | Source spec exists with `status: accepted` (or explicit `TBD: spec pending` placeholder + `SIG-PLAN-NO-SPEC` emitted per SPEC-PLAN-001 §2.1.1) | `source_spec:` field in plan frontmatter resolves to extant spec file | Yes | agent |
 | DOR-PLN-002 | Phase structure decided: phased (per Annex A §3) or flat. Phased plans declare phase count + checkpoint criteria. | Plan body declares phase count or notes flat structure | Yes | agent |
 | DOR-PLN-003 | Budget declared: model allocation per phase (Sonnet vs. Opus), expected wall-time, expected token cost. Surface to Brien if estimate exceeds 10% of weekly bucket per autonomy-grant L2. | Budget block populated in plan body or session notes | Yes | both |
 | DOR-PLN-004 | Applicable DoR/DoD library entries loaded for work types the plan executes (e.g., if plan dispatches sub-agents for spec authoring, DOR-SPC-001 et al loaded) | This file consulted; relevant entries cited in plan dependencies | Yes | agent |
 | DOR-PLN-005 | Dependencies identified: other plans (PLAN-IDs), signals whose resolution is prerequisite, external systems or approvals needed | Dependencies section populated | Yes | agent |
 
-### Definition of Done — Plan Authoring
+### Definition of Done: Plan Authoring
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
-| DOD-PLN-001 | All tasks completed OR formally deferred with documented rationale (no silent skips) | Every `- [ ]` checkbox is `- [x]` OR a `Deferred — see <signal-id>` annotation | Yes | agent |
-| DOD-PLN-002 | If plan is phased: every phase-checkpoint block satisfied per Annex A §3.2 (verification items checked, artifacts produced, handoff signal emitted) | Each `### CHECKPOINT — Phase N` block has all `- [ ]` verifiation items as `- [x]` and handoff signal file exists | Yes (if phased) | agent |
+| DOD-PLN-001 | All tasks completed OR formally deferred with documented rationale (no silent skips) | Every `- [ ]` checkbox is `- [x]` OR a `Deferred: see <signal-id>` annotation | Yes | agent |
+| DOD-PLN-002 | If plan is phased: every phase-checkpoint block satisfied per Annex A §3.2 (verification items checked, artifacts produced, handoff signal emitted) | Each `### CHECKPOINT: Phase N` block has all `- [ ]` verifiation items as `- [x]` and handoff signal file exists | Yes (if phased) | agent |
 | DOD-PLN-003 | Signals emitted at appropriate paths per task instructions; signal status fields are honest per closure-DoD (`resolved` only with installed upstream control + catch-net + pipeline survival) | Signal files exist at declared paths; status fields satisfy closure-DoD | Yes | agent |
-| DOD-PLN-004 | Handoff section populated (or marked `N/A — single-session plan` for non-multi-session plans) | Handoff section present and non-empty | Yes | agent |
-| DOD-PLN-005 | Rollback section populated (or marked `additive-only — no rollback needed`) per SPEC-PLAN-001 §2.1.2 | Rollback section present and non-empty | Yes | agent |
+| DOD-PLN-004 | Handoff section populated (or marked `N/A: single-session plan` for non-multi-session plans) | Handoff section present and non-empty | Yes | agent |
+| DOD-PLN-005 | Rollback section populated (or marked `additive-only: no rollback needed`) per SPEC-PLAN-001 §2.1.2 | Rollback section present and non-empty | Yes | agent |
 | DOD-PLN-006 | Plan status updated to `completed`, `abandoned`, or `deferred` per SPEC-PLAN-001 §2.1.1 lifecycle. Retro signal filed if appropriate. | Frontmatter `status` field is terminal value; if `abandoned` or `deferred`, reason in plan body + signal filed | Yes | brien-or-agent |
 
 ---
@@ -141,7 +141,7 @@ related_templates:
 
 > Use at the start of any new consulting, advising, or research engagement.
 
-### Definition of Ready — Engagement Kickoff
+### Definition of Ready: Engagement Kickoff
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
@@ -151,7 +151,7 @@ related_templates:
 | DOR-EKO-004 | Working folder structure created per Workspaces convention | `Work/Consulting/Engagements/[Client]/` exists with standard subdirs | Yes | agent |
 | DOR-EKO-005 | Placement resolver consulted: `Workspaces/AGENTS.md` Engagement Scope Test applied | Agent has read AGENTS.md for this engagement setup | Yes | agent |
 
-### Definition of Done — Engagement Kickoff
+### Definition of Done: Engagement Kickoff
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -165,9 +165,9 @@ related_templates:
 
 ## Engagement Closure
 
-> Use when wrapping an engagement — before archiving, invoicing, and retrospective.
+> Use when wrapping an engagement, before archiving, invoicing, and retrospective.
 
-### Definition of Ready — Engagement Closure
+### Definition of Ready: Engagement Closure
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
@@ -176,7 +176,7 @@ related_templates:
 | DOR-ECL-003 | Final invoice or billing record prepared | Financials/ shows invoice artifact | Yes | brien |
 | DOR-ECL-004 | Any NDA-sensitive materials confirmed to be engagement-scoped (not in Core/) | Placement resolver scan: no client-confidential content in Core/ | Yes | agent |
 
-### Definition of Done — Engagement Closure
+### Definition of Done: Engagement Closure
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -192,7 +192,7 @@ related_templates:
 
 > Use for any corpus enrichment run targeting named-human or archetype personas.
 
-### Definition of Ready — Persona Enrichment Pass
+### Definition of Ready: Persona Enrichment Pass
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
@@ -201,7 +201,7 @@ related_templates:
 | DOR-PEP-003 | Current depth scores synced: registry YAML, processing-log, and enrichment dashboard agree | Cross-check `rendering.depth_score` in registry vs. dashboard | Yes | agent |
 | DOR-PEP-004 | Research ceiling declared (free sources only? paid? Opus synthesis authorized?) | Ceiling stated in session or prior signal | No | brien |
 
-### Definition of Done — Persona Enrichment Pass
+### Definition of Done: Persona Enrichment Pass
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -218,7 +218,7 @@ related_templates:
 
 > Use for any panel-critique run (formal or rapid mode).
 
-### Definition of Ready — Critique Panel
+### Definition of Ready: Critique Panel
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
@@ -227,7 +227,7 @@ related_templates:
 | DOR-CPL-003 | Preset chosen (comprehensive / rapid / devil-devil / challenge-only) OR all knobs explicit | Preset named OR explicit stance/depth configuration provided | Yes | both |
 | DOR-CPL-004 | Output destination declared (inline response, file, specific path) | Output target stated | No | brien |
 
-### Definition of Done — Critique Panel
+### Definition of Done: Critique Panel
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -243,7 +243,7 @@ related_templates:
 
 > Use whenever a signal is being transitioned to `resolved`, `deferred`, or `symptom-repaired, upstream-pending`. Introduced 2026-04-16 per SIG-F-001. Enforces that closure cannot happen without the upstream control being in place (or explicitly deferred with rationale).
 
-### Definition of Ready — Signal Closure
+### Definition of Ready: Signal Closure
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
@@ -251,7 +251,7 @@ related_templates:
 | DOR-SCL-002 | Closer has searched the target codebase / spec repo for evidence that the upstream control exists | Search commands recorded or cited | Yes | agent |
 | DOR-SCL-003 | Closer has classified the closure: `resolved` (control installed), `deferred` (with rationale + date), or `symptom-repaired, upstream-pending` | Classification stated explicitly | Yes | agent |
 
-### Definition of Done — Signal Closure
+### Definition of Done: Signal Closure
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -267,14 +267,14 @@ related_templates:
 
 > Use for any pipeline stage that writes `.yaml` / `.yml` files (persona-intake IDENTIFY/HARVEST/RENDER, fieldbook ledger, skills-engine registry emission, engagement schema files). Introduced 2026-04-16 per SIG-046 / SIG-F-001. Prevents the recurring class of "LLM wrote YAML with unescaped colons / nested quotes / bad indentation, defect only caught at consumption."
 
-### Definition of Ready — YAML-Emitting Stage
+### Definition of Ready: YAML-Emitting Stage
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
 | DOR-YML-001 | Emission path declared: library-based (`yaml.safe_dump` via helper) OR template-with-validation. Hand-templated without validation is NOT a valid path | Path stated in spec / SKILL.md | Yes | agent |
 | DOR-YML-002 | Validation gate available: `yaml.safe_load` helper callable from the stage | Helper path + invocation stated | Yes | agent |
 
-### Definition of Done — YAML-Emitting Stage
+### Definition of Done: YAML-Emitting Stage
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -311,13 +311,13 @@ Every new spec should reference the applicable DoR/DoD from this library plus an
 
 > Use when advancing a framework, product, or discipline that is explicitly declared as
 > "working hypothesis under pressure test." The canonical case is Coherence Engineering
-> (CE) — see `Core/frameworks/coherence-engineering/DEFINITION.md` §status block.
+> (CE), see `Core/frameworks/coherence-engineering/DEFINITION.md` §status block.
 > A hypothesis test differs from spec authoring in that the exit criterion is
 > adversarial-critique survival, not approval from a single reviewer. The work type
 > is complete when the hypothesis has been subjected to structured disconfirmation
 > attempts and the surviving claim set is recorded.
 
-### Definition of Ready — Hypothesis Test
+### Definition of Ready: Hypothesis Test
 
 | ID | Condition | Verification | Blocked If Unmet | Owner |
 |----|-----------|--------------|------------------|-------|
@@ -327,7 +327,7 @@ Every new spec should reference the applicable DoR/DoD from this library plus an
 | DOR-HYP-004 | Dissent-preservation commitment confirmed: no aggregation to consensus; per-voice dissent preserved verbatim | Voices panel dissent-preservation law acknowledged in spec or session | Yes | agent |
 | DOR-HYP-005 | Existing dissent log reviewed: prior Voices-panel runs on this hypothesis are read before running a new pass | Dissent log consulted; agent can state current state of surviving objections | Yes | agent |
 
-### Definition of Done — Hypothesis Test
+### Definition of Done: Hypothesis Test
 
 | ID | Condition | Verification | Must Be True | Owner |
 |----|-----------|--------------|--------------|-------|
@@ -339,7 +339,7 @@ Every new spec should reference the applicable DoR/DoD from this library plus an
 | DOD-HYP-006 | Externalization gate status updated: if all DoD items pass, gate movement is assessed against `external/INDEX.md` three-gate sequence | Gate status logged in hypothesis artifact or `external/INDEX.md` | Yes | agent |
 | DOD-HYP-007 | Signal emitted capturing hypothesis pressure-test outcome (advance, weaken, or stall) | Signal file in `.intent/signals/` tagged `hypothesis-test-outcome` | Yes | agent |
 
-**Canonical case reference:** `Core/frameworks/coherence-engineering/DEFINITION.md` — this file
+**Canonical case reference:** `Core/frameworks/coherence-engineering/DEFINITION.md`, this file
 is the living example of a hypothesis artifact. Its status block, externalization gate
 (`external/INDEX.md`), and dissent register (`inventory/coherence-debt-register-2026-04-18.md`)
 are the reference implementation of the DoR/DoD above. Closes SIG-COH-DEBT-009.
@@ -351,4 +351,4 @@ are the reference implementation of the DoR/DoD above. Closes SIG-COH-DEBT-009.
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-05-20 | Added hypothesis-test work type (9th entry). Closes SIG-COH-DEBT-009. Canonical case: Coherence Engineering. | brien/agent |
-| 2026-04-14 | Initial: 6 work types — skill-build, spec-authoring, engagement-kickoff, engagement-closure, persona-enrichment, critique-panel | brien/agent |
+| 2026-04-14 | Initial: 6 work types, skill-build, spec-authoring, engagement-kickoff, engagement-closure, persona-enrichment, critique-panel | brien/agent |

@@ -20,6 +20,8 @@ origin: human | agent | synthetic
 ---
 # Domain Model: Model Name
 
+> **In plain terms:** A domain model settles the shared vocabulary for one bounded area of the work: the terms, entities, and boundaries that need to mean the same thing to everyone touching it. Fill one in when a concept keeps getting redefined differently by different people or documents, so there is one place that resolves what a word means and where its scope stops. The elements table and boundaries below are what other artifacts link back to instead of re-explaining the concept each time.
+
 ## Definition
 
 What this model represents and why it exists as a distinct
