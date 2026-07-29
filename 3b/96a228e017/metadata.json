@@ -1,0 +1,42 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "3b96a228e017",
+  "strategy": "manual-commit",
+  "branch": "land/dash-glyph-strip-and-hook-2026-07-29",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "hooks/emdash-stop-check.sh",
+    "knowledge-engine/templates/decision-atom.md",
+    "knowledge-engine/templates/design-rationale.md",
+    "knowledge-engine/templates/dod.md",
+    "knowledge-engine/templates/domain-model.md",
+    "knowledge-engine/templates/dor-dod-library.md",
+    "knowledge-engine/templates/dor.md",
+    "knowledge-engine/templates/dossier-company.md",
+    "knowledge-engine/templates/dossier-context.md",
+    "knowledge-engine/templates/dossier-industry.md",
+    "knowledge-engine/templates/dossier-person.md",
+    "knowledge-engine/templates/dossier-product.md",
+    "knowledge-engine/templates/dossier-service.md",
+    "knowledge-engine/templates/journey.md",
+    "knowledge-engine/templates/persona.md",
+    "knowledge-engine/templates/subagent-dispatch-prompt.md",
+    "knowledge-engine/templates/theme.md",
+    "knowledge/dossiers/industries/DSR-IND-002-spacecraft.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3b/96a228e017/0/metadata.json",
+      "transcript": "/3b/96a228e017/0/full.jsonl",
+      "content_hash": "/3b/96a228e017/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 174,
+    "cache_creation_tokens": 830098,
+    "cache_read_tokens": 22040731,
+    "output_tokens": 95910,
+    "api_call_count": 96
+  }
+}
