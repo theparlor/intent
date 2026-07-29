@@ -1,46 +1,54 @@
 #!/usr/bin/env bash
 # budget-snapshot-check.sh
 #
-# SessionStart hook - ambient budget state from codeburn.
+# SessionStart hook - ambient budget state from codeburn, with guidance that
+# depends on where in the cycle you are.
 #
 # Why this exists: budget state was being polled by two recurring Google
-# Calendar reminders ("Budget check: 18h to weekly reset" and "Budget check:
-# reset today 12:59 PM ET"), scheduled out to 2027-04-20. They were dumb
-# timers. They fired whether or not spend was anywhere near a threshold, they
-# could not say how much was left, and they went wrong the moment a plan or
-# reset window changed. The calendar was being used as a polling loop for
-# state a real instrument already holds.
+# Calendar reminders, deleted 2026-07-29. They were dumb timers. They fired
+# whether or not spend was near a threshold, could not say how much was left,
+# and went wrong the moment a plan or reset window changed.
 #
-# codeburn is that instrument. It scans transcripts, so it is surface-
-# independent, unlike ~/.claude/headroom.json which is written only by the
-# statusline and is blind in every surface that does not render one.
+# THE THING THIS HOOK GOT WRONG ON ITS FIRST DAY, now fixed:
+#
+#   v1 printed "that is a throttle signal, not a spend-it-down signal" on every
+#   breach, at every point in the cycle. Brien corrected that the same day:
+#   protect is cycle-position-dependent, and getting it backwards is expensive
+#   in BOTH directions.
+#
+#     Early and mid cycle, a breach IS a throttle signal. Burning to zero on
+#     day 1 costs the remaining six days. That is 2026-07-19: $1,321.80 in a
+#     day, bucket at 99% by 07-20, two days frozen.
+#
+#     Late cycle, the rule INVERTS. Unspent headroom does not roll over, it
+#     evaporates. On 2026-07-29 Brien left 50% of Fable and 50% of All-Models
+#     on the floor at cutover, having started too late. At T-minus-18h nothing
+#     is protected by restraint, because the bucket resets before the
+#     consequence lands.
+#
+#   So the guidance branches on hours-to-reset. Importing the 07-19 lesson into
+#   the end-of-cycle window is itself the error.
+#
+# Lead time is the point. A drain prompt at T-3h cannot be acted on at
+# Brien-scale, which is why the window is 24h and why the out-of-band trigger
+# (cycle-drain-window-check.sh, launchd) exists: a SessionStart hook only fires
+# if a session starts, and the whole problem is the sessions that do not.
 #
 # WHAT THIS HOOK DOES NOT DO, deliberately:
 #
-#   It does not invent a cycle percentage. codeburn's "weekly" is a ROLLING
-#   7 DAYS, not the Wednesday-anchored bucket. Reporting one as the other is
-#   exactly the error the 2026-07-29 sweep made (it read codeburn's 103%
-#   rolling figure as though it were cycle-percent). Both numbers appear
-#   here, each labelled with which window it came from.
+#   It does not invent a cycle percentage from codeburn. codeburn's "weekly" is
+#   a ROLLING 7 DAYS, not the Wednesday-anchored bucket. Reporting one as the
+#   other is the error the 2026-07-29 sweep made. Both windows print, labelled.
 #
-#   It does not hardcode the reset anchor. Per the resolution order in
-#   .claude/commands/overwatch.md Section 8, the displayed dashboard value is
-#   the only authoritative source; this hook reads resolution-order source 2,
-#   the "Current cycle" line in Core/reference/project-index/usage-tracking.md,
-#   and says so on screen. A hardcoded Friday anchor sat in Section 8 for
-#   three months and shipped a burn window off by two days
-#   (SIG-OVERWATCH-RESET-ANCHOR-FRIDAY-REGRESSION-2026-07-29). Never again in
-#   a file that runs every session.
+#   It does not resolve the anchor itself. That parse lives once, in
+#   Core/products/org-design-tooling/src/resolve-cycle-anchor.sh, so there is
+#   exactly one place the cycle can be wrong.
 #
-#   It does not block. A SessionStart hook that fails a session is worse than
-#   the drift it catches. Every failure path exits 0.
+#   It does not block. Every failure path exits 0.
 #
 # Bypass: BUDGET_SNAPSHOT_CHECK_BYPASSED=1
 #
-# Created: 2026-07-29 (closes step 3 of
-#   .intent/plans/HANDOFF-CODEBURN-AS-BUDGET-SOURCE-OF-TRUTH-2026-07-29.md,
-#   and the "not yet built" session-start burn summary logged as latent
-#   backlog in Core/reference/usage-tracker/usage-model.md)
+# Created 2026-07-29. Cycle-phase branching added the same day per Brien direct.
 
 set -u
 
@@ -50,7 +58,7 @@ CODEBURN="${CODEBURN_BIN:-/opt/homebrew/bin/codeburn}"
 command -v "$CODEBURN" >/dev/null 2>&1 || CODEBURN="$(command -v codeburn 2>/dev/null)"
 
 WS="${WORKSPACES_ROOT:-$HOME/Workspaces}"
-ANCHOR_FILE="$WS/Core/reference/project-index/usage-tracking.md"
+RESOLVER="$WS/Core/products/org-design-tooling/src/resolve-cycle-anchor.sh"
 
 if [ -z "${CODEBURN:-}" ] || [ ! -x "$CODEBURN" ]; then
   printf '\n%s\n' "BUDGET: codeburn not found. Install it, or set CODEBURN_BIN."
@@ -61,32 +69,29 @@ fi
 TMPDIR_B="$(mktemp -d 2>/dev/null)" || exit 0
 trap 'rm -rf "$TMPDIR_B"' EXIT
 
-# Each codeburn call takes roughly 3s (it rescans transcripts), so run the two
-# we need concurrently rather than serially. Serial would put this hook near
-# 7s on its own, and a slow SessionStart hook gets disabled by whoever is
-# waiting for it.
+# Each codeburn call takes roughly 3s (it rescans transcripts). Run the two we
+# need concurrently; serial would put this hook near 7s on its own, and a slow
+# SessionStart hook gets disabled by whoever is waiting for it.
 ( "$CODEBURN" budget --check >"$TMPDIR_B/budget" 2>/dev/null; echo $? >"$TMPDIR_B/budget.rc" ) &
 BPID=$!
-( "$CODEBURN" status --format json >"$TMPDIR_B/status" 2>/dev/null ) &
+( [ -x "$RESOLVER" ] && "$RESOLVER" >"$TMPDIR_B/cycle" 2>/dev/null ) &
 SPID=$!
 wait "$BPID" "$SPID" 2>/dev/null
 
 BUDGET_OUT="$(cat "$TMPDIR_B/budget" 2>/dev/null)"
 BUDGET_RC="$(cat "$TMPDIR_B/budget.rc" 2>/dev/null || echo 0)"
-STATUS_JSON="$(cat "$TMPDIR_B/status" 2>/dev/null)"
+CYCLE_JSON="$(cat "$TMPDIR_B/cycle" 2>/dev/null)"
 
-if [ -z "$BUDGET_OUT" ] && [ -z "$STATUS_JSON" ]; then
+if [ -z "$BUDGET_OUT" ] && [ -z "$CYCLE_JSON" ]; then
   printf '\n%s\n' "BUDGET: codeburn returned nothing. Run 'codeburn doctor' to see why."
   exit 0
 fi
 
-printf '\n%s\n' "BUDGET (codeburn is the instrument, the dashboard is the anchor)"
-printf '\n'
+printf '\n%s\n\n' "BUDGET (codeburn is the instrument, the dashboard is the anchor)"
 
 # --- Tripwires: codeburn's own daily / rolling-7day budgets -----------------
-# codeburn prints these as "  daily: $309.77 of $400.00 (77%) [OK]". Reprint
-# them with the window named, because "weekly" here means rolling 7 days and
-# reading it as cycle-percent is the documented failure mode.
+# Reprinted with the window named, because "weekly" here means rolling 7 days
+# and reading it as cycle-percent is the documented failure mode.
 if [ -n "$BUDGET_OUT" ]; then
   printf '%s\n' "$BUDGET_OUT" | while IFS= read -r line; do
     case "$line" in
@@ -96,77 +101,64 @@ if [ -n "$BUDGET_OUT" ]; then
   done
 fi
 
-if [ "$BUDGET_RC" = "1" ]; then
-  printf '\n  %s\n' "TRIPWIRE BREACHED. At least one configured budget is over."
-  printf '  %s\n' "That is a throttle signal, not a spend-it-down signal. The 2026-07-19"
-  printf '  %s\n' "freeze came from burning a bucket to zero and losing the next two days."
-fi
+# --- Cycle position, and the guidance that depends on it --------------------
+BUDGET_RC="$BUDGET_RC" python3 - <<'PY' "$CYCLE_JSON" 2>/dev/null
+import json, os, sys
 
-# --- The real cycle: Wednesday-anchored, resolved not hardcoded -------------
-python3 - "$ANCHOR_FILE" <<'PY' 2>/dev/null
-import re, sys
-from datetime import datetime, timedelta
+raw = sys.argv[1] if len(sys.argv) > 1 else ""
+breached = os.environ.get("BUDGET_RC", "0") == "1"
+
 try:
-    from zoneinfo import ZoneInfo
-except ImportError:
-    sys.exit(0)
+    c = json.loads(raw) if raw.strip() else {}
+except ValueError:
+    c = {}
 
-path = sys.argv[1]
-try:
-    text = open(path, encoding="utf-8").read()
-except OSError:
+if not c.get("ok"):
+    err = c.get("error", "cycle resolver produced no output")
     print()
-    print("  weekly cycle      anchor file unreadable: %s" % path)
-    print("                    Capture the dashboard and record it there.")
+    print("  weekly cycle      UNRESOLVED: %s" % err)
+    print("                    Capture the displayed 'Resets [day] [time]' and record it in")
+    print("                    the Current cycle line. Without it there is no cycle position,")
+    print("                    and the guidance below cannot be trusted either way.")
+    if breached:
+        print()
+        print("  TRIPWIRE BREACHED on a rolling window. Cannot say whether that means")
+        print("  throttle or drain without knowing hours-to-reset. Resolve the anchor first.")
     sys.exit(0)
 
-# Resolution-order source 2: the "Current cycle" line. Deliberately NOT a
-# constant in this file. See the header note on the Friday regression.
-m = re.search(
-    r"next reset\s+\w+\s+(\d{4}-\d{2}-\d{2})\s+(\d{1,2}):(\d{2})\s*([AaPp])\.?[Mm]\.?\s*ET",
-    text,
-)
-if not m:
-    print()
-    print("  weekly cycle      no 'next reset' found in the Current cycle line.")
-    print("                    Source: %s" % path)
-    sys.exit(0)
-
-date_s, hh, mm, ampm = m.group(1), int(m.group(2)), int(m.group(3)), m.group(4).lower()
-if ampm == "p" and hh != 12:
-    hh += 12
-elif ampm == "a" and hh == 12:
-    hh = 0
-
-ET = ZoneInfo("America/New_York")
-y, mo, d = (int(x) for x in date_s.split("-"))
-nxt = datetime(y, mo, d, hh, mm, tzinfo=ET)
-now = datetime.now(ET)
-
-# Forward-roll whole weeks if the recorded reset has already passed. This is a
-# staleness indicator, not a correction: it means nobody has captured the
-# dashboard since then, and the anchor is mobile by Anthropic's discretion.
-rolled = 0
-while nxt <= now:
-    nxt += timedelta(days=7)
-    rolled += 1
-
-to_reset = (nxt - now).total_seconds() / 3600.0
-elapsed = 168.0 - to_reset
-pct = max(0.0, min(100.0, elapsed / 168.0 * 100.0))
-
+phase = c["phase"]
+to_reset = c["hours_to_reset"]
 print()
-print("  weekly cycle      %s" % nxt.strftime("next reset %a %Y-%m-%d %-I:%M %p ET"))
-print("                    %.0fh elapsed of 168h (%.0f%%), %.0fh to reset" % (elapsed, pct, to_reset))
+print("  weekly cycle      next reset %s" % c["next_reset_human"])
+print("                    %.0fh elapsed of 168h (%.0f%%), %.0fh to reset"
+      % (c["hours_elapsed"], c["pct_elapsed"], to_reset))
 
-if rolled:
-    weeks = "week" if rolled == 1 else "weeks"
+if c.get("rolled_weeks"):
+    n = c["rolled_weeks"]
     print()
     print("  STALE ANCHOR      recorded reset had already passed; rolled forward %d %s."
-          % (rolled, weeks))
-    print("                    Nobody has captured the dashboard in that time, and the")
-    print("                    anchor is mobile. Read the displayed 'Resets [day] [time]'")
-    print("                    and record it in the Current cycle line.")
+          % (n, "week" if n == 1 else "weeks"))
+    print("                    Nobody has captured the dashboard in that time, and the anchor")
+    print("                    is mobile. Read the displayed 'Resets [day] [time]' and record it.")
+
+print()
+if phase == "drain":
+    print("  DRAIN WINDOW      %.0fh to reset. Unspent headroom does NOT roll over." % to_reset)
+    print("                    It evaporates. On 2026-07-29 half of both Fable and All-Models")
+    print("                    was left on the floor at cutover by starting too late.")
+    print("                    Queue and drain real work into the expiring capacity now.")
+    if breached:
+        print()
+        print("                    The breached tripwire above is a ROLLING-7-DAY reading and")
+        print("                    is not a stop signal here. Do not import the 2026-07-19")
+        print("                    throttle lesson into the end of a cycle.")
+elif breached:
+    print("  TRIPWIRE BREACHED. At %.0fh to reset, this IS a throttle signal, not a" % to_reset)
+    print("  spend-it-down signal. Burning the bucket to zero this early costs the rest")
+    print("  of the cycle: 2026-07-19 was $1,321.80 in a day and two frozen days after.")
+else:
+    print("  Mid-cycle, no tripwire breached. Protect headroom; the drain-window")
+    print("  guidance flips on at %.0fh to reset." % c.get("drain_window_h", 24))
 PY
 
 printf '\n'
@@ -175,9 +167,9 @@ printf '  %s\n' "- The rolling 7 days above is NOT the cycle. It is a tripwire w
 printf '  %s\n' "  Cycle percent consumed comes from the dashboard only."
 printf '  %s\n' "- Dollars are API-equivalent notional on a Max subscription, not"
 printf '  %s\n' "  out-of-pocket. They measure bucket draw, not money leaving an account."
-printf '  %s\n' "- Fable draws the weekly bucket at roughly 4.8x Opus per token, so a"
-printf '  %s\n' "  cheap-looking Fable fan-out is the most expensive thing available."
-printf '  %s\n' "- Anchor source: Core/reference/project-index/usage-tracking.md"
+printf '  %s\n' "- Fable draws the weekly bucket at roughly 4.8x Opus per token. That cuts"
+printf '  %s\n' "  both ways: worst thing to fan out early, best thing to drain late."
+printf '  %s\n' "- Anchor source: /Users/brien/Workspaces/Core/reference/project-index/usage-tracking.md"
 printf '\n'
 
 exit 0
