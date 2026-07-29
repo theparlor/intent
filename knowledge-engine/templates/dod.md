@@ -38,8 +38,8 @@ It pairs with the Definition of Ready (DoR), which asks: *"Are we ready to start
 In the Intent work ontology:
 
 ```
-Signal → Intent → Spec → Contract → Capability → Feature → Product
-                                                  ↑
+Signal -> Intent -> Spec -> Contract -> Capability -> Feature -> Product
+                    ^
                                           DoD gates the transition
                                           OUT of Execution (to Observe)
 ```

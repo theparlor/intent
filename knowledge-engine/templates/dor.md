@@ -38,8 +38,8 @@ It pairs with the Definition of Done (DoD), which asks: *"Are we done?"*
 In the Intent work ontology:
 
 ```
-Signal → Intent → Spec → Contract → Capability → Feature → Product
-                  ↑
+Signal -> Intent -> Spec -> Contract -> Capability -> Feature -> Product
+                    ^
               DoR gates the transition INTO Spec execution
               DoD gates the transition OUT of Spec (to Observe)
 ```
