@@ -11,7 +11,8 @@
     },
     "fallback_prefix": "mcp__google-workspace__",
     "spec": "Core/frameworks/intent/spec/native-connector-precedence.md (pending)",
-    "related_signal": "SIG-2026-05-27-native-connector-precedence-hook-gap.md"
+    "related_signal": "SIG-2026-05-27-native-connector-precedence-hook-gap.md",
+    "precedence_is_not_prohibition": "Blocking is a speed bump, not a wall. workspace-mcp is load-on-demand for cases the native connector does not cover. A blocked call can proceed by writing a reasoned, single-use, TTL-bounded grant to ~/.claude/native-connector-fallback-grant.json (the hook prints the exact command). Reviewed 2026-07-31 after the env-var bypass was found unreachable from MCP tool calls."
   },
   "blocked_with_native_equivalent": {
     "mcp__google-workspace__search_gmail_messages": {
@@ -87,7 +88,7 @@
     "mcp__google-workspace__create_drive_file": {
       "native_prefix": "drive",
       "native_verb": "create_file",
-      "note": "Same semantics."
+      "note": "NOT identical. Native create_file requires the content inlined in the tool call (text_content or base64_content). It has no fileUrl and no local-path upload, so bulk or large-file uploads from disk cost the full file size in tokens. workspace-mcp create_drive_file accepts fileUrl. For a handful of small files use native; for bulk or large local files, either take a fallback grant or call the Drive REST API directly with the stored credential."
     },
     "mcp__google-workspace__copy_drive_file": {
       "native_prefix": "drive",
@@ -122,7 +123,7 @@
     "mcp__google-workspace__create_drive_folder": {
       "native_prefix": "drive",
       "native_verb": "create_file",
-      "note": "Native create_file with mimeType application/vnd.google-apps.folder creates a folder."
+      "note": "Native create_file with mimeType application/vnd.google-apps.folder creates a folder. Equivalent, no content involved. Prefer native."
     }
   },
   "fallback_allowed": {

@@ -46,8 +46,50 @@ def _log(filename: str, msg: str) -> None:
         pass
 
 
+GRANT_FILE = Path.home() / ".claude" / "native-connector-fallback-grant.json"
+GRANT_TTL_SECONDS = 1800  # 30 minutes
+
+
+def _consume_grant(tool_name: str) -> str:
+    """Return the reason string if a live fallback grant covers this tool, else "".
+
+    The grant is a small JSON file the agent writes from Bash. It exists because
+    the original env-var bypass was UNREACHABLE: an MCP tool call carries no
+    environment, so NATIVE_CONNECTOR_PRECEDENCE_BYPASSED=1 could never be set for
+    the very calls this hook blocks. A documented escape hatch that cannot be
+    used is the same as no escape hatch, which made every block absolute.
+
+    Grant shape:
+        {"tool": "mcp__google-workspace__create_drive_file" | "*",
+         "reason": "why native cannot do this",
+         "granted_at": "<unix seconds>"}
+
+    Single-use per call and TTL-bounded, so it is a speed bump rather than a
+    standing exemption. Malformed or stale grants are ignored (fail closed to
+    the block, which is the safe direction here).
+    """
+    try:
+        if not GRANT_FILE.is_file():
+            return ""
+        grant = json.loads(GRANT_FILE.read_text())
+        age = datetime.now(timezone.utc).timestamp() - float(grant.get("granted_at", 0))
+        if age > GRANT_TTL_SECONDS or age < -60:
+            return ""
+        scope = grant.get("tool", "")
+        if scope not in ("*", tool_name):
+            return ""
+        reason = str(grant.get("reason", "")).strip()
+        if len(reason) < 12:
+            # A grant with no real reason is not a reason. Treat as absent.
+            return ""
+        return reason
+    except Exception:
+        return ""
+
+
 def main() -> int:
-    # Bypass — logged, then exit clean.
+    # Legacy env bypass. Retained for hook invocations that DO carry an
+    # environment (Bash-driven paths), but it cannot fire for MCP tool calls.
     if os.environ.get("NATIVE_CONNECTOR_PRECEDENCE_BYPASSED") == "1":
         session_id = os.environ.get("CLAUDE_SESSION_ID", "unknown")
         _log("native-connector-bypass.log", f"BYPASS session={session_id}")
@@ -106,6 +148,29 @@ def main() -> int:
         native_verb = entry.get("native_verb", "<unknown>")
         note = entry.get("note", "")
 
+        # A live, reasoned grant downgrades the block to a warning. This is the
+        # load-on-demand case: the native connector does not cover what is being
+        # asked, or it was tried and failed. Precedence still holds by default;
+        # it just is not absolute any more.
+        reason = _consume_grant(tool_name)
+        if reason:
+            session_id = os.environ.get("CLAUDE_SESSION_ID", "unknown")
+            _log(
+                "native-connector-bypass.log",
+                f"GRANT session={session_id} tool={tool_name} reason={reason}",
+            )
+            try:
+                GRANT_FILE.unlink()  # single use
+            except Exception:
+                pass
+            print(
+                f"[native-connector-precedence] ALLOWED via fallback grant: {tool_name}\n"
+                f"  Reason on record: {reason}\n"
+                f"  Grant consumed. Native equivalent remains {native_uuid}{native_verb}.",
+                file=sys.stderr,
+            )
+            return 0
+
         lines = [
             "",
             "BLOCKED: native-connector-precedence",
@@ -121,8 +186,25 @@ def main() -> int:
             lines += ["", f"  Note: {note}"]
         lines += [
             "",
-            "  Bypass (only when you have a documented reason workspace-mcp is required):",
-            "    NATIVE_CONNECTOR_PRECEDENCE_BYPASSED=1 <retry-call>",
+            "  This is precedence, not prohibition. workspace-mcp is load-on-demand.",
+            "  If the native verb genuinely cannot do this (missing capability, or you",
+            "  tried it and it failed), record why and retry. Run this in Bash first:",
+            "",
+            "    python3 - <<'EOF'",
+            "    import json, time, pathlib",
+            "    p = pathlib.Path.home() / '.claude' / 'native-connector-fallback-grant.json'",
+            "    p.parent.mkdir(parents=True, exist_ok=True)",
+            f"    p.write_text(json.dumps({{'tool': '{tool_name}',",
+            "        'reason': 'STATE THE ACTUAL GAP OR FAILURE, min 12 chars',",
+            "        'granted_at': time.time()}))",
+            "    EOF",
+            "",
+            "  Single use, 30 minute TTL, logged with your reason. A grant with no real",
+            "  reason is ignored. Do not reach for this reflexively: if the native verb",
+            "  can do the job, it is still the right call and it is more reliable.",
+            "",
+            "  (The old NATIVE_CONNECTOR_PRECEDENCE_BYPASSED=1 env bypass cannot work",
+            "  for MCP tool calls, which carry no environment. That is why this exists.)",
             "",
             "  Spec: Core/frameworks/intent/spec/native-connector-precedence.md",
             "  Memory: feedback_prefer_native_anthropic_connectors.md",
