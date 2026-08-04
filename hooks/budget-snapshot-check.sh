@@ -159,6 +159,39 @@ elif breached:
 else:
     print("  Mid-cycle, no tripwire breached. Protect headroom; the drain-window")
     print("  guidance flips on at %.0fh to reset." % c.get("drain_window_h", 24))
+
+# Forfeit ladder (budget-policy.yaml amendment 4, ratified 2026-08-04). This
+# block STATES the exception's conditions so no session judges from memory;
+# it enforces nothing. The rungs here mirror the policy file: change both
+# together or the statement becomes the lie the signal warned about.
+print()
+if to_reset <= 72:
+    rung = 15 if to_reset <= 24 else (30 if to_reset <= 48 else 50)
+    print("  FORFEIT LADDER    active rung: at %.0fh to reset, Fable on engagement work" % to_reset)
+    print("                    is permitted ONLY if the dashboard shows %d%% or more of" % rung)
+    print("                    the weekly bucket still available (ladder: 72h needs 50%,")
+    print("                    48h needs 30%, 24h needs 15%) AND no queued Brien-product")
+    print("                    work would consume it. Bucket percent is DASHBOARD-OBSERVED")
+    print("                    ONLY, never inferred from codeburn dollars.")
+    # Count from the board's own generated summary line ("N ready, ..."); the
+    # row format is not stable and a wrong 0 here would be a false all-clear.
+    import re as _re
+    try:
+        ready_path = os.path.expanduser("~/Workspaces/.intent/queue/READY.md")
+        m = _re.search(r"(\d+)\s+ready\b", open(ready_path).read())
+        if m:
+            print("                    Ready board reports %s ready items; the exception needs" % m.group(1))
+            print("                    none of them to be bucket-consuming product work.")
+        else:
+            print("                    Ready board count unreadable; check .intent/queue/READY.md")
+            print("                    yourself for queued product work before dispatching.")
+    except OSError:
+        print("                    Ready board missing; check the quartermaster queue yourself")
+        print("                    for queued product work before dispatching.")
+    print("                    Policy: Workspaces/.intent/queue/budget-policy.yaml, amendment 4.")
+else:
+    print("  FORFEIT LADDER    dormant: first rung opens at 72h to reset (72h needs 50%")
+    print("                    available, 48h needs 30%, 24h needs 15%; policy amendment 4).")
 PY
 
 printf '\n'
