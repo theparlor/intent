@@ -39,6 +39,7 @@ install_hook autonomy-grant-check.sh
 install_hook native-connector-precedence-check.sh
 install_hook presend-assertion-check.sh
 install_hook budget-snapshot-check.sh
+install_hook client-visible-content-lint.sh
 
 # Symlink the lookup map for the native-connector hook so it stays adjacent
 # to the script when invoked via ~/.claude/hooks/.
@@ -56,6 +57,25 @@ if [[ -f "${MAP_SRC}" ]]; then
   fi
 else
   echo "SKIP: ${MAP_NAME} (source not found at ${MAP_SRC})"
+fi
+
+# Symlink the token spec for the client-visible content lint so it stays
+# adjacent to the script when invoked via ~/.claude/hooks/. The Subaru JQL
+# catch-net scanner reads the same file: one list, two enforcement points.
+TOKENS_NAME="client-visible-content-lint-tokens.json"
+TOKENS_SRC="${SOURCE_DIR}/${TOKENS_NAME}"
+TOKENS_DST="${HOOK_DIR}/${TOKENS_NAME}"
+if [[ -f "${TOKENS_SRC}" ]]; then
+  if [[ -L "${TOKENS_DST}" && "$(readlink "${TOKENS_DST}")" == "${TOKENS_SRC}" ]]; then
+    echo "OK:   ${TOKENS_NAME} (already symlinked)"
+  elif [[ -e "${TOKENS_DST}" ]]; then
+    echo "WARN: ${TOKENS_DST} exists and is not our symlink; not overwriting"
+  else
+    ln -s "${TOKENS_SRC}" "${TOKENS_DST}"
+    echo "OK:   ${TOKENS_NAME} (symlinked -> ${TOKENS_SRC})"
+  fi
+else
+  echo "SKIP: ${TOKENS_NAME} (source not found at ${TOKENS_SRC})"
 fi
 
 cat << 'EOF'

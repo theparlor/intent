@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "signal": "SIG-MCP-LEAK-IN-CLIENT-JIRA-2026-05-04",
+    "spec_of_record": "Work/Consulting/Engagements/Subaru/working/jira-migration/canonical/signals/SIG-MCP-LEAK-IN-CLIENT-JIRA-2026-05-04.md",
+    "discipline": "These patterns run against OUTBOUND payloads only (tool_input bound for client-visible surfaces), never against local corpus files. The corpus keeps its history per the operating-vs-historical rule (D-N145): an archived audit naming a codename is a record, not a leak. The leak vector is the write boundary.",
+    "false_positive_valve": "Legitimate client-domain text can collide with a token (a Salesforce 'connector' in CRM copy, a quoted client string). The bypass is a single-use grant file or, for Bash calls, an env var, both requiring a logged reason of 12+ chars. Record recurring false-positive classes here in _fp_notes rather than silently loosening a pattern.",
+    "consumers": [
+      "Core/frameworks/intent/hooks/client-visible-content-lint.sh (PreToolUse hook, blocks at the write boundary)",
+      "Subaru working/jira-migration/scripts/scan-client-visible-leak-tokens.py (periodic JQL catch-net over recently touched issues)"
+    ],
+    "case_rule": "Patterns without 'i' in flags are case-sensitive on purpose: Cast, Witness, Crucible are common English words in lowercase and block only as capitalized product names."
+  },
+  "_fp_notes": [
+    "connector: North Star CRM copy may legitimately name vendor connectors (Salesforce, Mulesoft). Bypass with reason; do not remove the token, it is the original 2026-05-04 leak class.",
+    "register-id: SIG- prefixed strings could collide with client acronyms (special interest groups). None observed to date.",
+    "ai-vendor: a Bash compound command that both writes to a client surface and references a local ~/.claude/... path trips the scan on '.claude' (observed at install time, 2026-08-11). Split the command or use the env bypass; the pattern stays because 'claude' in an actual outbound payload is the token class that recurred."
+  ],
+  "tokens": [
+    {"id": "mcp", "pattern": "\\bMCPs?\\b", "flags": "i", "why": "MCP references, the original TSD-46 trigger"},
+    {"id": "mcp-tool-name", "pattern": "\\bmcp__[A-Za-z0-9_-]+", "flags": "", "why": "raw MCP tool-name shrapnel"},
+    {"id": "connector", "pattern": "\\bconnectors?\\b", "flags": "i", "why": "connector references reveal the tooling layer (signal Pattern list)"},
+    {"id": "subagent-codename", "pattern": "\\bW[0-9]+-[A-Z][A-Z0-9-]*\\b", "flags": "", "why": "sub-agent codenames (W1-DOCS, W2-TSD-HYGIENE, W2-WAVE2-TSD)"},
+    {"id": "audit-codename", "pattern": "\\baudit-[0-9]{4}-[0-9]{2}-[0-9]{2}\\b", "flags": "i", "why": "audit/wave codenames (audit-2026-05-04)"},
+    {"id": "workspace-path", "pattern": "\\b(?:canonical|working|scripts)/", "flags": "", "why": "workspace-relative paths (canonical/, working/, scripts/)"},
+    {"id": "workspaces-root", "pattern": "\\bWorkspaces/", "flags": "", "why": "Workspaces tree paths"},
+    {"id": "checkpoint-file", "pattern": "\\.checkpoint\\b", "flags": "", "why": "checkpoint artifacts (signal token list)"},
+    {"id": "product-name", "pattern": "\\b(?:Forge|Cast|Cort[e\u00e8]ge|Witness|Crucible|Fieldbook)\\b", "flags": "", "why": "internal product names; case-sensitive so lowercase English usage passes"},
+    {"id": "script-name", "pattern": "\\b(?:(?:lint|check|verify|gate|snapshot|prepare|scan)[-_][a-z0-9][a-z0-9_-]*|[a-z0-9][a-z0-9_-]*-(?:gate|gates|lint|check|audit|sweep))\\.(?:py|sh)\\b", "flags": "", "why": "lint and gate script names (lint-tsd-lifecycle.sh, check-canon-vs-live.py, run-all-gates.sh)"},
+    {"id": "ai-vendor", "pattern": "\\b(?:claude|anthropic)\\b", "flags": "i", "why": "the AI layer itself; the token class that recurred 2026-08-11 (attribution reaching client surfaces). Extension beyond the signal's explicit list, same leak class."},
+    {"id": "sub-agent-phrase", "pattern": "\\bsub-?agents?\\b", "flags": "i", "why": "discussion of the sub-agent layer. Extension, same leak class."},
+    {"id": "register-id", "pattern": "\\b(?:D-N[0-9]+|WS-DDR-[0-9]+|SIG-[A-Z0-9][A-Z0-9-]{3,})\\b", "flags": "", "why": "internal register and signal ids (D-N145, WS-DDR-121, SIG-*). Extension, same leak class: clients see decisions, not register plumbing."}
+  ]
+}
