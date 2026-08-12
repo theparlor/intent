@@ -1,7 +1,7 @@
 ---
 title: Autonomy-Grant Enforcement — Mechanism-Level Intervention
 id: SPEC-INTENT-AUTONOMY-GRANT-ENFORCEMENT-001
-updated: 2026-05-19
+updated: 2026-08-12
 related:
   - Core/frameworks/methodology-library/meta/autonomous-investigation.md
   - Core/frameworks/methodology-library/meta/signal-scoring.md
@@ -26,6 +26,7 @@ author: "intent framework (mechanism-level response to SIG-COH-DEBT-018 + RETRO-
 layer_4_versions:
   - {version: v1 (2026-04-28), change: Initial Layer 4 Stop hook — bare-choice-without-recommendation pattern}
   - {version: v2 (2026-05-13), change: Layer 2 spec amendment — soft-queue framing on pre-authorized continuation (SIG-AUTONOMY-DRIFT-POST-STAGE-2026-05-13), hook_landed: 2026-05-13}
+  - {version: v7 (2026-08-12), change: CHECK 8 decision-table detector with the D-N154 bucket-three carve-out (engagement backlog row D5; sanctioned addition 1 in lexical-layer-freeze.yaml), hook_landed: 2026-08-12}
 layer_5_versions:
   - {version: v1 (2026-05-19), change: Layer 5 PreToolUse dispatch-prompt check — blocks proposal-framing injected into subagent prompts before dispatch (SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19), hook_landed: 2026-05-19}
 ---
@@ -317,6 +318,66 @@ baseline was re-anchored 6→7 to match. Authoritative count: `lexical-layer-fre
 
 Origin: friction backlog `.intent/signals/SIG-2026-05-29-friction-00…05`; Brien
 authorization 2026-05-29 ("hit the first level and stage the second").
+
+## Layer 4 table extension: CHECK 8, decision-table rows (2026-08-12)
+
+Gap (engagement backlog row D5, build ordered by Brien 2026-08-12): the Layer 4
+detector enforced the recommendation marker on prose only. A markdown table row
+that surfaces a decision to the user has no sentence tail, so a row like
+`| A40 | Who decides the registry of record? | open |` passed every prose check
+while being a bare ask.
+
+**Detection (structural, not lexical).** CHECK 8 scans the FULL response text
+(not the last paragraph), strips fenced code blocks, and parses markdown table
+blocks. Header and separator rows are excluded. A body row is a DECISION ROW
+when either (a) a cell ends a question and carries a decision stem (which,
+should, shall, whether, choose, pick, prefer, approve, adopt, or, who decides),
+or (b) a cell carries decide/choose/approve/rule-on language directed at the
+user ("needs a ruling", "decision needed", "awaiting approval", "to be
+decided", "who decides", "your call", "open decision", "open question").
+
+**Required, in that row (not elsewhere in the response), one of two forms:**
+
+1. A recommendation marker: `Recommend`, `Recommendation:`, or bold
+   `**Recommend`, negation-stripped so "no recommendation yet" does not
+   qualify. The row states the pick with a one-line why; the alternative is
+   the reveal.
+2. **The D-N154 bucket-three carve-out.** Per D-N154 (North Star decision
+   register): two reasoned rows in genuine conflict go to the user side by
+   side, both reasons presented, with NO recommendation, BY RULE. The
+   sanctioned row form is the literal phrase `No recommendation BY RULE` with
+   a D-N154 citation in the same row, e.g.
+   `No recommendation BY RULE (D-N154 bucket three)` (first used by
+   engagement backlog rows A38 and A39, 2026-08-12). This is the only
+   no-recommendation form the hook accepts, and the citation must sit in the
+   same row as the phrase.
+
+**False-positive posture.** A table quoting an old decision or reporting a
+closure is not a new ask. Skipped rows: strikethrough anywhere in the row; a
+closure word with a date in the same cell (`RULED 2026-08-12`,
+`closed 2026-08-12`, `ratified 2026-08-12`); a whole status cell that is
+itself a closure word. Bare closure words without a date do NOT skip, because
+"Until ruled, nothing runs" belongs to an open ask. Responses without a
+markdown table never reach the analyzer (one grep gate), and CHECKs 1 to 7
+run first, unchanged, so prose behavior is byte-identical.
+
+**Freeze accounting.** CHECK 8 is sanctioned addition 1 in
+`hooks/lexical-layer-freeze.yaml`, carrying the required drag-budget debit,
+sunset clause, and flight-model cross reference. It is a structural detector
+(table geometry), not a new lexical tail phrase: it covers a surface the
+lexical checks never saw rather than extending the tail-phrase arms race the
+freeze exists to stop. It retires or demotes on the same measured Layer 4.2
+successor trigger as the baseline; if the successor does not read table
+geometry at that point, the retirement decision must state that gap.
+
+**Block message.** Names the failing row (first cell plus an excerpt) and both
+accepted forms. Audit line `CHECK8-CAUGHT`; telemetry rows `check: "8"` are
+emitted only for table-bearing responses.
+
+**Tests:** `hooks/tests/test_autonomy_stop_decision_tables.py`. The E cases
+pin CHECKs 1 to 7 behavior unchanged; the T cases cover the table matrix,
+including a fixture modeled on the A38 bucket-three row (passes) and a bare
+who-decides row (blocks).
 
 ## Related patterns
 

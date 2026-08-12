@@ -49,7 +49,38 @@ sunset:
 
 # Any CHECK beyond frozen_at_check MUST appear here, each with a debit + sunset.
 # Empty = the layer is at baseline. The dashboard counts these as sanctioned.
-sanctioned_additions: []
+sanctioned_additions:
+  - check: 8
+    name: decision-table row without a recommendation
+    added: 2026-08-12
+    authorized_by: >
+      Brien 2026-08-12 ("build it"); engagement backlog row D5. The gap: the
+      hook enforced the recommendation marker on prose only, so a markdown
+      table row that surfaces a decision with no recommendation passed.
+    class: >
+      STRUCTURAL (markdown table geometry, full response text), not a lexical
+      tail phrase. It does not extend the tail-phrase arms race the freeze
+      exists to stop; it covers a surface the lexical checks never saw.
+    drag_budget_debit: >
+      Zero added output on responses without a markdown table (one grep gate).
+      On table-bearing stops: one python3 subprocess plus one telemetry row
+      (check "8"). Fire rate observable via drag_dashboard.py telemetry;
+      expected near zero outside decision surfaces.
+    sunset_clause: >
+      Same trigger as the baseline: when Layer 4.2 clears its 14-day warn-only
+      calibration at measured FP under 5 percent, retire or demote this check
+      on the measured schedule with CHECKs 1-6. If the structural successor
+      does not read table geometry at that point, the retirement decision must
+      state that gap explicitly rather than silently keeping this check.
+    flight_model_cross_ref: >
+      spec/autonomy-flight-model-v1-DRAFT.md (decision-compute layer) and
+      spec/autonomy-posture-check-layer-4.2-DRAFT.md.
+    carve_out: >
+      D-N154 bucket three (North Star decision register): two reasoned
+      readings in genuine conflict go to the user side by side with NO
+      recommendation, BY RULE. The sanctioned row form is the literal phrase
+      "No recommendation BY RULE" with a D-N154 citation in the same row.
+    tests: hooks/tests/test_autonomy_stop_decision_tables.py
 
 rule:
   no_new_check_without:

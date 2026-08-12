@@ -91,6 +91,11 @@
 # Updated: 2026-05-29 — adds CHECK 7 scope-variant bare-choice ("do part OR do all"
 #   on pre-authorized work; fires regardless of recommendation marker) per
 #   SIG-2026-05-29-stop-hook-check-7-scope-variant.md.
+# Updated: 2026-08-12 - adds CHECK 8 decision-table detector (structural table
+#   geometry, not a lexical tail phrase; sanctioned addition 1 in
+#   lexical-layer-freeze.yaml) per engagement backlog row D5, Brien build order
+#   2026-08-12 ("build it"). Carve-out: D-N154 bucket three, the literal phrase
+#   "No recommendation BY RULE" with a D-N154 citation in the row.
 
 set -u
 
@@ -659,6 +664,213 @@ if [ "$SCOPE_VARIANT_TRIGGER" = "1" ]; then
 {"decision": "block", "reason": "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 7 — scope-variant bare-choice on pre-authorized work, v6): your response ends with a question that offers a SCOPE choice between a partial subset and the full set of already-authorized work ('do just the first tier, or all of them?', 'only the wave-1 personas, or the whole batch?'). A recommendation marker preceding it does NOT redeem it — that marker is exactly what let this slip CHECK 1. Per feedback_full_scope_execution: when Brien has set scope ('all' / 'every X'), the scope is his and is already set; re-asking 'part or all?' re-litigates a settled decision. 4-gate check: if doing the FULL scope is reversible, Workspaces-local, precedented, and has no info gap — do the full scope in this same turn. Do not ask which slice. Do not narrow under cover of 'minor'. If there is a genuine reason a partial pass is safer (irreversibility, an NDA/external boundary, or a real info gap on one subset), state THAT specific reason as a recommendation-with-reveal ('I'll do all N; the exception is X because <reason>'), not as a bare part-or-all question."}
 EOF
   exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# CHECK 8: Decision-table row without a recommendation (v7, 2026-08-12)
+#
+# The prose checks (1 to 7) scan sentences and tails. A markdown TABLE row
+# that surfaces a decision to the user has no sentence shape, so a row like
+# "| A40 | Who decides the registry of record? | open |" passed every prose
+# check while being a bare ask. Gap recorded in the engagement backlog row D5;
+# build ordered by Brien 2026-08-12 ("build it").
+#
+# Detection (STRUCTURAL, table geometry; scans the FULL response text, not the
+# last paragraph; fenced code blocks stripped first):
+#   A table body row (header and separator rows excluded) is a DECISION ROW
+#   when either
+#     (a) a cell ends a question ("?" at a word end) AND carries a decision
+#         stem (which / should / shall / whether / choose / pick / prefer /
+#         approve / adopt / or / who decides), or
+#     (b) a cell carries decide/choose/approve/rule-on language directed at
+#         the user: "needs a ruling", "decision needed", "awaiting approval",
+#         "to be decided", "who decides", "your call", "rule on",
+#         "(Brien|you) to decide/approve/choose/rule", "open decision",
+#         "open question", "for a ruling".
+#   A decision row PASSES when either accepted form is present IN THAT ROW:
+#     (1) a recommendation marker (Recommend / Recommendation: / **Recommend),
+#         negation-stripped so "no recommendation yet" does not qualify, or
+#     (2) the D-N154 bucket-three carve-out: the literal phrase
+#         "No recommendation BY RULE" plus a D-N154 citation in the same row.
+#         Two reasoned readings in genuine conflict go to the user side by
+#         side with NO recommendation, BY RULE; that is the only sanctioned
+#         no-recommendation form.
+#   Rows that QUOTE an old decision or REPORT a closure are not new asks and
+#   are skipped: strikethrough (~~) anywhere in the row, a closure word with
+#   a date in the same cell ("RULED 2026-08-12", "closed 2026-08-12",
+#   "ratified 2026-08-12"), or a whole status cell that is itself a closure
+#   word. Bare closure words without a date do NOT skip, because "Until
+#   ruled, nothing runs" belongs to an OPEN ask.
+#
+# Additive by construction: responses with no markdown table never reach the
+# analyzer (one cheap grep gate below, no new output on that path), and
+# CHECKs 1 to 7 run first, unchanged.
+#
+# Freeze accounting: sanctioned addition 1 in lexical-layer-freeze.yaml
+# (drag-budget debit, sunset clause, flight-model cross reference recorded
+# there). Structural detector, not a new lexical tail phrase.
+#
+# Tests: tests/test_autonomy_stop_decision_tables.py
+# ---------------------------------------------------------------------------
+
+C8_HAS_TABLE=0
+if printf '%s\n' "$LAST_TEXT" | grep -q '^[[:space:]]*|.*|.*|'; then
+  C8_HAS_TABLE=1
+fi
+
+if [ "$C8_HAS_TABLE" = "1" ]; then
+  C8_PY=$(cat <<'C8PYEOF'
+import os, re, json
+
+text = os.environ.get("C8_TEXT", "")
+# Fenced code blocks are not response tables (script output, quoted diffs).
+text = re.sub(r"```.*?```", "", text, flags=re.S)
+
+blocks, cur = [], []
+for ln in text.splitlines():
+    s = ln.strip()
+    if s.startswith("|") and s.count("|") >= 3:
+        cur.append(s)
+    else:
+        if cur:
+            blocks.append(cur)
+            cur = []
+if cur:
+    blocks.append(cur)
+
+SEP_RE = re.compile(r"^[\s:|\-]+$")
+# Heuristic (a): a cell that ends a question AND carries a decision stem.
+Q_STEM_RE = re.compile(
+    r"\b(which|should|shall|whether|choose|pick|prefer|approve|adopt|or)\b"
+    r"|\bwho\s+(decides|rules|approves|signs\s+off)\b", re.I)
+QMARK_RE = re.compile(r"\w\?(\s|$)")
+# Heuristic (b): decide/choose/approve/rule-on language directed at the user.
+DIRECTED_RE = re.compile(
+    r"\bneeds?\s+(a\s+|an\s+)?(ruling|decision|approval)\b"
+    r"|\b(ruling|decision|approval)\s+(is\s+)?needed\b"
+    r"|\bawait(s|ing)?\s+(a\s+|an\s+)?(ruling|decision|approval)\b"
+    r"|\bto\s+be\s+(decided|ruled|approved|chosen)\b"
+    r"|\bwho\s+(decides|rules|approves|signs\s+off)\b"
+    r"|\byour\s+(call|decision|ruling)\b"
+    r"|\brule[-\s]on\b"
+    r"|\b(brien|you)\s+(to\s+)?(decide|approve|choose|rule)s?\b"
+    r"|\bopen\s+(decision|question)\b"
+    r"|\bfor\s+(a\s+)?ruling\b", re.I)
+# Quoted decisions and reported closures are not new asks.
+CLOSED_DATE_RE = re.compile(
+    r"\b(closed|ruled|decided|approved|executed|resolved|superseded|ratified"
+    r"|landed|retired|withdrawn|shipped|done)\b[^|]{0,40}\d{4}-\d{2}-\d{2}", re.I)
+CLOSED_CELL_RE = re.compile(
+    r"^\W*(closed|done|ruled|decided|executed|resolved|superseded|ratified"
+    r"|retired|shipped|complete|completed)\W*$", re.I)
+BUCKET3_RE = re.compile(r"\bno\s+recommendation\s+by\s+rule\b", re.I)
+CITE_RE = re.compile(r"\bd-?n154\b", re.I)
+NEG_REC_RE = re.compile(r"\b(no|without)\s+(a\s+)?recommendation", re.I)
+REC_RE = re.compile(r"recommend", re.I)
+CODE_RE = re.compile(r"`[^`]*`")
+
+table_rows = 0
+decision_rows = 0
+offenders = []
+
+for block in blocks:
+    body = [r for r in block if not SEP_RE.match(r)]
+    if len(body) < 2:
+        continue
+    for raw in body[1:]:
+        cells = [c.strip() for c in raw.strip("|").split("|")]
+        row = " | ".join(c for c in cells if c)
+        if not row:
+            continue
+        table_rows += 1
+        if "~~" in raw:
+            continue
+        if CLOSED_DATE_RE.search(row):
+            continue
+        if any(CLOSED_CELL_RE.match(c) for c in cells if c):
+            continue
+        ask = False
+        for c in cells:
+            cs = CODE_RE.sub(" ", c)
+            if QMARK_RE.search(cs + " ") and Q_STEM_RE.search(cs):
+                ask = True
+                break
+        if not ask and DIRECTED_RE.search(CODE_RE.sub(" ", row)):
+            ask = True
+        if not ask:
+            continue
+        decision_rows += 1
+        if BUCKET3_RE.search(row) and CITE_RE.search(row):
+            continue
+        if REC_RE.search(NEG_REC_RE.sub(" ", row)):
+            continue
+        offenders.append(row)
+
+
+def san(s, n):
+    s = s.replace("\\", "/").replace('"', "'").replace("\n", " ")
+    return s[:n]
+
+
+print("C8STATS %d %d %d %s" % (
+    table_rows, decision_rows, len(offenders),
+    san(offenders[0], 160) if offenders else "-"))
+
+if offenders:
+    first = offenders[0]
+    row_id = san(first.split(" | ")[0], 60)
+    more = ""
+    if len(offenders) > 1:
+        more = " Plus %d more row(s) in the same state." % (len(offenders) - 1)
+    reason = (
+        "AUTONOMY-GRANT DRIFT (Layer 4 / CHECK 8, decision-table row without a "
+        "recommendation, v7): your response surfaces a decision or question to "
+        "the user inside a markdown table row that carries neither accepted "
+        "form. Failing row (first cell '%s'): %s.%s "
+        "Accepted form 1: a recommendation marker IN that row (Recommend / "
+        "Recommendation: / **Recommend) with a one-line why, and the "
+        "alternative offered as the reveal. "
+        "Accepted form 2, the D-N154 bucket-three carve-out: when two reasoned "
+        "readings are in genuine conflict and both are presented side by side, "
+        "the row states the literal phrase 'No recommendation BY RULE' with a "
+        "D-N154 citation, e.g. 'No recommendation BY RULE (D-N154 bucket "
+        "three)'. That is the only sanctioned no-recommendation form. "
+        "Rows that quote an old decision or report a closure are exempt when "
+        "they read as one: strikethrough, a closure word with its date (RULED "
+        "2026-08-12, closed 2026-08-12), or a whole status cell that is a "
+        "closure word. Revise the table row and stop again."
+        % (row_id, san(first, 160), more)
+    )
+    print(json.dumps({"decision": "block", "reason": reason}))
+C8PYEOF
+)
+  C8_OUT=$(C8_TEXT="$LAST_TEXT" python3 -c "$C8_PY" 2>/dev/null)
+  C8_LINE1=$(printf '%s\n' "$C8_OUT" | head -n 1)
+  C8_JSON=$(printf '%s\n' "$C8_OUT" | sed -n '2p')
+  C8_TABLE_ROWS=$(printf '%s' "$C8_LINE1" | awk '{print $2}')
+  C8_DECISION_ROWS=$(printf '%s' "$C8_LINE1" | awk '{print $3}')
+  C8_OFFENDERS=$(printf '%s' "$C8_LINE1" | awk '{print $4}')
+  C8_EXCERPT=$(printf '%s' "$C8_LINE1" | cut -d' ' -f5-)
+  case "$C8_TABLE_ROWS" in ''|*[!0-9]*) C8_TABLE_ROWS=0;; esac
+  case "$C8_DECISION_ROWS" in ''|*[!0-9]*) C8_DECISION_ROWS=0;; esac
+  case "$C8_OFFENDERS" in ''|*[!0-9]*) C8_OFFENDERS=0;; esac
+
+  C8_TRIGGER=0
+  if [ "$C8_OFFENDERS" -gt 0 ] && [ -n "$C8_JSON" ]; then
+    C8_TRIGGER=1
+  fi
+
+  # CHECK 8 telemetry (emitted only for table-bearing responses; the no-table
+  # path stays byte-identical to pre-CHECK-8 behavior)
+  printf '{"ts":"%s","session":"%s","check":"8","table_rows":%d,"decision_rows":%d,"offenders":%d,"trigger":%d,"row":"%s"}\n' \
+    "$TIMESTAMP" "$SESSION_ID" "$C8_TABLE_ROWS" "$C8_DECISION_ROWS" "$C8_OFFENDERS" "$C8_TRIGGER" \
+    "$(printf '%s' "$C8_EXCERPT" | tail -c 200 | tr '\n' ' ' | tr '"' "'" | tr '\' '/')" >> "$TELEMETRY_LOG" 2>/dev/null || true
+
+  if [ "$C8_TRIGGER" = "1" ]; then
+    echo "[$TIMESTAMP] CHECK8-CAUGHT session=$SESSION_ID table_rows=$C8_TABLE_ROWS decision_rows=$C8_DECISION_ROWS offenders=$C8_OFFENDERS row='$(printf '%s' "$C8_EXCERPT" | tr "'" '_')'" >> "$AUDIT_LOG"
+    printf '%s\n' "$C8_JSON"
+    exit 0
+  fi
 fi
 
 exit 0
