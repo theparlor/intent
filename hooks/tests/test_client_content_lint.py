@@ -201,6 +201,43 @@ rc, _ = run(ATL + "addCommentToJiraIssue",
             {"issueIdOrKey": "NS-12", "commentBody": "This implements D-N145 as ruled."})
 check("T22 register id D-N145 -> block", rc == 2)
 
+# T24-T29: destination scoping for Slack self-surfaces (added 2026-08-17). The hook
+# classified by tool when the risk lives in the destination, so a Pulse digest post to
+# Brien's own #pulse channel was blocked on "MCP" inside a verbatim public article title
+# and on "Claude" in the digest's own mark-consumed line. These assert the exemption is
+# real AND that it is narrow: every non-self-surface destination stays linted, because a
+# tool-wide grant would have reopened the exact leak class the hook exists to close.
+PULSE = "C0BFLP20U2Y"
+DIGEST_MSG = ("Pulse weekly 2026-08-17: 3 must-read\n"
+              "- Stateless MCP has recaptured my interest, Simon Willison\n"
+              'Read one? Tell Claude "mark pulse digest consumed".')
+
+rc, _ = run(SLACK + "slack_send_message", {"channel_id": PULSE, "message": DIGEST_MSG})
+check("T24 self-surface channel with mcp+vendor tokens -> allow", rc == 0)
+
+rc, err = run(SLACK + "slack_send_message", {"channel_id": "C0CLIENT9999", "message": DIGEST_MSG})
+check("T25 same payload to a non-self-surface channel -> block", rc == 2 and "BLOCKED" in err)
+
+# A DM to a human is never a self-surface even if the id is passed as channel_id.
+rc, _ = run(SLACK + "slack_send_message", {"channel_id": "U03KZ4XF14Y", "message": DIGEST_MSG})
+check("T26 DM user id -> block", rc == 2)
+
+# Channel NAME rather than id must not exempt: only exact id matches are trusted.
+rc, _ = run(SLACK + "slack_send_message", {"channel_id": "#pulse", "message": DIGEST_MSG})
+check("T27 channel name not id -> block", rc == 2)
+
+# Missing/non-string destination falls through to the scan, not to allow.
+rc, _ = run(SLACK + "slack_send_message", {"message": DIGEST_MSG})
+check("T28 absent channel_id -> block", rc == 2)
+rc, _ = run(SLACK + "slack_send_message", {"channel_id": None, "message": DIGEST_MSG})
+check("T29 null channel_id -> block", rc == 2)
+
+# The exemption is Slack-scoped: an Atlassian call must not inherit it via channel_id.
+rc, _ = run(ATL + "createJiraIssue",
+            {"channel_id": PULSE, "projectKey": "MTEC", "summary": "x",
+             "description": "The Atlassian MCP does not expose deleteIssueLink."})
+check("T30 atlassian call carrying channel_id -> block", rc == 2)
+
 # T23: malformed stdin -> allow (never break the harness on parse errors)
 p = subprocess.run(["python3", HOOK], input="not json", env={**os.environ, "HOME": FAKE_HOME},
                    capture_output=True, text=True)
