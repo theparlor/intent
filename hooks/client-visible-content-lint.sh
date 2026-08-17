@@ -65,6 +65,29 @@ ATLASSIAN_WRITE_VERBS = {
 }
 ATLASSIAN_SERVER_MARKS = ("atlassian", "4ae6210b-a30e-4336-979b-7301cd434920")
 SLACK_SERVER_MARKS = ("slack", "bb5eb37b-8361-4b5a-9a53-dcf2e5d3e089")
+
+# Self-surface destinations: Brien's own status channels, where the internal
+# tooling layer is the subject matter rather than a leak. Added 2026-08-17 after
+# the hook blocked a Pulse weekly digest post to #pulse on two tokens: "MCP"
+# inside a verbatim public article title, and "Claude" in the digest's own
+# mark-consumed instruction. Both are correct content for that destination.
+#
+# The defect this fixes is that the hook classified by TOOL when the risk lives
+# in the DESTINATION. slack_send_message to #pulse and slack_send_message to a
+# client channel are the same tool with opposite risk profiles. A blanket
+# per-tool grant would have disabled the lint for every Slack destination
+# including client and peer channels, which is exactly the leak class
+# SIG-MCP-LEAK-IN-CLIENT-JIRA-2026-05-04 exists to stop. Scoping by channel_id
+# keeps every other destination linted with no change in behavior.
+#
+# Membership rule: a destination belongs here only if Brien is the sole audience.
+# A channel with peers or clients in it NEVER qualifies, even inside his own
+# workspace. engineers-united contains Brien's peers; only the dedicated #pulse
+# channel inside it is a self-surface. A DM to another human is never eligible.
+SELF_SURFACE_DESTINATIONS = {
+    "C0BFLP20U2Y": "#pulse, Brien's dedicated Pulse digest channel "
+                   "(pre-authorized self-surface, 2026-07-06)",
+}
 WRITE_SHAPED = ("send", "post", "publish", "reply", "schedule", "broadcast",
                 "update", "create", "edit", "add", "set", "transition")
 READ_SHAPED = ("search", "read", "get", "list", "history", "info", "fetch",
@@ -165,6 +188,16 @@ def _classify(tool_name: str, tool_input) -> str:
     is_slack = any(m in server_l for m in SLACK_SERVER_MARKS)
     if not (is_atlassian or is_slack):
         return "allow"
+    # Destination scoping (see SELF_SURFACE_DESTINATIONS). Only exact channel_id
+    # matches exempt, and only for Slack: a thread reply inherits its parent's
+    # channel_id, so threads on a self-surface are covered without a second rule.
+    # Anything that is not a plain string id (a name, a user id for a DM, a
+    # missing field) falls through to the scan, so the failure direction is
+    # toward linting rather than toward leaking.
+    if is_slack and isinstance(tool_input, dict):
+        dest = tool_input.get("channel_id")
+        if isinstance(dest, str) and dest.strip() in SELF_SURFACE_DESTINATIONS:
+            return "allow"
     if any(r in verb_l for r in READ_SHAPED):
         return "allow"
     if any(w in verb_l for w in WRITE_SHAPED):
