@@ -40,6 +40,7 @@ install_hook native-connector-precedence-check.sh
 install_hook presend-assertion-check.sh
 install_hook budget-snapshot-check.sh
 install_hook client-visible-content-lint.sh
+install_hook account-connector-fabric-check.sh
 
 # Symlink the lookup map for the native-connector hook so it stays adjacent
 # to the script when invoked via ~/.claude/hooks/.
@@ -106,12 +107,23 @@ Add to hooks.PreToolUse:
     ]
   }
 
+Add to hooks.SessionStart (same matcher-* entry as the posture hooks):
+
+  {
+    "type": "command",
+    "command": "~/.claude/hooks/account-connector-fabric-check.sh",
+    "timeout": 10,
+    "statusMessage": "Connector fabric: checking claude.ai account-connector expectation"
+  }
+
 Then start a new Claude Code session and confirm:
   - The autonomy-grant banner appears in session-start context
+  - The account-connector fabric check block appears in session-start context
   - Calling `mcp__google-workspace__search_gmail_messages` is blocked with a
     pointer to the native equivalent
 
 Specs:
   Core/frameworks/intent/spec/autonomy-grant-enforcement.md §Verification
   Core/frameworks/intent/spec/native-connector-precedence.md §Closure DoD
+  Core/frameworks/intent/spec/account-connector-fabric-check.md §Verification
 EOF
