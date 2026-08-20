@@ -38,7 +38,8 @@
 #   CLIENT_CONTENT_LINT_REASON='...'.
 #
 # Registration (settings.json PreToolUse matcher):
-#   Bash|mcp__.*(atlassian|slack|4ae6210b|bb5eb37b).*|mcp__.*__(createJiraIssue|editJiraIssue|transitionJiraIssue|addCommentToJiraIssue|addWorklogToJiraIssue|createConfluencePage|updateConfluencePage|createConfluenceFooterComment|updateConfluenceFooterComment)
+#   Bash|mcp__.*([aA]tlassian|[sS]lack|4ae6210b|bb5eb37b).*|mcp__.*__(createJiraIssue|editJiraIssue|transitionJiraIssue|addCommentToJiraIssue|addWorklogToJiraIssue|createConfluencePage|updateConfluencePage|createConfluenceFooterComment|createConfluenceInlineComment|updateConfluenceFooterComment)
+#   ([aA]/[sS] added 2026-08-20: connector prefixes went name-based, mcp__claude_ai_Atlassian_Rovo__ / mcp__claude_ai_Slack__, so the server segment is now capitalized. The hex fragments are the retired legacy scheme, kept for recognition. createConfluenceInlineComment is a Rovo verb that did not exist when the 2026-05 verb list was written.)
 #
 # Token spec: client-visible-content-lint-tokens.json (adjacent; the JQL
 # catch-net scanner consumes the same file, one list, two enforcement points).
@@ -62,7 +63,13 @@ ATLASSIAN_WRITE_VERBS = {
     "addCommentToJiraIssue", "addWorklogToJiraIssue",
     "createConfluencePage", "updateConfluencePage",
     "createConfluenceFooterComment", "updateConfluenceFooterComment",
+    "createConfluenceInlineComment",
 }
+# Marks are matched against the LOWERCASED server segment, so one lowercase
+# name mark covers both prefix schemes: the current name-based scheme
+# (mcp__claude_ai_Atlassian_Rovo__, mcp__claude_ai_Slack__; live since the
+# 2026-08-19 scheme change) and the retired hex-UUID scheme, whose ids are
+# kept as legacy recognition only.
 ATLASSIAN_SERVER_MARKS = ("atlassian", "4ae6210b-a30e-4336-979b-7301cd434920")
 SLACK_SERVER_MARKS = ("slack", "bb5eb37b-8361-4b5a-9a53-dcf2e5d3e089")
 

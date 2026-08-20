@@ -144,7 +144,7 @@ def main() -> int:
     entry = blocked.get(tool_name)
     if entry:
         native_label = entry.get("native_prefix", "")
-        native_uuid = native_prefixes.get(native_label, "")
+        native_prefix_value = native_prefixes.get(native_label, "")
         native_verb = entry.get("native_verb", "<unknown>")
         note = entry.get("note", "")
 
@@ -166,7 +166,7 @@ def main() -> int:
             print(
                 f"[native-connector-precedence] ALLOWED via fallback grant: {tool_name}\n"
                 f"  Reason on record: {reason}\n"
-                f"  Grant consumed. Native equivalent remains {native_uuid}{native_verb}.",
+                f"  Grant consumed. Native equivalent remains {native_prefix_value}{native_verb}.",
                 file=sys.stderr,
             )
             return 0
@@ -176,7 +176,7 @@ def main() -> int:
             "BLOCKED: native-connector-precedence",
             "",
             f"  Tool requested: {tool_name}",
-            f"  Native equivalent: {native_uuid}{native_verb}",
+            f"  Native equivalent: {native_prefix_value}{native_verb}",
             "",
             f"  Reason: Anthropic-native {native_label.capitalize()} connector is the",
             "  primary tool surface. workspace-mcp is a fallback. Use the native verb",
