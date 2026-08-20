@@ -1,10 +1,18 @@
 {
   "_meta": {
     "name": "native-connector-precedence-map",
-    "version": "1.0",
+    "version": "1.1",
     "created": "2026-05-27",
+    "updated": "2026-08-20",
     "purpose": "Maps workspace-mcp tool verbs to their native Anthropic-connector equivalents. Used by native-connector-precedence-check.sh PreToolUse hook to block workspace-mcp calls when a native equivalent exists.",
+    "prefix_scheme": "Name-based as of claude CLI 2.1.228: mcp__claude_ai_<Name>__<verb>, where <Name> is the connector display name with spaces replaced by underscores. Verified against a live headless roster probe 2026-08-20. Signal: .intent/signals/SIG-CONNECTOR-PREFIX-SCHEME-CHANGE-2026-08-19.md (Workspaces repo).",
     "native_prefixes": {
+      "gmail": "mcp__claude_ai_Gmail__",
+      "calendar": "mcp__claude_ai_Google_Calendar__",
+      "drive": "mcp__claude_ai_Google_Drive__"
+    },
+    "legacy_native_prefixes_hex": {
+      "_note": "LEGACY, retired by 2026-08-19. Older builds addressed the same connectors by hex-UUID prefix; zero occurrences remain in ~/.claude.json. Kept only so old transcripts and docs stay recognizable. Never emit these as guidance.",
       "gmail": "mcp__2af7d4b6-48e4-40e0-b692-83bb17863698__",
       "calendar": "mcp__e84bacfb-2d7e-4832-93d8-cd99572ef756__",
       "drive": "mcp__af517670-6924-4852-bfe0-ad3f0c19c03d__"
@@ -49,6 +57,11 @@
       "native_prefix": "gmail",
       "native_verb": "label_message / unlabel_message / label_thread / unlabel_thread",
       "note": "Native has thread-level and message-level label ops."
+    },
+    "mcp__google-workspace__send_gmail_message": {
+      "native_prefix": "gmail",
+      "native_verb": "send_message",
+      "note": "Native Gmail gained send_message, reply, and forward (live roster 2026-08-20); the old no-native-send claim is retired. Sending routes state to another human, so the cross-human L0 rule applies regardless of which tool carries the send. Attachment support on native send is unverified; send-with-attachment is a legitimate grant case."
     },
     "mcp__google-workspace__list_calendars": {
       "native_prefix": "calendar",
@@ -105,6 +118,26 @@
       "native_verb": "get_file_permissions",
       "note": "Native returns full permission list including public-access state."
     },
+    "mcp__google-workspace__update_drive_file": {
+      "native_prefix": "drive",
+      "native_verb": "update_file",
+      "note": "Native update_file observed in live roster 2026-08-20; parameter semantics not yet exercised. If it cannot do the specific update, take a grant."
+    },
+    "mcp__google-workspace__manage_drive_access": {
+      "native_prefix": "drive",
+      "native_verb": "share_file",
+      "note": "Native share_file observed in live roster 2026-08-20; whether it covers this exact permission op is unverified. Try native first; take a grant if it cannot."
+    },
+    "mcp__google-workspace__set_drive_file_permissions": {
+      "native_prefix": "drive",
+      "native_verb": "share_file",
+      "note": "Native share_file observed in live roster 2026-08-20; whether it covers this exact permission op is unverified. Try native first; take a grant if it cannot."
+    },
+    "mcp__google-workspace__get_drive_shareable_link": {
+      "native_prefix": "drive",
+      "native_verb": "share_file",
+      "note": "Native share_file observed in live roster 2026-08-20; whether it returns a shareable link is unverified. Try native first; take a grant if it cannot."
+    },
     "mcp__google-workspace__search_docs": {
       "native_prefix": "drive",
       "native_verb": "search_files",
@@ -127,9 +160,8 @@
     }
   },
   "fallback_allowed": {
-    "_note": "These workspace-mcp verbs have NO native equivalent. They are legitimate fallback uses. Hook allows them without warning.",
+    "_note": "These workspace-mcp verbs have NO native equivalent. They are legitimate fallback uses. Hook allows them without warning. Re-checked against the live name-based roster 2026-08-20; verbs the roster contradicted (send_gmail_message, update_drive_file, manage_drive_access, set_drive_file_permissions, get_drive_shareable_link) moved up to blocked_with_native_equivalent.",
     "verbs": [
-      "mcp__google-workspace__send_gmail_message",
       "mcp__google-workspace__batch_modify_gmail_message_labels",
       "mcp__google-workspace__get_gmail_messages_content_batch",
       "mcp__google-workspace__get_gmail_threads_content_batch",
@@ -140,10 +172,6 @@
       "mcp__google-workspace__query_freebusy",
       "mcp__google-workspace__manage_focus_time",
       "mcp__google-workspace__manage_out_of_office",
-      "mcp__google-workspace__manage_drive_access",
-      "mcp__google-workspace__update_drive_file",
-      "mcp__google-workspace__get_drive_shareable_link",
-      "mcp__google-workspace__set_drive_file_permissions",
       "mcp__google-workspace__get_doc_content",
       "mcp__google-workspace__get_doc_as_markdown",
       "mcp__google-workspace__update_doc_tab",
@@ -177,7 +205,6 @@
       "mcp__google-workspace__debug_table_structure",
       "mcp__google-workspace__list_spreadsheet_comments",
       "mcp__google-workspace__manage_spreadsheet_comment",
-      "mcp__google-workspace__batch_modify_gmail_message_labels",
       "mcp__google-workspace__start_google_auth"
     ]
   }
