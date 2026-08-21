@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# install.sh — deploy intent hooks into ~/.claude/hooks/
+# install.sh: deploy intent hooks into ~/.claude/hooks/
 #
 # Safe to re-run. Uses symlinks so hook updates in Core/ propagate without
-# re-install. Does NOT modify ~/.claude/settings.json — hook registration
+# re-install. Does NOT modify ~/.claude/settings.json. Hook registration
 # is a manual step (printed at the end).
 
 set -euo pipefail
@@ -41,6 +41,9 @@ install_hook presend-assertion-check.sh
 install_hook budget-snapshot-check.sh
 install_hook client-visible-content-lint.sh
 install_hook account-connector-fabric-check.sh
+install_hook operator-voice-speak.sh
+install_hook operator-voice-play.sh
+install_hook operator-voice-ctl.sh
 
 # Symlink the lookup map for the native-connector hook so it stays adjacent
 # to the script when invoked via ~/.claude/hooks/.
@@ -115,6 +118,17 @@ Add to hooks.SessionStart (same matcher-* entry as the posture hooks):
     "timeout": 10,
     "statusMessage": "Connector fabric: checking claude.ai account-connector expectation"
   }
+
+Add to hooks.Stop (Operator Voice slice 0; speaks the anchor-block TL;DR):
+
+  {
+    "type": "command",
+    "command": "~/.claude/hooks/operator-voice-speak.sh",
+    "timeout": 10
+  }
+
+  Mute it any time with:  ~/.claude/hooks/operator-voice-ctl.sh off
+  State and log live in:  ~/.claude/operator-voice/
 
 Then start a new Claude Code session and confirm:
   - The autonomy-grant banner appears in session-start context
