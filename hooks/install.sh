@@ -41,9 +41,15 @@ install_hook presend-assertion-check.sh
 install_hook budget-snapshot-check.sh
 install_hook client-visible-content-lint.sh
 install_hook account-connector-fabric-check.sh
-install_hook operator-voice-speak.sh
-install_hook operator-voice-play.sh
-install_hook operator-voice-ctl.sh
+# RETIRED 2026-08-22: Operator Voice slice 0 is UNHOOKED. The Stop hook fired on
+# every session end, including unattended overnight launchd runs, and spoke aloud
+# through the night (8 utterances between 01:02 and 07:07 on 2026-08-22). It woke
+# the household. Do NOT re-register the Stop hook without a hard gate on
+# unattended sessions plus a quiet-hours window. Scripts are left on disk,
+# unregistered, so the work is recoverable; the registration is what was wrong.
+#   install_hook operator-voice-speak.sh
+#   install_hook operator-voice-play.sh
+#   install_hook operator-voice-ctl.sh
 
 # Symlink the lookup map for the native-connector hook so it stays adjacent
 # to the script when invoked via ~/.claude/hooks/.
@@ -119,16 +125,11 @@ Add to hooks.SessionStart (same matcher-* entry as the posture hooks):
     "statusMessage": "Connector fabric: checking claude.ai account-connector expectation"
   }
 
-Add to hooks.Stop (Operator Voice slice 0; speaks the anchor-block TL;DR):
-
-  {
-    "type": "command",
-    "command": "~/.claude/hooks/operator-voice-speak.sh",
-    "timeout": 10
-  }
-
-  Mute it any time with:  ~/.claude/hooks/operator-voice-ctl.sh off
-  State and log live in:  ~/.claude/operator-voice/
+Operator Voice slice 0: RETIRED 2026-08-22. DO NOT add it to hooks.Stop.
+The Stop hook has no awareness of whether a session is attended, so scheduled
+launchd runs spoke aloud overnight and woke the household. Any revival needs
+(a) an unattended-session gate and (b) a quiet-hours window, both enforced
+before the say call, not by the operator remembering to mute.
 
 Then start a new Claude Code session and confirm:
   - The autonomy-grant banner appears in session-start context
