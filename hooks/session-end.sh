@@ -43,9 +43,26 @@ set -uo pipefail
 # Allow override of the product root for testing.
 PRODUCT_ROOT="${INTENT_SESSION_END_ROOT:-${CLAUDE_PROJECT_DIR:-$PWD}}"
 
-# Allow override of the session UUID. Claude Code may set $CLAUDE_SESSION_ID;
-# otherwise we generate one.
-SESSION_UUID="${CLAUDE_SESSION_ID:-$(uuidgen 2>/dev/null || python3 -c 'import uuid; print(uuid.uuid4())')}"
+# Session UUID precedence (2026-09-11, foreign-key alignment with Witness):
+#   1. $CLAUDE_SESSION_ID if the harness exports it
+#   2. the "session_id" field of the hook's stdin JSON (what Claude Code actually sends;
+#      this is the SAME uuid that names ~/.claude/projects/<cwd>/<session>.jsonl and
+#      .entire/metadata/<session>/, so intents join cc-native and entire-io events by id)
+#   3. a generated uuid, only when neither is present (uppercase uuidgen output is the
+#      tell that a row fell through to this branch)
+# stdin is read once here, before anything else could consume it; empty or non-JSON
+# input is tolerated.
+HOOK_STDIN=""
+if [ ! -t 0 ]; then
+  HOOK_STDIN="$(cat 2>/dev/null || true)"
+fi
+STDIN_SESSION_ID="$(printf '%s' "$HOOK_STDIN" | python3 -c 'import sys,json
+try:
+    d=json.loads(sys.stdin.read() or "{}"); v=d.get("session_id") or ""
+    print(v if isinstance(v,str) else "")
+except Exception:
+    print("")' 2>/dev/null || true)"
+SESSION_UUID="${CLAUDE_SESSION_ID:-${STDIN_SESSION_ID:-$(uuidgen 2>/dev/null || python3 -c 'import uuid; print(uuid.uuid4())')}}"
 
 # --- Locate .intent/ by walking up from PRODUCT_ROOT -------------------------
 
