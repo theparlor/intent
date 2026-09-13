@@ -41,6 +41,7 @@ install_hook presend-assertion-check.sh
 install_hook budget-snapshot-check.sh
 install_hook client-visible-content-lint.sh
 install_hook account-connector-fabric-check.sh
+install_hook session-cap-wake-check.sh
 # RETIRED 2026-08-22: Operator Voice slice 0 is UNHOOKED. The Stop hook fired on
 # every session end, including unattended overnight launchd runs, and spoke aloud
 # through the night (8 utterances between 01:02 and 07:07 on 2026-08-22). It woke
