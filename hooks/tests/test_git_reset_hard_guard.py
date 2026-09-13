@@ -4,13 +4,15 @@
 Builds throwaway git repos in a temp dir (never touches a real one) and asserts the
 block/allow matrix. The load-bearing property under test: a DIRTY tree blocks, a CLEAN
 tree passes, and every non-destructive lookalike (reset --soft, a heredoc commit message
-that mentions the phrase, a grep for it) passes untouched.
+that mentions the phrase, a grep for it) passes untouched. Since 2026-09-13: inside a LINKED
+worktree, mutating `git stash` and `reset --hard` block regardless of tree state; `stash list`
+and `stash show` pass; outside a worktree stash is untouched.
 
 Run: python3 tests/test_git_reset_hard_guard.py
 """
 import json, os, subprocess, sys, tempfile
 
-HOOK = "/Users/brien/Workspaces/Core/frameworks/intent/hooks/git-reset-hard-dirty-tree-block.sh"
+HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "git-reset-hard-dirty-tree-block.sh")
 TMP = tempfile.mkdtemp(prefix="reset-guard-test-")
 DIRTY = os.path.join(TMP, "dirty")
 CLEAN = os.path.join(TMP, "clean")
@@ -50,6 +52,13 @@ def run(cmd, cwd, tool="Bash", env_bypass=False):
 make_repo(DIRTY, dirty=True)
 make_repo(CLEAN, dirty=False)
 
+# A LINKED worktree off the clean repo (git-dir lives under <common>/worktrees/), and a
+# standalone repo whose PATH names a worktree dir. Both must trip the worktree rule.
+WT = os.path.join(TMP, "wt")
+sh("git", "worktree", "add", "-q", WT, "-b", "wt-branch", cwd=CLEAN)
+PATHWT = os.path.join(TMP, ".worktrees", "standalone")
+make_repo(PATHWT, dirty=False)
+
 BLOCK, ALLOW = 2, 0
 CASES = [
     ("dirty + reset --hard",            "git reset --hard origin/main",              DIRTY, BLOCK),
@@ -76,6 +85,27 @@ CASES = [
     ("inline bypass",
      "GIT_RESET_HARD_GUARD_BYPASSED=1 git reset --hard origin/main",                  DIRTY, ALLOW),
     ("non-Bash tool",                   "git reset --hard origin/main",               DIRTY, ALLOW),
+    # linked-worktree rule: mutating stash blocked, reset --hard blocked even when CLEAN
+    ("wt + bare git stash",             "git stash",                                  WT,    BLOCK),
+    ("wt + stash push -u -m",           "git stash push -u -m realign",               WT,    BLOCK),
+    ("wt + stash pop",                  "git stash pop",                              WT,    BLOCK),
+    ("wt + stash apply sha",            "git stash apply 2c1d736",                    WT,    BLOCK),
+    ("wt + stash drop",                 "git stash drop stash@{0}",                   WT,    BLOCK),
+    ("wt + clean reset --hard",         "git reset --hard origin/main",               WT,    BLOCK),
+    ("wt + clean checkout -f",          "git checkout -f wt-branch",                  WT,    BLOCK),
+    ("wt via cd from outside",          f"cd {WT} && git stash",                      TMP,   BLOCK),
+    ("wt via git -C",                   f"git -C {WT} stash push -m x",               TMP,   BLOCK),
+    ("path-named worktree + stash",     "git stash",                                  PATHWT, BLOCK),
+    # worktree: read-only stash verbs and the sanctioned alternatives pass
+    ("wt + stash list",                 "git stash list",                             WT,    ALLOW),
+    ("wt + stash show -p",              "git stash show -p stash@{0}",                WT,    ALLOW),
+    ("wt + rebase",                     "git rebase origin/main",                     WT,    ALLOW),
+    ("wt + wip commit",                 "git add f.txt && git commit -m 'wip: x'",    WT,    ALLOW),
+    ("wt + heredoc mentions stash",
+     "git commit -F - <<EOF\nnote: never git stash in a worktree\nEOF",               WT,    ALLOW),
+    # main checkout: stash is out of scope for this hook
+    ("clean main checkout + stash",     "git stash",                                  CLEAN, ALLOW),
+    ("dirty main checkout + stash",     "git stash push -m x",                        DIRTY, ALLOW),
 ]
 
 fails = []

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # git-reset-hard-dirty-tree-block.sh
 #
-# PreToolUse hook (matcher: Bash) — blocks `git reset --hard` / `git checkout -f`
+# PreToolUse hook (matcher: Bash). Blocks `git reset --hard` / `git checkout -f`
 # when the target repo has UNCOMMITTED TRACKED modifications, because those
 # commands delete them with no git object left behind to recover from.
 #
@@ -34,6 +34,18 @@
 #     git reset --soft origin/main     # keeps the working tree
 #     git stash && git reset --hard origin/main && git stash pop
 # Recorded practice for the PR-only repos: memory project_quartermaster_repo_requires_pr.
+#
+# Linked-worktree rule (added 2026-09-13, SIG-SUBAGENT-BRIEF-PROHIBITIONS-IGNORED-UNDER-DRIFT):
+# - Inside a LINKED WORKTREE (git-dir under <common>/worktrees/, or a path containing
+#   /.worktrees/ or /.claude/worktrees/) the guard blocks `git stash` (every mutating
+#   form: bare, push, save, pop, apply, drop, clear, branch, create, store) and
+#   `git reset --hard` / `git checkout -f` REGARDLESS of tree state. The stash stack is
+#   shared with the main checkout and every other session's worktree, so a stash there
+#   can be popped by someone else, and a reset --hard is never the right realign in a
+#   worktree: `git rebase origin/main` or a WIP commit is. A Sonnet subagent did exactly
+#   this on 2026-09-13 after being told not to; prose in a brief lost to a known idiom.
+# - `git stash list` and `git stash show` are read-only and always pass.
+# - Outside a linked worktree, stash is untouched by this hook (scope is deliberate).
 #
 # Bypass: GIT_RESET_HARD_GUARD_BYPASSED=1 (logged). Honored from the hook's own
 #   environment AND as an inline command prefix, since env prefixes on the user
@@ -96,13 +108,16 @@ _CMDPOS = (
 # `git [-C <path>] [other global flags] reset ... --hard ...`
 _GIT_RESET_HARD = _CMDPOS + r"git\b(?P<g>(?:\s+-\S+(?:\s+\S+)?)*)\s+reset\b(?P<a>[^;&|\n]*)"
 _GIT_CHECKOUT_F = _CMDPOS + r"git\b(?P<g2>(?:\s+-\S+(?:\s+\S+)?)*)\s+checkout\b(?P<a2>[^;&|\n]*)"
+# `git [-C <path>] stash [subcommand ...]`
+_GIT_STASH = _CMDPOS + r"git\b(?P<g3>(?:\s+-\S+(?:\s+\S+)?)*)\s+stash\b(?P<a3>[^;&|\n]*)"
+_STASH_READONLY = ("list", "show")
 
 
 def _repo_dirs(cmd: str, cwd, m) -> list:
     """Candidate directories for the repo, most specific first."""
     cands = []
     # `git -C <path>` on the matched invocation wins.
-    g = (m.groupdict().get("g") or m.groupdict().get("g2") or "")
+    g = (m.groupdict().get("g") or m.groupdict().get("g2") or m.groupdict().get("g3") or "")
     gm = re.search(r"-C\s+(\S+)", g)
     if gm:
         cands.append(gm.group(1).strip("\"'"))
@@ -138,6 +153,67 @@ def _dirty_tracked(repo_dir: str):
         return None
 
 
+def _linked_worktree(repo_dir: str):
+    """Return the worktree root if repo_dir is inside a LINKED git worktree (or a path that
+    names one), else None. Fail open on anything unresolvable."""
+    try:
+        top = subprocess.run(["git", "-C", repo_dir, "rev-parse", "--show-toplevel"],
+                             capture_output=True, text=True, timeout=10)
+        if top.returncode != 0:
+            return None
+        top_s = top.stdout.strip()
+        if "/.worktrees/" in top_s + "/" or "/.claude/worktrees/" in top_s + "/":
+            return top_s
+        gd = subprocess.run(["git", "-C", repo_dir, "rev-parse", "--git-dir", "--git-common-dir"],
+                            capture_output=True, text=True, timeout=10)
+        if gd.returncode != 0:
+            return None
+        parts = gd.stdout.split()
+        if len(parts) >= 2:
+            git_dir = os.path.realpath(os.path.join(repo_dir, parts[0]))
+            common = os.path.realpath(os.path.join(repo_dir, parts[1]))
+            if git_dir != common and "/worktrees/" in git_dir:
+                return top_s
+        return None
+    except Exception:
+        return None
+
+
+def _block_worktree(verb: str, wt: str, cmd: str) -> int:
+    _log(f"BLOCK-WORKTREE verb={verb} worktree={wt} cmd={cmd[:140]!r}")
+    print(
+        "\n".join([
+            "",
+            f"BLOCKED: git-reset-hard-guard: `git {verb}` inside a linked worktree",
+            "",
+            f"  Worktree: {wt}",
+            "",
+            "  The stash stack is shared with the main checkout and every other session's",
+            "  worktree. A stash made here can be popped by someone else, and a stash left",
+            "  behind becomes an orphan nobody owns (one sat unnoticed from 2026-05-28 to",
+            "  2026-09-13). reset --hard and checkout -f have no place in a worktree either:",
+            "  the tree is disposable, the commits are not.",
+            "",
+            "  If origin/main moved under you:",
+            "    git rebase origin/main",
+            "",
+            "  If you must set work aside:",
+            "    git add <specific files> && git commit -m 'wip: <what>'",
+            "    (a commit on your own branch; squash or drop it before the PR)",
+            "",
+            "  git stash list / git stash show are read-only and always allowed.",
+            "",
+            "  Bypass only with a reason you would put in the commit message:",
+            f"    {BYPASS}=1 <retry-command>",
+            "",
+            "  Signal: SIG-SUBAGENT-BRIEF-PROHIBITIONS-IGNORED-UNDER-DRIFT-2026-09-13",
+            "",
+        ]),
+        file=sys.stderr,
+    )
+    return 2
+
+
 def main() -> int:
     if os.environ.get(BYPASS) == "1":
         _log(f"BYPASS session={os.environ.get('CLAUDE_SESSION_ID', 'unknown')}")
@@ -161,6 +237,21 @@ def main() -> int:
 
     cmd_stripped = _strip_heredocs(cmd)
 
+    cwd = payload.get("cwd")
+
+    # Linked-worktree rule: mutating stash is blocked outright; reset --hard and
+    # checkout -f are blocked even on a clean tree.
+    for m in re.finditer(_GIT_STASH, cmd_stripped, re.M):
+        sub = (m.group("a3") or "").strip().split()
+        if sub and sub[0] in _STASH_READONLY:
+            continue
+        for d in _repo_dirs(cmd_stripped, cwd, m):
+            if os.path.isdir(d):
+                wt = _linked_worktree(d)
+                if wt:
+                    return _block_worktree("stash " + (sub[0] if sub else "(push)"), wt, cmd)
+                break
+
     hit, verb = None, None
     for m in re.finditer(_GIT_RESET_HARD, cmd_stripped, re.M):
         if re.search(r"(?:^|\s)--hard(?:\s|$|=)", m.group("a")):
@@ -174,11 +265,13 @@ def main() -> int:
     if hit is None:
         return 0
 
-    cwd = payload.get("cwd")
     info = None
     for d in _repo_dirs(cmd_stripped, cwd, hit):
         if not os.path.isdir(d):
             continue
+        wt = _linked_worktree(d)
+        if wt:
+            return _block_worktree(verb, wt, cmd)
         info = _dirty_tracked(d)
         if info is not None:
             break
@@ -195,7 +288,7 @@ def main() -> int:
     print(
         "\n".join([
             "",
-            f"BLOCKED: git-reset-hard-guard — `git {verb}` on a DIRTY tree",
+            f"BLOCKED: git-reset-hard-guard: `git {verb}` on a DIRTY tree",
             "",
             f"  Repo: {top}",
             f"  {len(lines)} uncommitted tracked change(s) this call would DELETE:",
@@ -209,8 +302,10 @@ def main() -> int:
             "  If you are realigning local main after a PR merged (the usual cause):",
             "    git reset --soft origin/main",
             "",
-            "  If you genuinely want the remote's tree AND the local edits kept:",
-            "    git stash push -m realign && git reset --hard origin/main && git stash pop",
+            "  If you genuinely want the remote's tree AND the local edits kept, commit",
+            "  the edits first (a wip commit on a branch is recoverable; a stash is shared",
+            "  with every other session and gets orphaned):",
+            "    git add <specific files> && git commit -m 'wip: <what>' && git reset --hard origin/main",
             "",
             "  If the local edits belong to someone else's session, leave them alone:",
             "  a scheduled task should commit only its own artifacts.",
