@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# hooks/session-end.sh — Tier 1 session.end event emitter
+# hooks/session-end.sh (Tier 1 session.end event emitter)
 #
 # Emits an OTel-shaped `session.end` event to <product>/.intent/events/events.jsonl
 # at the close of an agent session. Installed per-product by `bin/intent-init`:
@@ -28,12 +28,13 @@
 #       "commit_sha": "<sha-or-null>",
 #       "signals_captured": [...],
 #       "signals_seen": [...],
-#       "decisions_recorded": [...]
+#       "decisions_recorded": [...],
+#       "decisions_seen": [...]
 #     }
 #   }
 #
 # signals_captured vs signals_seen (2026-09-14, loom PR 9 rung-2 fix):
-#   signals_seen is the old best-effort proxy — every .intent/signals/*.md
+#   signals_seen is the old best-effort proxy: every .intent/signals/*.md
 #   file whose mtime falls inside the session window, regardless of who
 #   touched it. On a day with several sessions open at once that proxy
 #   claims one session's stop for everyone else's work too, so it is kept
@@ -41,20 +42,35 @@
 #   signals_captured is narrowed to files this session has EVIDENCE for,
 #   strongest first:
 #     1. frontmatter naming this session (session:, session_id:,
-#        originSessionId: — the value is tokenized, so
+#        originSessionId: the value is tokenized, so
 #        "session: <id> (worktree name)" still matches)
 #     2. a Write or Edit tool_use in this session's own transcript
 #        (transcript_path from the hook payload) naming the file
 #     3. a commit on the cwd's current branch touching the file inside
 #        the session window
 #   Every rung is best-effort and independently fail-open: an unreadable
-#   transcript, a detached HEAD, or a git error just drops that rung —
+#   transcript, a detached HEAD, or a git error just drops that rung,
 #   never the event. Loom's harvest reads signals_captured as its second
 #   attribution rung; signals_seen is not read by that path.
+#
+# decisions_recorded vs decisions_seen (2026-09-14, same evidence ladder):
+#   decisions_recorded used to be the mtime sweep verbatim: every
+#   .intent/decisions/*.md file changed in the last 60 minutes, whoever
+#   wrote it, which has the identical over-claiming failure mode
+#   signals_captured had before the loom PR 9 fix above. It now runs
+#   through the SAME three-rung evidence ladder (shared helper, see
+#   evidence_ladder_captured() below) against .intent/decisions/ instead
+#   of .intent/signals/. The old mtime sweep is kept verbatim under the
+#   new decisions_seen field, so nothing is lost. Confirmed 2026-09-14:
+#   Loom's harvest (src/harvest.py, harvest_events()) reads
+#   decisions_recorded directly, producing a session-attributed "decision"
+#   record per entry, the same way it reads signals_captured for "signal"
+#   records. This narrowing therefore has the same direct benefit for
+#   Loom's decision attribution that the loom PR 9 fix had for signals.
 # Closure-DoD:
 #   upstream_control_path: this hook (the emitter) + bin/intent-init (the installer)
 #   catch_mechanism: events.jsonl tail per-session; library-index nightly read
-#   pipeline_survival: YES — events.jsonl is append-only, git-tracked
+#   pipeline_survival: YES. events.jsonl is append-only, git-tracked
 
 set -uo pipefail
 
@@ -91,9 +107,9 @@ STDIN_TRANSCRIPT_PATH="$(printf '%s\n' "$STDIN_PARSED" | sed -n '2p')"
 SESSION_UUID="${CLAUDE_SESSION_ID:-${STDIN_SESSION_ID:-$(uuidgen 2>/dev/null || python3 -c 'import uuid; print(uuid.uuid4())')}}"
 
 # transcript_path: what the SessionEnd hook payload names as the session's
-# own JSONL transcript. Used only as evidence for signals_captured below
-# (rung 2 of the ladder) — never required, since a missing or unreadable
-# transcript must not block the event (fail-open).
+# own JSONL transcript. Used only as evidence for signals_captured /
+# decisions_recorded below (rung 2 of the ladder), never required, since
+# a missing or unreadable transcript must not block the event (fail-open).
 TRANSCRIPT_PATH="${INTENT_SESSION_END_TRANSCRIPT_PATH:-$STDIN_TRANSCRIPT_PATH}"
 
 # --- Locate .intent/ by walking up from PRODUCT_ROOT -------------------------
@@ -112,7 +128,7 @@ find_intent_root() {
 
 INTENT_ROOT="$(find_intent_root "$PRODUCT_ROOT")"
 if [[ -z "${INTENT_ROOT:-}" ]]; then
-  # No .intent/ in scope — nothing to emit. Exit silently (this is correct
+  # No .intent/ in scope, so there is nothing to emit. Exit silently (this is correct
   # behavior for sessions in directories that aren't Intent-instrumented).
   exit 0
 fi
@@ -162,7 +178,8 @@ if [[ "$COMMIT_SHA" != "null" ]]; then
 fi
 
 # JSON-array-encode a newline-delimited list of bare filenames (shared by
-# signals_seen, signals_captured, and decisions_recorded below).
+# signals_seen, signals_captured, decisions_seen, and decisions_recorded
+# below).
 json_array_from_lines() {
   local lines="$1" arr="[" sep="" line
   while IFS= read -r line; do
@@ -174,54 +191,59 @@ json_array_from_lines() {
   printf '%s' "$arr"
 }
 
-# The session-window minutes used by both the mtime sweep below and the
-# git-log rung of the evidence ladder. Overridable for tests.
-SIGNALS_WINDOW_MIN="${INTENT_SESSION_END_WINDOW_MIN:-60}"
+# The session-window minutes used by both mtime sweeps below (signals_seen,
+# decisions_seen) and the git-log rung of the evidence ladder. Overridable
+# for tests.
+WINDOW_MIN="${INTENT_SESSION_END_WINDOW_MIN:-60}"
 
-SIGNALS_DIR="$INTENT_ROOT/.intent/signals"
-
-# signals_seen: the OLD best-effort proxy, kept verbatim — every signal
-# file whose mtime falls inside the session window, regardless of who
-# touched it. This is a coincidence-of-the-clock list, not attribution;
-# see the schema note above. Loom's harvest does not read this field.
-RECENT=""
-if [[ -d "$SIGNALS_DIR" ]]; then
+# mtime_sweep: the OLD best-effort proxy, shared by signals_seen and
+# decisions_seen: every *.md file directly under $1 whose mtime falls
+# inside WINDOW_MIN minutes, regardless of who touched it. A coincidence-
+# of-the-clock list, not attribution; see the schema note above. Prints
+# bare filenames, one per line; prints nothing if $1 doesn't exist.
+mtime_sweep() {
+  local dir="$1"
+  [[ -d "$dir" ]] || return 0
   # On macOS, use `-newermt` with date math; on GNU find use `-mmin`.
   if find --version >/dev/null 2>&1; then
     # GNU find
-    RECENT=$(find "$SIGNALS_DIR" -type f -name '*.md' -mmin "-${SIGNALS_WINDOW_MIN}" -printf '%f\n' 2>/dev/null || true)
+    find "$dir" -type f -name '*.md' -mmin "-${WINDOW_MIN}" -printf '%f\n' 2>/dev/null || true
   else
     # BSD find (macOS): use -mtime with minute resolution via -mmin if available
-    RECENT=$(find "$SIGNALS_DIR" -type f -name '*.md' -mmin "-${SIGNALS_WINDOW_MIN}" 2>/dev/null | xargs -n1 basename 2>/dev/null || true)
+    find "$dir" -type f -name '*.md' -mmin "-${WINDOW_MIN}" 2>/dev/null | xargs -n1 basename 2>/dev/null || true
   fi
-fi
-SIGNALS_SEEN="$(json_array_from_lines "$RECENT")"
+}
 
-# signals_captured: signals_seen narrowed to files THIS session has
-# evidence for. Three rungs, strongest first, each independently
-# fail-open (a missing transcript, a detached HEAD, or a git error just
-# drops that rung — never the event). See the schema note above the
-# event-shape comment block for the full contract.
-BRANCH_NAME=""
-if [[ "$COMMIT_SHA" != "null" ]]; then
-  BRANCH_NAME="$(git -C "$INTENT_ROOT" branch --show-current 2>/dev/null || true)"
-fi
-
-CAPTURED_LIST=""
-if [[ -d "$SIGNALS_DIR" ]]; then
-  CAPTURED_LIST="$(EV_SESSION_UUID="$SESSION_UUID" \
-    EV_SIGNALS_DIR="$SIGNALS_DIR" \
+# evidence_ladder_captured: the shared three-rung evidence ladder behind
+# both signals_captured and decisions_recorded. Narrows "every *.md file
+# under $1 touched in the window" (mtime_sweep's job) down to files THIS
+# session has evidence for, strongest first:
+#   1. frontmatter naming this session (session:, session_id:,
+#      originSessionId: tokenized, so "session: <id> (worktree name)"
+#      still matches)
+#   2. a Write or Edit tool_use in this session's own transcript
+#      (TRANSCRIPT_PATH) naming a file directly under $1
+#   3. a commit on the cwd's current branch touching a file under $1,
+#      inside the WINDOW_MIN window
+# Every rung is independently fail-open (missing transcript, detached
+# HEAD, or a git error just drops that rung, never the event). Prints
+# bare filenames, one per line; prints nothing if $1 doesn't exist.
+evidence_ladder_captured() {
+  local target_dir="$1"
+  [[ -d "$target_dir" ]] || return 0
+  EV_SESSION_UUID="$SESSION_UUID" \
+    EV_TARGET_DIR="$target_dir" \
     EV_TRANSCRIPT_PATH="$TRANSCRIPT_PATH" \
     EV_INTENT_ROOT="$INTENT_ROOT" \
     EV_BRANCH="$BRANCH_NAME" \
-    EV_WINDOW_MIN="$SIGNALS_WINDOW_MIN" \
+    EV_WINDOW_MIN="$WINDOW_MIN" \
     python3 - <<'PYEOF' 2>/dev/null || true
 import os
 import re
 import subprocess
 
 session_uuid = os.environ.get("EV_SESSION_UUID", "")
-signals_dir = os.environ.get("EV_SIGNALS_DIR", "")
+target_dir = os.environ.get("EV_TARGET_DIR", "")
 transcript_path = os.environ.get("EV_TRANSCRIPT_PATH", "")
 intent_root = os.environ.get("EV_INTENT_ROOT", "")
 branch = os.environ.get("EV_BRANCH", "")
@@ -231,13 +253,13 @@ captured = set()
 
 # --- Rung 1: frontmatter names this session -----------------------------
 FRONTMATTER_KEYS = ("session:", "session_id:", "originsessionid:", "origin_session_id:")
-if signals_dir and session_uuid and os.path.isdir(signals_dir):
+if target_dir and session_uuid and os.path.isdir(target_dir):
     try:
-        names = [n for n in os.listdir(signals_dir) if n.endswith(".md")]
+        names = [n for n in os.listdir(target_dir) if n.endswith(".md")]
     except Exception:
         names = []
     for name in names:
-        fm_path = os.path.join(signals_dir, name)
+        fm_path = os.path.join(target_dir, name)
         try:
             fm_lines = []
             with open(fm_path, "r", errors="ignore") as f:
@@ -264,8 +286,8 @@ if signals_dir and session_uuid and os.path.isdir(signals_dir):
                     break
 
 # --- Rung 2: this session's own transcript wrote/edited the file --------
-if transcript_path and signals_dir and os.path.isfile(transcript_path):
-    signals_dir_abs = os.path.abspath(signals_dir)
+if transcript_path and target_dir and os.path.isfile(transcript_path):
+    target_dir_abs = os.path.abspath(target_dir)
     try:
         with open(transcript_path, "r", errors="ignore") as f:
             for raw in f:
@@ -292,24 +314,24 @@ if transcript_path and signals_dir and os.path.isfile(transcript_path):
                     if not fp:
                         continue
                     fp_abs = os.path.abspath(fp)
-                    if fp_abs == signals_dir_abs or os.path.dirname(fp_abs) == signals_dir_abs:
+                    if fp_abs == target_dir_abs or os.path.dirname(fp_abs) == target_dir_abs:
                         captured.add(os.path.basename(fp_abs))
     except Exception:
         pass
 
 # --- Rung 3: a commit on the cwd's current branch, inside the window ----
-if branch and intent_root and signals_dir and os.path.isdir(signals_dir):
+if branch and intent_root and target_dir and os.path.isdir(target_dir):
     try:
-        rel_signals = os.path.relpath(signals_dir, intent_root)
+        rel_target = os.path.relpath(target_dir, intent_root)
         out = subprocess.run(
             ["git", "-C", intent_root, "log", f"--since={window_min} minutes ago",
-             "--name-only", "--pretty=format:", "--", rel_signals],
+             "--name-only", "--pretty=format:", "--", rel_target],
             capture_output=True, text=True, timeout=10,
         )
         if out.returncode == 0:
             for line in out.stdout.splitlines():
                 line = line.strip()
-                if line and line.startswith(rel_signals):
+                if line and line.startswith(rel_target):
                     captured.add(os.path.basename(line))
     except Exception:
         pass
@@ -317,36 +339,32 @@ if branch and intent_root and signals_dir and os.path.isdir(signals_dir):
 for name in sorted(captured):
     print(name)
 PYEOF
-)"
-fi
-SIGNALS_CAPTURED="$(json_array_from_lines "$CAPTURED_LIST")"
+}
 
-# decisions_recorded: decision atoms or decision-log entries modified in
-# the last 60 minutes. Best-effort.
-DECISIONS_RECORDED="[]"
-DECISIONS_DIR="$INTENT_ROOT/.intent/decisions"
-if [[ -d "$DECISIONS_DIR" ]]; then
-  if find --version >/dev/null 2>&1; then
-    RECENT_DEC=$(find "$DECISIONS_DIR" -type f -name '*.md' -mmin -60 -printf '%f\n' 2>/dev/null || true)
-  else
-    RECENT_DEC=$(find "$DECISIONS_DIR" -type f -name '*.md' -mmin -60 2>/dev/null | xargs -n1 basename 2>/dev/null || true)
-  fi
-  if [[ -n "${RECENT_DEC:-}" ]]; then
-    DECISIONS_RECORDED="["
-    sep=""
-    while IFS= read -r line; do
-      [[ -z "$line" ]] && continue
-      DECISIONS_RECORDED+="${sep}\"${line//\"/\\\"}\""
-      sep=","
-    done <<< "$RECENT_DEC"
-    DECISIONS_RECORDED+="]"
-  fi
+# BRANCH_NAME: the cwd's current branch, used by rung 3 of the evidence
+# ladder for both signals and decisions. Empty (and rung 3 a no-op) on a
+# detached HEAD or outside a git repo.
+BRANCH_NAME=""
+if [[ "$COMMIT_SHA" != "null" ]]; then
+  BRANCH_NAME="$(git -C "$INTENT_ROOT" branch --show-current 2>/dev/null || true)"
 fi
+
+# signals_seen / signals_captured: see the schema note above.
+SIGNALS_DIR="$INTENT_ROOT/.intent/signals"
+SIGNALS_SEEN="$(json_array_from_lines "$(mtime_sweep "$SIGNALS_DIR")")"
+SIGNALS_CAPTURED="$(json_array_from_lines "$(evidence_ladder_captured "$SIGNALS_DIR")")"
+
+# decisions_seen / decisions_recorded: same shape, same shared helpers,
+# aimed at .intent/decisions/ instead of .intent/signals/. See the schema
+# note above.
+DECISIONS_DIR="$INTENT_ROOT/.intent/decisions"
+DECISIONS_SEEN="$(json_array_from_lines "$(mtime_sweep "$DECISIONS_DIR")")"
+DECISIONS_RECORDED="$(json_array_from_lines "$(evidence_ladder_captured "$DECISIONS_DIR")")"
 
 # --- Compose + emit event ----------------------------------------------------
 
 EVENT=$(cat <<EOF
-{"version":"0.1.0","event":"session.end","trace_id":"${TRACE_ID}","span_id":"${SPAN_ID}","parent_id":null,"timestamp":"${TIMESTAMP}","source":{"system":"${PRODUCT_NAME}","instance":"${SESSION_UUID}"},"data":{"files_touched":${FILES_TOUCHED},"commit_sha":${COMMIT_SHA},"signals_captured":${SIGNALS_CAPTURED},"signals_seen":${SIGNALS_SEEN},"decisions_recorded":${DECISIONS_RECORDED}}}
+{"version":"0.1.0","event":"session.end","trace_id":"${TRACE_ID}","span_id":"${SPAN_ID}","parent_id":null,"timestamp":"${TIMESTAMP}","source":{"system":"${PRODUCT_NAME}","instance":"${SESSION_UUID}"},"data":{"files_touched":${FILES_TOUCHED},"commit_sha":${COMMIT_SHA},"signals_captured":${SIGNALS_CAPTURED},"signals_seen":${SIGNALS_SEEN},"decisions_recorded":${DECISIONS_RECORDED},"decisions_seen":${DECISIONS_SEEN}}}
 EOF
 )
 
