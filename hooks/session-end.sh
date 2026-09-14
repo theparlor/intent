@@ -27,10 +27,30 @@
 #       "files_touched": [...],
 #       "commit_sha": "<sha-or-null>",
 #       "signals_captured": [...],
+#       "signals_seen": [...],
 #       "decisions_recorded": [...]
 #     }
 #   }
 #
+# signals_captured vs signals_seen (2026-09-14, loom PR 9 rung-2 fix):
+#   signals_seen is the old best-effort proxy — every .intent/signals/*.md
+#   file whose mtime falls inside the session window, regardless of who
+#   touched it. On a day with several sessions open at once that proxy
+#   claims one session's stop for everyone else's work too, so it is kept
+#   verbatim but demoted: nothing downstream should trust it as attribution.
+#   signals_captured is narrowed to files this session has EVIDENCE for,
+#   strongest first:
+#     1. frontmatter naming this session (session:, session_id:,
+#        originSessionId: — the value is tokenized, so
+#        "session: <id> (worktree name)" still matches)
+#     2. a Write or Edit tool_use in this session's own transcript
+#        (transcript_path from the hook payload) naming the file
+#     3. a commit on the cwd's current branch touching the file inside
+#        the session window
+#   Every rung is best-effort and independently fail-open: an unreadable
+#   transcript, a detached HEAD, or a git error just drops that rung —
+#   never the event. Loom's harvest reads signals_captured as its second
+#   attribution rung; signals_seen is not read by that path.
 # Closure-DoD:
 #   upstream_control_path: this hook (the emitter) + bin/intent-init (the installer)
 #   catch_mechanism: events.jsonl tail per-session; library-index nightly read
@@ -56,13 +76,25 @@ HOOK_STDIN=""
 if [ ! -t 0 ]; then
   HOOK_STDIN="$(cat 2>/dev/null || true)"
 fi
-STDIN_SESSION_ID="$(printf '%s' "$HOOK_STDIN" | python3 -c 'import sys,json
+STDIN_PARSED="$(printf '%s' "$HOOK_STDIN" | python3 -c 'import sys,json
 try:
-    d=json.loads(sys.stdin.read() or "{}"); v=d.get("session_id") or ""
-    print(v if isinstance(v,str) else "")
+    d=json.loads(sys.stdin.read() or "{}")
+    sid=d.get("session_id") or ""
+    tp=d.get("transcript_path") or ""
+    print(sid if isinstance(sid,str) else "")
+    print(tp if isinstance(tp,str) else "")
 except Exception:
+    print("")
     print("")' 2>/dev/null || true)"
+STDIN_SESSION_ID="$(printf '%s\n' "$STDIN_PARSED" | sed -n '1p')"
+STDIN_TRANSCRIPT_PATH="$(printf '%s\n' "$STDIN_PARSED" | sed -n '2p')"
 SESSION_UUID="${CLAUDE_SESSION_ID:-${STDIN_SESSION_ID:-$(uuidgen 2>/dev/null || python3 -c 'import uuid; print(uuid.uuid4())')}}"
+
+# transcript_path: what the SessionEnd hook payload names as the session's
+# own JSONL transcript. Used only as evidence for signals_captured below
+# (rung 2 of the ladder) — never required, since a missing or unreadable
+# transcript must not block the event (fail-open).
+TRANSCRIPT_PATH="${INTENT_SESSION_END_TRANSCRIPT_PATH:-$STDIN_TRANSCRIPT_PATH}"
 
 # --- Locate .intent/ by walking up from PRODUCT_ROOT -------------------------
 
@@ -129,31 +161,165 @@ if [[ "$COMMIT_SHA" != "null" ]]; then
   fi
 fi
 
-# signals_captured: signal files in .intent/signals/ modified during this
-# session. Best-effort proxy: signals modified in the last 60 minutes.
-SIGNALS_CAPTURED="[]"
+# JSON-array-encode a newline-delimited list of bare filenames (shared by
+# signals_seen, signals_captured, and decisions_recorded below).
+json_array_from_lines() {
+  local lines="$1" arr="[" sep="" line
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    arr+="${sep}\"${line//\"/\\\"}\""
+    sep=","
+  done <<< "$lines"
+  arr+="]"
+  printf '%s' "$arr"
+}
+
+# The session-window minutes used by both the mtime sweep below and the
+# git-log rung of the evidence ladder. Overridable for tests.
+SIGNALS_WINDOW_MIN="${INTENT_SESSION_END_WINDOW_MIN:-60}"
+
 SIGNALS_DIR="$INTENT_ROOT/.intent/signals"
+
+# signals_seen: the OLD best-effort proxy, kept verbatim — every signal
+# file whose mtime falls inside the session window, regardless of who
+# touched it. This is a coincidence-of-the-clock list, not attribution;
+# see the schema note above. Loom's harvest does not read this field.
+RECENT=""
 if [[ -d "$SIGNALS_DIR" ]]; then
-  # Find files modified in the last 60 minutes (Claude Code session-typical).
   # On macOS, use `-newermt` with date math; on GNU find use `-mmin`.
   if find --version >/dev/null 2>&1; then
     # GNU find
-    RECENT=$(find "$SIGNALS_DIR" -type f -name '*.md' -mmin -60 -printf '%f\n' 2>/dev/null || true)
+    RECENT=$(find "$SIGNALS_DIR" -type f -name '*.md' -mmin "-${SIGNALS_WINDOW_MIN}" -printf '%f\n' 2>/dev/null || true)
   else
     # BSD find (macOS): use -mtime with minute resolution via -mmin if available
-    RECENT=$(find "$SIGNALS_DIR" -type f -name '*.md' -mmin -60 2>/dev/null | xargs -n1 basename 2>/dev/null || true)
-  fi
-  if [[ -n "${RECENT:-}" ]]; then
-    SIGNALS_CAPTURED="["
-    sep=""
-    while IFS= read -r line; do
-      [[ -z "$line" ]] && continue
-      SIGNALS_CAPTURED+="${sep}\"${line//\"/\\\"}\""
-      sep=","
-    done <<< "$RECENT"
-    SIGNALS_CAPTURED+="]"
+    RECENT=$(find "$SIGNALS_DIR" -type f -name '*.md' -mmin "-${SIGNALS_WINDOW_MIN}" 2>/dev/null | xargs -n1 basename 2>/dev/null || true)
   fi
 fi
+SIGNALS_SEEN="$(json_array_from_lines "$RECENT")"
+
+# signals_captured: signals_seen narrowed to files THIS session has
+# evidence for. Three rungs, strongest first, each independently
+# fail-open (a missing transcript, a detached HEAD, or a git error just
+# drops that rung — never the event). See the schema note above the
+# event-shape comment block for the full contract.
+BRANCH_NAME=""
+if [[ "$COMMIT_SHA" != "null" ]]; then
+  BRANCH_NAME="$(git -C "$INTENT_ROOT" branch --show-current 2>/dev/null || true)"
+fi
+
+CAPTURED_LIST=""
+if [[ -d "$SIGNALS_DIR" ]]; then
+  CAPTURED_LIST="$(EV_SESSION_UUID="$SESSION_UUID" \
+    EV_SIGNALS_DIR="$SIGNALS_DIR" \
+    EV_TRANSCRIPT_PATH="$TRANSCRIPT_PATH" \
+    EV_INTENT_ROOT="$INTENT_ROOT" \
+    EV_BRANCH="$BRANCH_NAME" \
+    EV_WINDOW_MIN="$SIGNALS_WINDOW_MIN" \
+    python3 - <<'PYEOF' 2>/dev/null || true
+import os
+import re
+import subprocess
+
+session_uuid = os.environ.get("EV_SESSION_UUID", "")
+signals_dir = os.environ.get("EV_SIGNALS_DIR", "")
+transcript_path = os.environ.get("EV_TRANSCRIPT_PATH", "")
+intent_root = os.environ.get("EV_INTENT_ROOT", "")
+branch = os.environ.get("EV_BRANCH", "")
+window_min = os.environ.get("EV_WINDOW_MIN", "60")
+
+captured = set()
+
+# --- Rung 1: frontmatter names this session -----------------------------
+FRONTMATTER_KEYS = ("session:", "session_id:", "originsessionid:", "origin_session_id:")
+if signals_dir and session_uuid and os.path.isdir(signals_dir):
+    try:
+        names = [n for n in os.listdir(signals_dir) if n.endswith(".md")]
+    except Exception:
+        names = []
+    for name in names:
+        fm_path = os.path.join(signals_dir, name)
+        try:
+            fm_lines = []
+            with open(fm_path, "r", errors="ignore") as f:
+                for i, line in enumerate(f):
+                    if i == 0:
+                        if line.strip() != "---":
+                            break
+                        continue
+                    if line.strip() == "---":
+                        break
+                    fm_lines.append(line)
+                    if i > 60:
+                        break
+        except Exception:
+            continue
+        for line in fm_lines:
+            lline = line.strip().lower()
+            for key in FRONTMATTER_KEYS:
+                if lline.startswith(key):
+                    value = line.split(":", 1)[1] if ":" in line else ""
+                    tokens = [t.lower() for t in re.split(r'[\s,()"\']+', value) if t]
+                    if session_uuid.lower() in tokens:
+                        captured.add(name)
+                    break
+
+# --- Rung 2: this session's own transcript wrote/edited the file --------
+if transcript_path and signals_dir and os.path.isfile(transcript_path):
+    signals_dir_abs = os.path.abspath(signals_dir)
+    try:
+        with open(transcript_path, "r", errors="ignore") as f:
+            for raw in f:
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    import json as _json
+                    obj = _json.loads(raw)
+                except Exception:
+                    continue
+                if obj.get("type") != "assistant":
+                    continue
+                content = obj.get("message", {}).get("content", [])
+                if not isinstance(content, list):
+                    continue
+                for block in content:
+                    if not isinstance(block, dict) or block.get("type") != "tool_use":
+                        continue
+                    if block.get("name") not in ("Write", "Edit"):
+                        continue
+                    inp = block.get("input") or {}
+                    fp = inp.get("file_path") or inp.get("path") or ""
+                    if not fp:
+                        continue
+                    fp_abs = os.path.abspath(fp)
+                    if fp_abs == signals_dir_abs or os.path.dirname(fp_abs) == signals_dir_abs:
+                        captured.add(os.path.basename(fp_abs))
+    except Exception:
+        pass
+
+# --- Rung 3: a commit on the cwd's current branch, inside the window ----
+if branch and intent_root and signals_dir and os.path.isdir(signals_dir):
+    try:
+        rel_signals = os.path.relpath(signals_dir, intent_root)
+        out = subprocess.run(
+            ["git", "-C", intent_root, "log", f"--since={window_min} minutes ago",
+             "--name-only", "--pretty=format:", "--", rel_signals],
+            capture_output=True, text=True, timeout=10,
+        )
+        if out.returncode == 0:
+            for line in out.stdout.splitlines():
+                line = line.strip()
+                if line and line.startswith(rel_signals):
+                    captured.add(os.path.basename(line))
+    except Exception:
+        pass
+
+for name in sorted(captured):
+    print(name)
+PYEOF
+)"
+fi
+SIGNALS_CAPTURED="$(json_array_from_lines "$CAPTURED_LIST")"
 
 # decisions_recorded: decision atoms or decision-log entries modified in
 # the last 60 minutes. Best-effort.
@@ -180,7 +346,7 @@ fi
 # --- Compose + emit event ----------------------------------------------------
 
 EVENT=$(cat <<EOF
-{"version":"0.1.0","event":"session.end","trace_id":"${TRACE_ID}","span_id":"${SPAN_ID}","parent_id":null,"timestamp":"${TIMESTAMP}","source":{"system":"${PRODUCT_NAME}","instance":"${SESSION_UUID}"},"data":{"files_touched":${FILES_TOUCHED},"commit_sha":${COMMIT_SHA},"signals_captured":${SIGNALS_CAPTURED},"decisions_recorded":${DECISIONS_RECORDED}}}
+{"version":"0.1.0","event":"session.end","trace_id":"${TRACE_ID}","span_id":"${SPAN_ID}","parent_id":null,"timestamp":"${TIMESTAMP}","source":{"system":"${PRODUCT_NAME}","instance":"${SESSION_UUID}"},"data":{"files_touched":${FILES_TOUCHED},"commit_sha":${COMMIT_SHA},"signals_captured":${SIGNALS_CAPTURED},"signals_seen":${SIGNALS_SEEN},"decisions_recorded":${DECISIONS_RECORDED}}}
 EOF
 )
 
