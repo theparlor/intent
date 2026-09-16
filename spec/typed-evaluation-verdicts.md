@@ -182,7 +182,7 @@ spec's shape that the differences are worth writing down while they are visible.
 captures an intent statement plus acceptance criteria from the agent session, routes each
 criterion to a check method, attaches evidence, and records a per-criterion verdict. The full
 assessment, with the sponsorship disclosure and the verification log, is at
-`/Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/08-code-review-taste-problem-assessment-2026-09-16.md`.
+`/Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/09-code-review-taste-problem-assessment-2026-09-16.md`.
 
 Two contrasts bear directly on this spec's typing model.
 
