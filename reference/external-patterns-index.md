@@ -79,6 +79,16 @@ These reference documents analyze external frameworks, articles, and open-source
 **Downstream spec:** `spec/SPEC-INTENT-PROJECTION-DIVERGENCE-001.md` (the projection-divergence operator)
 **Lineage:** https://github.com/theparlor/intake/issues/12
 
+### 9. Olivier Wulveryck, the Agentic Platform and Team Topologies
+**File:** reference/wulveryck-agentic-platform-analysis.md
+**Sources:** Olivier Wulveryck, "Vibe Coding at Scale? Engineering Strikes Back" (2026-06-19) and "Who Does What? Team Topologies for the Agentic Platform" (2026-06-24, LastMod 2026-07-18)
+**Key finding:** The clearest external statement yet that autonomy is a property of the substrate rather than of the actor. His five platform-maturity criteria gate an explicit L0 to L4 progression on the *business* team, gated by *platform* maturity. He applies Skelton and Pais at org altitude and builds a working conformance loop (deterministic guardrails as typed comparators, with the "why blocked" audit trail as the error signal), then stops one loop short and says so: the platform enforces "a baseline of safety and standards" and "does not guarantee business excellence." That sentence is the boundary. His model closes eval against standards; Coherence Engineering closes eval against intent. His four pillars have no pillar holding declared intent, which is the structural reason it cannot close.
+**Adopt immediately:** "anticipation burden" as vocabulary; the seam mediation vocabulary (joint / lent / contract) as the three states of one seam rather than three seam types; his three-to-five-product-team threshold and his Team Topologies vocabulary as client-facing entry ramps, attributed to him.
+**Do not adopt:** his five maturity criteria as a readiness checklist mapped onto an engagement's own data-integrity chain (the rhyme is superficial at item level, see the analysis Q5); a new seam type in the topology spec (SPEC-INTENT-SEAM-DECOMPOSITION-001 already forbids forking the Contract primitive); "agentic factory" as a term, which he never defines.
+**Related position:** POS-AGENTIC-001 at /Users/brien/Workspaces/Core/frameworks/coherence-engineering/positions/agentic-platform-boundary.md
+**Related signals:** SIG-COH-EXT-009 (PSAE-001 cited as canonical with no defining artifact)
+**Lineage:** theparlor/intake#23
+
 ### Cross-Cutting Insight: Multi-Model Adversarial Synthesis (SIG-036)
 **Signal:** `.intent/signals/2026-04-12-multi-model-adversarial-synthesis.md`
 **Derived from:** Pawel Huryn (multi-LLM gateway), Dex Horthy (context engineering), LLM landscape analysis
@@ -171,6 +181,11 @@ These reference documents analyze external frameworks, articles, and open-source
 | Position compilation as "Level 2 of Team OS" in messaging | Team OS (Stulberg) | HIGH | Intent site, course |
 | Monitor Stulberg/Vellotti Maven workshop (May 10) | Team OS (Stulberg) | MEDIUM | Competitive intel |
 | Add Hannah Stulberg as practitioner-architect persona | Team OS (Stulberg) | LOW | Persona library |
+| Adopt "anticipation burden" as named vocabulary | Wulveryck | MEDIUM | glossary, Intent site |
+| Add a `mediation` attribute (joint/lent/contract) to the Contract model | Wulveryck (Q1) | MEDIUM | servers/models.py, SPEC-INTENT-SEAM-DECOMPOSITION-001 |
+| Add portfolio deprecation as an Observe-phase obligation | Wulveryck | MEDIUM | Observe phase spec |
+| Define PSAE-001 or retire the identifier | Wulveryck analysis, honesty note | HIGH | Core/products/_intake/2026-07-07-three-plane-reconciliation/ |
+| Watch for the promised A2A communication follow-up article | Wulveryck | LOW | reference/, competitive intel |
 
 ---
 
