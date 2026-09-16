@@ -15,7 +15,7 @@ depth_signals:
 vocab_density: 0.64
 maintained_by: agent
 last_compiled: 2026-05-16
-artifact_count: 23
+artifact_count: 24
 ---
 # Knowledge Base — Master Index
 
@@ -55,11 +55,12 @@ artifact_count: 23
 - [[DOM-001-work-ontology]] — The seven-level work hierarchy: Signal → Intent → Spec → Contract → Atom → Capability → Feature/Product.
 - [[DOM-002-knowledge-ontology]] — The six Layer 1 artifact types (PER, JRN, DDR, THM, DOM, RAT) and their relationships.
 
-## Design Rationale (3)
+## Design Rationale (4)
 
 - [[RAT-001-generating-systems]] — The knowledge base is a generating system (Alexander), not documentation. Pattern language that generates specs through rules of combination.
 - [[RAT-002-double-loop-learning]] — Flow 5 (Observe → Wiki) is the most important data flow. Without it, only single-loop optimization is possible. Now validated by Boyd's OODA learning loop (Richards 2020). (Argyris, Beer, Seiden, Boyd)
 - [[RAT-003-dual-circuit-architecture]] — Boyd's dual-circuit model (fast IG&C + learning loop) validates Intent's two-speed architecture. Trust scoring determines which circuit dominates. Incestuous amplification is the governance failure mode overwatch prevents. (Boyd, Richards 2020)
+- [[RAT-004-verifier-at-the-seam]], VibeThinker-3B's CLR loop is external evidence for typed-comparator-at-a-seam, and supplies the composition rule Intent lacked: aggregate M binary verdicts as (mean)^M, not strict AND. Reframes "autonomy bounded by verifiability" as a price on comparator authority, not a prohibition. Rejects strict-AND constraint-seam gain and the shared-lambda reading of MGPO. Confidence: 0.75. (Xu et al., arXiv 2606.16140v1; intake #18)
 
 ## Entity Dossiers (1)
 
@@ -80,9 +81,9 @@ Engagement-scoped artifacts live in their engagement Knowledge Farms per the fed
 | Decisions | 8 | 0.85 |
 | Themes | 5 | 0.81 |
 | Domain Models | 2 | 0.78 |
-| Design Rationale | 3 | 0.85 |
+| Design Rationale | 4 | 0.83 |
 | Entity Dossiers | 1 | 0.65 |
-| **Total** | **23** | **0.78** |
+| **Total** | **24** | **0.78** |
 
 ## Raw Research Sources (12)
 
