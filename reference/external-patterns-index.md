@@ -70,6 +70,15 @@ These reference documents analyze external frameworks, articles, and open-source
 **Adopt immediately:** "Launch gate" as L3 governance pattern (no feature ships without knowledge artifacts), progressive context loading by depth (3% context per query), folder ownership as lightweight knowledge stewardship model, "context bottleneck" as L3 problem framing
 **Related signals:** SIG-038, INT-015, SPEC-productivity-os-layers
 
+### 8. The `/goal` command and the "evals are the new PRD" claim
+**File:** reference/goal-command-and-eval-prd-analysis.md
+**Sources:** Claude Code documentation (https://code.claude.com/docs/en/goal, verified 2026-09-16); Emilia David, VentureBeat, 2026-05-14; Simon Willison on Codex CLI 0.128.0, 2026-04-30; four Aakash Gupta pieces (the 10-page-PRD essay, the Ankur Goyal / Braintrust interview titled "Evals are the new PRD", the 40-lines-of-markdown PRD essay, and the complete PM guide to `/goal`); Kohli, "Nine Judges, Two Effective Votes" (Apple ML Research, Jun 2026); Choi, Hecht and Tayler on surrogation (2012, 2013).
+**Key finding:** Two vendors shipped the same autonomous-completion command two weeks apart and reached opposite defaults on who declares done: Anthropic separates the evaluator by construction, OpenAI lets the model decide with user evaluators optional. That is a live design axis, not settled wisdom, and it is the same axis Intent governs with L0 to L4 gating and with `criteria_origin`. The popular reading, that the eval replaces the PRD, is substitution; the load-bearing reading is opposition. The transcript-scoped evaluator is verified to run no tools, which makes it structurally output-confined and honest about it.
+**Adopt immediately:** The reframe as canon, "evals are the PRD's verification half, and the intent half got more valuable, not less." The three-verdict evaluator (met, not yet met, impossible) as prior art for terminating an unreachable finish line. The `/goal` no-progress stop and doubling backoff as verified damping precedent. Kohli's correlated-error number as the hard citation behind `spec/typed-evaluation-verdicts.md`'s same-lineage argument, alongside the Knight and Leveson citation already there. Choi, Hecht and Tayler's single-measure finding as the reason a seam never gets exactly one finish line.
+**Corrections it carries:** five factual corrections to the June 2026 capture, including the three-verdict evaluator (the capture described a binary), the reversed ship order versus Codex CLI, and the misreading of the cheat sheet's 25-turn Safety Net as a product mechanism rather than a prompt-template convention.
+**Downstream spec:** `spec/SPEC-INTENT-PROJECTION-DIVERGENCE-001.md` (the projection-divergence operator)
+**Lineage:** https://github.com/theparlor/intake/issues/12
+
 ### Cross-Cutting Insight: Multi-Model Adversarial Synthesis (SIG-036)
 **Signal:** `.intent/signals/2026-04-12-multi-model-adversarial-synthesis.md`
 **Derived from:** Pawel Huryn (multi-LLM gateway), Dex Horthy (context engineering), LLM landscape analysis
