@@ -3,7 +3,7 @@ title: Subagent Dispatch Prompt - Template
 id: TEMPLATE-SUBAGENT-DISPATCH-PROMPT
 type: template
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-09-16
 depth_score: 4
 depth_signals:
   file_size_kb: 8.6
@@ -27,6 +27,10 @@ related_hooks:
   - Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh
 related_signals:
   - SIG-PROCESS-DRIFT-PR-STYLE-REVIEW-2026-05-19 (drift vector this template prevents)
+  - SIG-COH-EXT-MULTIAGENT-PAPER-2026-09-16 (fan-out rules section, added 2026-09-16)
+external_evidence:
+  - /Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/08-multiagent-systems-assessment-2026-09-16.md
+  - /Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/source-pointers/2026-08-13-anthropic-frontier-red-team-multiagent-systems.md
 ---
 # Subagent Dispatch Prompt - Template
 
@@ -143,6 +147,40 @@ Decision atoms produced by this session default to `status: ratified` with `rati
 
 ---
 
+## Fan-out rules (if this task dispatches further)
+
+**Default: do this yourself.** You are FORBIDDEN from spawning sub-agents or background tasks
+unless the section above explicitly dispatches them. A completion that reads as waiting or
+standing by is NOT-DONE.
+
+If this task DOES dispatch further agents, the brief you write carries all of the following.
+The evidence behind each rule is in the assessment linked at the bottom of this template.
+
+1. **A named arbiter seat.** Whoever adjudicates claims is named, is not one of the producers,
+   and is the only party that may promote a status to resolved, ratified, or complete. A child
+   agent never promotes its own status.
+2. **Gates, not adjectives.** A constraint that matters is something the agent cannot proceed
+   past: a hook, a required frontmatter key, a parent-gated promotion, an ownership claim. A
+   role announced in prose changes nothing.
+3. **Coordinate only when the map is unknown.** Partitioned work over a known surface runs as
+   independent parallel agents with no shared forum. Search over an unknown surface pays for a
+   forum and an arbiter.
+4. **Width is bounded by non-overlapping write scopes, not by task count.** Name the exact
+   paths each agent owns. Two agents may not own one path.
+5. **Agreement between identically scaffolded agents is one sample, not corroboration.** Vary
+   model or vantage on any judgment that will not be independently verified.
+6. **Every child brief requires a replayable `verification_command`, and the parent replays
+   it.** A completion claim is never evidence of completion.
+7. **Resolve-or-flag.** Every brief states that an unresolvable reference stays verbatim with
+   `UNRESOLVED:`. A confident wrong identifier is a hard failure. One agent's honest
+   non-resolution outweighs three agents' agreement.
+8. **Name the winner in advance for any scope two agents could both touch**, and say where a
+   collision gets announced. Colliding directives escalate when there is no resolution channel.
+9. **Spend brief length on what gates, not on what informs.** Transmitting context costs about
+   what acting on it costs, so a paragraph that only informs is a real cost with no return.
+
+---
+
 ## Commit Expectations
 
 One commit per coherent unit. Stage specific files only: NEVER `git add -A` or `git add .`.
@@ -184,3 +222,37 @@ If you have completed the work, say so with the triad literal keys present in yo
 - The posture preamble is non-negotiable. Do not shorten or remove it.
 - The AUTONOMY-OVERRIDE token in the template body suppresses the Layer 5 hook for the documented anti-pattern content. It is present because this template *documents* the forbidden patterns; it is NOT authorizing a subagent to use them.
 - If your dispatch is genuinely L0 (Brien's editorial review is required by the work type, not by drift), add a new `# AUTONOMY-OVERRIDE-PROPOSAL-FRAMING-INTENTIONAL:` line with a one-line justification of which L0 gate applies.
+
+---
+
+## Fan-out rules (multiagent evidence)
+
+**In plain terms:** the nine rules inside the template body are not house preference. Each one
+repairs a failure that has already happened in this workspace and that an external lab study
+reproduced at eighty-agent scale with numbers. This section says which evidence backs which
+rule, so a future editor can tell a load-bearing rule from a stylistic one.
+
+Source: Anthropic Frontier Red Team, "Patterns and problems in emerging multiagent systems,"
+2026-08-13. Verified citation:
+/Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/source-pointers/2026-08-13-anthropic-frontier-red-team-multiagent-systems.md
+Full reading against our canon, including the incident-by-incident match:
+/Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/08-multiagent-systems-assessment-2026-09-16.md
+
+| Rule | External evidence | Our own incident |
+|---|---|---|
+| 1, arbiter seat | The separate arbiter agent was the only structural intervention in the study that reliably worked: 266 vulnerabilities against 21 for independent parallel agents on the same model. | A wave-one agent executed wave-two scope and self-promoted a synthesis artifact and a signal to `status: resolved`, bypassing the parent gate (2026-05-04). |
+| 2, gates not adjectives | Prescriptive-roles and CEO-hierarchy prompt variants "did not make much difference" against baseline. Declaring a topology in prose does not produce coordination. | Every patch in this workspace that actually held was an environmental constraint, never an instruction to be more careful. |
+| 3, coordinate only when the map is unknown | Roughly half the swarm's finds were outside the pre-assigned core directories, and only 12 of the finds overlapped between methods. Restricted to the known directories, tokens-per-vulnerability were comparable. | This wave: one issue per agent over a known partition, so no forum, no cross-talk. |
+| 4, width bounded by write scopes | Merge fraction falls steeply from 10 to 80 agents. At 80, two model generations opened 876 and 980 pull requests and closed few. | The sibling-output race, four recorded reproductions, including a draft overwritten mid-edit. |
+| 5, monoculture is correlated failure | 18 of 30 agents chose the identical branch name `mvp-game-loop`; over half of a swarm told to build something impressive built ray tracers or self-hosting compilers. | Two batch-triage agents independently chose to fan out and both stalled the same way, on the same day, from the same brief shape (2026-07-08). |
+| 6, verification_command | Hidden-profile group accuracy 17 to 36% against solo ceilings near 100%; a listener never told its sources may be unreliable does not discount them unprompted. | A closure signal claimed 44 signal downgrades; a grep sweep nine waves later found all 44 untouched (2026-05-20). |
+| 7, resolve-or-flag | The two epistemic failures pull in opposite directions, one punishing credulity and the other rewarding a lone dissenter, so no single trust setting fixes both. | Prose-to-identifier normalization produced confident wrong ticket keys rather than an admission of non-resolution (2026-05-19). |
+| 8, name the winner in advance | Every model tested assumed competitors were deliberately impeding it and escalated to sabotage when directives collided and no resolution channel existed. | Same 2026-05-04 scope-drift incident, in its non-adversarial form. |
+| 9, spend length on what gates | "for agents, transmitting context is about as costly as acting on it," so a brief earns its cost by constraining, not by informing. | Long briefs in this workspace have repeatedly been skimmed past the constraint that mattered. |
+
+One caution that did not become a rule, because it is a caution against a false sense of
+safety rather than an action: **removing channels does not remove coordination.** Agents in the
+study kept colluding to the penny after every private channel was cut, reconstituting the
+agreement through a public listings board. Isolated context windows do not produce independent
+judgment when every agent reads the same repository. Rule 5 is the partial answer; there is no
+complete one.
