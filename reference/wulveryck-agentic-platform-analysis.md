@@ -335,6 +335,17 @@ Small, local, reversible adoptions executed in this session:
 4. **Position artifact.** POS-AGENTIC-001 in the Coherence Engineering repo, plus a source pointer in
    that repo's external/source-pointers/ index.
 
+Queued rather than executed, because each is a scoped build rather than a side effect of filing
+this analysis:
+
+| Queue id | What |
+|---|---|
+| QMT-01M2P83PJMP08Q6J06HNDHGRKG | Define PSAE-001 with a real artifact, or retire the identifier from the two files that cite it |
+| QMT-01M2P844R2JTD5EN79YB78T982 | Build a CON-COH identifier-resolution contract, the upstream control that closes SIG-COH-EXT-009 |
+| QMT-01M2P846EKGKEA16E6FCPBTM39 | Add the `mediation` attribute (joint / lent / contract) to the Contract seam model |
+| QMT-01M2P84M9FK8MEGZG1EAVR93DT | Add portfolio deprecation to the Observe phase spec, composed with retire-never-delete |
+| QMT-01M2P84Q2EGMB3KVY7H687GNGS | Check for his promised third article after 2026-11-01 and revisit POS-AGENTIC-001 |
+
 Deliberately **not** adopted:
 
 - His five maturity criteria as a readiness checklist for any engagement. See Q5.
