@@ -169,3 +169,54 @@ with zero added parameters. Source record:
 alternatives, and the rest of the disposition:
 `knowledge/design-rationale/RAT-004-verifier-at-the-seam.md`. Captured via intake issue
 https://github.com/theparlor/intake/issues/18.
+
+---
+
+## External contrast: context isolation is not lineage displacement
+
+*Added 2026-09-16 from intake issue https://github.com/theparlor/intake/issues/44. Additive
+cross-reference only. Nothing above this line changes.*
+
+**Why this is here.** A commercial product now ships a verification flow close enough to this
+spec's shape that the differences are worth writing down while they are visible. Aviator Verify
+captures an intent statement plus acceptance criteria from the agent session, routes each
+criterion to a check method, attaches evidence, and records a per-criterion verdict. The full
+assessment, with the sponsorship disclosure and the verification log, is at
+`/Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/09-code-review-taste-problem-assessment-2026-09-16.md`.
+
+Two contrasts bear directly on this spec's typing model.
+
+**1. Their verdict is typed by method. Ours is typed by provenance.** Verify labels a verdict by
+how it was checked (structural scan, executed scenario, matched team rule, model fallback with a
+confidence threshold) and that labelling is genuinely useful. It is not the same thing as
+`criteria_origin`. In their flagship flow the implementing agent generates the acceptance criteria
+from what it just built and a human approves them. Under section 2 of this spec that is
+`criteria_origin: self`: the criteria were authored inside the author's frame, and a human
+pressing approve changes who signed, not who framed. Section 3 therefore still bars the verdict
+from closing at acceptance authority, however deterministic the check that produced it. Their
+alternate flow, where the spec is approved before any code is written, is materially better on
+this axis, and it is not the one the product leads with.
+
+Stated as a rule for anyone reading this spec against an external tool: **a deterministic check
+against a self-authored criterion is a precise answer to a question the author chose.** Precision
+of mechanism does not buy displacement of frame.
+
+**2. No shared context is not foreign lineage.** Aviator's model fallback runs "a separate
+verifier agent with no shared context with the implementing agent" (their engineering blog). That
+is a real improvement over one agent grading its own transcript, and it removes context carryover
+as a failure mode. It does not satisfy `lineage: foreign`. The same model family grading its own
+family's output shares the blind spots that produced the output, whether or not it can see the
+transcript. The two fields stay distinct, and a claim of independence has to say which one it is
+buying:
+
+| What was separated | Removes | Does not remove | Field satisfied |
+|---|---|---|---|
+| The conversation (fresh context, same model) | context carryover, anchoring on the author's rationale | shared-model blind spots, shared training priors | none by itself |
+| The model lineage (different provider or family) | shared-model blind spots | author-framed criteria, if the criteria came from the author | `lineage: foreign` |
+| The criteria authorship (an exterior judge derives its own) | author-frame pathologies | nothing further is claimed | `criteria_origin: derived` |
+
+Precedent already on the record: `knowledge/decisions/DDR-009-externally-authored-verification.md`.
+
+**Disposition.** This does not earn a new named principle. `criteria_origin` and `lineage` already
+carry it and DDR-009 already decided it; a new principle would duplicate an existing one. Recorded
+as contrast so the next reader who meets the vendor framing has the distinction in hand. Note that the bar in contrast 1 is not merely written policy here: `INV-INTENT-NO-SELF-GRADED-CLOSURE` (`tools/typed_verdict_invariants.py`) enforces it, which is the asymmetry worth keeping in view when comparing the two designs.
