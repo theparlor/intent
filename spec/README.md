@@ -45,3 +45,15 @@ If the agent executes and the result is wrong, the spec failed — not the agent
 - **intent-methodology.md** — The Intent methodology spec
 - **autonomous-operations-design.md** — The operations layer spec
 - **intent-concept-brief.md** — The product concept spec
+
+### Operators
+
+An operator is a named instrument that runs *on* the work-ontology artifacts rather than
+producing one. Operators live here beside the methodology specs; they do not get their own
+directory and they do not get product names.
+
+| Operator | Spec | What it scans |
+|---|---|---|
+| Seam decomposition | `SPEC-INTENT-SEAM-DECOMPOSITION-001.md` | The fan-out topology: one frozen Contract per sortie, so collision is designed out |
+| Typed evaluation verdicts | `typed-evaluation-verdicts.md` | Every `observation.evaluated` verdict, typing it by criterion provenance so self-graded evaluation cannot close a spec |
+| Projection divergence | `SPEC-INTENT-PROJECTION-DIVERGENCE-001.md` | One intent across work-ontology levels 1 to 4, measuring what the Spec loses on its way down to a checkable Contract. A differential amplifier for intent: rejects common mode, amplifies the differential, emits Signals at comparator crossings and `amplification_score` nudges in between |

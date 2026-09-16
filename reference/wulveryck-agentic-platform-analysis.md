@@ -329,7 +329,7 @@ Small, local, reversible adoptions executed in this session:
    describing who holds the comparator. Recorded in glossary and in this analysis, Q1. Not yet an
    attribute in the Contract model; adding it to `servers/models.py` is a larger change than this
    issue's scope and is queued rather than executed.
-3. **Index registration.** This analysis is entry 8 in
+3. **Index registration.** This analysis is entry 9 in
    /Users/brien/Workspaces/Core/frameworks/intent/reference/external-patterns-index.md, with action
    rows.
 4. **Position artifact.** POS-AGENTIC-001 in the Coherence Engineering repo, plus a source pointer in
