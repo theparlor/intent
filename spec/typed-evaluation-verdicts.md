@@ -117,3 +117,55 @@ This amendment is defined in Intent's event catalog and therefore applies to eve
 - Grounding: `Core/products/parallax/research/2026-06-09-three-vantage-testing-grounding.md` (headline gap; required-fields fix)
 - Signal: `.intent/signals/SIG-2026-06-09-typed-evaluation-verdicts.md`
 - Catch-net (built 2026-07-02): `INV-INTENT-NO-SELF-GRADED-CLOSURE` → `tools/typed_verdict_invariants.py` (+ `tools/test_typed_verdict_invariants.py`), repo-local route, zero-violation on day one
+
+
+## 8. Composing several verdicts over one artifact (candidate, added 2026-09-16)
+
+Sections 1 to 7 type a **single** verdict and govern what that one verdict may be consumed
+for. They say nothing about what happens when several verdicts land on the same artifact.
+Every live aggregation in the tree today is strict AND: the CON-COH contract family runs five
+machine-assertable contracts over one corpus and the run record reads "FAIL, 1 violation"
+even when four of five passed everywhere
+(`/Users/brien/Workspaces/Core/frameworks/coherence-engineering/contracts/runs/CON-COH-005-first-run-2026-06-10.md`).
+That gives the corpus one bit and no way to say which of two failing documents is closer to
+good, which is the question a repair pass actually needs.
+
+**Candidate rule.** Given `M` binary verdicts `v[1..M]` over one artifact from judges sharing
+a `criteria_origin`, aggregate as the mean of the verdicts raised to the power of the check
+count:
+
+```
+r = ( (1/M) * sum_m v[m] ) ^ M
+```
+
+With `M = 5`: five of five gives 1.000, four of five gives 0.328, three of five gives 0.078,
+zero of five gives 0.000.
+
+Two properties are why this is preferred to a minimum or a plain mean.
+
+1. **It stays positive until every check fails**, so imperfect candidates remain orderable.
+   Strict AND returns zero for four-of-five and three-of-five alike and destroys the ranking,
+   which is fatal wherever the comparator's job includes ranking the imperfect.
+2. **Strictness is derived, not tuned.** The exponent is the number of checks, so widening
+   the audit tightens the aggregate automatically. There is no tolerance knob to argue over,
+   because tolerance is a consequence of how broadly you decided to audit.
+
+**Consumption authority of a composed verdict.** A composed `r` inherits the **lowest**
+`criteria_origin` among its inputs. Five `self` checks compose to a `self` number and are
+still barred by section 3 from closing a spec. Composition changes resolution, never
+authority.
+
+**Status: candidate, not normative.** It becomes normative only after this falsification
+test passes: score the CON-COH corpus run three ways (strict AND, plain mean, power-mean),
+hand-label a sample of 30 files by how much repair each actually needs, and check whether the
+power-mean ordering correlates better with the labels than the plain mean without collapsing
+into strict AND's one-bit partition. If it does not, this section is withdrawn.
+
+**Provenance.** Borrowed from the CLR (Claim-Level Reliability Assessment) stage of
+VibeThinker-3B, arXiv 2606.16140v1, where `M = 5` claims are extracted per trajectory and
+reliability-weighted clustering over `K = 32` trajectories buys 2.7 to 6.1 benchmark points
+with zero added parameters. Source record:
+`raw/research/2026-09-16-vibethinker-3b-verifiable-reasoning.md`. Mapping, rejected
+alternatives, and the rest of the disposition:
+`knowledge/design-rationale/RAT-004-verifier-at-the-seam.md`. Captured via intake issue
+https://github.com/theparlor/intake/issues/18.
