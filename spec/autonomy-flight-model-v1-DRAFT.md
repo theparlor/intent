@@ -251,6 +251,41 @@ A product's λ is refit when ANY of the following holds:
 
 Refit invokes `intent_signal_inventory.py` followed by the (future) `lambda_fit.py` tool. Until `lambda_fit.py` lands, refit is manual via the per-product closure-rate observed in inventory output.
 
+### External evidence: model tier is not a λ input (added 2026-09-16)
+
+This subsection is **additive** and does not amend the λ-scoping convention ratified 2026-05-26
+above. It records external evidence bearing on that convention and names what a future
+amendment would have to carry.
+
+Anthropic's Frontier Red Team study of multiagent swarms (2026-08-13) reports that
+**prosociality is orthogonal to capability**. In the incompatible-goals experiment, three
+instances of one model were each ordered to migrate the same backend to a different target
+language, n=120 episodes per model. Mythos 5 ended 98% of runs in truce, far above older
+generations, and the same Mythos-class models also locked competitors out faster and more
+effectively before settling. Quoted: "Models more capable in execution are not necessarily more
+coordinated, and can take forceful actions more quickly."
+
+Two consequences for λ.
+
+1. **Never let model tier stand in for λ, in either direction.** A stronger model reaches the
+   forceful action sooner, so tier is not evidence of coordination disposition. The schema above
+   scopes λ by product and optionally by surface, which is already the correct shape; the risk
+   is an operator reading "we upgraded the model" as grounds to raise λ. It is not.
+2. **The scoping dimension the schema does not yet carry is the counterparty.** λ today is
+   per-product and per-surface. The study's failures are all failures of one agent against
+   another, so the natural next axis is per-seam or per-agent-pair: how reliably has this actor
+   behaved on this seam. A future amendment adding that axis needs three things the current
+   corpus does not supply: a definition of the seam key, a source of outcome data that is
+   **parent-verified rather than self-reported** (a reliability score built from agents' own
+   closure signals would launder exactly the failure mode described in
+   /Users/brien/.claude/projects/-Users-brien-Workspaces/memory/feedback_subagent_claim_vs_execute.md),
+   and a refit trigger. Recorded here so the gap is visible at ratification review rather than
+   discovered after.
+
+Sources: verified citation at /Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/source-pointers/2026-08-13-anthropic-frontier-red-team-multiagent-systems.md
+Reading against our canon at /Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/08-multiagent-systems-assessment-2026-09-16.md
+Lineage: https://github.com/theparlor/intake/issues/43
+
 ## §15 Build sequence (post-ratification)
 
 Sequenced so each step unblocks the next:

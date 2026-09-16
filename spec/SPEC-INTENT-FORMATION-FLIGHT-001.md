@@ -93,6 +93,57 @@ single-aircraft. Formation adds two more, *on top* of those:
 Formation breakup is the dangerous one, because it is invisible to every single-aircraft instrument.
 Each agent reports "airworthy"; the formation has already broken up.
 
+## §3a A third crash mode: formation conformity (added 2026-09-16)
+
+§3 names mid-air collision (two aircraft in one airspace) and formation breakup (the formation
+loses its shared frame). Anthropic's Frontier Red Team study of multiagent swarms (2026-08-13)
+documents a third, and it is invisible to both detectors above.
+
+| Crash | Mechanism | Why the existing detectors miss it |
+|---|---|---|
+| **Formation conformity** | Every aircraft flies the same heading because every aircraft IS the same aircraft. Same model, similar context, similar scaffold produces near-identical action selection even in very large action spaces. One bad decision becomes N bad decisions, simultaneously. | `touched_paths` intersection reports no collision, because identical agents often pick disjoint scopes cleanly. The glossary and invariants diff reports no breakup, because the frame is perfectly shared. Every single-aircraft instrument reports airworthy and the formation IS coherent. It is coherently wrong. |
+
+The study's evidence: 18 of 30 agents independently created a git branch with the identical name
+`mvp-game-loop`; told to build something impressive, over half of a swarm built either ray
+tracers or self-hosting compilers; in an iterated prisoner's dilemma with communication, agents
+converged on the same strategy and defected simultaneously, tanking rewards; given a
+finite-bandwidth job queue with no coordination channel, agents flooded it with 30 Hz polling
+daemons, producing 2.4 million requests against 117 accepted jobs.
+
+This workspace has its own instance. On 2026-07-08 two batch-triage agents, dispatched
+separately from the same brief shape, independently decided to fan out to children and both
+completed with "standing by for my research agents." Zero commits had landed. Recorded at
+/Users/brien/.claude/projects/-Users-brien-Workspaces/memory/feedback_batch_apply_no_spawn_clause.md
+and /Users/brien/Workspaces/.intent/signals/SIG-2026-07-08-subagent-fanout-stall-pattern.md
+
+**Detector, stated honestly as absent.** There is no instrument for this in the spec family
+today. Formation conformity is a *correlation* property of the formation, so it cannot be read
+off one sortie. The two candidate detectors, neither built:
+
+- **Variance floor at dispatch.** Voices already carries the conservation law that keeps
+  contradictions from being merged away (§4, §10 of the flight model). The formation analogue is
+  a dispatch-time requirement that some fraction of a formation flies a different model or a
+  foreign lineage, so agreement is evidence rather than an artifact of cloning. The three-vantage
+  testing architecture already designed in Core/products/throughline and Core/products/parallax
+  is the existing answer, and it now has external justification.
+- **Post-hoc correlation read.** Witness already records every sortie's inputs and outputs
+  (WS-DDR-098). Identical branch names, identical first moves, identical failure text across a
+  formation are computable from that record. Nothing computes them yet.
+
+**The operating rule in the meantime, which is applied today:** agreement between identically
+scaffolded agents is one sample, not corroboration. It is rule 5 of the fan-out rules in
+/Users/brien/Workspaces/Core/frameworks/intent/knowledge-engine/templates/subagent-dispatch-prompt.md
+
+One counterweight worth carrying into any future detector design: **removing channels does not
+remove correlation.** In the study's Bertrand pricing game, agents kept colluding to the penny
+after every private channel was cut, reconstituting the agreement through a public listings
+board. Worktree isolation does not make two agents independent when both read the same
+repository.
+
+Sources: verified citation at /Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/source-pointers/2026-08-13-anthropic-frontier-red-team-multiagent-systems.md
+Reading against our canon at /Users/brien/Workspaces/Core/frameworks/coherence-engineering/external/08-multiagent-systems-assessment-2026-09-16.md
+Lineage: https://github.com/theparlor/intake/issues/43
+
 ## §4 Component mapping (reuse, don't rebuild)
 
 Formation Flight is mostly **composition of primitives that already exist**. The flight model already
