@@ -44,6 +44,8 @@ INPUT=$(cat)
 LINT_HOOK_INPUT="$INPUT" python3 - <<'PY'
 import json, sys, re, os, datetime
 
+HOME = os.path.expanduser("~")
+
 def fail_open():
     sys.exit(0)
 
@@ -172,7 +174,7 @@ try:
         prose = re.sub(r"```.*?```", "", text, flags=re.S)
         anchor_local = re.compile(r"\]\(\s*(?!https?://|mailto:|#)([~./]|/Users/|Core/|Work/|Home/)", re.I)
         anchor_ext   = re.compile(r"\]\(\s*(?!https?://|mailto:|#)[^)]*\.(?:md|py|ya?ml|csv|json|sh|html?|xlsx|pdf|docx|txt|png)\s*\)", re.I)
-        backtick_abs = re.compile(r"`(?:/Users/brien/Workspaces|~/Workspaces)[^`]*`")
+        backtick_abs = re.compile(r"`(?:" + re.escape(HOME) + r"/Workspaces|~/Workspaces)[^`]*`")
         bare_rel     = re.compile(r"(?:^|\s)(?:Core|Work|Home)/[\w./-]+\.(?:md|py|ya?ml|csv|json|sh|html?|xlsx|pdf|docx)\b")
         tilde_path   = re.compile(r"(?<![\w/])~/[\w.\-/]+")
         hits = []
@@ -189,11 +191,11 @@ try:
             blocks.append(
                 "LINK-FORMAT DRIFT (feedback_link_format): your response references a local file in a form "
                 "that is NOT clickable in Brien's interface -- detected: " + ", ".join(hits) + ". The ONLY "
-                "clickable form is a BARE, FULL-ABSOLUTE path starting /Users/brien/Workspaces/... with "
+                "clickable form is a BARE, FULL-ABSOLUTE path starting " + HOME + "/Workspaces/... with "
                 "nothing around it. Do NOT use the ~/ shorthand (~/Workspaces, ~/.claude): Brien's client "
-                "joins it to the project-root CWD and produces a double-nested /Users/brien/Workspaces/~/Workspaces/... "
+                "joins it to the project-root CWD and produces a double-nested " + HOME + "/Workspaces/~/Workspaces/... "
                 "path he cannot open. No markdown anchor [label](...), no backticks, no relative Core/|Work/|Home/ form, "
-                "no ~/ shorthand. Rewrite every file reference as a bare /Users/brien/... absolute path "
+                "no ~/ shorthand. Rewrite every file reference as a bare " + HOME + "/... absolute path "
                 "(fenced code-block examples are exempt)."
             )
 except Exception:

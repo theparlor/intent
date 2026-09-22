@@ -215,7 +215,7 @@ printf '  %s\n' "  Added 2026-08-09: a session read the tripwire above, conclude
 printf '  %s\n' "  against fanning out, ran solo, and delivered a partial audit. Both halves"
 printf '  %s\n' "  of that were wrong: parallel was the cheaper mode, and the trade was never"
 printf '  %s\n' "  surfaced."
-printf '  %s\n' "- Anchor source: /Users/brien/Workspaces/Core/reference/project-index/usage-tracking.md"
+printf '  %s\n' "- Anchor source: $HOME/Workspaces/Core/reference/project-index/usage-tracking.md"
 printf '\n'
 
 exit 0

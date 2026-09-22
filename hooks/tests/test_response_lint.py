@@ -3,7 +3,8 @@
 so real audit logs are untouched. Asserts each rule + the consolidation behavior."""
 import json, os, subprocess, tempfile, sys
 
-HOOK = "/Users/brien/Workspaces/Core/frameworks/intent/hooks/response-lint-stop-check.sh"
+HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
+                    "response-lint-stop-check.sh")
 TMP = tempfile.mkdtemp(prefix="lint-test-")
 FAKE_HOME = os.path.join(TMP, "home")
 os.makedirs(os.path.join(FAKE_HOME, ".claude", "audit"), exist_ok=True)
@@ -11,6 +12,7 @@ MODEL_LOG = os.path.join(FAKE_HOME, ".claude", "audit", "model-effort-detections
 
 CLEAN_FILLER = ("The audit runs a check and records the outcome in plain words. " * 16)  # ~990 chars, clean
 MODEL_LINE = "Model: Opus 4.8 . Effort: high\n\n"
+WS = os.path.join(FAKE_HOME, "Workspaces")  # matches the HOME the hook runs under
 
 def run(last_text, stop_active=False):
     tpath = os.path.join(TMP, "t.jsonl")
@@ -44,11 +46,11 @@ out = run("This has an em dash — right here, and it is not allowed.")
 check("T2 emdash -> DASH-GLYPH block", "DASH-GLYPH DRIFT" in out)
 
 # T3: backtick-wrapped workspace path -> block LINK-FORMAT
-out = run("See `/Users/brien/Workspaces/Core/foo.md` for the detail you want.")
+out = run("See `%s/Core/foo.md` for the detail you want." % WS)
 check("T3 backtick path -> LINK-FORMAT block", "LINK-FORMAT DRIFT" in out)
 
 # T4: BOTH em-dash and backtick path -> ONE block object containing BOTH reasons
-out = run("Fix `/Users/brien/Workspaces/Core/foo.md` — then re-run the check.")
+out = run("Fix `%s/Core/foo.md` — then re-run the check." % WS)
 one_json = False
 try:
     obj = json.loads(out); one_json = obj.get("decision") == "block"
@@ -85,11 +87,11 @@ out = run("has an em dash — here", stop_active=True)
 check("T8 recursion guard -> no output", out == "")
 
 # T9: code-fence exemption -> backtick path INSIDE a fence does NOT block link-format
-out = run(MODEL_LINE + "Example only:\n```\nsee `/Users/brien/Workspaces/x.md`\n```\nCarry on with the plan.")
+out = run(MODEL_LINE + "Example only:\n```\nsee `%s/x.md`\n```\nCarry on with the plan." % WS)
 check("T9 fenced path -> no LINK-FORMAT block", "LINK-FORMAT DRIFT" not in out)
 
 # T9b: same path OUTSIDE a fence DOES block (control for T9)
-out = run("see `/Users/brien/Workspaces/x.md` inline in prose here")
+out = run("see `%s/x.md` inline in prose here" % WS)
 check("T9b inline path -> LINK-FORMAT block", "LINK-FORMAT DRIFT" in out)
 
 # T10: em-dash INSIDE a fence STILL blocks (emdash has no fence exemption, by design)
@@ -123,7 +125,7 @@ out = run_split([("text", "clean intro with an em dash — here"), ("text", "mor
 check("T11 glyph in earlier split-block -> caught", "DASH-GLYPH DRIFT" in out)
 
 # T11b: final block is tool_use (no text) but an earlier same-id text block has a bad path -> caught
-out = run_split([("text", "see `/Users/brien/Workspaces/x.md` inline"), ("tool_use", "")])
+out = run_split([("text", "see `%s/x.md` inline" % WS), ("tool_use", "")])
 check("T11b bad path before trailing tool_use -> caught", "LINK-FORMAT DRIFT" in out)
 
 print()
