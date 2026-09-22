@@ -19,3 +19,21 @@ jobs:
               *)        bash -n "$f" ;;
             esac
           done
+  hooks-parse-under-macos-bash:
+    # Every Mac's /bin/bash is 3.2, and it misparses a backtick inside a heredoc inside $( ),
+    # which bash 5 accepts (PR 39, the autonomy-grant Stop hook, failed to load on Faustina on
+    # 2026-09-22). The ubuntu job above parses with bash 5 and cannot catch it; macos-latest
+    # ships /bin/bash 3.2. Shebang-aware: the python3 hooks are compiled by the job above.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: parse every bash hook with /bin/bash 3.2
+        run: |
+          set -e
+          /bin/bash --version | head -1
+          for f in hooks/*.sh; do
+            [ -f "$f" ] || continue
+            case "$(head -1 "$f")" in *python*) continue ;; esac
+            /bin/bash -n "$f"
+            echo "ok $f"
+          done
