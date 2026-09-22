@@ -17,7 +17,7 @@
 # register in ~/.claude/settings.json under hooks.SessionStart.
 #
 # Behavior:
-#   - Walks /Users/brien/Workspaces/ for .git/ directories at depth >= 2
+#   - Walks ~/Workspaces/ for .git/ directories at depth >= 2
 #     (skips the parent repo's own .git at depth 1)
 #   - For each nested .git found, checks whether the parent repo tracks
 #     any files under that path (git ls-files returns >= 1 result)

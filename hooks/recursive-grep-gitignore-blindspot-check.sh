@@ -13,7 +13,7 @@
 # - The Workspaces root repo gitignores its nested repos: 42 directories under
 #   Core/products/ (every product and every product site), every top-level
 #   directory under Work/ and Home/ (measured 2026-09-21). A recursive grep from
-#   /Users/brien/Workspaces therefore searches governance-tracked files only.
+#   ~/Workspaces therefore searches governance-tracked files only.
 # - 2026-09-21: a sweep for copy2/copytree call sites under tests/ returned zero
 #   hits three times (with -r, then -R) while a targeted grep on a known file hit.
 #   find plus xargs reached 678 test files and 23 call sites. An empty recursive

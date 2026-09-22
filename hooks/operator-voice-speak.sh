@@ -30,7 +30,7 @@
 # and dispatches playback to a detached child so the turn does not wait on audio.
 #
 # Slice 0 of the operator-voice plan:
-#   /Users/brien/Workspaces/Core/products/_intake/2026-08-20-operator-voice/design.md
+#   ~/Workspaces/Core/products/_intake/2026-08-20-operator-voice/design.md
 # Created 2026-08-21.
 
 set -u

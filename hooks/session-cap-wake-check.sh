@@ -42,7 +42,7 @@
 #   SESSION_CAP_WAKE_SLEEP_OVERRIDE_SECONDS  fixes the background sleep duration
 #   SESSION_CAP_WAKE_RESUME_CMD              replaces the claude --resume invocation
 #
-# Signal: /Users/brien/Workspaces/.intent/signals/SIG-SESSION-CAP-NO-AUTO-RESUME-2026-09-02.md
+# Signal: ~/Workspaces/.intent/signals/SIG-SESSION-CAP-NO-AUTO-RESUME-2026-09-02.md
 # Queue task: QMT-01M1JK4DSV08TEW1R4RP5KCWNM
 # Memory rule this makes mechanical: reference_five_hour_cap_binds_fanout.md,
 #   feedback_schedule_wakeup_on_rate_limit.md

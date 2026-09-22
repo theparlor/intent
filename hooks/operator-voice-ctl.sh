@@ -14,7 +14,7 @@
 #
 # State: ~/.claude/operator-voice/   (override with OV_STATE_DIR)
 # Slice 0 of the operator-voice plan:
-#   /Users/brien/Workspaces/Core/products/_intake/2026-08-20-operator-voice/design.md
+#   ~/Workspaces/Core/products/_intake/2026-08-20-operator-voice/design.md
 # Created 2026-08-21.
 
 set -u
