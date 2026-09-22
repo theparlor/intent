@@ -86,6 +86,8 @@ def run_hook(root, session_id, transcript_path=None, extra_env=None):
         payload["transcript_path"] = transcript_path
     env = dict(os.environ)
     env["INTENT_SESSION_END_ROOT"] = root
+    # Fixed machine id: the hook writes events.<machine-id>.jsonl (P4 shard).
+    env["INTENT_SESSION_END_MACHINE"] = "test"
     env.pop("CLAUDE_SESSION_ID", None)
     if extra_env:
         env.update(extra_env)
@@ -97,14 +99,14 @@ def run_hook(root, session_id, transcript_path=None, extra_env=None):
 
 
 def last_event(root):
-    events_path = os.path.join(root, ".intent", "events", "events.jsonl")
+    events_path = os.path.join(root, ".intent", "events", "events.test.jsonl")
     with open(events_path) as f:
         lines = [l for l in f.read().splitlines() if l.strip()]
     return json.loads(lines[-1])
 
 
 def all_events(root):
-    events_path = os.path.join(root, ".intent", "events", "events.jsonl")
+    events_path = os.path.join(root, ".intent", "events", "events.test.jsonl")
     with open(events_path) as f:
         return [json.loads(l) for l in f.read().splitlines() if l.strip()]
 
@@ -207,6 +209,48 @@ try:
     check("committed file captured via branch evidence",
           "f-committed-no-frontmatter.md" in ev_f["data"]["signals_captured"],
           str(ev_f["data"]["signals_captured"]))
+
+    # ------------------------------------------------------------------
+    print("Case 5: per-machine shard (P4); role and name recorded, never gating")
+    root5 = make_root(TMP)
+    mj = os.path.join(TMP, "machine.json")
+    with open(mj, "w") as f:
+        json.dump({"role": "travel", "name": 'Faus"tina\\x', "serial": "ABC123"}, f)
+    p_g = run_hook(root5, str(uuid.uuid4()),
+                   extra_env={"INTENT_SESSION_END_MACHINE": "Serial-ABC 123",
+                              "CLAUDE_MACHINE_JSON": mj})
+    check("hook exits 0 with a machine.json present", p_g.returncode == 0, p_g.stderr)
+    shard = os.path.join(root5, ".intent", "events", "events.serial-abc-123.jsonl")
+    check("machine id is slugged and lowercased into the shard name", os.path.isfile(shard),
+          str(os.listdir(os.path.join(root5, ".intent", "events"))))
+    with open(shard) as f:
+        ev_g = json.loads(f.read().splitlines()[-1])
+    check("row is version 0.2.0", ev_g["version"] == "0.2.0", ev_g["version"])
+    check("source.machine carries serial, role, escaped name",
+          ev_g["source"]["machine"] == {"serial": "serial-abc-123", "role": "travel",
+                                        "name": 'Faus"tina\\x'},
+          str(ev_g["source"].get("machine")))
+
+    root6 = make_root(TMP)
+    env_unset = {"CLAUDE_MACHINE_JSON": os.path.join(TMP, "absent.json")}
+    saved = os.environ.pop("INTENT_SESSION_END_MACHINE", None)
+    env6 = dict(os.environ)
+    env6["INTENT_SESSION_END_ROOT"] = root6
+    env6.pop("CLAUDE_SESSION_ID", None)
+    env6.update(env_unset)
+    p_h = subprocess.run(["bash", HOOK], input=json.dumps({"session_id": str(uuid.uuid4())}),
+                         env=env6, capture_output=True, text=True, timeout=30)
+    if saved is not None:
+        os.environ["INTENT_SESSION_END_MACHINE"] = saved
+    names6 = sorted(os.listdir(os.path.join(root6, ".intent", "events")))
+    check("unknown role still writes (capture is never gated)", p_h.returncode == 0 and len(names6) == 1,
+          str(names6))
+    check("default machine id never writes the legacy events.jsonl", "events.jsonl" not in names6,
+          str(names6))
+    with open(os.path.join(root6, ".intent", "events", names6[0])) as f:
+        ev_h = json.loads(f.read().splitlines()[-1])
+    check("absent machine.json records role unknown", ev_h["source"]["machine"]["role"] == "unknown",
+          str(ev_h["source"]["machine"]))
 
 finally:
     shutil.rmtree(TMP, ignore_errors=True)

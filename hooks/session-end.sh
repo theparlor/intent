@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 # hooks/session-end.sh (Tier 1 session.end event emitter)
 #
-# Emits an OTel-shaped `session.end` event to <product>/.intent/events/events.jsonl
-# at the close of an agent session. Installed per-product by `bin/intent-init`:
+# Emits an OTel-shaped `session.end` event to
+# <product>/.intent/events/events.<machine-id>.jsonl at the close of an agent
+# session. One shard per machine (P4, single-writer change plan section 1): two
+# machines never append to the same tracked file, so their rows never conflict
+# on a pull, and the lander unions every shard. The legacy events.jsonl is no
+# longer written; it stays as history and readers glob events*.jsonl.
+#
+# Installed per-product by `bin/intent-init`:
 #
 #   cp hooks/session-end.sh <product>/.claude/hooks/session-end
 #   chmod +x <product>/.claude/hooks/session-end
@@ -13,7 +19,7 @@
 #
 # Event schema (per DEC-004 + spawn-a-product runbook):
 #   {
-#     "version": "0.1.0",
+#     "version": "0.2.0",
 #     "event": "session.end",
 #     "trace_id": "<intent-trace>",
 #     "span_id": "<session-uuid>",
@@ -21,7 +27,9 @@
 #     "timestamp": "<iso8601-utc>",
 #     "source": {
 #       "system": "<product-name>",
-#       "instance": "<session-uuid>"
+#       "instance": "<session-uuid>",
+#       "machine": {"serial": "<machine-id>", "role": "<hub|travel|embassy|unknown>",
+#                   "name": "<operator name or empty>"}
 #     },
 #     "data": {
 #       "files_touched": [...],
@@ -67,10 +75,23 @@
 #   record per entry, the same way it reads signals_captured for "signal"
 #   records. This narrowing therefore has the same direct benefit for
 #   Loom's decision attribution that the loom PR 9 fix had for signals.
+#
+# machine id (0.2.0): the lowercased hardware serial (IOPlatformSerialNumber),
+#   falling back to a lowercased slug of the ComputerName, then of the hostname.
+#   INTENT_SESSION_END_MACHINE overrides it (tests). The role and name come from
+#   the machine-role helper in the claude config (guarded source; absent helper
+#   or absent ~/.claude/machine.json means role "unknown"). Capture is never
+#   gated on role: every machine writes, only the file name differs.
+#
+# Append: one os.write of row plus newline on an O_APPEND descriptor under an
+#   exclusive fcntl.flock, then fsync. The lock serialises concurrent sessions on
+#   one machine; nothing relies on PIPE_BUF atomicity.
+#
 # Closure-DoD:
 #   upstream_control_path: this hook (the emitter) + bin/intent-init (the installer)
-#   catch_mechanism: events.jsonl tail per-session; library-index nightly read
-#   pipeline_survival: YES. events.jsonl is append-only, git-tracked
+#   catch_mechanism: loom harvest reads every events*.jsonl shard
+#   pipeline_survival: YES. Each shard is append-only and git-tracked; the
+#     quartermaster lander unions .intent/events/events.*.jsonl
 
 set -uo pipefail
 
@@ -133,8 +154,42 @@ if [[ -z "${INTENT_ROOT:-}" ]]; then
   exit 0
 fi
 
+# --- Machine identity (names the shard; never gates the write) ---------------
+
+slugify() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-' | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$//'
+}
+
+MACHINE_ID="${INTENT_SESSION_END_MACHINE:-}"
+if [[ -z "$MACHINE_ID" ]] && command -v ioreg >/dev/null 2>&1; then
+  MACHINE_ID="$(ioreg -rd1 -c IOPlatformExpertDevice 2>/dev/null \
+    | awk -F'"' '/IOPlatformSerialNumber/ {print $4; exit}')"
+fi
+if [[ -z "$MACHINE_ID" ]] && command -v scutil >/dev/null 2>&1; then
+  MACHINE_ID="$(scutil --get ComputerName 2>/dev/null || true)"
+fi
+if [[ -z "$MACHINE_ID" ]]; then
+  MACHINE_ID="$(hostname -s 2>/dev/null || hostname 2>/dev/null || true)"
+fi
+MACHINE_ID="$(slugify "$MACHINE_ID")"
+# Last resort only when every source above is empty; the row is still written.
+[[ -n "$MACHINE_ID" ]] || MACHINE_ID="unidentified"
+
+_role_helper="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hooks/helpers/machine-role.sh"
+if [[ -r "$_role_helper" ]]; then
+  # shellcheck source=/dev/null
+  . "$_role_helper" || MACHINE_ROLE=unknown
+else
+  MACHINE_ROLE=unknown
+fi
+MACHINE_ROLE="${MACHINE_ROLE:-unknown}"
+MACHINE_NAME="${MACHINE_NAME:-}"
+# JSON-escape the free-text name (backslash first, then double quote).
+MACHINE_NAME_JSON="${MACHINE_NAME//\\/\\\\}"
+MACHINE_NAME_JSON="${MACHINE_NAME_JSON//\"/\\\"}"
+
 EVENTS_DIR="$INTENT_ROOT/.intent/events"
-EVENTS_FILE="$EVENTS_DIR/events.jsonl"
+EVENTS_FILE="$EVENTS_DIR/events.${MACHINE_ID}.jsonl"
 mkdir -p "$EVENTS_DIR"
 
 # --- Derive event fields -----------------------------------------------------
@@ -364,23 +419,36 @@ DECISIONS_RECORDED="$(json_array_from_lines "$(evidence_ladder_captured "$DECISI
 # --- Compose + emit event ----------------------------------------------------
 
 EVENT=$(cat <<EOF
-{"version":"0.1.0","event":"session.end","trace_id":"${TRACE_ID}","span_id":"${SPAN_ID}","parent_id":null,"timestamp":"${TIMESTAMP}","source":{"system":"${PRODUCT_NAME}","instance":"${SESSION_UUID}"},"data":{"files_touched":${FILES_TOUCHED},"commit_sha":${COMMIT_SHA},"signals_captured":${SIGNALS_CAPTURED},"signals_seen":${SIGNALS_SEEN},"decisions_recorded":${DECISIONS_RECORDED},"decisions_seen":${DECISIONS_SEEN}}}
+{"version":"0.2.0","event":"session.end","trace_id":"${TRACE_ID}","span_id":"${SPAN_ID}","parent_id":null,"timestamp":"${TIMESTAMP}","source":{"system":"${PRODUCT_NAME}","instance":"${SESSION_UUID}","machine":{"serial":"${MACHINE_ID}","role":"${MACHINE_ROLE}","name":"${MACHINE_NAME_JSON}"}},"data":{"files_touched":${FILES_TOUCHED},"commit_sha":${COMMIT_SHA},"signals_captured":${SIGNALS_CAPTURED},"signals_seen":${SIGNALS_SEEN},"decisions_recorded":${DECISIONS_RECORDED},"decisions_seen":${DECISIONS_SEEN}}}
 EOF
 )
 
-# --- Append with fsync + best-effort lock ------------------------------------
+# --- Append: exclusive lock, one write, fsync ---------------------------------
 
-if command -v flock >/dev/null 2>&1; then
-  (
-    flock -x 200
-    printf '%s\n' "$EVENT" >> "$EVENTS_FILE"
-    sync "$EVENTS_FILE" 2>/dev/null || sync
-  ) 200>"${EVENTS_FILE}.lock"
-else
-  # macOS fallback: shell-level append is atomic for single lines under PIPE_BUF (4096B);
-  # session.end events are well under that. Still call sync for durability.
+if ! INTENT_EVENT_ROW="$EVENT" python3 - "$EVENTS_FILE" <<'PYEOF'
+import fcntl
+import os
+import sys
+
+row = (os.environ["INTENT_EVENT_ROW"] + "\n").encode("utf-8")
+fd = os.open(sys.argv[1], os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
+try:
+    fcntl.flock(fd, fcntl.LOCK_EX)
+    try:
+        view = memoryview(row)
+        while view:
+            n = os.write(fd, view)
+            view = view[n:]
+        os.fsync(fd)
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+finally:
+    os.close(fd)
+PYEOF
+then
+  # python3 unavailable or the write failed: capture is never dropped, so fall
+  # back to a plain shell append.
   printf '%s\n' "$EVENT" >> "$EVENTS_FILE"
-  sync
 fi
 
 # --- Verbose mode (for debugging hook installation) --------------------------
