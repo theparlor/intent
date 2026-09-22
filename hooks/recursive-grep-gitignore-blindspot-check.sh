@@ -46,6 +46,14 @@
 #   that has been told once is not told on every grep. State lives in
 #   ~/.claude/state/recursive-grep-blindspot-seen.json.
 #
+# Grep tool (matcher: Grep, same script, added 2026-09-21): the tool runs the
+#   embedded ripgrep with --hidden and never passes --no-ignore, and no parameter
+#   can add one (measured by replaying its argument set: from the Workspaces
+#   root a string that exists only in a gitignored product file returns
+#   nothing; with path scoped into that repo it is found). The advisory reads
+#   tool_input.path (default cwd) and names the remedy: scope the path to the
+#   nested repo, one call per repo. Same throttle, same bypass.
+#
 # Bypass: RECURSIVE_GREP_BLINDSPOT_BYPASSED=1 (env or inline prefix; logged).
 # Output: JSON on stdout with hookSpecificOutput.additionalContext, exit 0.
 #   Plain stdout on exit 0 reaches nobody for PreToolUse; additionalContext is
@@ -264,7 +272,11 @@ def _throttled(session: str, top: str) -> bool:
 
 def _advise(name: str, root: str, top: str, nested: list) -> None:
     shown = ", ".join(nested[:6]) + (f", and {len(nested) - 6} more" if len(nested) > 6 else "")
-    if name == "rg":
+    if name == "Grep":
+        how = ("The Grep tool runs the embedded ripgrep without --no-ignore and no parameter "
+               "can add it. Scope `path` to the nested repo itself, one call per repo, "
+               f"or search from Bash with `find {root} -type f -name '<glob>' | xargs grep -n <pattern>`")
+    elif name == "rg":
         how = ("Note that rg honors .gitignore by default. Re-run with `rg --no-ignore` (or -uu), "
                f"or `find {root} -type f -name '<glob>' | xargs grep -n <pattern>`")
     else:
@@ -282,6 +294,33 @@ def _advise(name: str, root: str, top: str, nested: list) -> None:
                                              "additionalContext": msg}}))
 
 
+def _grep_tool(payload: dict) -> int:
+    """The Grep tool: one root, the `path` input, defaulting to cwd. A file path never
+    recurses, so it is silent."""
+    inp = payload.get("tool_input") or {}
+    cwd = payload.get("cwd") or os.getcwd()
+    session = payload.get("session_id") or os.environ.get("CLAUDE_SESSION_ID") or "unknown"
+    raw_path = inp.get("path") or ""
+    raw_path = os.path.expanduser(raw_path)
+    root = raw_path if os.path.isabs(raw_path) else os.path.join(cwd, raw_path)
+    root = os.path.realpath(root)
+    if not os.path.isdir(root):
+        return 0
+    info = _hidden_repos(root)
+    if not info:
+        return 0
+    top, nested = info
+    if not nested:
+        return 0
+    if _throttled(session, top):
+        _log(f"SUPPRESSED tool=Grep session={session} top={top} root={root} nested={len(nested)}")
+        return 0
+    _log(f"ADVISE tool=Grep session={session} top={top} root={root} nested={len(nested)} "
+         f"pattern={str(inp.get('pattern'))[:80]!r}")
+    _advise("Grep", root, top, nested)
+    return 0
+
+
 def main() -> int:
     if os.environ.get(BYPASS) == "1":
         _log(f"BYPASS session={os.environ.get('CLAUDE_SESSION_ID', 'unknown')}")
@@ -293,7 +332,10 @@ def main() -> int:
         payload = json.loads(raw)
     except Exception:
         return 0
-    if (payload.get("tool_name") or "") != "Bash":
+    tool = payload.get("tool_name") or ""
+    if tool == "Grep":
+        return _grep_tool(payload)
+    if tool != "Bash":
         return 0
     cmd = ((payload.get("tool_input") or {}).get("command") or "")
     if not cmd.strip():
