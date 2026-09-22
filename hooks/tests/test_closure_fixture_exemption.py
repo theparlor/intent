@@ -13,7 +13,7 @@ path and session so exemption use stays observable.
 """
 import json, os, subprocess, tempfile, sys
 
-HOOK = "/Users/brien/Workspaces/Core/frameworks/intent/hooks/closure-discipline-signal-check.sh"
+HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "closure-discipline-signal-check.sh")
 TMP = tempfile.mkdtemp(prefix="closure-fixture-test-")
 FAKE_HOME = os.path.join(TMP, "home")
 os.makedirs(os.path.join(FAKE_HOME, ".claude", "audit"), exist_ok=True)

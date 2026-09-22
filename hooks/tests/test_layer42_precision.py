@@ -22,8 +22,8 @@ only channel Layer 4.2 uses to report its verdict.
 """
 import json, os, subprocess, tempfile, sys
 
-HOOK = "/Users/brien/Workspaces/Core/frameworks/intent/hooks/autonomy-posture-check-layer-4.2.sh"
-FIXTURES_DIR = "/Users/brien/Workspaces/Core/frameworks/intent/hooks/tests/fixtures/layer42"
+HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "autonomy-posture-check-layer-4.2.sh")
+FIXTURES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures", "layer42")
 TMP = tempfile.mkdtemp(prefix="l42-precision-test-")
 FAKE_HOME = os.path.join(TMP, "home")
 os.makedirs(os.path.join(FAKE_HOME, ".claude", "audit"), exist_ok=True)

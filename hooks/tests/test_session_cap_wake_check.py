@@ -23,7 +23,7 @@ import time
 
 HOOK = os.environ.get(
     "SESSION_CAP_WAKE_HOOK_PATH",
-    "/Users/brien/Workspaces/Core/frameworks/intent/hooks/session-cap-wake-check.sh",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "session-cap-wake-check.sh"),
 )
 TMP = tempfile.mkdtemp(prefix="session-cap-wake-test-")
 

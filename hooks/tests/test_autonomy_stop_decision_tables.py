@@ -36,7 +36,7 @@ structural form and the D-N154 citation are preserved.
 """
 import json, os, subprocess, tempfile, sys
 
-HOOK = "/Users/brien/Workspaces/Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh"
+HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "autonomy-grant-stop-check.sh")
 TMP = tempfile.mkdtemp(prefix="stop-table-test-")
 FAKE_HOME = os.path.join(TMP, "home")
 os.makedirs(FAKE_HOME, exist_ok=True)

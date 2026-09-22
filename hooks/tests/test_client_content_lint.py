@@ -18,7 +18,7 @@ Contract under test (SIG-MCP-LEAK-IN-CLIENT-JIRA-2026-05-04, mechanism 1):
 """
 import json, os, subprocess, tempfile, time, sys
 
-HOOK = "/Users/brien/Workspaces/Core/frameworks/intent/hooks/client-visible-content-lint.sh"
+HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "client-visible-content-lint.sh")
 TMP = tempfile.mkdtemp(prefix="content-lint-test-")
 FAKE_HOME = os.path.join(TMP, "home")
 os.makedirs(os.path.join(FAKE_HOME, ".claude", "logs"), exist_ok=True)
@@ -117,8 +117,8 @@ check("T9 bash GET with token -> allow", rc == 0)
 
 # T10: Bash with cd/source local clauses then a clean PUT -> allow (clauses stripped)
 rc, _ = run("Bash",
-            {"command": 'cd /Users/brien/Workspaces/Work/Consulting/Engagements/Subaru/working/jira-migration/scripts '
-                        '&& source /Users/brien/.config/atlassian/soa.env && curl -s -X PUT '
+            {"command": 'cd ~/Workspaces/Work/Consulting/Engagements/Subaru/working/jira-migration/scripts '
+                        '&& source ~/.config/atlassian/soa.env && curl -s -X PUT '
                         '-H "Authorization: Basic $TOKEN_B64" -H "Content-Type: application/json" '
                         '"$JIRA_BASE/rest/api/3/issue/NS-9?notifyUsers=false" '
                         '-d \'{"fields":{"summary":"Release calendar alignment"}}\''})
