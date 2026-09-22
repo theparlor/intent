@@ -55,8 +55,11 @@ open(os.path.join(OUTER, ".venv", "lib", "x.py"), "w").write("needle\n")
 
 
 def run(cmd, cwd, tool="Bash", session="s1", wrapper=True, env_bypass=False):
+    tool_input = {"pattern": "needle", "path": cmd} if tool == "Grep" else {"command": cmd}
+    if tool == "Grep" and cmd is None:
+        tool_input = {"pattern": "needle"}
     payload = json.dumps({"tool_name": tool, "cwd": cwd, "session_id": session,
-                          "tool_input": {"command": cmd}})
+                          "tool_input": tool_input})
     env = dict(os.environ)
     env["HOME"] = FAKE_HOME
     env["CLAUDE_CODE_EXECPATH"] = FAKE_CLAUDE if wrapper else os.path.join(TMP, "absent")
@@ -154,6 +157,37 @@ print(f"  {'PASS' if ok else 'FAIL'}  {'throttle once per session per repo':<36}
 if not ok:
     fails.append("throttle: want advise,silent,advise")
 
+# the Grep tool: path input, default cwd; a file path or a clean root is silent
+GREP_CASES = [
+    ("Grep path=outer root",            OUTER,                         OUTER,  ADVISE),
+    ("Grep no path (cwd outer)",        None,                          OUTER,  ADVISE),
+    ("Grep relative path products/",    "products",                    OUTER,  ADVISE),
+    ("Grep path=plain/ only",           PLAIN,                         OUTER,  SILENT),
+    ("Grep path inside nested repo",    NESTED,                        OUTER,  SILENT),
+    ("Grep path is a file",             os.path.join(OUTER, "f.txt"),  OUTER,  SILENT),
+    ("Grep path in a non-repo dir",     NOREPO,                        OUTER,  SILENT),
+    ("Grep path does not exist",        os.path.join(TMP, "missing"),  OUTER,  SILENT),
+]
+for n, (desc, path, cwd, want) in enumerate(GREP_CASES):
+    rc, ctx, err = run(path, cwd, tool="Grep", session=f"grep-{n}")
+    got = ctx is not None
+    ok = rc == 0 and got == want and not err.strip()
+    if ok and got:
+        ok = "products/nested" in ctx and "one call per repo" in ctx and ".venv" not in ctx
+        if not ok:
+            fails.append(f"{desc}: advisory text incomplete: {ctx!r}")
+    elif not ok:
+        fails.append(f"{desc}: want advise={want} got advise={got} rc={rc} stderr={err.strip()!r}")
+    print(f"  {'PASS' if ok else 'FAIL'}  {desc:<36} rc={rc} advise={got}")
+
+# Grep and Bash share the throttle for the same session and repo
+rc1, c1, _ = run("grep -rn needle .", OUTER, session="shared")
+rc2, c2, _ = run(OUTER, OUTER, tool="Grep", session="shared")
+ok = c1 is not None and c2 is None and rc1 == rc2 == 0
+print(f"  {'PASS' if ok else 'FAIL'}  {'Grep shares the Bash throttle':<36} first={c1 is not None} second={c2 is not None}")
+if not ok:
+    fails.append("shared throttle: want advise then silent")
+
 # the advisory names the wrapper for grep and --no-ignore for rg
 rc, cg, _ = run("grep -rn needle .", OUTER, session="text-grep")
 rc, cr, _ = run("rg needle", OUTER, session="text-rg")
@@ -176,4 +210,4 @@ if fails:
     for f in fails:
         print("  -", f)
     sys.exit(1)
-print(f"All {len(CASES) + 4} cases passed.")
+print(f"All {len(CASES) + len(GREP_CASES) + 5} cases passed.")
