@@ -724,7 +724,7 @@ import os, re, json
 
 text = os.environ.get("C8_TEXT", "")
 # Fenced code blocks are not response tables (script output, quoted diffs).
-text = re.sub(r"```.*?```", "", text, flags=re.S)
+text = re.sub(r"\x60\x60\x60.*?\x60\x60\x60", "", text, flags=re.S)  # \x60 is a backtick; a literal one here breaks bash 3.2, which misparses backticks inside a heredoc within $( )
 
 blocks, cur = [], []
 for ln in text.splitlines():
@@ -767,7 +767,7 @@ BUCKET3_RE = re.compile(r"\bno\s+recommendation\s+by\s+rule\b", re.I)
 CITE_RE = re.compile(r"\bd-?n154\b", re.I)
 NEG_REC_RE = re.compile(r"\b(no|without)\s+(a\s+)?recommendation", re.I)
 REC_RE = re.compile(r"recommend", re.I)
-CODE_RE = re.compile(r"`[^`]*`")
+CODE_RE = re.compile(r"\x60[^\x60]*\x60")  # \x60 is a backtick, see the note above
 
 table_rows = 0
 decision_rows = 0
