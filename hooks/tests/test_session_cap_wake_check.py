@@ -33,9 +33,23 @@ def epoch_at(y, mo, d, h, mi, s=0):
     return time.mktime((y, mo, d, h, mi, s, 0, 0, -1))
 
 
+def install_role(home, role):
+    """Stand in for the claude-config machine-role helper inside the fake HOME.
+    role=None leaves no helper on disk, which the hook must read as unknown."""
+    helper = os.path.join(home, ".claude", "hooks", "helpers", "machine-role.sh")
+    if role is None:
+        if os.path.exists(helper):
+            os.remove(helper)
+        return
+    os.makedirs(os.path.dirname(helper), exist_ok=True)
+    with open(helper, "w") as f:
+        f.write(f"MACHINE_ROLE={role}\nexport MACHINE_ROLE\n")
+
+
 def run(text, now_epoch, session_id="sess-test", tool_name="Agent",
-        home=None, sleep_override="1", resume_cmd=None, extra_env=None):
+        home=None, sleep_override="1", resume_cmd=None, extra_env=None, role="hub"):
     home = home or tempfile.mkdtemp(prefix="home-", dir=TMP)
+    install_role(home, role)
     payload = json.dumps({
         "session_id": session_id,
         "tool_name": tool_name,
@@ -44,6 +58,8 @@ def run(text, now_epoch, session_id="sess-test", tool_name="Agent",
     resume_marker = os.path.join(home, "resume-invoked.marker")
     env = dict(os.environ)
     env["HOME"] = home
+    env.pop("CLAUDE_CONFIG_DIR", None)
+    env.pop("CLAUDE_MACHINE_JSON", None)
     env["SESSION_CAP_WAKE_NOW_EPOCH"] = str(now_epoch)
     if sleep_override is not None:
         env["SESSION_CAP_WAKE_SLEEP_OVERRIDE_SECONDS"] = str(sleep_override)
@@ -176,6 +192,26 @@ log8 = audit_log(home8)
 check("case8 rc=0 under bypass", p8.returncode == 0, p8.stderr)
 check("case8 BYPASS logged, no ARM", "BYPASS" in log8 and "ARMED" not in log8, log8)
 check("case8 no resume marker under bypass", not os.path.exists(marker8))
+
+# ---------------------------------------------------------------------------
+# Case 9: role gate (P4). travel arms like the hub; embassy and an absent
+# helper (unknown) log a SKIP and never arm.
+# ---------------------------------------------------------------------------
+p9, home9, marker9 = run("You've hit your session limit, resets 6pm", NOW_1,
+                          session_id="sess-travel", role="travel")
+log9 = audit_log(home9)
+check("case9 travel arms", p9.returncode == 0 and "ARMED" in log9, log9)
+
+for label, role in (("embassy", "embassy"), ("absent helper", None)):
+    p10, home10, marker10 = run("You've hit your session limit, resets 6pm", NOW_1,
+                                session_id="sess-norole", role=role)
+    log10 = audit_log(home10)
+    check(f"case10 {label}: rc=0", p10.returncode == 0, p10.stderr)
+    check(f"case10 {label}: SKIP role logged, no ARM",
+          "SKIP role=" in log10 and "ARMED" not in log10, log10)
+    check(f"case10 {label}: no marker written",
+          not os.path.isdir(state_dir(home10)) or not any(
+              n.startswith("armed-") for n in os.listdir(state_dir(home10))))
 
 print()
 shutil.rmtree(TMP, ignore_errors=True)

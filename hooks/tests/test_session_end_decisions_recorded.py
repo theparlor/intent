@@ -88,6 +88,8 @@ def run_hook(root, session_id, transcript_path=None, extra_env=None):
         payload["transcript_path"] = transcript_path
     env = dict(os.environ)
     env["INTENT_SESSION_END_ROOT"] = root
+    # Fixed machine id: the hook writes events.<machine-id>.jsonl (P4 shard).
+    env["INTENT_SESSION_END_MACHINE"] = "test"
     env.pop("CLAUDE_SESSION_ID", None)
     if extra_env:
         env.update(extra_env)
@@ -99,14 +101,14 @@ def run_hook(root, session_id, transcript_path=None, extra_env=None):
 
 
 def last_event(root):
-    events_path = os.path.join(root, ".intent", "events", "events.jsonl")
+    events_path = os.path.join(root, ".intent", "events", "events.test.jsonl")
     with open(events_path) as f:
         lines = [l for l in f.read().splitlines() if l.strip()]
     return json.loads(lines[-1])
 
 
 def all_events(root):
-    events_path = os.path.join(root, ".intent", "events", "events.jsonl")
+    events_path = os.path.join(root, ".intent", "events", "events.test.jsonl")
     with open(events_path) as f:
         return [json.loads(l) for l in f.read().splitlines() if l.strip()]
 

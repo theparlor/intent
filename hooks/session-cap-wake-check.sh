@@ -33,6 +33,8 @@
 #   matcher "Workflow|Agent|Bash"
 #
 # Bypass: SESSION_CAP_WAKE_BYPASSED=1
+# Role gate: arms only when the machine-role helper reports hub or travel;
+#   embassy and unknown log a SKIP and exit 0.
 # Audit log: ~/.claude/audit/session-cap-wakes.log
 # State dir (idempotency markers): ~/.claude/audit/session-cap-wake-state/
 #
@@ -67,6 +69,22 @@ if [ "${SESSION_CAP_WAKE_BYPASSED:-0}" = "1" ]; then
   log "BYPASS env-flag set"
   exit 0
 fi
+
+# Role gate (P4): only the hub and the travel spoke ever arm a background
+# resume. An embassy or an unrecognised machine (absent or unparseable
+# ~/.claude/machine.json, or no helper on disk) skips, so a client-owned
+# machine never gets a detached claude --resume.
+_role_helper="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hooks/helpers/machine-role.sh"
+if [ -r "$_role_helper" ]; then
+  # shellcheck source=/dev/null
+  . "$_role_helper" || MACHINE_ROLE=unknown
+else
+  MACHINE_ROLE=unknown
+fi
+case "${MACHINE_ROLE:-unknown}" in
+  hub|travel) ;;
+  *) log "SKIP role=${MACHINE_ROLE:-unknown} never arms a background resume"; exit 0 ;;
+esac
 
 # Read tool input/response JSON from stdin.
 INPUT=$(cat)
