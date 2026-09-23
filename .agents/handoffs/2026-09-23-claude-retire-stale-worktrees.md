@@ -1,6 +1,6 @@
 # Agent handoff: retire-stale-worktrees
 
-- Status: active
+- Status: complete
 - Provider/agent: claude
 - Objective: retire stale worktrees with tag, manifest and ledger row (2026-09-23 cleanup)
 - Worktree and branch: `../intent-wt-2026-09-23-retire-stale-worktrees`, `agent/claude/2026-09-23-retire-stale-worktrees`
