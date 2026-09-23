@@ -76,12 +76,27 @@
 #   records. This narrowing therefore has the same direct benefit for
 #   Loom's decision attribution that the loom PR 9 fix had for signals.
 #
-# machine id (0.2.0): the lowercased hardware serial (IOPlatformSerialNumber),
-#   falling back to a lowercased slug of the ComputerName, then of the hostname.
-#   INTENT_SESSION_END_MACHINE overrides it (tests). The role and name come from
-#   the machine-role helper in the claude config (guarded source; absent helper
-#   or absent ~/.claude/machine.json means role "unknown"). Capture is never
-#   gated on role: every machine writes, only the file name differs.
+# machine id (0.2.0): names the shard. Sources in order, first non-empty wins:
+#   1. INTENT_SESSION_END_MACHINE (test override)
+#   2. the hardware serial (IOPlatformSerialNumber) from /usr/sbin/ioreg, called
+#      by absolute path; `command -v ioreg` only when that path does not exist
+#   3. the serial recorded in ~/.claude/machine.json (MACHINE_SERIAL from the
+#      machine-role helper when it is installed, else the file read directly)
+#   4. a slug of the ComputerName from /usr/sbin/scutil, absolute path, same rule
+#   5. a slug of the hostname
+#   The value is lowercased and slugged; "unidentified" only when all five are
+#   empty. The role and name come from the machine-role helper in the claude
+#   config (guarded source; absent helper or absent ~/.claude/machine.json means
+#   role "unknown"). Capture is never gated on role: every machine writes, only
+#   the file name differs.
+#   Incident 2026-09-23 (hub, headless sdk-cli session d9ad46a1-df54-4a36-815a-
+#   e227f62c5c4e, 07:02Z): the session ran with PATH=/usr/bin:/bin, `command -v
+#   ioreg` found nothing because ioreg lives in /usr/sbin, and 51 session.end rows
+#   went to events.marcus-aurelius.jsonl (the ComputerName slug) beside the serial
+#   shard events.gc0vy29jjk.jsonl. The multi-machine verifier flagged the second
+#   shard ("dirty under .intent/events/ besides the shard"). Rungs 2 to 4 no
+#   longer depend on PATH. INTENT_SESSION_END_IOREG and INTENT_SESSION_END_SCUTIL
+#   are test seams that point at a stub or at a missing path.
 #
 # Append: one os.write of row plus newline on an O_APPEND descriptor under an
 #   exclusive fcntl.flock, then fsync. The lock serialises concurrent sessions on
@@ -160,22 +175,16 @@ slugify() {
   printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-' | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$//'
 }
 
-MACHINE_ID="${INTENT_SESSION_END_MACHINE:-}"
-if [[ -z "$MACHINE_ID" ]] && command -v ioreg >/dev/null 2>&1; then
-  MACHINE_ID="$(ioreg -rd1 -c IOPlatformExpertDevice 2>/dev/null \
-    | awk -F'"' '/IOPlatformSerialNumber/ {print $4; exit}')"
-fi
-if [[ -z "$MACHINE_ID" ]] && command -v scutil >/dev/null 2>&1; then
-  MACHINE_ID="$(scutil --get ComputerName 2>/dev/null || true)"
-fi
-if [[ -z "$MACHINE_ID" ]]; then
-  MACHINE_ID="$(hostname -s 2>/dev/null || hostname 2>/dev/null || true)"
-fi
-MACHINE_ID="$(slugify "$MACHINE_ID")"
-# Last resort only when every source above is empty; the row is still written.
-[[ -n "$MACHINE_ID" ]] || MACHINE_ID="unidentified"
-
-_role_helper="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hooks/helpers/machine-role.sh"
+# Role, name and serial from the machine-role helper in the claude config
+# (guarded source: absent helper means role "unknown"). Sourced BEFORE the
+# machine id is derived so MACHINE_SERIAL can name the shard (rung 3 below).
+# The helper re-reads machine.json and overwrites anything inherited. When the
+# helper is not installed the file is read directly for the serial only; an
+# inherited MACHINE_SERIAL is never trusted (the file is authoritative, as in
+# the helper). python3 resolves under a bare PATH (/usr/bin/python3) and is
+# what the rest of this hook already uses.
+_role_helper="${CLAUDE_CONFIG_DIR:-${HOME:-}/.claude}/hooks/helpers/machine-role.sh"
+MACHINE_SERIAL=""
 if [[ -r "$_role_helper" ]]; then
   # shellcheck source=/dev/null
   . "$_role_helper" || MACHINE_ROLE=unknown
@@ -184,6 +193,60 @@ else
 fi
 MACHINE_ROLE="${MACHINE_ROLE:-unknown}"
 MACHINE_NAME="${MACHINE_NAME:-}"
+MACHINE_SERIAL="${MACHINE_SERIAL:-}"
+if [[ -z "$MACHINE_SERIAL" ]]; then
+  _machine_json="${MACHINE_JSON:-${CLAUDE_MACHINE_JSON:-${CLAUDE_CONFIG_DIR:-${HOME:-}/.claude}/machine.json}}"
+  if [[ -f "$_machine_json" && -r "$_machine_json" ]]; then
+    MACHINE_SERIAL="$(python3 -c 'import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+    v = d.get("serial") if isinstance(d, dict) else None
+    print("" if v is None else str(v))
+except Exception:
+    print("")' "$_machine_json" 2>/dev/null || true)"
+  fi
+fi
+
+# Machine id: names the shard. First non-empty source wins; order in the header.
+MACHINE_ID="${INTENT_SESSION_END_MACHINE:-}"
+
+# ioreg and scutil live in /usr/sbin, which a headless session's PATH may not
+# include (incident 2026-09-23, see the header), so both are called by absolute
+# path; `command -v` is consulted only when the absolute path does not exist.
+# INTENT_SESSION_END_IOREG / INTENT_SESSION_END_SCUTIL are test seams: a stub,
+# or a missing path to simulate a machine without the tool.
+if [[ -n "${INTENT_SESSION_END_IOREG:-}" ]]; then
+  _ioreg="$INTENT_SESSION_END_IOREG"
+elif [[ -x /usr/sbin/ioreg ]]; then
+  _ioreg=/usr/sbin/ioreg
+else
+  _ioreg="$(command -v ioreg 2>/dev/null || true)"
+fi
+if [[ -n "${INTENT_SESSION_END_SCUTIL:-}" ]]; then
+  _scutil="$INTENT_SESSION_END_SCUTIL"
+elif [[ -x /usr/sbin/scutil ]]; then
+  _scutil=/usr/sbin/scutil
+else
+  _scutil="$(command -v scutil 2>/dev/null || true)"
+fi
+
+if [[ -z "$MACHINE_ID" && -n "$_ioreg" && -x "$_ioreg" ]]; then
+  MACHINE_ID="$("$_ioreg" -rd1 -c IOPlatformExpertDevice 2>/dev/null \
+    | awk -F'"' '/IOPlatformSerialNumber/ {print $4; exit}')"
+fi
+if [[ -z "$MACHINE_ID" ]]; then
+  MACHINE_ID="$MACHINE_SERIAL"
+fi
+if [[ -z "$MACHINE_ID" && -n "$_scutil" && -x "$_scutil" ]]; then
+  MACHINE_ID="$("$_scutil" --get ComputerName 2>/dev/null || true)"
+fi
+if [[ -z "$MACHINE_ID" ]]; then
+  MACHINE_ID="$(hostname -s 2>/dev/null || hostname 2>/dev/null || true)"
+fi
+MACHINE_ID="$(slugify "$MACHINE_ID")"
+# Last resort only when every source above is empty; the row is still written.
+[[ -n "$MACHINE_ID" ]] || MACHINE_ID="unidentified"
+
 # JSON-escape the free-text name (backslash first, then double quote).
 MACHINE_NAME_JSON="${MACHINE_NAME//\\/\\\\}"
 MACHINE_NAME_JSON="${MACHINE_NAME_JSON//\"/\\\"}"
