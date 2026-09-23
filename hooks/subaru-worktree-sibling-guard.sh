@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 # subaru-worktree-sibling-guard.sh
 #
+# RETIRED 2026-09-23, superseded by nested-repo-worktree-sibling-guard.sh, which enforces
+# the same sibling rule for every nested Workspaces repo with the session kit, Subaru
+# included, and carries this file's selftest cases. Kept per the never-delete rule and no
+# longer registered in ~/.claude/settings.json; if anything still calls it, main() hands
+# stdin and argv straight to the successor, so behavior cannot drift. The original body
+# below is the record of the Subaru-only version.
+#
 # PreToolUse hook (matcher: Bash). Refuses `git worktree add` on the Subaru engagement
 # repo (theparlor/engagement-subaru) unless the new worktree is a SIBLING of the primary
 # checkout named for its task: <...>/Work/Consulting/Engagements/Subaru-wt-<task>.
@@ -223,6 +230,9 @@ def _selftest() -> int:
 
 
 def main() -> int:
+    successor = Path(__file__).resolve().parent / "nested-repo-worktree-sibling-guard.sh"
+    if successor.is_file():
+        os.execv(sys.executable, [sys.executable, str(successor)] + sys.argv[1:])
     if "--selftest" in sys.argv:
         return _selftest()
     if os.environ.get(BYPASS) == "1":
