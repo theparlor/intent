@@ -29,6 +29,13 @@ as one probability. Against a blind Sonnet read of the same tails it had better 
 legitimate deferral (an OAuth prompt, a budget window, a production write that is L0) from a handback, which is
 the exact distinction the July regex patch encoded.
 
+## Admissibility flag
+
+The run preceded the ruling on DECISIONS-PENDING.md ask 3 (transcript handling) and applied its recommended
+option; one of 190 tails came from a JCI-engagement session that ask 3 keeps out of the pool under every option,
+and 48 tails cannot be traced to a project. Rescored without the JCI row: unchanged (results-excluding-jci-sessions.md).
+The run is void if the ruling goes another way.
+
 ## What changes
 
 Nothing. No hook was edited; the freeze holds. The trace (hashes and probabilities, no text) is in

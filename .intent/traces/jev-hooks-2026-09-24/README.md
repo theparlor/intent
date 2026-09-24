@@ -87,6 +87,18 @@ Sonnet agrees with the human label on 10 of 13 non-ambiguous fixtures.
 
 Kev latency per tail (wall ms): median 4604, p90 11278, n 190
 
+## Admissibility, read against DECISIONS-PENDING.md ask 3
+
+This run happened before ask 3 (transcript handling under WS-DDR-146) was ruled, under the handling that ask
+recommends: raw tails to the local model, hashes only in the committed trace, tails and labels kept local. Ask 3
+also keeps JCI-engagement sessions out of the pool under every option until that client's AI policy is read; the
+pool was drawn without that filter. After the fact: 1 of 190 rows traces to a JCI-engagement session, 15 to other
+engagements, 64 to non-engagement sessions, and 48 to sessions whose transcript directory no longer exists. The
+JCI row is listed locally (`~/.claude/logs/jev-hook-eval/jci-sessions-excluded.json`) and
+`results-excluding-jci-sessions.md` rescored without it: precision 0.45, recall 0.83, AUC 0.821, 32 of 63 false
+fires suppressible; nothing moves. If the ruling is "features" or "exclude", this run is void and this file says
+so; nothing captured is deleted.
+
 ## Verdict
 
 **Partial pass, not a replacement.** Against 190 blind-labeled tails the one probability outperforms the
