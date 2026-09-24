@@ -1,6 +1,6 @@
 # Agent handoff: jev-eval
 
-- Status: active
+- Status: complete
 - Provider/agent: claude
 - Objective: Stop-hook posture family: can a local typed-decision model (Kev) separate true from false hook fires
 - Worktree and branch: `../intent-wt-2026-09-24-jev-eval`, `agent/claude/2026-09-24-jev-eval`
