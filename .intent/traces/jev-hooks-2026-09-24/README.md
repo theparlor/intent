@@ -99,8 +99,9 @@ reads every one of them as a handback because it has no notion of which steps ar
 exactly what the 2026-07-19 regex patch encoded, so the regex knows something the model does not, and the blind
 labeler agreed with the human on only 10 of 13, which says the labels themselves carry that ambiguity. Second,
 latency: 4.6 s median per tail on the local Kev-4B while it shared the server with the H5 run, against a budget
-of about 0.5 s per Stop. An uncontended short-state call measured 0.4 s earlier in the session, so a dedicated
-process on the hub, or Kev-0.8B, may fit; that number is in the intake package's section 7, not asserted here.
+of about 0.5 s per Stop. Re-measured on an idle server after the other runs finished, a single Noul over one tail takes 1.05 s
+median, 2.5 s at p90 (probe in the Cortege trace folder, `probes.jsonl`), still twice the budget on Kev-4B;
+Kev-0.8B, or a resident process with the prefix cache warm, is the untested next step.
 
 What a stranger would do on Monday: nothing in the hooks. If Brien wants the false-fire rate down, the cheapest
 experiment is shadow mode: log P(queues) beside every CHECK fire for two weeks and read the ledger, which needs a

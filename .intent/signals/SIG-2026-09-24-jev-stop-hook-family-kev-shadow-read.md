@@ -37,5 +37,5 @@ Nothing. No hook was edited; the freeze holds. The trace (hashes and probabiliti
 ## The decision Brien is being handed
 
 Whether to run the model in shadow beside the CHECKs for two weeks (needs a resident Kev endpoint on the hub,
-about 8 GB of memory, and 0.5 s or less per Stop, which the contended run did not meet at 4.6 s) before any
+about 8 GB of memory, and 0.5 s or less per Stop, which Kev-4B does not meet: 4.6 s contended, 1.05 s median on an idle server) before any
 retire or demote conversation. Recommendation: yes to the shadow, no to any retirement on this evidence.
