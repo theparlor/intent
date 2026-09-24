@@ -89,6 +89,15 @@ fi
 
 printf '\n%s\n\n' "BUDGET (codeburn is the instrument, the dashboard is the anchor)"
 
+# GitHub Actions minutes, a second meter beside Claude spend (actions budget guard, 2026-09-24).
+# Reads local state only; silent when the tool or its state is absent.
+AB_DIR="${WORKSPACES_ROOT:-$HOME/Workspaces}/Core/products/org-design-tooling"
+AB_PY="$AB_DIR/.venv/bin/python"; [ -x "$AB_PY" ] || AB_PY=python3
+if [ -f "$AB_DIR/tools/actions-budget/ladder.py" ]; then
+  AB_LINE="$("$AB_PY" "$AB_DIR/tools/actions-budget/ladder.py" summary 2>/dev/null | head -1)"
+  [ -n "$AB_LINE" ] && printf '%s\n' "$AB_LINE"
+fi
+
 # --- Tripwires: codeburn's own daily / rolling-7day budgets -----------------
 # Reprinted with the window named, because "weekly" here means rolling 7 days
 # and reading it as cycle-percent is the documented failure mode.
