@@ -1,0 +1,15 @@
+{
+  "id": "2026-09-24-claude-jev-eval",
+  "provider": "claude",
+  "status": "active",
+  "branch": "agent/claude/2026-09-24-jev-eval",
+  "worktree": "../intent-wt-2026-09-24-jev-eval",
+  "base_commit": "cb81914",
+  "objective": "Stop-hook posture family: can a local typed-decision model (Kev) separate true from false hook fires",
+  "owned_paths": [
+    ".intent/signals",
+    ".intent/traces"
+  ],
+  "started": "2026-09-24T00:13:30-04:00",
+  "handoff": ".agents/handoffs/2026-09-24-claude-jev-eval.md"
+}
