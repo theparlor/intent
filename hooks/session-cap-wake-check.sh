@@ -230,8 +230,12 @@ WAKE_EPOCH=$((RESET_EPOCH + 60))
 if [ -n "${SESSION_CAP_WAKE_SLEEP_OVERRIDE_SECONDS:-}" ]; then
   SLEEP_SECONDS="$SESSION_CAP_WAKE_SLEEP_OVERRIDE_SECONDS"
 else
-  NOW_EPOCH=$(python3 -c "print(int(float('''${NOW_OVERRIDE:-0}''' or __import__('time').time())))" 2>/dev/null)
-  [ -z "$NOW_EPOCH" ] && NOW_EPOCH=$(date -u +%s)
+  # The delta from now to the wake, never the wake epoch itself. The previous form
+  # ran float('0' or time.time()): the string '0' is truthy, so NOW_EPOCH was 0 and
+  # every armed sleeper slept for the epoch value (about 56 years). Seen live on
+  # 2026-09-24: seven arms since 2026-09-14, zero WAKE-FIRED lines, one sleeper from
+  # 2026-09-22 still alive. The audit line's sleep_seconds now reads as seconds.
+  if [ -n "$NOW_OVERRIDE" ]; then NOW_EPOCH="${NOW_OVERRIDE%.*}"; else NOW_EPOCH=$(date -u +%s); fi
   SLEEP_SECONDS=$((WAKE_EPOCH - NOW_EPOCH))
   [ "$SLEEP_SECONDS" -lt 1 ] && SLEEP_SECONDS=1
 fi

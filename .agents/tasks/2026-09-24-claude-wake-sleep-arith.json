@@ -1,0 +1,13 @@
+{
+  "id": "2026-09-24-claude-wake-sleep-arith",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-24-wake-sleep-arith",
+  "worktree": "../intent-wt-2026-09-24-wake-sleep-arith",
+  "base_commit": "863aca1",
+  "objective": "session-cap wake hook: sleep the delta to the reset, not the epoch",
+  "owned_paths": [],
+  "started": "2026-09-24T12:52:09-04:00",
+  "handoff": ".agents/handoffs/2026-09-24-claude-wake-sleep-arith.md",
+  "landed": "2026-09-24T12:52:45-04:00"
+}

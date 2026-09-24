@@ -213,6 +213,33 @@ for label, role in (("embassy", "embassy"), ("absent helper", None)):
           not os.path.isdir(state_dir(home10)) or not any(
               n.startswith("armed-") for n in os.listdir(state_dir(home10))))
 
+# ---------------------------------------------------------------------------
+# Case 11: the armed sleeper sleeps the DELTA to reset plus 60 s, never the
+# epoch itself. Regression for 2026-09-24: with no sleep override the hook
+# computed NOW_EPOCH as 0 (the string '0' is truthy in Python), so every
+# sleeper slept for the wake epoch value, about 56 years, and no wake ever
+# fired. The wake script is read back rather than run, so nothing sleeps here;
+# the script is then removed so no detached sleeper outlives the test.
+# ---------------------------------------------------------------------------
+NOW_11 = epoch_at(2026, 9, 24, 12, 5, 0)
+EXPECT_11 = epoch_at(2026, 9, 24, 18, 0, 0)
+p11, home11, marker11 = run("You've hit your session limit, resets 6pm", NOW_11,
+                            session_id="sess-delta", sleep_override=None)
+log11 = audit_log(home11)
+expected_sleep = int(EXPECT_11) + 60 - int(NOW_11)
+check("case11 rc=0 and ARMED", p11.returncode == 0 and "ARMED" in log11, log11)
+check("case11 sleep_seconds is the delta to reset plus 60",
+      f"sleep_seconds={expected_sleep} " in log11, log11)
+check("case11 sleep_seconds is under a day (not the epoch)",
+      f"sleep_seconds={int(EXPECT_11) + 60} " not in log11, log11)
+wake11 = os.path.join(state_dir(home11), f"wake-{int(EXPECT_11)}.sh")
+check("case11 wake script sleeps the same delta",
+      os.path.exists(wake11) and f"sleep {expected_sleep}\n" in open(wake11).read(),
+      open(wake11).read() if os.path.exists(wake11) else "no wake script")
+subprocess.run(["pkill", "-f", wake11], capture_output=True)
+if os.path.exists(wake11):
+    os.remove(wake11)
+
 print()
 shutil.rmtree(TMP, ignore_errors=True)
 if fails:
