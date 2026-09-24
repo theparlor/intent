@@ -1,0 +1,15 @@
+{
+  "id": "2026-09-24-claude-actions-minutes-line",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-24-actions-minutes-line",
+  "worktree": "../intent-wt-2026-09-24-actions-minutes-line",
+  "base_commit": "f34c607",
+  "objective": "",
+  "owned_paths": [
+    "hooks/budget-snapshot-check.sh"
+  ],
+  "started": "2026-09-24T08:52:03-04:00",
+  "handoff": ".agents/handoffs/2026-09-24-claude-actions-minutes-line.md",
+  "landed": "2026-09-24T08:52:30-04:00"
+}
