@@ -1,6 +1,6 @@
 # Agent handoff: jev-eval-jci
 
-- Status: active
+- Status: complete
 - Provider/agent: claude
 - Objective: Fold the JCI-excluded rescoring and the ask-3 admissibility flag into the hook-family trace
 - Worktree and branch: `../intent-wt-2026-09-24-jev-eval-jci`, `agent/claude/2026-09-24-jev-eval-jci`

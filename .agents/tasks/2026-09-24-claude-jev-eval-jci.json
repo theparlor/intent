@@ -1,7 +1,7 @@
 {
   "id": "2026-09-24-claude-jev-eval-jci",
   "provider": "claude",
-  "status": "active",
+  "status": "complete",
   "branch": "agent/claude/2026-09-24-jev-eval-jci",
   "worktree": "../intent-wt-2026-09-24-jev-eval-jci",
   "base_commit": "bc52995",
@@ -11,5 +11,6 @@
     ".intent/signals"
   ],
   "started": "2026-09-24T00:51:08-04:00",
-  "handoff": ".agents/handoffs/2026-09-24-claude-jev-eval-jci.md"
+  "handoff": ".agents/handoffs/2026-09-24-claude-jev-eval-jci.md",
+  "landed": "2026-09-24T00:51:09-04:00"
 }
