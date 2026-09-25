@@ -76,7 +76,7 @@
 #   exit 0. A rule 2 block is exit 2 + stderr (PreToolUse convention). The log records counts
 #   and engagement names, never the flagged terms.
 # - Bypass: CROSS_ENGAGEMENT_WRITE_GUARD_BYPASSED=1 in the environment, or as an inline prefix
-#   on a Bash command. Logged.
+#   on a Bash command (never inside a heredoc body, which is data). Logged.
 # - Fails open: an internal error is logged and the call is allowed. A write that touches no
 #   engagement and no memory dir costs two path regexes and no file reads.
 # - `--selftest` builds a temp Workspaces with fixture engagements (Alpha, Beta, Gamma) and runs
@@ -705,7 +705,10 @@ def _handle(payload: dict) -> int:
     if tool not in FILE_TOOLS and tool != "Bash":
         return 0
     session_id = payload.get("session_id") or os.environ.get("CLAUDE_SESSION_ID") or "unknown"
-    if tool == "Bash" and re.search(r"\b" + BYPASS + r"=1\b", (payload.get("tool_input") or {}).get("command") or ""):
+    # The inline bypass counts only in the command itself: a heredoc body that quotes it (a doc
+    # or a memory being written) is data, and must not switch the check off for that write.
+    if tool == "Bash" and re.search(r"\b" + BYPASS + r"=1\b",
+                                    _strip_heredocs((payload.get("tool_input") or {}).get("command") or "")):
         _log(f"BYPASS inline session={session_id}")
         return 0
     result = decide(payload)
@@ -1038,6 +1041,10 @@ def _selftest() -> int:
         run("a session outside any engagement writes into Beta: silent",
             {"tool_name": "Write", "cwd": f"{WORKSPACES}/Core", "session_id": "selftest-session-5",
              "tool_input": {"file_path": f"{eng}/Beta/x.md", "content": "x"}}, 0, False)
+        run("a heredoc that only quotes the bypass does not bypass: blocked",
+            {"tool_name": "Bash", "cwd": alpha_wt, "session_id": "selftest-session-6",
+             "tool_input": {"command": f"cat > {alpha_mem}/g.md <<'EOF'\nUndo with {BYPASS}=1.\n"
+                                       f"{REPLAY_FIXTURE}EOF"}}, 2, False)
         run("an inline bypass on Bash is silent",
             {"tool_name": "Bash", "cwd": alpha_wt, "session_id": "selftest-session-6",
              "tool_input": {"command": f"{BYPASS}=1 touch {eng}/Beta/x.md"}}, 0, False)

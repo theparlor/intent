@@ -1,0 +1,15 @@
+{
+  "id": "2026-09-24-claude-guard-heredoc-bypass",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-24-guard-heredoc-bypass",
+  "worktree": "../intent-wt-2026-09-24-guard-heredoc-bypass",
+  "base_commit": "0100c2a",
+  "objective": "cross-engagement-write-guard: an inline bypass counts only outside heredoc bodies",
+  "owned_paths": [
+    "hooks/cross-engagement-write-guard.sh"
+  ],
+  "started": "2026-09-24T23:42:16-04:00",
+  "handoff": ".agents/handoffs/2026-09-24-claude-guard-heredoc-bypass.md",
+  "landed": "2026-09-24T23:42:38-04:00"
+}
