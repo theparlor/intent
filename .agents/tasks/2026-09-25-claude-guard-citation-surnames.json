@@ -1,0 +1,15 @@
+{
+  "id": "2026-09-25-claude-guard-citation-surnames",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-25-guard-citation-surnames",
+  "worktree": "../intent-wt-2026-09-25-guard-citation-surnames",
+  "base_commit": "63baa8b",
+  "objective": "Guard: author citations (Womack & Jones (1996), Jones (OpenClaw 2026)) no longer read as glossary people; fonts join PUBLIC",
+  "owned_paths": [
+    "hooks/cross-engagement-write-guard.sh"
+  ],
+  "started": "2026-09-25T08:35:44-04:00",
+  "handoff": ".agents/handoffs/2026-09-25-claude-guard-citation-surnames.md",
+  "landed": "2026-09-25T08:56:23-04:00"
+}

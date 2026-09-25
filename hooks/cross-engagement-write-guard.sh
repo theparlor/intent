@@ -63,6 +63,19 @@
 #   glossary grew to about 200 people, on Brien's rule that glossaries and lists of humans
 #   always grow: common first names and surnames from a large roster otherwise collide with
 #   every other engagement's own people.
+# - A name part joined by a hyphen to a capitalized word is part of a compound name, another
+#   person ("Avery Worthing-Jones" against "Christopher Jones"); a lowercase suffix ("a Jones-led
+#   review") still counts. A surname cited as a source is an author, not the glossary person:
+#   followed by "et al", by a year in parentheses ("Jones (1996)", "Per Jones (OpenClaw 2026)"),
+#   or by a year that closes an open parenthesis ("(Jones, OpenClaw 2026)", "(Lean: Womack &
+#   Jones 1996; ...)"), where any source words before the year are capitalized, not months or
+#   acronyms ("(Jones, Q3 2026)" still counts). A surname joined by "&" or "and" to a
+#   surname-like word ("Womack & Jones", "Jones and Womack") is a firm or co-author pair, unless
+#   the partner is itself a name part of the same engagement's people (then it is a list of
+#   them). A surname right after its own given name is never read as a citation. Typeface names
+#   (Montserrat, Calibri and the like) are public: a person who shares one keeps the full name
+#   and surname as terms. Added 2026-09-25 (second WS-DDR-148 amendment) when the
+#   OptumCareWellMed People table named a Jones and three author citations elsewhere collided.
 # - Never flagged: any form of any engagement's name (folder name, its CamelCase parts, the
 #   aliases in the central glossary's engagement table, alias sections, and a glossary row
 #   that defines the client itself); a term the memory's own engagement glossary uses anywhere
@@ -242,8 +255,18 @@ LEADING = {"A", "An", "And", "The", "Not", "Left", "With", "For", "Both", "Also"
 HONORIFICS = {"Dr", "Mr", "Mrs", "Ms", "Mx", "Prof", "Sir", "Dame", "Rev"}
 FIRST_WHYS = ("a person's first name", "a person, first name only")
 SURNAME_WHY = "a person's surname"
-_NEXT_WORD = re.compile(r"\s+([A-Z][A-Za-z'.-]*)")
+_NEXT_WORD = re.compile(r"(?:\s+|-)([A-Z][A-Za-z'.-]*)")
 _PREV_WORD = re.compile(r"([A-Z][A-Za-z'.-]*)\s+$")
+_HYPHEN_PREV = re.compile(r"([A-Z][A-Za-z']*)-$")
+# Author citations: a year, optionally after up to three capitalized source words.
+_YEAR = r"(?:1[5-9]|20)\d\d[a-z]?"
+_SRC = r"((?:[A-Z][A-Za-z.&'-]*,?\s+){0,3})"
+_ET_AL = re.compile(r"\s+et\s+al\b")
+_YEAR_PAREN = re.compile(r"\s*\(\s*" + _SRC + _YEAR + r"(?:\s*[,:;][^()\n]{0,30})?\s*\)")
+_CITE_TAIL = re.compile(r"(?:\s+et\s+al\.?)?,?\s+" + _SRC + _YEAR + r"\s*[,;)]")
+_OPEN_PAREN = re.compile(r"\([^()\n]*$")
+_JOIN_BEFORE = re.compile(r"([A-Z][A-Za-z'.-]*)\s+(&|and)\s+$")
+_JOIN_AFTER = re.compile(r"\s+(&|and)\s+([A-Z][A-Za-z'.-]*)")
 CALENDAR = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
             "january", "february", "march", "april", "may", "june", "july", "august",
             "september", "october", "november", "december"}
@@ -256,6 +279,12 @@ PUBLIC = {"jira", "confluence", "rovo", "atlassian", "miro", "slack", "teams", "
           "tableau", "powerbi", "smartsheet", "asana", "trello", "loom", "screenpipe", "cowork",
           "dynamics", "oracle", "sap", "adobe", "apple", "mac", "macos", "windows", "intune",
           "crowdstrike", "zscaler", "planview", "agiletest", "xray", "box", "dropbox"}
+# Typeface names: public, named in every brand guide (Montserrat is Turnberry's), never identity
+# on their own. A glossary person who shares one keeps the full name and surname as terms.
+FONTS = {"montserrat", "helvetica", "arial", "calibri", "cambria", "candara", "consolas", "aptos",
+         "corbel", "roboto", "lato", "raleway", "poppins", "verdana", "tahoma", "segoe", "garamond",
+         "futura", "frutiger", "avenir", "gotham", "nunito", "merriweather", "menlo"}
+PUBLIC |= FONTS
 # Fallback when the system word list is missing: enough to keep common words from counting.
 BUILTIN_WORDS = set("""a about above after again all also an and any are as at back base be been
 before being big board business by can capacity change client day delivery design do done down
@@ -527,20 +556,55 @@ def _namelike(tok: str) -> bool:
     return _capword(tok) and (t in _proper() or not _is_word(t.lower()))
 
 
+def _other_author(word: str, conj: str, eng: str, companions) -> bool:
+    """The partner in 'X & Surname' or 'X and Surname' makes a firm or co-author pair: a
+    capitalized word that is not a common given name and not a name part of this engagement's
+    own people (two of its own people is a list of them); after 'and', also not a dictionary word."""
+    t = _norm_token(word)
+    if not _capword(word) or t in _proper() or (eng, t) in companions:
+        return False
+    return conj == "&" or not _is_word(t.lower())
+
+
+def _cited(content: str, m, head: str, eng: str, companions) -> bool:
+    """A surname match cited as a source or joined into a firm or co-author name."""
+    tail = content[m.end():m.end() + 80]
+    if _ET_AL.match(tail):
+        return True
+    for rx, in_paren in ((_YEAR_PAREN, False), (_CITE_TAIL, True)):
+        c = rx.match(tail)
+        if c and (not in_paren or _OPEN_PAREN.search(head)) \
+                and all(_capword(w) for w in re.split(r"[,\s]+", c.group(1)) if w):
+            return True
+    joins = []
+    jb = _JOIN_BEFORE.search(head)
+    if jb:
+        joins.append((jb.group(2), jb.group(1)))
+    ja = _JOIN_AFTER.match(tail)
+    if ja:
+        joins.append((ja.group(1), ja.group(2)))
+    return any(_other_author(w, conj, eng, companions) for conj, w in joins)
+
+
 def _same_person(pat, content: str, why: str, eng: str, companions) -> bool:
     """For a first name or surname term: True if some match stands alone or beside its own
-    person's other name parts, False if every match sits inside a different person's name."""
+    person's other name parts, False if every match sits inside a different person's name, a
+    hyphenated compound name, or (surnames) an author citation or a firm or co-author pair."""
     if why not in FIRST_WHYS and why != SURNAME_WHY:
         return True
     for m in pat.finditer(content):
         own = companions.get((eng, _norm_token(m.group(0))), set())
+        head = content[max(0, m.start() - 120):m.start()]
         nx = _NEXT_WORD.match(content, m.end())
         after = nx.group(1) if nx and _capword(nx.group(1)) else None
-        before = None
-        if why == SURNAME_WHY:
-            pv = _PREV_WORD.search(content[max(0, m.start() - 60):m.start()])
+        hy = _HYPHEN_PREV.search(head)
+        before = hy.group(1) if hy and _capword(hy.group(1)) else None
+        if before is None and why == SURNAME_WHY:
+            pv = _PREV_WORD.search(head)
             before = pv.group(1) if pv and _namelike(pv.group(1)) else None
         if any(w is not None and _norm_token(w) not in own for w in (after, before)):
+            continue
+        if why == SURNAME_WHY and before is None and _cited(content, m, head, eng, companions):
             continue
         return True
     return False
@@ -885,6 +949,7 @@ name: Beta glossary (selftest fixture)
 | Orsolya Brandvik ("Orsi") | First product owner | start |
 | Morgan Whitlock | Sponsor-adjacent here too | start |
 | Vendor roster | Kestrel Ashdown and Ilse Varnhagen, both vendor developers; Not Otto Pruell | start |
+| Montserrat Quellhorst | Vendor lead; the given name is also a public typeface | start |
 
 ## Program & Planning Vocabulary
 
@@ -1050,6 +1115,9 @@ def _selftest() -> int:
         check("index: vocabulary sections are skipped", "Big Rocks" not in names and "Definition of Ready" not in names)
         check("index: engagement names are allowed", {"Alpha", "Beta", "Gamma", "Motors"} <= allowed)
         check("index: a client row is an alias, not a term", "Beta Motors" not in names)
+        check("index: a typeface first name is public; the full name and surname stay strong",
+              "Montserrat" not in names and names.get("Montserrat Quellhorst") == "strong"
+              and names.get("Quellhorst") == "strong")
 
         # Name parts count only as their own person (2026-09-25 amendment).
         comps = getattr(terms, "companions", {})
@@ -1070,6 +1138,35 @@ def _selftest() -> int:
              "Pete Quillfeather signed off", sur, False),
             ("a first name followed by a dictionary-word surname is another person", "Thaddeus",
              "Thaddeus Smith signed off", first, False),
+            # Compound names, author citations and co-author pairs (second 2026-09-25 amendment).
+            ("a hyphenated compound surname is another person", "Quillfeather",
+             "Avery Worthing-Quillfeather joined", sur, False),
+            ("a hyphenated compound first name is another person", "Thaddeus",
+             "ask Jean-Thaddeus about it", first, False),
+            ("a lowercase hyphen suffix still counts", "Quillfeather", "a Quillfeather-led review", sur, True),
+            ("citation: co-author with '&' and a year", "Quillfeather",
+             "as Womack & Quillfeather (1996) put it", sur, False),
+            ("citation: source and year in parentheses after the surname", "Quillfeather",
+             "Per Quillfeather (OpenClaw 2026), the failure mode", sur, False),
+            ("citation: surname, source and year inside parentheses", "Quillfeather",
+             "the failure mode (Quillfeather, OpenClaw 2026) is tacit", sur, False),
+            ("citation: a year-list inside parentheses", "Quillfeather",
+             "(Lean: Ohno 1988; Womack & Quillfeather 1996; Shingo 1989)", sur, False),
+            ("citation: et al", "Quillfeather", "Quillfeather et al. found the same", sur, False),
+            ("citation: an 'and' pair with a surname-like partner", "Quillfeather",
+             "as Quillfeather and Womack argue", sur, False),
+            ("standalone surname in a parenthetical that is not a citation still counts", "Quillfeather",
+             "Quillfeather (VP, 2026 plan owner) approved it", sur, True),
+            ("a month and year is not a citation", "Quillfeather",
+             "(owner: Quillfeather, March 2026)", sur, True),
+            ("a quarter and year is not a citation", "Quillfeather",
+             "(owner: Quillfeather, Q3 2026)", sur, True),
+            ("a pair with the same engagement's own person is a list of them", "Quillfeather",
+             "Brandvik & Quillfeather own the plan", sur, True),
+            ("a pair with a common given name is not a co-author pair", "Quillfeather",
+             "Quillfeather and Anatole will pair", sur, True),
+            ("a surname after its own given name is never read as a citation", "Quillfeather",
+             "Thaddeus Quillfeather (2019) wrote it", sur, True),
         ]:
             check(f"name part: {label}", _same_person(_pattern(term), text, why, "Beta", comps) == want)
         check("block rule: two first names alone do not block",
@@ -1130,6 +1227,21 @@ def _selftest() -> int:
             {"tool_name": "Write", "cwd": alpha_wt,
              "tool_input": {"file_path": f"{alpha_mem}/y.md", "content": "Notes per Quillfeather's review."}},
             2, False)
+        run("author citations and a compound name carrying a Beta surname: silent",
+            {"tool_name": "Write", "cwd": alpha_wt,
+             "tool_input": {"file_path": f"{alpha_mem}/y.md", "content":
+                            "Lean sources: Womack & Quillfeather (1996); Quillfeather et al. (2019).\n"
+                            "Per Quillfeather (OpenClaw 2026), tacit knowledge is the failure mode "
+                            "(Quillfeather, OpenClaw 2026). Avery Worthing-Quillfeather reviewed it."}},
+            0, False)
+        run("a Beta surname in a parenthetical that is not a citation: blocked",
+            {"tool_name": "Write", "cwd": alpha_wt,
+             "tool_input": {"file_path": f"{alpha_mem}/y.md",
+                            "content": "Quillfeather (VP, 2026 plan owner) approved the scope."}}, 2, False)
+        run("a typeface that is also a Beta first name: silent",
+            {"tool_name": "Write", "cwd": alpha_wt,
+             "tool_input": {"file_path": f"{alpha_mem}/y.md",
+                            "content": "Deck styling: headings in Montserrat, body in Calibri."}}, 0, False)
         run("two Beta first names alone: advisory, not a block",
             {"tool_name": "Write", "cwd": alpha_wt,
              "tool_input": {"file_path": f"{alpha_mem}/y.md",
