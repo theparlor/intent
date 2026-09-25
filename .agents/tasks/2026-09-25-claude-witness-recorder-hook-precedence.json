@@ -1,0 +1,15 @@
+{
+  "id": "2026-09-25-claude-witness-recorder-hook-precedence",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-25-witness-recorder-hook-precedence",
+  "worktree": "../intent-wt-2026-09-25-witness-recorder-hook-precedence",
+  "base_commit": "ec1c40b",
+  "objective": "",
+  "owned_paths": [
+    "hooks/signal-recorder-silent-check.sh"
+  ],
+  "started": "2026-09-25T17:43:54-04:00",
+  "handoff": ".agents/handoffs/2026-09-25-claude-witness-recorder-hook-precedence.md",
+  "landed": "2026-09-25T17:45:23-04:00"
+}

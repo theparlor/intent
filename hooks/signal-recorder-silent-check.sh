@@ -61,8 +61,18 @@ try:
     d = json.loads(sys.stdin.read() or '{}')
     # PreToolUse hook gets tool_input — try to extract a file path
     tool_input = d.get('tool_input', {})
-    path = (tool_input.get('file_path') or tool_input.get('path') or
-            tool_input.get('command', '').split()[1] if tool_input.get('command') else None)
+    # Precedence fix 2026-09-25: the old one-liner read as
+    # (file_path or path or command.split()[1]) if command else None, so
+    # every Edit and Write call resolved to None and the hook skipped all
+    # 30,953 checks between 2026-05-26 and 2026-09-25 as no-context.
+    path = tool_input.get('file_path') or tool_input.get('path') or tool_input.get('notebook_path')
+    if not path and tool_input.get('command'):
+        # Bash: first token that names an existing absolute path.
+        for tok in tool_input['command'].split():
+            tok = tok.strip(chr(39) + chr(34))
+            if tok.startswith('/') and os.path.exists(tok):
+                path = tok
+                break
     if path and os.path.exists(path):
         # Walk up to find a directory containing .intent/
         cur = os.path.dirname(os.path.abspath(path))
