@@ -1,0 +1,16 @@
+{
+  "id": "2026-09-24-claude-cross-engagement-write-guard",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-24-cross-engagement-write-guard",
+  "worktree": "../intent-wt-2026-09-24-cross-engagement-write-guard",
+  "base_commit": "4179813",
+  "objective": "PreToolUse guard: warn on cross-engagement repo writes, block other engagements' names in engagement project memory (SIG-0026)",
+  "owned_paths": [
+    "hooks/cross-engagement-write-guard.sh",
+    "hooks/tests/test_cross_engagement_write_guard.py"
+  ],
+  "started": "2026-09-24T23:23:19-04:00",
+  "handoff": ".agents/handoffs/2026-09-24-claude-cross-engagement-write-guard.md",
+  "landed": "2026-09-24T23:36:23-04:00"
+}
