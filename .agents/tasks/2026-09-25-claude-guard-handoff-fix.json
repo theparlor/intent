@@ -1,0 +1,15 @@
+{
+  "id": "2026-09-25-claude-guard-handoff-fix",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-25-guard-handoff-fix",
+  "worktree": "../intent-wt-2026-09-25-guard-handoff-fix",
+  "base_commit": "d33afa3",
+  "objective": "Correct the collisions totals in the guard-citation-surnames handoff",
+  "owned_paths": [
+    ".agents/handoffs/2026-09-25-claude-guard-citation-surnames.md"
+  ],
+  "started": "2026-09-25T08:58:27-04:00",
+  "handoff": ".agents/handoffs/2026-09-25-claude-guard-handoff-fix.md",
+  "landed": "2026-09-25T08:58:35-04:00"
+}
