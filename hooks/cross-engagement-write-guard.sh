@@ -49,7 +49,20 @@
 #   WEAK terms: a first name, a short surname, a team name built only of dictionary words
 #   ("North Star"), a lone word from a neutral section. One weak hit is an advisory; two or
 #   more distinct weak hits block, because a memory that names two of another engagement's
-#   people or teams is about that engagement.
+#   people or teams is about that engagement, EXCEPT that first names corroborate and never
+#   convict alone: two or more weak hits that are all first names stay an advisory. A block
+#   needs a strong hit, or two weak hits of which at least one is not a first name.
+# - A name PART counts only as that person. A first name followed by a different surname
+#   ("Jason Lindmeyer" against a glossary's "Jason Davis"), or a surname preceded by a
+#   different given name ("Maria Alves" against "Flavia Alves"), is a different person and is
+#   not a hit, and so is a surname used as someone's first name ("Russell Canning" against
+#   "Cian Russell"). Any capitalized word right after the part marks another person; before
+#   a surname, a common given name (/usr/share/dict/propernames) or a non-dictionary word
+#   does. The part still counts standing alone ("ask Jason", "per Alves", "Dr. Alves") or
+#   beside its own person's other name parts. Added 2026-09-25 (WS-DDR-148 amendment) when the JCI
+#   glossary grew to about 200 people, on Brien's rule that glossaries and lists of humans
+#   always grow: common first names and surnames from a large roster otherwise collide with
+#   every other engagement's own people.
 # - Never flagged: any form of any engagement's name (folder name, its CamelCase parts, the
 #   aliases in the central glossary's engagement table, alias sections, and a glossary row
 #   that defines the client itself); a term the memory's own engagement glossary uses anywhere
@@ -79,6 +92,13 @@
 #   on a Bash command (never inside a heredoc body, which is data). Logged.
 # - Fails open: an internal error is logged and the call is allowed. A write that touches no
 #   engagement and no memory dir costs two path regexes and no file reads.
+# - `--collisions [NAME]` is the catch-net for glossary changes: it scans every engagement's own
+#   markdown (from-client/ and nested worktrees excluded, 400 files each) against every other
+#   engagement's terms, or only NAME's, and prints would-block and advisory counts per
+#   engagement with the terms that cause them. Run it with NAME before landing a glossary that
+#   adds people: a rise in would-blocks elsewhere means a name part collides with another
+#   engagement's own people. Added 2026-09-25 after a JCI People table landed Turnberry
+#   colleague names as JCI identity and only this kind of sweep showed it.
 # - `--selftest` builds a temp Workspaces with fixture engagements (Alpha, Beta, Gamma) and runs
 #   the decision table plus end-to-end stdin payloads through this file. It also replays the
 #   real 2026-09-24 case when that material is on this machine: the Subaru-side copy of the
@@ -103,6 +123,7 @@ KINDS = ("Consulting", "Advising")
 SIGNAL = ("Work/Consulting/Engagements/JohnsonControls/.intent/signals/"
           "SIG-0026-session-opened-in-jci-folder-did-another-engagements-work-2026-09-24.md")
 DICT_PATH = "/usr/share/dict/words"
+PROPER_PATH = "/usr/share/dict/propernames"
 WARN_TTL = 7 * 86400
 MAX_SOURCE_BYTES = 200_000
 
@@ -218,6 +239,11 @@ TLD = re.compile(r"\.(?:com|ai|net|org|io)$", re.I)
 # Sentence words that can open a capitalized run in a roster cell ("Not Winston ...").
 LEADING = {"A", "An", "And", "The", "Not", "Left", "With", "For", "Both", "Also", "Per", "Via",
            "Former", "Ex", "Was", "Is", "Reports", "Replaced", "Backup", "See", "Plus", "Or"}
+HONORIFICS = {"Dr", "Mr", "Mrs", "Ms", "Mx", "Prof", "Sir", "Dame", "Rev"}
+FIRST_WHYS = ("a person's first name", "a person, first name only")
+SURNAME_WHY = "a person's surname"
+_NEXT_WORD = re.compile(r"\s+([A-Z][A-Za-z'.-]*)")
+_PREV_WORD = re.compile(r"([A-Z][A-Za-z'.-]*)\s+$")
 CALENDAR = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
             "january", "february", "march", "april", "may", "june", "july", "august",
             "september", "october", "november", "december"}
@@ -229,7 +255,7 @@ PUBLIC = {"jira", "confluence", "rovo", "atlassian", "miro", "slack", "teams", "
           "azure", "aws", "gcp", "linkedin", "notion", "figma", "lucid", "lucidchart", "visio",
           "tableau", "powerbi", "smartsheet", "asana", "trello", "loom", "screenpipe", "cowork",
           "dynamics", "oracle", "sap", "adobe", "apple", "mac", "macos", "windows", "intune",
-          "crowdstrike", "zscaler", "planview", "agiletest", "xray"}
+          "crowdstrike", "zscaler", "planview", "agiletest", "xray", "box", "dropbox"}
 # Fallback when the system word list is missing: enough to keep common words from counting.
 BUILTIN_WORDS = set("""a about above after again all also an and any are as at back base be been
 before being big board business by can capacity change client day delivery design do done down
@@ -243,6 +269,19 @@ three through time to today too two under up us use value very want was way we w
 when where which while who why will with work would year you your""".split())
 
 _DICT = None
+_PROPER = None
+
+
+def _proper() -> set:
+    """Common given names, from the system list; empty if it is missing."""
+    global _PROPER
+    if _PROPER is None:
+        try:
+            with open(PROPER_PATH, encoding="utf-8", errors="replace") as fh:
+                _PROPER = {w.strip() for w in fh if w.strip()}
+        except Exception:
+            _PROPER = set()
+    return _PROPER
 
 
 def _dict() -> set:
@@ -416,6 +455,12 @@ def build_index():
         return not _generic(t) and _norm_token(t) not in allowed
 
     terms = {}
+    companions = {}
+
+    def remember(eng, toks):
+        parts = {_norm_token(t) for t in toks}
+        for t in parts:
+            companions.setdefault((eng, t), set()).update(parts)
 
     def add(term, eng, weight, why):
         term = term.strip()
@@ -430,6 +475,7 @@ def build_index():
             d = [t for t in toks if distinct(t)]
             titled = all(t[:1].isupper() for t in toks)
             if people and 2 <= len(toks) <= 3 and titled and d:
+                remember(name, toks)
                 add(a, name, "strong", "a person")
                 last, given = _norm_token(toks[-1]), _norm_token(toks[0])
                 if distinct(last):
@@ -458,13 +504,58 @@ def build_index():
                         toks = toks[1:]
                     if len(toks) >= 2 and distinct(toks[-1]) and len(_norm_token(toks[-1])) >= 3:
                         add(" ".join(toks), name, "strong", "a person")
-    return list(terms.values()), allowed, texts
+    out = _Terms(terms.values())
+    out.companions = companions
+    return out, allowed, texts
+
+
+class _Terms(list):
+    """The term list, carrying {(engagement, name part): every part of the names it belongs to}."""
+    companions = {}
+
+
+def _capword(tok: str) -> bool:
+    """A capitalized word that could be part of a name: not an acronym, title or weekday."""
+    t = _norm_token(tok)
+    return (len(t) >= 2 and not t.isupper() and t not in LEADING and t not in HONORIFICS
+            and t.lower() not in CALENDAR)
+
+
+def _namelike(tok: str) -> bool:
+    """A capitalized token that reads as a given name: a common one, or not a dictionary word."""
+    t = _norm_token(tok)
+    return _capword(tok) and (t in _proper() or not _is_word(t.lower()))
+
+
+def _same_person(pat, content: str, why: str, eng: str, companions) -> bool:
+    """For a first name or surname term: True if some match stands alone or beside its own
+    person's other name parts, False if every match sits inside a different person's name."""
+    if why not in FIRST_WHYS and why != SURNAME_WHY:
+        return True
+    for m in pat.finditer(content):
+        own = companions.get((eng, _norm_token(m.group(0))), set())
+        nx = _NEXT_WORD.match(content, m.end())
+        after = nx.group(1) if nx and _capword(nx.group(1)) else None
+        before = None
+        if why == SURNAME_WHY:
+            pv = _PREV_WORD.search(content[max(0, m.start() - 60):m.start()])
+            before = pv.group(1) if pv and _namelike(pv.group(1)) else None
+        if any(w is not None and _norm_token(w) not in own for w in (after, before)):
+            continue
+        return True
+    return False
+
+
+def _is_block(strong, weak) -> bool:
+    """A strong hit, or two weak hits of which at least one is not a first name."""
+    return bool(strong) or (len(weak) >= 2 and any(w[2] not in FIRST_WHYS for w in weak))
 
 
 def scan(content: str, own: str, index=None):
     """Foreign glossary terms named in content, judged against engagement `own`.
     Returns (strong_hits, weak_hits), each a list of (term, engagement, why)."""
     terms, _allowed, texts = index or build_index()
+    companions = getattr(terms, "companions", {})
     own_text = texts.get(own, "")
     strong, weak, seen = [], [], set()
     for term, eng, weight, why in terms:
@@ -472,6 +563,8 @@ def scan(content: str, own: str, index=None):
             continue
         pat = _pattern(term)
         if not pat.search(content) or pat.search(own_text):
+            continue
+        if not _same_person(pat, content, why, eng, companions):
             continue
         seen.add(term)
         (strong if weight == "strong" else weak).append((term, eng, why))
@@ -692,12 +785,14 @@ def _memory_block_text(eng, strong, weak, path) -> str:
 
 
 def _memory_advice_text(eng, weak, path) -> str:
-    t, e, why = weak[0]
+    named = ", ".join(f"\"{t}\" ({e} glossary: {why})" for t, e, why in weak)
+    others = sorted({e for _t, e, _w in weak})
     return (f"ADVISORY (cross-engagement-write-guard, not a block): this write to the {eng[1]} project "
-            f"memory ({path}) names \"{t}\", which the {e} glossary lists as {why} and {eng[1]}'s glossary "
-            f"does not use. If it means {e}'s, reword it or move the lesson to {e}'s project memory; "
-            f"one more name from another engagement in the same write would block. If it is {eng[1]} "
-            f"vocabulary too, add it to {primary_of(eng)}/glossary.md. Signal: {SIGNAL}")
+            f"memory ({path}) names {named}, which {eng[1]}'s glossary does not use. If they mean "
+            f"{' or '.join(others)}'s people, reword or move the lesson to that project memory; a surname, "
+            f"full name, team or product from another engagement in the same write would block (first "
+            f"names alone never do). If they are {eng[1]}'s own people too, add them to "
+            f"{primary_of(eng)}/glossary.md. Signal: {SIGNAL}")
 
 
 def _handle(payload: dict) -> int:
@@ -712,7 +807,7 @@ def _handle(payload: dict) -> int:
         _log(f"BYPASS inline session={session_id}")
         return 0
     result = decide(payload)
-    blocks = [m for m in result["memory"] if m[2] or len(m[3]) >= 2]
+    blocks = [m for m in result["memory"] if _is_block(m[2], m[3])]
     if blocks:
         for _memdir, eng, strong, weak, _path in blocks:
             _log(f"BLOCK memory eng={eng[1]} strong={len(strong)} weak={len(weak)} "
@@ -721,7 +816,8 @@ def _handle(payload: dict) -> int:
         return 2
     notes, user_lines = [], []
     for _memdir, eng, _strong, weak, path in result["memory"]:
-        _log(f"ADVISE memory eng={eng[1]} weak=1 from={weak[0][1]} session={session_id}")
+        _log(f"ADVISE memory eng={eng[1]} weak={len(weak)} from={sorted({e for _t, e, _w in weak})} "
+             f"session={session_id}")
         notes.append(_memory_advice_text(eng, weak, path))
     for session, target, path in result["mismatches"]:
         if _warned(session_id, target[1]):
@@ -883,7 +979,7 @@ def _selftest() -> int:
         s = len(mem[0][2]) if mem else 0
         w = len(mem[0][3]) if mem else 0
         check("REAL replay 2026-09-24: JCI app worktree, the Subaru lesson into JCI memory: blocked",
-              s or w >= 2, f"{s} strong, {w} weak hits")
+              bool(mem) and _is_block(mem[0][2], mem[0][3]), f"{s} strong, {w} weak hits")
         r = decide({"tool_name": "Write", "cwd": cwd, "tool_input": {"file_path": lesson, "content": text}})
         check("REAL replay: the same lesson into Subaru's own memory, from the JCI session: allowed",
               not r["memory"], f"{len(r['memory'])} memory findings")
@@ -893,7 +989,7 @@ def _selftest() -> int:
                 print(f"SKIP real repaired memory {f}: not on this machine")
                 continue
             s_hits, w_hits = scan(_read(p), REAL_SESSION.rsplit("/", 1)[1], index)
-            check(f"REAL repaired JCI memory stays writable: {f}", not s_hits and len(w_hits) < 2,
+            check(f"REAL repaired JCI memory stays writable: {f}", not _is_block(s_hits, w_hits),
                   f"{len(s_hits)} strong, {len(w_hits)} weak")
     else:
         print("SKIP real 2026-09-24 replay: the Subaru lesson or the glossaries are not on this machine")
@@ -955,6 +1051,32 @@ def _selftest() -> int:
         check("index: engagement names are allowed", {"Alpha", "Beta", "Gamma", "Motors"} <= allowed)
         check("index: a client row is an alias, not a term", "Beta Motors" not in names)
 
+        # Name parts count only as their own person (2026-09-25 amendment).
+        comps = getattr(terms, "companions", {})
+        first, sur = FIRST_WHYS[0], SURNAME_WHY
+        for label, term, text, why, want in [
+            ("a first name beside its own surname counts", "Thaddeus", "Thaddeus Quillfeather", first, True),
+            ("a first name followed by a different surname is another person", "Thaddeus",
+             "Pairing with Thaddeus Brightwater today", first, False),
+            ("a first name standing alone counts", "Thaddeus", "ask Thaddeus about it", first, True),
+            ("a surname after its own given name counts", "Quillfeather", "Thaddeus Quillfeather", sur, True),
+            ("a surname after a different given name is another person", "Quillfeather",
+             "Winnifred Quillfeather joined", sur, False),
+            ("a surname after an honorific counts", "Quillfeather", "Dr. Quillfeather said", sur, True),
+            ("a surname after a sentence word counts", "Quillfeather", "Then Quillfeather said", sur, True),
+            ("a surname used as someone's first name is another person", "Quillfeather",
+             "Quillfeather Canning signed off", sur, False),
+            ("a surname after a common given name that is also a word is another person", "Quillfeather",
+             "Pete Quillfeather signed off", sur, False),
+            ("a first name followed by a dictionary-word surname is another person", "Thaddeus",
+             "Thaddeus Smith signed off", first, False),
+        ]:
+            check(f"name part: {label}", _same_person(_pattern(term), text, why, "Beta", comps) == want)
+        check("block rule: two first names alone do not block",
+              not _is_block([], [("Thaddeus", "Beta", first), ("Orsi", "Beta", FIRST_WHYS[1])]))
+        check("block rule: a first name plus a team blocks",
+              _is_block([], [("Orsi", "Beta", FIRST_WHYS[1]), ("Harbor Light", "Beta", "a team or product name")]))
+
         me = os.path.abspath(__file__)
 
         def run(label, payload, want_rc, want_out, want_warn=False, extra_env=None):
@@ -999,6 +1121,22 @@ def _selftest() -> int:
             {"tool_name": "MultiEdit", "cwd": alpha_wt,
              "tool_input": {"file_path": f"{alpha_mem}/x.md",
                             "edits": [{"old_string": "a", "new_string": "Thaddeus Quillfeather said so."}]}},
+            2, False)
+        run("a Beta first name inside another person's full name: silent",
+            {"tool_name": "Write", "cwd": alpha_wt,
+             "tool_input": {"file_path": f"{alpha_mem}/y.md",
+                            "content": "Pairing with Thaddeus Brightwater and Winnifred Quillfeather."}}, 0, False)
+        run("a Beta surname standing alone: blocked",
+            {"tool_name": "Write", "cwd": alpha_wt,
+             "tool_input": {"file_path": f"{alpha_mem}/y.md", "content": "Notes per Quillfeather's review."}},
+            2, False)
+        run("two Beta first names alone: advisory, not a block",
+            {"tool_name": "Write", "cwd": alpha_wt,
+             "tool_input": {"file_path": f"{alpha_mem}/y.md",
+                            "content": "Retro: Thaddeus and Orsi both flagged the date."}}, 0, True, True)
+        run("a Beta first name plus a Beta team: blocked",
+            {"tool_name": "Write", "cwd": alpha_wt,
+             "tool_input": {"file_path": f"{alpha_mem}/y.md", "content": "Orsi owns the Harbor Light backlog."}},
             2, False)
         run("a non-engagement (root) memory is out of scope",
             {"tool_name": "Write", "cwd": WORKSPACES,
@@ -1071,9 +1209,46 @@ def _selftest() -> int:
     return 0 if bad == 0 else 1
 
 
+def _collisions(only=None) -> int:
+    """Scan each engagement's own markdown against the other engagements' terms."""
+    index = build_index()
+    counts, causes = {}, {}
+    for name, (kind, _g) in sorted(_engagements().items()):
+        base = f"{WORKSPACES}/Work/{kind}/Engagements/{name}"
+        files = []
+        for root, dirs, fnames in os.walk(base):
+            dirs[:] = [d for d in dirs if d not in (".git", "from-client", ".claude") and "-wt-" not in d]
+            files += [os.path.join(root, f) for f in fnames if f.endswith(".md")]
+        n = b = a = 0
+        for f in sorted(files)[:400]:
+            strong, weak = scan(_read(f)[:60000], name, index)
+            if only:
+                strong = [x for x in strong if x[1] == only]
+                weak = [x for x in weak if x[1] == only]
+            n += 1
+            if _is_block(strong, weak):
+                b += 1
+            elif weak:
+                a += 1
+            for t, e, _w in strong + weak:
+                causes[(t, e)] = causes.get((t, e), 0) + 1
+        counts[name] = (n, b, a)
+    print(f"collisions against {'the ' + only + ' glossary' if only else 'every other glossary'}")
+    for name, (n, b, a) in counts.items():
+        if n:
+            print(f"  {name:24} files {n:4}  would-block {b:3}  advisory {a:3}")
+    print("terms causing hits (files):")
+    for (t, e), c in sorted(causes.items(), key=lambda kv: -kv[1])[:30]:
+        print(f"  {c:4}  {t}  ({e})")
+    return 0
+
+
 def main() -> int:
     if "--selftest" in sys.argv:
         return _selftest()
+    if "--collisions" in sys.argv:
+        rest = sys.argv[sys.argv.index("--collisions") + 1:]
+        return _collisions(rest[0] if rest else None)
     if os.environ.get(BYPASS) == "1":
         _log(f"BYPASS env session={os.environ.get('CLAUDE_SESSION_ID', 'unknown')}")
         return 0
