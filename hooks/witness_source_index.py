@@ -72,6 +72,20 @@ When absent, the name is the product's directory name, with a session-kit worktr
 suffix removed ("intent-wt-2026-09-25-task" reads as "intent") and a Claude desktop
 worktree read as the repo that holds it. Matching ignores case.
 
+No actions of its own (the witness_actions key)
+-----------------------------------------------
+WS-DDR-150 asks every product that acts to report its actions. A product with nothing
+that acts (a content or methodology repo: markdown only, no scripts, hooks, jobs or
+servers) says so, with a named reason, at column 0 in .intent/INTENT.md:
+
+  witness_actions: none (content repo, markdown only, no scripts hooks jobs or servers)
+
+The reason in parentheses is required; a bare "witness_actions: none" is not a
+declaration and the product stays silent until someone names why. The report shows such
+a product as "no-actions" with its reason instead of "silent", and the hook skips it
+(telemetry detection no-actions-declared). Events still win: a product that declares no
+actions but has Witness events in the window reads as active.
+
 The hook imports the small pure functions below (names, lookup, timestamps); keep this
 module's top-level imports light, because every Write and Edit pays for them.
 """
@@ -92,6 +106,8 @@ HEAD_BYTES = 4096
 DAY_S = 86400
 
 DECLARES_RE = re.compile(r"^(lambda_settings|autonomy_grants):", re.M)
+NO_ACTIONS_RE = re.compile(r"^witness_actions:[ \t]*(.*)$", re.M)
+_NO_ACTIONS_VALUE = re.compile(r"^none\s*\((.*\S.*)\)\s*(#.*)?$", re.I)
 _WT_SUFFIX = re.compile(r"^(.+?)-wt-.+$")
 _TS_RE = re.compile(
     r"(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})(\.\d+)?\s*(Z|z|[+-]\d{2}:?\d{2})?$")
@@ -189,6 +205,24 @@ def declared_names(intent_md_text: str) -> list[str]:
                 names.append(n)
         return names
     return []
+
+
+def declared_no_actions(intent_md_text: str) -> str | None:
+    """The named reason from a 'witness_actions: none (<reason>)' line at column 0, else None.
+
+    None also when the key is absent, its value is not 'none', or the reason is empty:
+    only a named reason takes a product off the silent list."""
+    m = NO_ACTIONS_RE.search(intent_md_text or "")
+    if not m:
+        return None
+    value = m.group(1).strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+        value = value[1:-1].strip()
+    v = _NO_ACTIONS_VALUE.match(value)
+    if not v:
+        return None
+    reason = v.group(1).strip()
+    return reason or None
 
 
 def default_name(product_root: str) -> str:
@@ -505,24 +539,32 @@ def report(roots: list[str], as_json: bool = False) -> int:
     rows = []
     for root in _declaring_products(roots):
         with open(os.path.join(root, ".intent", "INTENT.md"), "r", encoding="utf-8", errors="replace") as fh:
-            names, how = product_names(root, fh.read())
+            text = fh.read()
+        names, how = product_names(root, text)
+        no_actions = declared_no_actions(text)
         hit = lookup(index, names)
         last = hit["last_event_epoch"]
         silent = last is None or now - last > WINDOW_DAYS * DAY_S
+        verdict = "active" if not silent else ("no-actions" if no_actions else "silent")
         rows.append({"product": os.path.basename(root), "root": root, "names": names, "names_from": how,
                      "last_event": iso(last), "count_30d": hit["count_30d"],
-                     "verdict": "silent" if silent else "active"})
-    rows.sort(key=lambda r: (r["verdict"] != "silent", r["product"]))
+                     "verdict": verdict, "no_actions_reason": no_actions})
+    order = {"silent": 0, "no-actions": 1, "active": 2}
+    rows.sort(key=lambda r: (order.get(r["verdict"], 3), r["product"]))
     if as_json:
         print(json.dumps({"index_built_at": index.get("built_at"), "rows": rows}, indent=2))
         return 0
     print(f"Witness index built {index.get('built_at')}; window {WINDOW_DAYS} days; "
-          f"{sum(r['verdict'] == 'silent' for r in rows)} of {len(rows)} declaring products silent\n")
+          f"{sum(r['verdict'] == 'silent' for r in rows)} of {len(rows)} declaring products silent; "
+          f"{sum(r['verdict'] == 'no-actions' for r in rows)} declare no actions of their own\n")
     print("| product | names checked | last Witness event | 30-day count | verdict |")
     print("|---|---|---|---|---|")
     for r in rows:
         names = ", ".join(r["names"]) + (" (declared)" if r["names_from"] == "declared" else "")
-        print(f"| {r['product']} | {names} | {r['last_event'] or 'never'} | {r['count_30d']} | {r['verdict']} |")
+        verdict = r["verdict"]
+        if verdict == "no-actions":
+            verdict = f"no-actions ({r['no_actions_reason']})"
+        print(f"| {r['product']} | {names} | {r['last_event'] or 'never'} | {r['count_30d']} | {verdict} |")
     return 0
 
 

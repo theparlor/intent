@@ -218,6 +218,45 @@ def test_11_report_table():
     assert rows["cortege"]["verdict"] == "active" and rows["quiet"]["verdict"] == "silent", rows
 
 
+
+def test_12_declared_no_actions_parsing():
+    f = wsi.declared_no_actions
+    assert f("witness_actions: none (content repo, markdown only)\n") == "content repo, markdown only"
+    assert f("---\nx: 1\nwitness_actions: None (methodology repo; no scripts)  # why\n---\n") == \
+        "methodology repo; no scripts"
+    assert f('witness_actions: "none (quoted reason)"\n') == "quoted reason"
+    assert f("witness_actions: none\n") is None          # a reason is required
+    assert f("witness_actions: none ()\n") is None       # an empty reason is no reason
+    assert f("witness_actions: none (   )\n") is None
+    assert f("witness_actions: some (it acts)\n") is None
+    assert f("  witness_actions: none (indented is not column 0)\n") is None
+    assert f("name: x\n") is None and f("") is None and f(None) is None
+
+
+def test_13_report_no_actions_verdict():
+    root = os.path.join(TMP, "products-na")
+    for name, body in (("content", "lambda_settings:\n  a: 1\nwitness_actions: none (content repo, markdown only)\n"),
+                       ("bare", "lambda_settings:\n  a: 1\nwitness_actions: none\n"),
+                       ("cortege", "lambda_settings:\n  a: 1\nwitness_actions: none (declared but it emits)\n")):
+        os.makedirs(os.path.join(root, name, ".intent"))
+        with open(os.path.join(root, name, ".intent", "INTENT.md"), "w") as fh:
+            fh.write(body)
+    env = dict(os.environ, HOME=HOME)
+    p = subprocess.run(["/usr/bin/python3", BUILDER, "--report", root, "--json"],
+                       capture_output=True, text=True, env=env)
+    assert p.returncode == 0, p.stderr
+    rows = {r["product"]: r for r in json.loads(p.stdout)["rows"]}
+    assert rows["content"]["verdict"] == "no-actions", rows["content"]
+    assert rows["content"]["no_actions_reason"] == "content repo, markdown only", rows["content"]
+    assert rows["bare"]["verdict"] == "silent" and rows["bare"]["no_actions_reason"] is None, rows["bare"]
+    assert rows["cortege"]["verdict"] == "active", rows["cortege"]  # events win over the declaration
+    p = subprocess.run(["/usr/bin/python3", BUILDER, "--report", root],
+                       capture_output=True, text=True, env=env)
+    assert p.returncode == 0, p.stderr
+    assert "1 of 3 declaring products silent; 1 declare no actions of their own" in p.stdout, p.stdout
+    assert "| no-actions (content repo, markdown only) |" in p.stdout, p.stdout
+
+
 def main():
     setup_module()
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]

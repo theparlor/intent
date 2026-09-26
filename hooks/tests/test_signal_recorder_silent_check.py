@@ -65,6 +65,10 @@ def setup_module(_module=None):
                               extra="witness_source_system:\n  - gamma-src\n  - \"delta-src\"\nother: 1\n")
     P["wt"] = make_product("wtprod-wt-2026-09-25-some-task", declares=True, sig_age_days=None)
     P["dedupe"] = make_product("dedupe", declares=True, sig_age_days=None)
+    P["noact"] = make_product("noact", declares=True, sig_age_days=None,
+                              extra="witness_actions: none (content repo, markdown only)\n")
+    P["barenone"] = make_product("barenone", declares=True, sig_age_days=None,
+                                 extra="witness_actions: none\n")
     write_index()
 
 
@@ -334,6 +338,20 @@ def test_20_latency_under_budget():
     print(f"      latency: median {med:.1f} ms, max {max(times):.1f} ms over {len(times)} full-path runs "
           f"(budget {LATENCY_BUDGET_MS} ms for the whole hook)")
     assert med < LATENCY_BUDGET_MS, times
+
+
+
+def test_21_no_actions_declared_with_reason_is_skipped():
+    r = run({"file_path": P["noact"][1], "content": "y"}, "Write", "s21")
+    _check(r, "no-actions-declared", False)
+    assert r["row"]["outcome"] == "skip" and r["row"]["reason"] == "content repo, markdown only", r["row"]
+    assert r["stdout"] == "", r["stdout"]
+
+
+def test_22_bare_none_without_reason_still_warns():
+    r = run({"file_path": P["barenone"][1], "content": "y"}, "Write", "s22")
+    _check(r, "silent-recorder", True)
+    assert "witness_actions: none (<named reason>)" in r["ctx"], r["ctx"]
 
 
 def main():

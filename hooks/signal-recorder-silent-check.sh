@@ -14,6 +14,10 @@
 #   2. Engagement products (Work/<kind>/Engagements/<Client>/...) are exempt.
 #   3. Only products whose .intent/INTENT.md declares lambda_settings: or
 #      autonomy_grants: at column 0 are checked.
+#   3b. A product that declares no actions of its own, with a named reason
+#      ("witness_actions: none (<reason>)" at column 0 in INTENT.md, a content or
+#      methodology repo), is skipped: detection no-actions-declared. A bare "none"
+#      with no reason is not a declaration (WS-DDR-150 backfill, QMT-01M3F5JYA4643ANV7GPPRJDPZR).
 #   4. The product's Witness names: INTENT.md may declare
 #          witness_source_system: fieldbook
 #          witness_source_system: [signalbox, exchange]
@@ -33,6 +37,7 @@
 #
 # Telemetry detections (one JSONL row per call, $HOME/.claude/logs/signal-recorder-silent.jsonl):
 #   no-context, engagement-exempt, no-lambda-declaration      skip, as before
+#   no-actions-declared   the product names why it has no actions (step 3b); skip
 #   recorder-active       a Witness event within 30 days (was: a SIG-*.md within 30 days)
 #   silent-recorder       no Witness event within 30 days (outcome warn, or
 #                         warn-suppressed when this session was already told)
@@ -209,6 +214,11 @@ def _handle(raw, now):
     if not wsi.declares_autonomy(intent_md):
         _telemetry(now, work_dir=work_dir, detection="no-lambda-declaration", outcome="skip")
         return 0
+    no_actions = wsi.declared_no_actions(intent_md) if hasattr(wsi, "declared_no_actions") else None
+    if no_actions:
+        _telemetry(now, work_dir=work_dir, detection="no-actions-declared", outcome="skip",
+                   reason=no_actions[:200])
+        return 0
     names, names_from = wsi.product_names(work_dir, intent_md)
     index_path = wsi.index_path()
     index, problem = wsi.load_index(index_path)
@@ -246,7 +256,8 @@ def _handle(raw, now):
         f"have it emit Witness events: append event lines to {work_dir}/.intent/events/events.jsonl "
         f"(Witness ingests Core/**/.intent/events/events*.jsonl daily at 06:00, under the directory "
         f"name) or send them through a Witness adapter. If it already reports under another name, "
-        f"declare witness_source_system: in its INTENT.md. Warn-only: the tool call proceeds, and this "
+        f"declare witness_source_system: in its INTENT.md. If it has no actions of its own (a content "
+        f"or methodology repo), declare witness_actions: none (<named reason>) there instead. Warn-only: the tool call proceeds, and this "
         f"note appears once per session per product."
     )
     user_line = (f"Witness recorder check: {product} declares autonomy settings but sent Witness no "
