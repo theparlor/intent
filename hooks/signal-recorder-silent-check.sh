@@ -133,10 +133,36 @@ def _telemetry(now, **row):
     _append(TELEMETRY_LOG, json.dumps(out, separators=(",", ":")))
 
 
+_SCOPE_ROOTS = (("Core", "products"), ("Core", "frameworks"), ("Home",))
+
+
+def _tree_product_root(path):
+    """The product folder a path sits in, read from its place in the tree (WS-DDR-150 scope).
+
+    Core/products/<name>, Core/frameworks/<name> and Home/<name> are products whether or
+    not they carry a .intent/ directory. Names starting with "_" or "." (the intake area,
+    hidden folders) are not products. Returns "" when the path is not under one of them.
+    """
+    parts = os.path.normpath(os.path.abspath(path)).split(os.sep)
+    for i in range(len(parts) - 1, -1, -1):
+        for root in _SCOPE_ROOTS:
+            n = len(root)
+            if tuple(parts[i:i + n]) == root and len(parts) > i + n:
+                name = parts[i + n]
+                if name and not name.startswith(("_", ".")) and len(parts) > i + n + 1:
+                    return os.sep.join(parts[:i + n + 1]) or os.sep
+    return ""
+
+
 def _resolve_product(tool_input):
-    """Nearest ancestor of the tool's target path that holds a .intent/ directory."""
+    """(product_dir, in_rule_scope) for the tool's target path.
+
+    A path under Core/products, Core/frameworks or Home resolves to its product folder and
+    is in scope of WS-DDR-150 (everything built). Anything else falls back to the nearest
+    ancestor holding a .intent/ directory, gated as before on an autonomy declaration.
+    """
     if not isinstance(tool_input, dict):
-        return ""
+        return "", False
     path = tool_input.get("file_path") or tool_input.get("path") or tool_input.get("notebook_path")
     if not path and isinstance(tool_input.get("command"), str):
         for tok in tool_input["command"].split():
@@ -145,13 +171,16 @@ def _resolve_product(tool_input):
                 path = tok
                 break
     if not isinstance(path, str) or not path or not os.path.exists(path):
-        return ""
+        return "", False
+    tree_root = _tree_product_root(path)
+    if tree_root:
+        return tree_root, True
     cur = os.path.dirname(os.path.abspath(path))
     while cur and cur != "/":
         if os.path.isdir(os.path.join(cur, ".intent")):
-            return cur
+            return cur, False
         cur = os.path.dirname(cur)
-    return ""
+    return "", False
 
 
 def _is_engagement(work_dir):
@@ -225,7 +254,7 @@ def _handle(raw, now):
         payload = {}
     session_id = payload.get("session_id") or os.environ.get("CLAUDE_SESSION_ID") or ""
     SESSION["id"] = session_id
-    work_dir = _resolve_product(payload.get("tool_input"))
+    work_dir, in_scope = _resolve_product(payload.get("tool_input"))
     if not work_dir:
         _telemetry(now, work_dir="", detection="no-context", outcome="skip")
         return 0
@@ -242,7 +271,8 @@ def _handle(raw, now):
     sys.path.insert(0, HOOK_DIR)
     import witness_source_index as wsi
 
-    if not wsi.declares_autonomy(intent_md):
+    declares = wsi.declares_autonomy(intent_md)
+    if not declares and not in_scope:
         _telemetry(now, work_dir=work_dir, detection="no-lambda-declaration", outcome="skip")
         return 0
     no_actions = wsi.declared_no_actions(intent_md) if hasattr(wsi, "declared_no_actions") else None
@@ -309,7 +339,7 @@ def _handle(raw, now):
 
     last_txt = "never" if last is None else f"{wsi.iso(last)}, {last_days} days ago"
     _append(AUDIT_LOG, f"[{_now_iso(now)}] SILENT-RECORDER work_dir={work_dir} names={','.join(names)} "
-                       f"last_event={last_txt.replace(' ', '_')} declares_lambda=1")
+                       f"last_event={last_txt.replace(' ', '_')} declares_lambda={1 if declares else 0}")
     if _already_warned(session_id, work_dir, now):
         _telemetry(now, detection="silent-recorder", outcome="warn-suppressed", **base)
         return 0
@@ -317,8 +347,9 @@ def _handle(raw, now):
     product = os.path.basename(work_dir)
     how = "declared in INTENT.md" if names_from == "declared" else "the directory name, no witness_source_system declared"
     context = (
-        f"[Witness recorder check, WS-DDR-098] {product} ({work_dir}) declares autonomy settings "
-        f"in .intent/INTENT.md, but Witness holds no event from it in the last {STALE_DAYS} days. "
+        f"[Witness recorder check, WS-DDR-150] {product} ({work_dir}) "
+        f"{'declares autonomy settings in .intent/INTENT.md' if declares else 'is a product, and everything built reports its actions to Witness'}, "
+        f"but Witness holds no event from it in the last {STALE_DAYS} days. "
         f"Names checked: {', '.join(names)} ({how}). Last event: {last_txt}. "
         f"Index built {index.get('built_at')} from the Witness store. "
         f"Everything built reports its actions to Witness (WS-DDR-150). If this session changes what "
@@ -330,8 +361,8 @@ def _handle(raw, now):
         f"or methodology repo), declare witness_actions: none (<named reason>) there instead. Warn-only: the tool call proceeds, and this "
         f"note appears once per session per product."
     )
-    user_line = (f"Witness recorder check: {product} declares autonomy settings but sent Witness no "
-                 f"event in {STALE_DAYS} days (last: {last_txt}).")
+    user_line = (f"Witness recorder check: {product} sent Witness no event in {STALE_DAYS} days "
+                 f"(last: {last_txt}); WS-DDR-150 asks every product to report its actions.")
     print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": context},
                       "systemMessage": user_line}))
     return 0

@@ -13,7 +13,8 @@ Two regressions under test.
    additionalContext note, index failure modes, the detached refresh and latency.
 
 Expectation change from the seven-case version: "warned" used to mean WS-DDR-098 on stderr;
-it now means WS-DDR-098 inside hookSpecificOutput.additionalContext on stdout. The
+it now means the recorder-check note inside hookSpecificOutput.additionalContext on stdout
+(since 2026-09-26 the note cites WS-DDR-150, which amended WS-DDR-098). The
 detection values keep their names; "recorder-active" and "silent-recorder" now come from the
 Witness index instead of SIG-*.md mtimes (the SIG fixtures are kept, and one added case
 proves a fresh SIG file no longer counts).
@@ -197,7 +198,7 @@ def run(tool_input, tool="Write", session="s-default", env_extra=None, bypass=Fa
     if p.stdout.strip():
         ctx = json.loads(p.stdout)["hookSpecificOutput"]["additionalContext"]
     return {"rc": p.returncode, "stdout": p.stdout, "stderr": p.stderr, "row": last,
-            "rows": len(rows), "ctx": ctx, "warned": "WS-DDR-098" in ctx,
+            "rows": len(rows), "ctx": ctx, "warned": "[Witness recorder check," in ctx,
             "field_note": "[Witness field check, WS-DDR-150]" in ctx, "ms": ms}
 
 
@@ -528,6 +529,60 @@ def test_30_emit_failure_never_breaks_the_hook():
     r = run({"file_path": P["never"][1], "content": "y"}, "Write", "s30-absent",
             env_extra={"WITNESS_EMIT": os.path.join(TMP, "no-such-emit.py")})
     assert r["rc"] == 0 and r["stderr"] == "" and r["warned"], r
+
+
+def _tree_file(*parts, intent=None):
+    """A file at TMP/<parts...>/src/thing.py; optional .intent/INTENT.md body at TMP/<parts...>."""
+    root = os.path.join(TMP, *parts)
+    os.makedirs(os.path.join(root, "src"), exist_ok=True)
+    if intent is not None:
+        os.makedirs(os.path.join(root, ".intent"), exist_ok=True)
+        with open(os.path.join(root, ".intent", "INTENT.md"), "w") as fh:
+            fh.write(intent)
+    target = os.path.join(root, "src", "thing.py")
+    with open(target, "w") as fh:
+        fh.write("x = 1\n")
+    return root, target
+
+
+# ---- WS-DDR-150 scope: every product under Core/products, Core/frameworks, Home ----
+
+def test_32_undeclared_product_without_intent_dir_is_in_scope():
+    write_index()
+    _, target = _tree_file("Core", "products", "scopedprod")
+    r = run({"file_path": target, "content": "y"}, "Write", "s32")
+    _check(r, "silent-recorder", True)
+    out = json.loads(r["stdout"])
+    ctx = out["hookSpecificOutput"]["additionalContext"]
+    assert "WS-DDR-150" in ctx and "is a product" in ctx and "declares autonomy" not in ctx, ctx
+    assert r["row"]["names"] == ["scopedprod"], r["row"]
+
+
+def test_33_sibling_worktree_path_reads_as_the_product():
+    write_index()
+    _, target = _tree_file("Core", "products", "scopedwt-wt-2026-09-26-task")
+    r = run({"file_path": target, "content": "y"}, "Write", "s33")
+    _check(r, "silent-recorder", True)
+    assert r["row"]["names"] == ["scopedwt"], r["row"]
+
+
+def test_34_intake_package_keeps_the_declaration_gate():
+    write_index()
+    _, target = _tree_file("Core", "products", "_intake", "2026-09-26-pkg", intent="---\ntitle: plain\n---\n")
+    _check(run({"file_path": target, "content": "y"}, "Write", "s34"), "no-lambda-declaration", False)
+
+
+def test_35_home_product_is_in_scope():
+    write_index()
+    _, target = _tree_file("Home", "someroom", intent="---\ntitle: a room\n---\n")
+    _check(run({"file_path": target, "content": "y"}, "Write", "s35"), "silent-recorder", True)
+
+
+def test_36_in_scope_product_declaring_no_actions_is_skipped():
+    write_index()
+    _, target = _tree_file("Core", "frameworks", "contentonly",
+                           intent="---\ntitle: c\n---\nwitness_actions: none (content repo, no scripts)\n")
+    _check(run({"file_path": target, "content": "y"}, "Write", "s36"), "no-actions-declared", False)
 
 
 def main():

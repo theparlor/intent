@@ -1,0 +1,16 @@
+{
+  "id": "2026-09-26-claude-recorder-scope-ws-ddr-150",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-26-recorder-scope-ws-ddr-150",
+  "worktree": "../intent-wt-2026-09-26-recorder-scope-ws-ddr-150",
+  "base_commit": "af40e38",
+  "objective": "",
+  "owned_paths": [
+    "hooks/signal-recorder-silent-check.sh",
+    "hooks/tests/test_signal_recorder_silent_check.py"
+  ],
+  "started": "2026-09-26T12:03:01-04:00",
+  "handoff": ".agents/handoffs/2026-09-26-claude-recorder-scope-ws-ddr-150.md",
+  "landed": "2026-09-26T12:03:50-04:00"
+}
