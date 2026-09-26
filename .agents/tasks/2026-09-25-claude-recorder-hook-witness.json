@@ -1,0 +1,20 @@
+{
+  "id": "2026-09-25-claude-recorder-hook-witness",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-25-recorder-hook-witness",
+  "worktree": "../intent-wt-2026-09-25-recorder-hook-witness",
+  "base_commit": "ecb2e60",
+  "objective": "WS-DDR-098 recorder hook measures Witness events via a daily index and warns through additionalContext (QMT-01M3D8KVWP66F2SH5X0TAV4E0B)",
+  "owned_paths": [
+    "hooks/signal-recorder-silent-check.sh",
+    "hooks/tests/test_signal_recorder_silent_check.py",
+    "hooks/witness_source_index.py",
+    "hooks/tests/test_witness_source_index.py",
+    "ARCHITECTURE.md",
+    ".intent/signals/SIG-RECORDER-HOOK-MEASURES-WITNESS-2026-09-25.md"
+  ],
+  "started": "2026-09-25T21:09:07-04:00",
+  "handoff": ".agents/handoffs/2026-09-25-claude-recorder-hook-witness.md",
+  "landed": "2026-09-25T21:19:09-04:00"
+}

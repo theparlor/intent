@@ -1,165 +1,275 @@
-#!/usr/bin/env bash
+#!/usr/bin/python3
 # signal-recorder-silent-check.sh
 #
-# PreToolUse hook — Witness mandatory-recorder enforcement per WS-DDR-098.
+# PreToolUse hook (registered on Write|Edit in ~/.claude/settings.json; the Bash branch
+# below is kept for any matcher that adds Bash). Witness mandatory-recorder check for
+# WS-DDR-098: a product that declares autonomy settings must report what it does to
+# Witness. The file keeps its .sh name because settings.json and ~/.claude/hooks point at
+# it; it is Python, run by the system interpreter in its shebang (no venv needed).
 #
-# Detects intent-decorated-but-silent products: products that have declared
-# `lambda_settings:` in their .intent/INTENT.md (or autonomy_grants:) but have
-# emitted no signal to their .intent/signals/ directory in the last N days.
+# What it checks (rebuilt 2026-09-25, QMT-01M3D8KVWP66F2SH5X0TAV4E0B):
+#   1. The tool call's file path (file_path, path, notebook_path, or for Bash the first
+#      absolute path in the command that exists) is walked up to the nearest folder that
+#      holds a .intent/ directory: the product.
+#   2. Engagement products (Work/<kind>/Engagements/<Client>/...) are exempt.
+#   3. Only products whose .intent/INTENT.md declares lambda_settings: or
+#      autonomy_grants: at column 0 are checked.
+#   4. The product's Witness names: INTENT.md may declare
+#          witness_source_system: fieldbook
+#          witness_source_system: [signalbox, exchange]
+#      or a block list of "- name" lines. Absent that, the name is the product's
+#      directory name, with a session-kit worktree suffix removed ("intent-wt-<task>"
+#      reads as "intent"). Witness's intent-events adapter uses the same default when it
+#      ingests Core/**/.intent/events/events*.jsonl, so a product that writes its own
+#      events file is found under its directory name with no declaration.
+#   5. The names are looked up, ignoring case, in the Witness source index
+#      ($HOME/.claude/state/witness-source-index.json, built by
+#      hooks/witness_source_index.py from the Witness events store). The index keys each
+#      event by event.product, else source_system. No event in 30 days under any of the
+#      names means the product is silent.
+#   The hook never scans the Witness store. When the index is missing or more than 24
+#   hours old it starts the builder detached (at most one kick an hour, stamp file next
+#   to the index) and does not wait for it.
 #
-# Surfaces the silent-recorder gap as an actionable signal rather than blocking
-# the action — the rule is "products MUST route through Witness," not "blocking
-# every action until they do." The catch-net is observability; the user/agent
-# is informed and the gap surfaces as a follow-up signal candidate.
+# Telemetry detections (one JSONL row per call, $HOME/.claude/logs/signal-recorder-silent.jsonl):
+#   no-context, engagement-exempt, no-lambda-declaration      skip, as before
+#   recorder-active       a Witness event within 30 days (was: a SIG-*.md within 30 days)
+#   silent-recorder       no Witness event within 30 days (outcome warn, or
+#                         warn-suppressed when this session was already told)
+#   witness-index-missing / witness-index-malformed           no verdict possible; builder kicked
+#   hook-error            an internal error; logged, the call proceeds
 #
-# Per WS-DDR-098: products that emit autonomy decisions MUST route through
-# Witness; non-routing products are Intent-decorated, not Intent-enabled.
-# Engagement-scoped products (Work/.../Engagements/[Client]/.intent/) are
-# EXEMPT from this enforcement.
+# Output channel: JSON on stdout, hookSpecificOutput.additionalContext, which Claude Code
+# adds to the model's context before the tool runs, plus a one-line systemMessage for the
+# person. Checked 2026-09-25 on Claude Code 2.1.282 two ways: the hooks reference
+# (code.claude.com/docs/en/hooks, PreToolUse decision control: additionalContext is
+# "added to Claude's context before the tool call executes"; exit 0 stderr "goes to the
+# debug log only, Claude never sees it") and a headless probe in which the model reported
+# the additionalContext token and neither the stderr nor the systemMessage token. The old
+# stderr warning therefore reached nobody. The note goes out once per session per
+# product: state in $HOME/.claude/state/signal-recorder-silent-warned.json keyed by the
+# hook input's session_id, entries pruned after 7 days.
+#
+# Posture: WARN-ONLY. Never blocks, always exits 0; any internal error fails open.
+# Bypass: SIGNAL_RECORDER_SILENT_BYPASSED=1
+# Audit log: $HOME/.claude/audit/signal-recorder-silent-detections.log (silent verdicts)
+# Test: /usr/bin/python3 hooks/tests/test_signal_recorder_silent_check.py
 #
 # Spec: Workspaces/.context/DECISIONS.md WS-DDR-098
-# Signal: .intent/signals/SIG-2026-05-26-flight-model-ingestion.md
-# Companion: Core/frameworks/intent/hooks/autonomy-grant-stop-check.sh (Layer 4)
-#
-# Install: chmod +x and symlink to ~/.claude/hooks/
-# Register: add PreToolUse entry to ~/.claude/settings.json with matcher
-#   limited to high-leverage tool calls (Bash for git, Edit/Write on
-#   .intent/, etc.) to avoid running on every tool call.
-#
-# Bypass: SIGNAL_RECORDER_SILENT_BYPASSED=1
-# Audit log: ~/.claude/audit/signal-recorder-silent-detections.log
-# Telemetry: ~/.claude/logs/signal-recorder-silent.jsonl
-#
-# Posture: WARN-ONLY (does not block). The recorder-MANDATORY rule is policy;
-# the hook surfaces gaps but never blocks legitimate work — blocking would
-# create exactly the Drag (caution overhead) the flight-model spec penalizes.
-#
-# Created: 2026-05-26 — companion to WS-DDR-098 ratification.
+# Signals: .intent/signals/SIG-2026-05-26-flight-model-ingestion.md (origin);
+#   Workspaces/.intent/signals/SIG-WITNESS-COVERAGE-GAP-AND-DEAD-RECORDER-HOOK-2026-09-25.md
+# Created 2026-05-26; path lookup fixed 2026-09-25 (ecb2e60); Witness measure 2026-09-25.
 
-set -u
+import json
+import os
+import sys
+import time
 
-AUDIT_LOG="$HOME/.claude/audit/signal-recorder-silent-detections.log"
-TELEMETRY_LOG="$HOME/.claude/logs/signal-recorder-silent.jsonl"
-mkdir -p "$(dirname "$AUDIT_LOG")" 2>/dev/null || true
-mkdir -p "$(dirname "$TELEMETRY_LOG")" 2>/dev/null || true
+BYPASS = "SIGNAL_RECORDER_SILENT_BYPASSED"
+STALE_DAYS = 30
+DAY_S = 86400
+WARN_TTL = 7 * DAY_S
+REFRESH_EVERY_S = 24 * 3600
+KICK_EVERY_S = 3600
 
-# Bypass
-if [ "${SIGNAL_RECORDER_SILENT_BYPASSED:-0}" = "1" ]; then
-  exit 0
-fi
+HOME = os.environ.get("HOME") or os.path.expanduser("~")
+AUDIT_LOG = os.path.join(HOME, ".claude", "audit", "signal-recorder-silent-detections.log")
+TELEMETRY_LOG = os.path.join(HOME, ".claude", "logs", "signal-recorder-silent.jsonl")
+WARN_STATE = os.path.join(HOME, ".claude", "state", "signal-recorder-silent-warned.json")
+HOOK_DIR = os.path.dirname(os.path.realpath(__file__))
+BUILDER = os.path.join(HOOK_DIR, "witness_source_index.py")
 
-# Read input JSON from stdin
-INPUT=$(cat)
 
-# Threshold: products silent for >30 days are flagged
-STALE_DAYS=30
+def _now_iso(now):
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))
 
-# Parse input to extract working directory hint (best-effort)
-WORK_DIR=$(python3 -c "
-import json, sys, os
-try:
-    d = json.loads(sys.stdin.read() or '{}')
-    # PreToolUse hook gets tool_input — try to extract a file path
-    tool_input = d.get('tool_input', {})
-    # Precedence fix 2026-09-25: the old one-liner read as
-    # (file_path or path or command.split()[1]) if command else None, so
-    # every Edit and Write call resolved to None and the hook skipped all
-    # 30,953 checks between 2026-05-26 and 2026-09-25 as no-context.
-    path = tool_input.get('file_path') or tool_input.get('path') or tool_input.get('notebook_path')
-    if not path and tool_input.get('command'):
-        # Bash: first token that names an existing absolute path.
-        for tok in tool_input['command'].split():
-            tok = tok.strip(chr(39) + chr(34))
-            if tok.startswith('/') and os.path.exists(tok):
+
+def _append(path, line):
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(line + "\n")
+    except Exception:
+        pass
+
+
+def _telemetry(now, **row):
+    out = {"ts": _now_iso(now)}
+    out.update(row)
+    _append(TELEMETRY_LOG, json.dumps(out, separators=(",", ":")))
+
+
+def _resolve_product(tool_input):
+    """Nearest ancestor of the tool's target path that holds a .intent/ directory."""
+    if not isinstance(tool_input, dict):
+        return ""
+    path = tool_input.get("file_path") or tool_input.get("path") or tool_input.get("notebook_path")
+    if not path and isinstance(tool_input.get("command"), str):
+        for tok in tool_input["command"].split():
+            tok = tok.strip("'\"")
+            if tok.startswith("/") and os.path.exists(tok):
                 path = tok
                 break
-    if path and os.path.exists(path):
-        # Walk up to find a directory containing .intent/
-        cur = os.path.dirname(os.path.abspath(path))
-        while cur and cur != '/':
-            if os.path.isdir(os.path.join(cur, '.intent')):
-                print(cur)
-                sys.exit(0)
-            cur = os.path.dirname(cur)
-    print('')
-except Exception:
-    print('')
-" <<< "$INPUT" 2>/dev/null)
+    if not isinstance(path, str) or not path or not os.path.exists(path):
+        return ""
+    cur = os.path.dirname(os.path.abspath(path))
+    while cur and cur != "/":
+        if os.path.isdir(os.path.join(cur, ".intent")):
+            return cur
+        cur = os.path.dirname(cur)
+    return ""
 
-TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-# No working dir resolved → exit cleanly (no detection possible)
-if [ -z "$WORK_DIR" ] || [ ! -d "$WORK_DIR/.intent" ]; then
-  # Telemetry: still emit so frequency trends observable
-  printf '{"ts":"%s","work_dir":"","detection":"no-context","outcome":"skip"}\n' "$TIMESTAMP" >> "$TELEMETRY_LOG" 2>/dev/null || true
-  exit 0
-fi
+def _is_engagement(work_dir):
+    parts = work_dir.split(os.sep)
+    for i, p in enumerate(parts):
+        if p == "Work" and len(parts) > i + 2 and parts[i + 2] == "Engagements":
+            return True
+    return False
 
-# Exempt engagement-scoped paths
-case "$WORK_DIR" in
-  */Work/*/Engagements/*)
-    printf '{"ts":"%s","work_dir":"%s","detection":"engagement-exempt","outcome":"skip"}\n' "$TIMESTAMP" "$WORK_DIR" >> "$TELEMETRY_LOG" 2>/dev/null || true
-    exit 0
-    ;;
-esac
 
-INTENT_DIR="$WORK_DIR/.intent"
-INTENT_MD="$INTENT_DIR/INTENT.md"
+def _kick_refresh(index_path, now):
+    """Start the index builder detached, at most once an hour. Never waits."""
+    if os.environ.get("WITNESS_INDEX_NO_REFRESH") == "1" or not os.path.isfile(BUILDER):
+        return False
+    stamp = index_path + ".kick"
+    try:
+        if now - os.path.getmtime(stamp) < KICK_EVERY_S:
+            return False
+    except OSError:
+        pass
+    try:
+        os.makedirs(os.path.dirname(stamp), exist_ok=True)
+        with open(stamp, "a"):
+            pass
+        os.utime(stamp, (now, now))
+        import subprocess
+        subprocess.Popen([sys.executable, BUILDER, "--quiet"], stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         close_fds=True, start_new_session=True)
+        return True
+    except Exception:
+        return False
 
-# Check if this product has declared lambda_settings or autonomy_grants
-DECLARES_LAMBDA=0
-if [ -f "$INTENT_MD" ]; then
-  if grep -qE "^(lambda_settings|autonomy_grants):" "$INTENT_MD" 2>/dev/null; then
-    DECLARES_LAMBDA=1
-  fi
-fi
 
-# Not a flight-model-eligible product → exit cleanly
-if [ "$DECLARES_LAMBDA" = "0" ]; then
-  printf '{"ts":"%s","work_dir":"%s","detection":"no-lambda-declaration","outcome":"skip"}\n' "$TIMESTAMP" "$WORK_DIR" >> "$TELEMETRY_LOG" 2>/dev/null || true
-  exit 0
-fi
+def _already_warned(session_id, work_dir, now):
+    """True when this session was already told about work_dir; records it otherwise."""
+    if not session_id:
+        return False
+    try:
+        with open(WARN_STATE, "r", encoding="utf-8") as fh:
+            state = json.load(fh)
+        if not isinstance(state, dict):
+            state = {}
+    except Exception:
+        state = {}
+    state = {s: v for s, v in state.items()
+             if isinstance(v, dict) and any(isinstance(t, (int, float)) and now - t < WARN_TTL
+                                            for t in v.values())}
+    seen = state.setdefault(session_id, {})
+    if work_dir in seen:
+        return True
+    seen[work_dir] = now
+    try:
+        os.makedirs(os.path.dirname(WARN_STATE), exist_ok=True)
+        tmp = f"{WARN_STATE}.tmp.{os.getpid()}"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(state, fh)
+        os.replace(tmp, WARN_STATE)
+    except Exception:
+        pass
+    return False
 
-# Check signal emission recency
-SIGNALS_DIR="$INTENT_DIR/signals"
-LATEST_SIG_DAYS=999
-if [ -d "$SIGNALS_DIR" ]; then
-  # Find newest SIG-*.md file mtime in days
-  LATEST_MTIME=$(find "$SIGNALS_DIR" -name "SIG-*.md" -type f -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)
-  if [ -n "$LATEST_MTIME" ]; then
-    LATEST_SIG_DAYS=$(python3 -c "
-import os, sys, time
-try:
-    age = (time.time() - os.path.getmtime('$LATEST_MTIME')) / 86400
-    print(int(age))
-except Exception:
-    print(999)
-")
-  fi
-fi
 
-# Within threshold → exit cleanly
-if [ "$LATEST_SIG_DAYS" -le "$STALE_DAYS" ]; then
-  printf '{"ts":"%s","work_dir":"%s","detection":"recorder-active","latest_sig_days":%d,"outcome":"skip"}\n' "$TIMESTAMP" "$WORK_DIR" "$LATEST_SIG_DAYS" >> "$TELEMETRY_LOG" 2>/dev/null || true
-  exit 0
-fi
+def _handle(raw, now):
+    try:
+        payload = json.loads(raw or "{}")
+    except Exception:
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    session_id = payload.get("session_id") or os.environ.get("CLAUDE_SESSION_ID") or ""
+    work_dir = _resolve_product(payload.get("tool_input"))
+    if not work_dir:
+        _telemetry(now, work_dir="", detection="no-context", outcome="skip")
+        return 0
+    if _is_engagement(work_dir):
+        _telemetry(now, work_dir=work_dir, detection="engagement-exempt", outcome="skip")
+        return 0
+    try:
+        with open(os.path.join(work_dir, ".intent", "INTENT.md"), "r", encoding="utf-8",
+                  errors="replace") as fh:
+            intent_md = fh.read()
+    except OSError:
+        intent_md = ""
 
-# Silent recorder detected — surface warning (warn-only, do not block)
-echo "[$TIMESTAMP] SILENT-RECORDER work_dir=$WORK_DIR latest_sig_days=$LATEST_SIG_DAYS declares_lambda=1" >> "$AUDIT_LOG"
-printf '{"ts":"%s","work_dir":"%s","detection":"silent-recorder","latest_sig_days":%d,"outcome":"warn"}\n' "$TIMESTAMP" "$WORK_DIR" "$LATEST_SIG_DAYS" >> "$TELEMETRY_LOG" 2>/dev/null || true
+    sys.path.insert(0, HOOK_DIR)
+    import witness_source_index as wsi
 
-# Warn-only output to stderr — surfaces to user without blocking tool call
-cat >&2 <<EOF
-[Witness mandatory-recorder warning — WS-DDR-098]
-Product at $WORK_DIR has declared lambda_settings/autonomy_grants but
-its .intent/signals/ has not emitted a SIG-*.md in $LATEST_SIG_DAYS days
-(threshold: $STALE_DAYS days).
+    if not wsi.declares_autonomy(intent_md):
+        _telemetry(now, work_dir=work_dir, detection="no-lambda-declaration", outcome="skip")
+        return 0
+    names, names_from = wsi.product_names(work_dir, intent_md)
+    index_path = wsi.index_path()
+    index, problem = wsi.load_index(index_path)
+    if problem:
+        kicked = _kick_refresh(index_path, now)
+        _telemetry(now, work_dir=work_dir, detection=f"witness-index-{problem}", outcome="skip",
+                   names=names, refresh_kicked=kicked)
+        return 0
+    index_age_h = round((now - index["built_at_epoch"]) / 3600, 1)
+    kicked = _kick_refresh(index_path, now) if index_age_h * 3600 > REFRESH_EVERY_S else False
+    hit = wsi.lookup(index, names)
+    last = hit["last_event_epoch"]
+    last_days = None if last is None else max(0, int((now - last) // DAY_S))
+    base = dict(work_dir=work_dir, names=names, names_from=names_from, last_event_days=last_days,
+                count_30d=hit["count_30d"], index_age_h=index_age_h, refresh_kicked=kicked)
+    if last is not None and now - last <= STALE_DAYS * DAY_S:
+        _telemetry(now, detection="recorder-active", outcome="skip", **base)
+        return 0
 
-Per WS-DDR-098 the product is Intent-decorated, not Intent-enabled, until
-it routes through Witness. Tool call NOT blocked — this is observability,
-not enforcement. Capture a signal documenting recent autonomy decisions
-to clear the gap.
-EOF
+    last_txt = "never" if last is None else f"{wsi.iso(last)}, {last_days} days ago"
+    _append(AUDIT_LOG, f"[{_now_iso(now)}] SILENT-RECORDER work_dir={work_dir} names={','.join(names)} "
+                       f"last_event={last_txt.replace(' ', '_')} declares_lambda=1")
+    if _already_warned(session_id, work_dir, now):
+        _telemetry(now, detection="silent-recorder", outcome="warn-suppressed", **base)
+        return 0
+    _telemetry(now, detection="silent-recorder", outcome="warn", **base)
+    product = os.path.basename(work_dir)
+    how = "declared in INTENT.md" if names_from == "declared" else "the directory name, no witness_source_system declared"
+    context = (
+        f"[Witness recorder check, WS-DDR-098] {product} ({work_dir}) declares autonomy settings "
+        f"in .intent/INTENT.md, but Witness holds no event from it in the last {STALE_DAYS} days. "
+        f"Names checked: {', '.join(names)} ({how}). Last event: {last_txt}. "
+        f"Index built {index.get('built_at')} from the Witness store. "
+        f"Everything built reports its actions to Witness. If this session changes what {product} does, "
+        f"have it emit Witness events: append event lines to {work_dir}/.intent/events/events.jsonl "
+        f"(Witness ingests Core/**/.intent/events/events*.jsonl daily at 06:00, under the directory "
+        f"name) or send them through a Witness adapter. If it already reports under another name, "
+        f"declare witness_source_system: in its INTENT.md. Warn-only: the tool call proceeds, and this "
+        f"note appears once per session per product."
+    )
+    user_line = (f"Witness recorder check: {product} declares autonomy settings but sent Witness no "
+                 f"event in {STALE_DAYS} days (last: {last_txt}).")
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": context},
+                      "systemMessage": user_line}))
+    return 0
 
-# Exit 0 — warn-only posture, do not block the tool call
-exit 0
+
+def main():
+    if os.environ.get(BYPASS) == "1":
+        return 0
+    now = time.time()
+    try:
+        raw = sys.stdin.read()
+    except Exception:
+        raw = ""
+    try:
+        return _handle(raw, now)
+    except Exception as e:  # a recorder check must never wedge a write
+        _telemetry(now, detection="hook-error", outcome="skip", error=f"{type(e).__name__}: {e}"[:300])
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

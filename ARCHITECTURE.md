@@ -203,7 +203,7 @@ Prevents conversion of L4-eligible work into L0 proposals. Parallel architecture
 
 ---
 
-## Hook Infrastructure (8 Governance Hooks)
+## Hook Infrastructure (Governance Hooks)
 
 All hooks live in `hooks/`. Registered in `~/.claude/settings.json`.
 
@@ -217,8 +217,21 @@ All hooks live in `hooks/`. Registered in `~/.claude/settings.json`.
 | `closure-discipline-signal-check.sh` | PreToolUse (Write/Edit) | Resolved-without-triad block |
 | `overwatch-staleness-check.sh` | SessionStart | Overwatch journal staleness banner (>7d warn, >14d load-bearing) |
 | `spec-age-lint.sh` | Configurable | Approved/ratified specs with no corresponding implementation after N days |
+| `signal-recorder-silent-check.sh` | PreToolUse (Write/Edit) | WS-DDR-098 recorder check: a product that declares autonomy settings but sent Witness no event in 30 days gets a once-per-session note in the model's context (warn-only) |
 
 `install.sh` — registers all hooks into `~/.claude/settings.json`.
+
+### Witness recorder check (WS-DDR-098)
+
+WS-DDR-098 says a product that makes autonomy decisions reports them to Witness. `hooks/signal-recorder-silent-check.sh` checks that on every Write and Edit, and `hooks/witness_source_index.py` gives it something cheap to check against.
+
+- **Which products.** The nearest folder above the edited file that holds `.intent/`, when its `.intent/INTENT.md` declares `lambda_settings:` or `autonomy_grants:` at column 0. Engagement products under `Work/<kind>/Engagements/` are exempt.
+- **Which Witness names are the product's own.** `.intent/INTENT.md` may declare them with `witness_source_system:`, as one name (`witness_source_system: fieldbook`), a flow list (`witness_source_system: [signalbox, exchange]`) or a block list of `- name` lines. Without the key the name is the product's directory name, with a session-kit worktree suffix removed (`intent-wt-<task>` reads as `intent`). Witness's intent-events adapter uses the same default when it ingests `Core/**/.intent/events/events*.jsonl`, so a product that appends to its own `.intent/events/events.jsonl` is found with no declaration. Matching ignores case.
+- **What counts as an event.** The builder reads the Witness events store (`Core/products/witness/farm/events-store/*.jsonl`) and keys each event by `event.product`, falling back to `source_system` when an event names no product. `source_system` is the ingest channel, not the product: the intent-events adapter carries every product's events under `intent`, so matching on it would make the Intent framework look active on everyone's behalf. Activity time is `event.ts`, else `ingested_at`, so a backfill of June events does not make a product look active in September.
+- **Silent** means no event under any of the product's names in the last 30 days.
+- **The index.** `$HOME/.claude/state/witness-source-index.json`, outside git. The builder reads only bytes appended since its last run (the first run reads the whole store, about 1.3 GB in 25 s), holds a lock, and rebuilds at most once a day unless run with `--force`. The hook never reads the store: when the index is missing or more than 24 hours old it starts the builder detached, at most once an hour, and answers from what it has. A missing or malformed index is recorded as `witness-index-missing` or `witness-index-malformed` and nothing is shown.
+- **Where the warning goes.** JSON on stdout, `hookSpecificOutput.additionalContext`, which Claude Code adds to the model's context before the tool runs, plus a one-line `systemMessage` for the person; once per session per product. A PreToolUse hook's stderr on exit 0 goes to the debug log only, which is why the earlier stderr warning was never seen.
+- **Commands.** `/usr/bin/python3 hooks/witness_source_index.py --report` prints every declaring product with the names checked, last Witness event, 30-day count and verdict. Tests: `hooks/tests/test_signal_recorder_silent_check.py` and `hooks/tests/test_witness_source_index.py`. Bypass: `SIGNAL_RECORDER_SILENT_BYPASSED=1`. Telemetry: `$HOME/.claude/logs/signal-recorder-silent.jsonl`.
 
 ---
 
