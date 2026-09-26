@@ -18,8 +18,19 @@ detection values keep their names; "recorder-active" and "silent-recorder" now c
 Witness index instead of SIG-*.md mtimes (the SIG fixtures are kept, and one added case
 proves a fresh SIG file no longer counts).
 
+3. 2026-09-26 (QMT-01M3F5JWBR8XPK9YGB7HTMCBNP, WS-DDR-150): the index carries field lint per
+   product. Cases 23 to 31 pin the once-per-session field note for an active product whose
+   rule-bound events mostly miss a minimum field, the quiet paths (mostly conformant, legacy
+   only, no lint in the index), merging across declared names, the silent note's emit.py
+   pointer, the hook.fire event every fire emits through emit.py, that an emit failure never
+   changes the check, and a remedy that fits what is missing. Case 20 now times 21 runs with
+   the emit on. Case 19's fixture event carries attributes.adapter, as every real event on
+   the intent channel does (the intent-events adapter stamps it); without it the event read
+   as a nonconformant rule-bound one and drew the new note.
+
 Everything runs under a temp dir with a fake HOME, so the real telemetry, audit log, dedupe
-state and index are never touched.
+state and index are never touched. The emit cases point WITNESS_EMIT at the real emit.py and
+WITNESS_INBOX at a temp dir, so nothing reaches the real Witness inbox.
 
 Run: /usr/bin/python3 hooks/tests/test_signal_recorder_silent_check.py   (or under pytest)
 """
@@ -32,9 +43,24 @@ import sys
 import tempfile
 import time
 
-HOOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "signal-recorder-silent-check.sh")
+HERE = os.path.dirname(os.path.abspath(__file__))
+HOOK = os.path.join(HERE, "..", "signal-recorder-silent-check.sh")
+sys.path.insert(0, os.path.join(HERE, ".."))
+import witness_source_index as wsi  # noqa: E402
+
 DAY = 86400
 LATENCY_BUDGET_MS = 100
+LATENCY_RUNS = 21
+_EMIT_ENV = ("WITNESS_EMIT", "WITNESS_INBOX", "WITNESS_CALLER", "WITNESS_RUN_ID", "WITNESS_ROOT")
+
+
+def real_emit_py():
+    """The Witness emit.py beside this repo (Core/products/witness/src), else under $HOME."""
+    for cand in (os.path.join(HERE, "..", "..", "..", "..", "products", "witness", "src", "emit.py"),
+                 os.path.join(os.path.expanduser("~"), "Workspaces", "Core", "products", "witness", "src", "emit.py")):
+        if os.path.isfile(cand):
+            return os.path.normpath(cand)
+    raise AssertionError("Witness emit.py not found; the emit cases need Core/products/witness/src/emit.py")
 
 TMP = FAKE_HOME = TELEMETRY = INDEX = STORE = None
 P = {}
@@ -69,6 +95,14 @@ def setup_module(_module=None):
                               extra="witness_actions: none (content repo, markdown only)\n")
     P["barenone"] = make_product("barenone", declares=True, sig_age_days=None,
                                  extra="witness_actions: none\n")
+    P["fieldy"] = make_product("fieldy", declares=True, sig_age_days=None)
+    P["tidy"] = make_product("tidy", declares=True, sig_age_days=None)
+    P["oldie"] = make_product("oldie", declares=True, sig_age_days=None)
+    P["split"] = make_product("splitprod", declares=True, sig_age_days=None,
+                              extra="witness_source_system: [split-a, split-b]\n")
+    P["slowy"] = make_product("slowy", declares=True, sig_age_days=None)
+    P["engy"] = make_product("engy", declares=True, sig_age_days=None)
+    P["mixy"] = make_product("mixy", declares=True, sig_age_days=None)
     write_index()
 
 
@@ -103,10 +137,13 @@ def write_index(built_ago_s=0, raw=None):
         return
     now = time.time()
 
-    def row(days_ago, count):
+    def row(days_ago, count, lint=None):
         e = now - days_ago * DAY
-        return {"last_event_epoch": e, "last_event": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(e)),
-                "count_30d": count, "count_total": count + 5, "source_systems": {"x": count + 5}}
+        r = {"last_event_epoch": e, "last_event": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(e)),
+             "count_30d": count, "count_total": count + 5, "source_systems": {"x": count + 5}}
+        if lint is not None:
+            r["lint_30d"] = {k: wsi.lint_block(*lint.get(k, (0, 0, {}))) for k in ("rule", "legacy")}
+        return r
 
     data = {
         "schema": "witness-source-index/1",
@@ -122,6 +159,14 @@ def write_index(built_ago_s=0, raw=None):
             "alpha-src": row(45, 0),
             "gamma-src": row(40, 0),
             "wtprod": row(1, 9),
+            "fieldy": row(1, 10, {"rule": (10, 9, {"caller": 9, "machine": 9, "run_id": 2})}),
+            "tidy": row(1, 10, {"rule": (10, 3, {"machine": 3})}),
+            "oldie": row(1, 500, {"legacy": (500, 500, {"ts": 500, "caller": 500})}),
+            "split-a": row(2, 4, {"rule": (4, 4, {"run_id": 4})}),
+            "split-b": row(1, 6, {"rule": (6, 0, {})}),
+            "slowy": row(1, 10, {"rule": (10, 8, {"duration_ms": 8})}),
+            "engy": row(1, 10, {"rule": (10, 6, {"redaction_level": 6})}),
+            "mixy": row(1, 10, {"rule": (10, 10, {"duration_ms": 10, "caller": 9, "run_id": 9})}),
         },
         "source_systems": {},
     }
@@ -134,6 +179,8 @@ def run(tool_input, tool="Write", session="s-default", env_extra=None, bypass=Fa
     env.pop("SIGNAL_RECORDER_SILENT_BYPASSED", None)
     env.pop("WITNESS_SOURCE_INDEX", None)
     env.pop("CLAUDE_SESSION_ID", None)
+    for k in _EMIT_ENV:
+        env.pop(k, None)
     if bypass:
         env["SIGNAL_RECORDER_SILENT_BYPASSED"] = "1"
     env.update(env_extra or {})
@@ -150,7 +197,21 @@ def run(tool_input, tool="Write", session="s-default", env_extra=None, bypass=Fa
     if p.stdout.strip():
         ctx = json.loads(p.stdout)["hookSpecificOutput"]["additionalContext"]
     return {"rc": p.returncode, "stdout": p.stdout, "stderr": p.stderr, "row": last,
-            "rows": len(rows), "ctx": ctx, "warned": "WS-DDR-098" in ctx, "ms": ms}
+            "rows": len(rows), "ctx": ctx, "warned": "WS-DDR-098" in ctx,
+            "field_note": "[Witness field check, WS-DDR-150]" in ctx, "ms": ms}
+
+
+def emit_env(inbox):
+    return {"WITNESS_EMIT": real_emit_py(), "WITNESS_INBOX": inbox}
+
+
+def inbox_events(inbox):
+    out = []
+    if os.path.isdir(inbox):
+        for name in sorted(os.listdir(inbox)):
+            with open(os.path.join(inbox, name)) as fh:
+                out.extend(json.loads(line) for line in fh if line.strip())
+    return out
 
 
 def _rows():
@@ -296,7 +357,8 @@ def test_19_stale_index_kicks_a_detached_rebuild():
     with open(os.path.join(STORE, "2026-09-25.jsonl"), "w") as fh:
         ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 3600))
         fh.write(json.dumps({"event_id": "EVT-1", "ingested_at": ts, "source_system": "intent",
-                             "event": {"ts": ts, "product": "silent", "event": "x"}}) + "\n")
+                             "event": {"ts": ts, "product": "silent", "event": "x",
+                                       "attributes": {"adapter": "intent-events-jsonl"}}}) + "\n")
     try:
         write_index(built_ago_s=2 * DAY)
         r = run({"file_path": P["silent"][1], "content": "y"}, "Write", "s19",
@@ -329,14 +391,17 @@ def test_19_stale_index_kicks_a_detached_rebuild():
 
 
 def test_20_latency_under_budget():
+    """21 full-path runs: index read, lookup, field lint, the note, and the hook.fire emit."""
+    inbox = os.path.join(TMP, "inbox-latency")
     times = []
-    for i in range(11):
-        r = run({"file_path": P["silent"][1], "content": "y"}, "Write", f"s20-{i}")
-        assert r["rc"] == 0 and r["row"].get("detection") == "silent-recorder", r
+    for i in range(LATENCY_RUNS):
+        r = run({"file_path": P["fieldy"][1], "content": "y"}, "Write", f"s20-{i}", env_extra=emit_env(inbox))
+        assert r["rc"] == 0 and r["row"].get("detection") == "nonconformant-events", r
         times.append(r["ms"])
     med = statistics.median(times)
     print(f"      latency: median {med:.1f} ms, max {max(times):.1f} ms over {len(times)} full-path runs "
-          f"(budget {LATENCY_BUDGET_MS} ms for the whole hook)")
+          f"with the Witness emit on (budget {LATENCY_BUDGET_MS} ms for the whole hook)")
+    assert len(inbox_events(inbox)) == LATENCY_RUNS, "one hook.fire event per run"
     assert med < LATENCY_BUDGET_MS, times
 
 
@@ -352,6 +417,117 @@ def test_22_bare_none_without_reason_still_warns():
     r = run({"file_path": P["barenone"][1], "content": "y"}, "Write", "s22")
     _check(r, "silent-recorder", True)
     assert "witness_actions: none (<named reason>)" in r["ctx"], r["ctx"]
+
+
+# ---- added 2026-09-26: field lint (WS-DDR-150) ----
+
+def test_23_mostly_nonconformant_active_product_is_told_once_naming_the_field():
+    first = run({"file_path": P["fieldy"][1], "content": "y"}, "Write", "s23")
+    _check(first, "nonconformant-events", False)
+    assert first["field_note"] and first["row"]["outcome"] == "warn", first
+    ctx = first["ctx"]
+    assert "9 of 10" in ctx and "most often caller" in ctx and "emit.py" in ctx, ctx
+    assert ". " not in ctx and ctx.endswith("when given duration_ms."), "one plain sentence: " + ctx
+    assert "caller" in json.loads(first["stdout"])["systemMessage"], first["stdout"]
+    assert first["row"]["lint_events"] == 10 and first["row"]["lint_nonconformant"] == 9, first["row"]
+    assert first["row"]["lint_most_missing"] == "caller", first["row"]
+    again = run({"file_path": P["fieldy"][1], "content": "z"}, "Edit", "s23")
+    _check(again, "nonconformant-events", False)
+    assert again["row"]["outcome"] == "warn-suppressed" and again["stdout"] == "", again
+    other = run({"file_path": P["fieldy"][1], "content": "y"}, "Write", "s23-b")
+    assert other["field_note"], other
+
+
+def test_31_the_remedy_fits_what_is_missing():
+    """emit.py supplies everything but duration_ms and redaction_level. A product already on
+    emit.py is told the argument to pass; one missing a field emit.py supplies is told to use
+    emit.py, even when duration_ms is the single most missing field (Witness's own linker on
+    2026-09-26: duration_ms missing on every event, caller on all but one)."""
+    cases = (("slowy", "most often duration_ms", "pass duration_ms to"),
+             ("engy", "most often redaction_level", "pass redaction_level client-confidential to"),
+             ("mixy", "most often duration_ms", "report through"))
+    for name, most, remedy in cases:
+        r = run({"file_path": P[name][1], "content": "y"}, "Write", "s31")
+        _check(r, "nonconformant-events", False)
+        assert most in r["ctx"] and remedy in r["ctx"] and "emit.py" in r["ctx"], (name, r["ctx"])
+        assert ". " not in r["ctx"], r["ctx"]
+
+
+def test_24_mostly_conformant_active_product_stays_quiet():
+    r = run({"file_path": P["tidy"][1], "content": "y"}, "Write", "s24")
+    _check(r, "recorder-active", False)
+    assert r["stdout"] == "" and r["row"]["lint_events"] == 10 and r["row"]["lint_nonconformant"] == 3, r
+
+
+def test_25_legacy_only_events_never_nag():
+    r = run({"file_path": P["oldie"][1], "content": "y"}, "Write", "s25")
+    _check(r, "recorder-active", False)
+    assert r["stdout"] == "", r
+    assert r["row"]["lint_events"] == 0 and r["row"]["lint_legacy_events"] == 500, r["row"]
+
+
+def test_26_lint_merges_across_declared_names():
+    # split-a: 4 of 4 miss run_id; split-b: 6 of 6 carry every field. Merged 4 of 10 is not "mostly".
+    r = run({"file_path": P["split"][1], "content": "y"}, "Write", "s26")
+    _check(r, "recorder-active", False)
+    assert r["row"]["lint_events"] == 10 and r["row"]["lint_nonconformant"] == 4, r["row"]
+    assert r["row"]["lint_most_missing"] == "run_id", r["row"]
+
+
+def test_27_index_without_lint_stays_quiet():
+    r = run({"file_path": P["active"][1], "content": "y"}, "Write", "s27")
+    _check(r, "recorder-active", False)
+    assert "lint_events" not in r["row"], r["row"]
+
+
+def test_28_silent_note_points_at_emit_py():
+    r = run({"file_path": P["never"][1], "content": "y"}, "Write", "s28")
+    _check(r, "silent-recorder", True)
+    assert "emit.py" in r["ctx"] and "WS-DDR-150" in r["ctx"] and "under the name never" in r["ctx"], r["ctx"]
+
+
+def test_29_every_fire_emits_one_conformant_hook_fire_event():
+    inbox = os.path.join(TMP, "inbox-29")
+    env = emit_env(inbox)
+    fires = [
+        (run({"file_path": P["never"][1], "content": "y"}, "Write", "s29", env_extra=env), "silent-recorder", "ok"),
+        (run({"file_path": P["active"][1], "content": "y"}, "Write", "s29", env_extra=env), "recorder-active", "ok"),
+        (run({"command": "ls"}, "Bash", "s29", env_extra=env), "no-context", "skipped"),
+        (run({"file_path": P["eng"][1], "content": "y"}, "Write", "s29", env_extra=env), "engagement-exempt", "skipped"),
+    ]
+    events = inbox_events(inbox)
+    assert len(events) == len(fires), events
+    for (r, detection, outcome), ev in zip(fires, events):
+        assert r["rc"] == 0 and r["stderr"] == "", r
+        assert ev["product"] == "intent" and ev["event"] == "hook.fire", ev
+        a = ev["attributes"]
+        assert a["detection"] == detection and a["outcome"] == outcome, (detection, a)
+        assert a["caller"] == "hook:signal-recorder-silent-check" and a["session"] == "s29", a
+        assert isinstance(a["duration_ms"], (int, float)) and a["machine"] and a["run_id"], a
+        assert wsi.lint_event(ev, "intent") == ("rule", []), wsi.lint_event(ev, "intent")
+    assert events[0]["attributes"]["told_session"] is True and events[0]["attributes"]["target"] == "never"
+    eng = events[3]
+    assert eng["attributes"]["target"].startswith("sha256:"), eng
+    assert eng["attributes"]["redaction_level"] == "client-confidential", eng
+    assert "Client" not in json.dumps(eng) and "Engagements" not in json.dumps(eng), eng
+    assert "target" not in events[2]["attributes"], events[2]
+
+
+def test_30_emit_failure_never_breaks_the_hook():
+    broken = os.path.join(TMP, "broken_emit.py")
+    with open(broken, "w") as fh:
+        fh.write("raise RuntimeError('emit module broken on purpose')\n")
+    not_a_dir = os.path.join(TMP, "inbox-is-a-file")
+    with open(not_a_dir, "w") as fh:
+        fh.write("x\n")
+    for i, env in enumerate(({"WITNESS_EMIT": broken}, {"WITNESS_EMIT": real_emit_py(), "WITNESS_INBOX": not_a_dir})):
+        r = run({"file_path": P["never"][1], "content": "y"}, "Write", f"s30-{i}", env_extra=env)
+        assert r["rc"] == 0 and r["row"]["detection"] == "silent-recorder" and r["warned"], r
+        json.loads(r["stdout"])  # the note is intact: stdout is still one JSON object
+        assert "witness-emit: not recorded" in r["stderr"], r["stderr"]
+    r = run({"file_path": P["never"][1], "content": "y"}, "Write", "s30-absent",
+            env_extra={"WITNESS_EMIT": os.path.join(TMP, "no-such-emit.py")})
+    assert r["rc"] == 0 and r["stderr"] == "" and r["warned"], r
 
 
 def main():

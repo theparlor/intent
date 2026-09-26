@@ -1,0 +1,19 @@
+{
+  "id": "2026-09-26-claude-recorder-field-lint",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-26-recorder-field-lint",
+  "worktree": "../intent-wt-2026-09-26-recorder-field-lint",
+  "base_commit": "fc674d8",
+  "objective": "QMT-01M3F5JWBR8XPK9YGB7HTMCBNP: WS-DDR-150 field lint in the recorder check",
+  "owned_paths": [
+    "hooks/witness_source_index.py",
+    "hooks/signal-recorder-silent-check.sh",
+    "hooks/tests/test_witness_source_index.py",
+    "hooks/tests/test_signal_recorder_silent_check.py",
+    "ARCHITECTURE.md"
+  ],
+  "started": "2026-09-26T11:45:58-04:00",
+  "handoff": ".agents/handoffs/2026-09-26-claude-recorder-field-lint.md",
+  "landed": "2026-09-26T11:58:10-04:00"
+}

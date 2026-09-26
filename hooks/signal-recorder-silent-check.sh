@@ -31,14 +31,36 @@
 #      hooks/witness_source_index.py from the Witness events store). The index keys each
 #      event by event.product, else source_system. No event in 30 days under any of the
 #      names means the product is silent.
+#   6. Field lint (WS-DDR-150, added 2026-09-26, QMT-01M3F5JWBR8XPK9YGB7HTMCBNP). For an
+#      active product the index also says, per name, how many of its rule-bound events in
+#      the last 30 days miss a minimum field (ts with timezone, product, event, caller,
+#      machine, outcome, duration_ms, run_id; redaction_level on engagement events) and
+#      which field is missing most often. When more than half miss a field, the session
+#      is told once, in one sentence that names that field and points at emit.py.
+#      Legacy events (screenpipe, cc-native, entire-io, and anything a Witness stream
+#      adapter carried, marked by attributes.adapter) are counted by the builder and
+#      shown by its --report, but never produce this note. The rule for telling them
+#      apart is written out in witness_source_index.py under "Field lint".
 #   The hook never scans the Witness store. When the index is missing or more than 24
 #   hours old it starts the builder detached (at most one kick an hour, stamp file next
 #   to the index) and does not wait for it.
+#
+# Its own events (WS-DDR-150): every fire, except a bypassed one, reports itself to
+# Witness through emit.py as product intent, event hook.fire, caller
+# hook:signal-recorder-silent-check, with the detection, the product's directory name as
+# target (a hash plus redaction_level client-confidential for an engagement path), the
+# session id and its duration. Fail-open: when emit.py is absent (a machine without
+# Witness) nothing is said; a failed emit prints one line to stderr (the debug log) and
+# the check's result stands. Costs about 11 ms of the latency budget.
 #
 # Telemetry detections (one JSONL row per call, $HOME/.claude/logs/signal-recorder-silent.jsonl):
 #   no-context, engagement-exempt, no-lambda-declaration      skip, as before
 #   no-actions-declared   the product names why it has no actions (step 3b); skip
 #   recorder-active       a Witness event within 30 days (was: a SIG-*.md within 30 days)
+#                         and its rule-bound events mostly carry the minimum fields
+#                         (lint_* fields in the row when the index has field lint)
+#   nonconformant-events  active, but more than half of its rule-bound events miss a
+#                         minimum field (outcome warn, or warn-suppressed once told)
 #   silent-recorder       no Witness event within 30 days (outcome warn, or
 #                         warn-suppressed when this session was already told)
 #   witness-index-missing / witness-index-malformed           no verdict possible; builder kicked
@@ -56,11 +78,11 @@
 # hook input's session_id, entries pruned after 7 days.
 #
 # Posture: WARN-ONLY. Never blocks, always exits 0; any internal error fails open.
-# Bypass: SIGNAL_RECORDER_SILENT_BYPASSED=1
+# Bypass: SIGNAL_RECORDER_SILENT_BYPASSED=1 (inert: no telemetry, no note, no Witness event)
 # Audit log: $HOME/.claude/audit/signal-recorder-silent-detections.log (silent verdicts)
 # Test: /usr/bin/python3 hooks/tests/test_signal_recorder_silent_check.py
 #
-# Spec: Workspaces/.context/DECISIONS.md WS-DDR-098
+# Spec: Workspaces/.context/DECISIONS.md WS-DDR-098, amended in part by WS-DDR-150
 # Signals: .intent/signals/SIG-2026-05-26-flight-model-ingestion.md (origin);
 #   Workspaces/.intent/signals/SIG-WITNESS-COVERAGE-GAP-AND-DEAD-RECORDER-HOOK-2026-09-25.md
 # Created 2026-05-26; path lookup fixed 2026-09-25 (ecb2e60); Witness measure 2026-09-25.
@@ -83,6 +105,11 @@ TELEMETRY_LOG = os.path.join(HOME, ".claude", "logs", "signal-recorder-silent.js
 WARN_STATE = os.path.join(HOME, ".claude", "state", "signal-recorder-silent-warned.json")
 HOOK_DIR = os.path.dirname(os.path.realpath(__file__))
 BUILDER = os.path.join(HOOK_DIR, "witness_source_index.py")
+HOOK_NAME = "signal-recorder-silent-check"
+_VERDICTS = ("recorder-active", "silent-recorder", "nonconformant-events")
+_EMIT_SUPPLIES = ("ts", "product", "event", "caller", "machine", "outcome", "run_id")
+FIRE = {}  # the last telemetry row of this fire, reported to Witness when the fire ends
+SESSION = {"id": ""}  # the hook input's session_id, for the same report
 
 
 def _now_iso(now):
@@ -101,6 +128,8 @@ def _append(path, line):
 def _telemetry(now, **row):
     out = {"ts": _now_iso(now)}
     out.update(row)
+    FIRE.clear()
+    FIRE.update(out)
     _append(TELEMETRY_LOG, json.dumps(out, separators=(",", ":")))
 
 
@@ -149,9 +178,10 @@ def _kick_refresh(index_path, now):
             pass
         os.utime(stamp, (now, now))
         import subprocess
+        env = dict(os.environ, WITNESS_CALLER=f"hook:{HOOK_NAME}")
         subprocess.Popen([sys.executable, BUILDER, "--quiet"], stdin=subprocess.DEVNULL,
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                         close_fds=True, start_new_session=True)
+                         close_fds=True, start_new_session=True, env=env)
         return True
     except Exception:
         return False
@@ -194,6 +224,7 @@ def _handle(raw, now):
     if not isinstance(payload, dict):
         payload = {}
     session_id = payload.get("session_id") or os.environ.get("CLAUDE_SESSION_ID") or ""
+    SESSION["id"] = session_id
     work_dir = _resolve_product(payload.get("tool_input"))
     if not work_dir:
         _telemetry(now, work_dir="", detection="no-context", outcome="skip")
@@ -234,8 +265,46 @@ def _handle(raw, now):
     last_days = None if last is None else max(0, int((now - last) // DAY_S))
     base = dict(work_dir=work_dir, names=names, names_from=names_from, last_event_days=last_days,
                 count_30d=hit["count_30d"], index_age_h=index_age_h, refresh_kicked=kicked)
+    lint = hit.get("lint")
+    rule = (lint or {}).get("rule") or {}
+    if lint is not None:
+        base.update(lint_events=rule.get("events"), lint_nonconformant=rule.get("nonconformant"),
+                    lint_most_missing=rule.get("most_missing"),
+                    lint_legacy_events=((lint.get("legacy") or {}).get("events")))
     if last is not None and now - last <= STALE_DAYS * DAY_S:
-        _telemetry(now, detection="recorder-active", outcome="skip", **base)
+        if not wsi.mostly_nonconformant(rule):
+            _telemetry(now, detection="recorder-active", outcome="skip", **base)
+            return 0
+        # Active, but most of what it reports lacks the minimum fields (WS-DDR-150).
+        if _already_warned(session_id, work_dir + "#fields", now):
+            _telemetry(now, detection="nonconformant-events", outcome="warn-suppressed", **base)
+            return 0
+        _telemetry(now, detection="nonconformant-events", outcome="warn", **base)
+        product = os.path.basename(work_dir)
+        field = rule.get("most_missing") or "caller"
+        emit_py = wsi.emit_path()
+        # emit.py supplies ts, product, event, caller, machine, outcome and run_id itself;
+        # duration_ms and redaction_level come from the caller. A product missing any field
+        # emit.py supplies is not using it yet, so the remedy is emit.py; one already using
+        # it is told which argument to pass.
+        missing = rule.get("missing") or {}
+        if any(missing.get(f) for f in _EMIT_SUPPLIES):
+            how = f"so have {product} report through {emit_py}, which supplies every required field when given duration_ms"
+        elif field == "redaction_level":
+            how = f"so have {product} pass redaction_level client-confidential to {emit_py} for engagement work"
+        elif field == "duration_ms":
+            how = f"so have {product} pass duration_ms to {emit_py} with each action"
+        else:
+            how = f"so have {product} report through {emit_py}, which supplies every required field when given duration_ms"
+        context = (
+            f"[Witness field check, WS-DDR-150] Most of {product}'s events in Witness over the last "
+            f"{STALE_DAYS} days ({rule.get('nonconformant')} of {rule.get('events')}) lack fields the rule "
+            f"requires, most often {field}, {how}."
+        )
+        user_line = (f"Witness field check: most of {product}'s recent Witness events lack {field} "
+                     f"(WS-DDR-150); report through emit.py.")
+        print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": context},
+                          "systemMessage": user_line}))
         return 0
 
     last_txt = "never" if last is None else f"{wsi.iso(last)}, {last_days} days ago"
@@ -252,10 +321,11 @@ def _handle(raw, now):
         f"in .intent/INTENT.md, but Witness holds no event from it in the last {STALE_DAYS} days. "
         f"Names checked: {', '.join(names)} ({how}). Last event: {last_txt}. "
         f"Index built {index.get('built_at')} from the Witness store. "
-        f"Everything built reports its actions to Witness. If this session changes what {product} does, "
-        f"have it emit Witness events: append event lines to {work_dir}/.intent/events/events.jsonl "
-        f"(Witness ingests Core/**/.intent/events/events*.jsonl daily at 06:00, under the directory "
-        f"name) or send them through a Witness adapter. If it already reports under another name, "
+        f"Everything built reports its actions to Witness (WS-DDR-150). If this session changes what "
+        f"{product} does, have it report each action through the shared emit call, {wsi.emit_path()}, "
+        f"under the name {names[0]}, passing duration_ms; emit.py then gives every event the minimum fields "
+        f"the rule requires, which lines appended to .intent/events files do not. If it already reports "
+        f"under another name, "
         f"declare witness_source_system: in its INTENT.md. If it has no actions of its own (a content "
         f"or methodology repo), declare witness_actions: none (<named reason>) there instead. Warn-only: the tool call proceeds, and this "
         f"note appears once per session per product."
@@ -267,9 +337,37 @@ def _handle(raw, now):
     return 0
 
 
+def _emit_fire(session_id, started):
+    """Report this fire to Witness: one hook.fire event through emit.py. Never raises."""
+    try:
+        if HOOK_DIR not in sys.path:
+            sys.path.insert(0, HOOK_DIR)
+        import witness_source_index as wsi
+        detection = FIRE.get("detection") or "unknown"
+        outcome = "error" if detection == "hook-error" else ("ok" if detection in _VERDICTS else "skipped")
+        fields = {"hook": HOOK_NAME, "detection": detection, "told_session": FIRE.get("outcome") == "warn"}
+        if session_id:
+            fields["session"] = session_id
+        work_dir = FIRE.get("work_dir") or ""
+        if work_dir and _is_engagement(work_dir):
+            import hashlib
+            fields["target"] = "sha256:" + hashlib.sha256(work_dir.encode("utf-8")).hexdigest()[:16]
+            fields["redaction_level"] = "client-confidential"
+        elif work_dir:
+            fields["target"] = os.path.basename(work_dir)
+        for k in ("count_30d", "lint_events", "lint_nonconformant", "lint_most_missing"):
+            if FIRE.get(k) is not None:
+                fields[k] = FIRE[k]
+        wsi.emit_action("hook.fire", caller=f"hook:{HOOK_NAME}", outcome=outcome,
+                        duration_ms=(time.perf_counter() - started) * 1000, **fields)
+    except Exception:
+        pass
+
+
 def main():
     if os.environ.get(BYPASS) == "1":
         return 0
+    started = time.perf_counter()
     now = time.time()
     try:
         raw = sys.stdin.read()
@@ -280,6 +378,8 @@ def main():
     except Exception as e:  # a recorder check must never wedge a write
         _telemetry(now, detection="hook-error", outcome="skip", error=f"{type(e).__name__}: {e}"[:300])
         return 0
+    finally:
+        _emit_fire(SESSION["id"], started)
 
 
 if __name__ == "__main__":
