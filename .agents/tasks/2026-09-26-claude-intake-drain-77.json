@@ -1,0 +1,13 @@
+{
+  "id": "2026-09-26-claude-intake-drain-77",
+  "provider": "claude",
+  "status": "complete",
+  "branch": "agent/claude/2026-09-26-intake-drain-77",
+  "worktree": "../intent-wt-2026-09-26-intake-drain-77",
+  "base_commit": "e81ed20",
+  "objective": "",
+  "owned_paths": [],
+  "started": "2026-09-26T08:02:38-04:00",
+  "handoff": ".agents/handoffs/2026-09-26-claude-intake-drain-77.md",
+  "landed": "2026-09-26T08:03:27-04:00"
+}
